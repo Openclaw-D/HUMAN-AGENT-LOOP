@@ -65,6 +65,14 @@ async function ag2(base, token, method, path, body) {
 }
 
 test('PostgreSQL 容器整机重启（docker restart）：数据完好，连接池自动恢复', async (t) => {
+  // 容器整册重启仅对"测试库所在容器"执行；容器名/探活命令须经 env 显式指定，
+  // 未指定时跳过（绝不盲重启 v7next-a-pg 等可能被其他服务使用的容器）。
+  const pgContainer = process.env.JW_A_TEST_PG_CONTAINER ?? null;
+  const pgIsReady = process.env.JW_A_TEST_PG_ISREADY ?? null;
+  if (pgContainer === null || pgIsReady === null) {
+    t.skip('未设置 JW_A_TEST_PG_CONTAINER/JW_A_TEST_PG_ISREADY：跳过容器重启用例（避免触碰非本测试的容器）');
+    return;
+  }
   const { execSync } = await import('node:child_process');
   const k = await startKernel();
   t.after(() => k.stop());
@@ -75,13 +83,13 @@ test('PostgreSQL 容器整机重启（docker restart）：数据完好，连接�
   const projectId = pr.json.projectId;
   await bus('POST', `/api/v1/projects/${projectId}/evidence`, { requestId: newId('r'), expectedVersion: 1, kind: 'doc', content: { durable: true } });
 
-  // 重启本路隔离容器（只影响 v7next-a-pg；不触碰 Dify 容器）
-  execSync('docker restart v7next-a-pg', { stdio: 'pipe' });
+  // 重启指定隔离容器（env 显式授权的目标；不触碰 Dify 等其他容器）
+  execSync(`docker restart ${pgContainer}`, { stdio: 'pipe' });
   // 等 PG 就绪
   let ready = false;
   for (let i = 0; i < 60; i++) {
     try {
-      execSync('docker exec v7next-a-pg pg_isready -U v7next -d v7next_a', { stdio: 'pipe' });
+      execSync(pgIsReady, { stdio: 'pipe' });
       ready = true;
       break;
     } catch { await sleep(500); }
