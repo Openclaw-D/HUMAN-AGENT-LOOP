@@ -1,0 +1,1104 @@
+{
+  "time": "2026-09-16T12:25:32.828Z",
+  "source": "C:/Users/22673/Desktop/Anthropic/V7/backend-next",
+  "destination": "C:\\Users\\22673\\Desktop\\JW\\Back",
+  "checked": 148,
+  "missing": [],
+  "different": [],
+  "excluded": [
+    {
+      "path": "A/.kernel-48080.log",
+      "reason": "local-config-runtime-or-generated"
+    },
+    {
+      "path": "A/.server-smoke.log",
+      "reason": "local-config-runtime-or-generated"
+    },
+    {
+      "path": "A/assembly/.b-final-config.json",
+      "reason": "local-config-runtime-or-generated"
+    },
+    {
+      "path": "A/assembly/.b-final-runtime/",
+      "reason": "dependency-runtime-evidence-or-isolated-spike"
+    },
+    {
+      "path": "A/evidence/",
+      "reason": "dependency-runtime-evidence-or-isolated-spike"
+    },
+    {
+      "path": "A/node_modules/",
+      "reason": "dependency-runtime-evidence-or-isolated-spike"
+    },
+    {
+      "path": "B/evidence/",
+      "reason": "dependency-runtime-evidence-or-isolated-spike"
+    },
+    {
+      "path": "B/node_modules/",
+      "reason": "dependency-runtime-evidence-or-isolated-spike"
+    },
+    {
+      "path": "B/runtime/",
+      "reason": "dependency-runtime-evidence-or-isolated-spike"
+    },
+    {
+      "path": "B/spike/",
+      "reason": "dependency-runtime-evidence-or-isolated-spike"
+    },
+    {
+      "path": "B/test/.tmp/",
+      "reason": "dependency-runtime-evidence-or-isolated-spike"
+    },
+    {
+      "path": "C/evidence/",
+      "reason": "dependency-runtime-evidence-or-isolated-spike"
+    },
+    {
+      "path": "D/.run/",
+      "reason": "dependency-runtime-evidence-or-isolated-spike"
+    },
+    {
+      "path": "D/evidence/",
+      "reason": "dependency-runtime-evidence-or-isolated-spike"
+    }
+  ],
+  "files": [
+    {
+      "source": "A/assembly/c-plans-result.json",
+      "destination": "Back/A/assembly/c-plans-result.json",
+      "sha256": "5fee00d48b36afbe75cedab5af761d0fef9e8e998b10a9161ba535ccfb19a967",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/assembly/e2e-compose.mjs",
+      "destination": "Back/A/assembly/e2e-compose.mjs",
+      "sha256": "e7acd1e9456407eea3a7d338bdb77d04c83d54b284fc507c67ce1f9571eaa16f",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/assembly/e2e-result.json",
+      "destination": "Back/A/assembly/e2e-result.json",
+      "sha256": "3a7c078872cf226fcb453e1537442b8a681d07d5b303d5ca95c2b5b98d3df430",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/assembly/final-compose-manifest.json",
+      "destination": "Back/A/assembly/final-compose-manifest.json",
+      "sha256": "bce569f9eb650a548112430519c27a36fd8429b8db44c0ba3e61a4737a371883",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/assembly/final-compose-result.json",
+      "destination": "Back/A/assembly/final-compose-result.json",
+      "sha256": "99a9d37f50508f46c745a1f4dc36fc4b6ac138f9a487a34a9e2113416779e219",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/assembly/final-compose.mjs",
+      "destination": "Back/A/assembly/final-compose.mjs",
+      "sha256": "a7b0172c885ede89b2687b4fe4549199fc32a53fc186b0d1e1efe4adede630ab",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/assembly/manifest.json",
+      "destination": "Back/A/assembly/manifest.json",
+      "sha256": "be044e226d882712db1565c00bf34715babaa118a2f378a320dc2fd18296527e",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/assembly/run-c-plans.mjs",
+      "destination": "Back/A/assembly/run-c-plans.mjs",
+      "sha256": "89adcc17311c6b6e6dd2c303c13308e2d2b32027731a82ee13064d73d7351914",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/DEF01-analysis.md",
+      "destination": "Back/A/DEF01-analysis.md",
+      "sha256": "d7984d5de6beb3906251dbf4983eba5f32ed7841ce2f77ece1e5a07416673655",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/migrations/001_init.sql",
+      "destination": "Back/A/migrations/001_init.sql",
+      "sha256": "f30299fce43f6595703dc89342094f1033d9474b0aa5de9d058c70d0c7281415",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/package-lock.json",
+      "destination": "Back/A/package-lock.json",
+      "sha256": "d7e8f1a5271a0d11abef3b81674714f4fb3ba120cd67c98049a486cc9cf301c5",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/package.json",
+      "destination": "Back/A/package.json",
+      "sha256": "607c76dbdf1b786a0b541ec6a22c87a31f8c992ed9c770ea0b5a57481eb9abe9",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/README.md",
+      "destination": "Back/A/README.md",
+      "sha256": "813acf56cf482a8eb89d7f76aebd61883c133b5482ebe9625b2e2b4f7f8b7993",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/RESULT.md",
+      "destination": "Back/A/RESULT.md",
+      "sha256": "f92065283635a50cad5dda39f602e6162498a021a3e274d467bb2e64f007216c",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/scripts/goal-client.mjs",
+      "destination": "Back/A/scripts/goal-client.mjs",
+      "sha256": "4173375be86a1752eed04f5d2a4ee0f172858f959dea9032636c2aaf9b321fbd",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/scripts/manifest.mjs",
+      "destination": "Back/A/scripts/manifest.mjs",
+      "sha256": "7c22f0e733fa986f3ee034acb781abe1fcd0ebeb7f9c3dec1191c9e6c855f0a0",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/scripts/start-kernel.mjs",
+      "destination": "Back/A/scripts/start-kernel.mjs",
+      "sha256": "73fd1cffc317f7104191b393b5bb6fcd9b6fe836537697a7015d068590790647",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/scripts/verify-clean-start.mjs",
+      "destination": "Back/A/scripts/verify-clean-start.mjs",
+      "sha256": "9136fc18b8379dc4cb9cb8afa6ebd6679ff3b63a120d05154a0e7117dbcfa6da",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/src/config.ts",
+      "destination": "Back/A/src/config.ts",
+      "sha256": "4dc10ef3519377275d35cc6bc1f967b0b6cf10c5b440933f5ea71df7580d326e",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/src/db/db.ts",
+      "destination": "Back/A/src/db/db.ts",
+      "sha256": "fdab12d24a281188cc1f4aca6c2a2f2fdc6e8c97da348acff17edb1869b41dbc",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/src/db/migrate-cli.ts",
+      "destination": "Back/A/src/db/migrate-cli.ts",
+      "sha256": "7b1653bd63d0e620bbde9ae02f57955e8b97b56cdf2dac1b3c263b20ff2372aa",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/src/domain/errors.ts",
+      "destination": "Back/A/src/domain/errors.ts",
+      "sha256": "cbdaef95d1900ab9f107eac0c6f65c09c0a96a9faae204b4252969cb0364db23",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/src/domain/kernel.ts",
+      "destination": "Back/A/src/domain/kernel.ts",
+      "sha256": "ce2bcce6505ab5f32acd2df00fac2f11d8ea76f24224c660f16097e05e10224b",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/src/domain/principal.ts",
+      "destination": "Back/A/src/domain/principal.ts",
+      "sha256": "6db082a0e0f26ef984cf64a3e776d507e5ebe04a86ba243a60ee034c10b25a81",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/src/domain/recompute.ts",
+      "destination": "Back/A/src/domain/recompute.ts",
+      "sha256": "6fd7e925002d2a87019f1242b256f811b1f0e2241b5293e3a36e671b0277a572",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/src/domain/staleness.ts",
+      "destination": "Back/A/src/domain/staleness.ts",
+      "sha256": "ccc1e3d2b8c8345a191fb78b4d231295133f728dbef58fcbdef25450bef7348c",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/src/domain/status.ts",
+      "destination": "Back/A/src/domain/status.ts",
+      "sha256": "d3773e56c0a228dc9bcff16775e755dbac8d433f951bff7da7623f8130fec272",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/src/domain/util.ts",
+      "destination": "Back/A/src/domain/util.ts",
+      "sha256": "4f35fb66f778709a821bfc330bed0ae99374160856b403d6c9bbdaac17f647ae",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/src/http/server.ts",
+      "destination": "Back/A/src/http/server.ts",
+      "sha256": "3e61a75a7068f6c2d9656d88642f09a3a62d6772b7b1d0ded5e5835845f74d76",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/src/index.ts",
+      "destination": "Back/A/src/index.ts",
+      "sha256": "04d2e9857b908f0ce31aa4381464e4ad3f9ba00badc8c7758b98589f85946268",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/src/outbox/dispatcher.ts",
+      "destination": "Back/A/src/outbox/dispatcher.ts",
+      "sha256": "0bc32d9cc7c160618f6d28cb76fe37fabbe3b0175ccf3fe269c564359e92d6d7",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/STATUS.md",
+      "destination": "Back/A/STATUS.md",
+      "sha256": "f048fd96066e621289d0715d3b90621c481c64e17307d10121724efbeae6973e",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/test/integration-core.test.mjs",
+      "destination": "Back/A/test/integration-core.test.mjs",
+      "sha256": "6c35ec940e0b8427894f2b3ca6be3b12174cadceb7b2ecca38f589fc568693a2",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/test/integration-crash.test.mjs",
+      "destination": "Back/A/test/integration-crash.test.mjs",
+      "sha256": "9ca3d82746faed171db04383f2e61d181f32c7547753039f5cd1fb3b7e1de18c",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/test/integration-flows.test.mjs",
+      "destination": "Back/A/test/integration-flows.test.mjs",
+      "sha256": "93aa73333c682bed9f282942a998f8b8cd4fa6f13913733748d08ab4a02ae2b8",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/test/integration-limits.test.mjs",
+      "destination": "Back/A/test/integration-limits.test.mjs",
+      "sha256": "b3f3d286360294840e9eb528b57ccdfc56175b092f6ab4236a669202e1a02ea7",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/test/integration-tx.test.mjs",
+      "destination": "Back/A/test/integration-tx.test.mjs",
+      "sha256": "c9f82c1879e97ec0b54e8f343f9506ab07de0725dcccb5b2179624178565461c",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/test/run-all.mjs",
+      "destination": "Back/A/test/run-all.mjs",
+      "sha256": "16f4229632b3321e4628e0445e096bbac72c689aea1d772578f583567aa903ef",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/test/utils.mjs",
+      "destination": "Back/A/test/utils.mjs",
+      "sha256": "8720a52dbb9bfb94271c4446046b7be5a17488b872ce630a9a4d0e9f26b0395a",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "A/tsconfig.json",
+      "destination": "Back/A/tsconfig.json",
+      "sha256": "1d6899ba621958ce81bfde00a395ea3a9d856b9e8908ab0926934d01a6f35757",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/config/b-config.example.json",
+      "destination": "Back/B/config/b-config.example.json",
+      "sha256": "7f7b0bdfdcc5a56355bce479d39c368d4684fa36f998535a11fdd95933fd758c",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/config/b-config.http-sample.json",
+      "destination": "Back/B/config/b-config.http-sample.json",
+      "sha256": "3fa8516af87a10684a9dff0f57adf2fc4cd276d64ae4111f7692a5232780c446",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/def03-stderr.txt",
+      "destination": "Back/B/def03-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/HANDOFF-D.md",
+      "destination": "Back/B/HANDOFF-D.md",
+      "sha256": "e037301e4e38a773c4b96a2ccb0706d83b6d928f2c85a59bf14f9dfa38d6b9a3",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/interface-change-request.md",
+      "destination": "Back/B/interface-change-request.md",
+      "sha256": "26fcaed228b3fa6f83f73c6600d1ba4973d862d0c3e261f404aabc1a6fc4f14b",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/package-lock.json",
+      "destination": "Back/B/package-lock.json",
+      "sha256": "c040d55b66a69b0dfbc2fbf94e8562d98ef200f74d3a227b76ad789049e216ed",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/package.json",
+      "destination": "Back/B/package.json",
+      "sha256": "1287fcacd3c9af49f676ba6ab8e72cd266b398c8fafa3fd2cc9d78177bf9df49",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/README.md",
+      "destination": "Back/B/README.md",
+      "sha256": "881fe7539df29dea4a6c47159d7e670542b641702a8b296991f64370ed3a8a41",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/RESULT.md",
+      "destination": "Back/B/RESULT.md",
+      "sha256": "ef9d8ba4f14f8afb74541f698dccfe482423e57f88f2affc1067134312d855ce",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/scripts/celery-collector.mjs",
+      "destination": "Back/B/scripts/celery-collector.mjs",
+      "sha256": "a8642cee7d366e5d49a2409dabd878283943bddcb46ac3dc5abacccfa6f962e1",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/scripts/hash-manifest.mjs",
+      "destination": "Back/B/scripts/hash-manifest.mjs",
+      "sha256": "f1d1dc9ff28936e773fba4f15ef0451a34f0087855d7a014fdc3b4f88371e57c",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/scripts/run-a-integration.mjs",
+      "destination": "Back/B/scripts/run-a-integration.mjs",
+      "sha256": "f0b73a6537ce09197a4bec566016e43a6fdc6463564e0284c09ecf8693a7e1f7",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/scripts/verify-resident.mjs",
+      "destination": "Back/B/scripts/verify-resident.mjs",
+      "sha256": "bb0c80774c0f581e25c5c86156508f089f8ed5bade33ce9c477fda1173330e71",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/src/cli.mjs",
+      "destination": "Back/B/src/cli.mjs",
+      "sha256": "89f1279dcc54dead39bf1852e74263b2a11968488a2ab53b1e97e2e9759f899c",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/src/codes.mjs",
+      "destination": "Back/B/src/codes.mjs",
+      "sha256": "b0d138903a4d510d55837242dba1223f0f89f91678773f2050b4bbdf4c81e226",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/src/contract/client.mjs",
+      "destination": "Back/B/src/contract/client.mjs",
+      "sha256": "13470beb2f481807f17cc7c13a7aca65266f84d313892fc34cb348e53a87e1f7",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/src/contract/stub.mjs",
+      "destination": "Back/B/src/contract/stub.mjs",
+      "sha256": "04d59be9e067ddc6403831f9af73c0ae07edc113c477dffa5bfb6a73c9d07277",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/src/deps.mjs",
+      "destination": "Back/B/src/deps.mjs",
+      "sha256": "be1c1b82161630f3596c0e08b2bcdf881897855893e8105e37dc46d2419439f8",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/src/graph/decision.mjs",
+      "destination": "Back/B/src/graph/decision.mjs",
+      "sha256": "b48f675b9b5f70d701c91f82836acb03cb68e362273fdbfb9e8d15c4b9e481b7",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/src/graph/task-run-orchestrator.mjs",
+      "destination": "Back/B/src/graph/task-run-orchestrator.mjs",
+      "sha256": "25e9976b100b58e12bc145ec33942d357f9db806227c417109cc209897277e82",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/src/langgraph/file-checkpointer.mjs",
+      "destination": "Back/B/src/langgraph/file-checkpointer.mjs",
+      "sha256": "86b64ad4a298228794ff24c54a0ce5ce64cc9cd9d6984d642978bdb7405343a1",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/src/ports.mjs",
+      "destination": "Back/B/src/ports.mjs",
+      "sha256": "272e72ca466e4c49ed18d6e2a99510c821baddbd2aa129c54d4d650c77334068",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/src/redact.mjs",
+      "destination": "Back/B/src/redact.mjs",
+      "sha256": "6186a2865af3d8cac9b584459ea565e27dfd24b1e8297e99cf8233e31bb2bf4b",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/src/resume-core.mjs",
+      "destination": "Back/B/src/resume-core.mjs",
+      "sha256": "4572cf05a1257b15cc9035967eb4044225a750742a360ef5f02085e7152ceaae",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/src/router.mjs",
+      "destination": "Back/B/src/router.mjs",
+      "sha256": "f5db170497c601d86f81890d42531564a4b96887792177b2fc7f53e6761dcbf2",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/src/runtime.mjs",
+      "destination": "Back/B/src/runtime.mjs",
+      "sha256": "840faa09fe855d8d5b086b27b4f2854d5001b08f3ce536debd7f9ec7b008aad5",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/src/transport/bridge.mjs",
+      "destination": "Back/B/src/transport/bridge.mjs",
+      "sha256": "179b479d2a84f0e7fffbe88be1a6ea75970f8e7bcb611de477e1f5bc2bf0994a",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/src/transport/glm.mjs",
+      "destination": "Back/B/src/transport/glm.mjs",
+      "sha256": "95caaf4c099486b86cca99522223ec66d9496c45aa5af271499a8ba8e4d1cf01",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/src/worker/worker.mjs",
+      "destination": "Back/B/src/worker/worker.mjs",
+      "sha256": "0abf663a5f4a2ba8992f84cc2dda52d5decb8afcb54d08db53978223ebc7e142",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/STATUS.md",
+      "destination": "Back/B/STATUS.md",
+      "sha256": "f9fadb7ae7fcf284197fe4daa61bacc5931d21a29a3d85ebd0d16df2ded6d752",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/test/budget-child.mjs",
+      "destination": "Back/B/test/budget-child.mjs",
+      "sha256": "e99ca3746300787fe88994552da53cd12c2fd030d219c69453e59398d7449af1",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/test/budget.test.mjs",
+      "destination": "Back/B/test/budget.test.mjs",
+      "sha256": "f2fada3a4dec9ebc5eb35434e5f1241de03ce90890c3b57e9f418edb76292aa3",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/test/contract-stub.test.mjs",
+      "destination": "Back/B/test/contract-stub.test.mjs",
+      "sha256": "5a3b27a547a840c94dc4a652f238882d77124939dd17a0a406a217f396753815",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/test/crash-child.mjs",
+      "destination": "Back/B/test/crash-child.mjs",
+      "sha256": "44581f5575398885d7e6c5f05073f0cb106e43f9985e3144f39b10e8526238c9",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/test/crash-recovery.test.mjs",
+      "destination": "Back/B/test/crash-recovery.test.mjs",
+      "sha256": "ad7d45779198c82f8d2405a078a8d6fea47de9a23dd025bc8f777dd3a4e26b63",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/test/def03-resume-resend.test.mjs",
+      "destination": "Back/B/test/def03-resume-resend.test.mjs",
+      "sha256": "eb96ee512b54b320e74cec950e42ac89f610ca68d0337060133959a785e97b79",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/test/goal-graph.test.mjs",
+      "destination": "Back/B/test/goal-graph.test.mjs",
+      "sha256": "ae9d7feeadbfe31229fcb0f57c4fcfed1d209de9ab9ef688ca92e59f87c04f98",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/test/helpers.mjs",
+      "destination": "Back/B/test/helpers.mjs",
+      "sha256": "6203ad28cc8f1d0efd05c63ea65fa7b151640394579cc433df19a36120149129",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/test/redact.test.mjs",
+      "destination": "Back/B/test/redact.test.mjs",
+      "sha256": "03dc11d143857bf39b93bda731855d0481dba8d00e224d91f6780297a65255cc",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/test/resume-identity.test.mjs",
+      "destination": "Back/B/test/resume-identity.test.mjs",
+      "sha256": "e783b2ee822fc631418f627bf4d4f74a346e32f8dc0394dc44ba61e85f097a8e",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/test/router.test.mjs",
+      "destination": "Back/B/test/router.test.mjs",
+      "sha256": "6369d431b1f0e2c0223886a44c385398aa8277508954b49344e58f4889af8a04",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/test/three-way-send.test.mjs",
+      "destination": "Back/B/test/three-way-send.test.mjs",
+      "sha256": "a479e8305be244bfceb36390ddb29e9bb47987db6ea794765034514349f185a9",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "B/test/worker-fencing.test.mjs",
+      "destination": "Back/B/test/worker-fencing.test.mjs",
+      "sha256": "f3108e82636ed4b7d08904d247632e86fb2d6490e0759335a5e5e4529d97b079",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/INTERFACES.md",
+      "destination": "Back/C/INTERFACES.md",
+      "sha256": "7126549dd94fea71440e2382ee35d3603584e1b6c5c989d49f1c44310cdcdb63",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/MOCK_API.md",
+      "destination": "Back/C/MOCK_API.md",
+      "sha256": "e1190ccc4df3399ffc8f005bc2dbc985557c5bbcca942cb1f6fb68dc0acbc633",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/package.json",
+      "destination": "Back/C/package.json",
+      "sha256": "6c6d551b941349af94544475a5b3fcfcd244fa0b8a4592f1fe4255f63e55ecf8",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/README.md",
+      "destination": "Back/C/README.md",
+      "sha256": "9031040c89b8d324b1623b55e8ca66a64989bbffcebdec95a50da0c10c4ae7d5",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/RESULT.md",
+      "destination": "Back/C/RESULT.md",
+      "sha256": "70c3631e59360491db93c114763f7dd0f8b869181778877fe79d308926ac5ca7",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/rules/rule-pack-v2.json",
+      "destination": "Back/C/rules/rule-pack-v2.json",
+      "sha256": "7ba254ca6ca65de3d197da1c2fc84ff7d4addc2be52700342532968523b5a5e9",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/scenarios/heldout-cases-v1.json",
+      "destination": "Back/C/scenarios/heldout-cases-v1.json",
+      "sha256": "103a5416bde3d6855315efeeb232fa4efe20e3153d91b2bf1fa6e1accf65531a",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/scenarios/leasing-cases-v1.json",
+      "destination": "Back/C/scenarios/leasing-cases-v1.json",
+      "sha256": "e79805e7e1169d69bcef678d3548c97dd33bc09e961413814899813e267eff01",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/scenarios/plans/L1-metal-direct-mature.plan.json",
+      "destination": "Back/C/scenarios/plans/L1-metal-direct-mature.plan.json",
+      "sha256": "ad94778eede8225824ede29fdbaf3a40213ea9df0660acba68df757ac34d324b",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/scenarios/plans/L2-print-leaseback-old-customer.plan.json",
+      "destination": "Back/C/scenarios/plans/L2-print-leaseback-old-customer.plan.json",
+      "sha256": "6f163b808142d83c5119262ffeaa30a1add5649c4ce2065dde96d2063096cb06",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/scenarios/plans/L3-injection-new-rough-statements.plan.json",
+      "destination": "Back/C/scenarios/plans/L3-injection-new-rough-statements.plan.json",
+      "sha256": "f74dd2e81bbf2c3807a814785cc911a5bea8710597aea71945270302ed9a7b09",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/scenarios/plans/L4-casting-hidden-debt.plan.json",
+      "destination": "Back/C/scenarios/plans/L4-casting-hidden-debt.plan.json",
+      "sha256": "5b78be14d20e44abc19332a26fd8cb91555d4c02abc6375415cd56a02246e287",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/scenarios/plans/L5-glass-ownership-dispute.plan.json",
+      "destination": "Back/C/scenarios/plans/L5-glass-ownership-dispute.plan.json",
+      "sha256": "ac5d9dca2c7f8d11195a6c1808b1bdd1388f515e8db7a70873ac294e83d33998",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/scenarios/plans/L6-textile-low-liquidity-disposal.plan.json",
+      "destination": "Back/C/scenarios/plans/L6-textile-low-liquidity-disposal.plan.json",
+      "sha256": "f348a76f6712cdf7204ea71cd22f9fd9e2bbb70dd408b3f21178b147255508e6",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/scenarios/plans/L7-pack-order-concentration.plan.json",
+      "destination": "Back/C/scenarios/plans/L7-pack-order-concentration.plan.json",
+      "sha256": "88122e135e9a1942fd141b206a75ea56fcbbd8080cbc23c363f3328a4a8f32cc",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/scenarios/plans/L8-electronics-high-price-unknown-cost.plan.json",
+      "destination": "Back/C/scenarios/plans/L8-electronics-high-price-unknown-cost.plan.json",
+      "sha256": "780c79697e0e7b6c2994fef68281007d6adf6039e0aabedc1763b7ad219fc552",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/scripts/smoke-external.mjs",
+      "destination": "Back/C/scripts/smoke-external.mjs",
+      "sha256": "173a7175a536f975ed689a786e06c9bdf5d4d2039c9b73901574312155f05aa9",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/scripts/start-mock.mjs",
+      "destination": "Back/C/scripts/start-mock.mjs",
+      "sha256": "bac9f829f534d4fc937dc9e5e1a8acc281a57b7b928fade12e403aed1a7b024e",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/src/calculation-tool.mjs",
+      "destination": "Back/C/src/calculation-tool.mjs",
+      "sha256": "d9e9fdb1c046c5deeca9b47248fdff90d3e3bc26aebb3194a65babf2e7054f25",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/src/candidate-schema.mjs",
+      "destination": "Back/C/src/candidate-schema.mjs",
+      "sha256": "49a378693a76ebf80ce4867c3c49ba3af51823eb515310f07cf976501cc9ac52",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/src/case-checker.mjs",
+      "destination": "Back/C/src/case-checker.mjs",
+      "sha256": "39d24235b3d0f0bbece47f5836907131b361e6c8009e3e65bd8ccb364b8b6b48",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/src/contract-adapter.mjs",
+      "destination": "Back/C/src/contract-adapter.mjs",
+      "sha256": "c437cf488b85f8a3d7daa125d24d0e1c00b0c17b13901aee3e0aba31444e0854",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/src/generate-plans.mjs",
+      "destination": "Back/C/src/generate-plans.mjs",
+      "sha256": "73bfc0e259daed4356b7e669339526f8d2cd039928c50beb05e28af7ae5ccfbd",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/src/mock-redact.mjs",
+      "destination": "Back/C/src/mock-redact.mjs",
+      "sha256": "4b11ea4d1e4b2f3c5b178448f44a63116d7488b90e3ffc69ac32831a0a977208",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/src/mock-server.mjs",
+      "destination": "Back/C/src/mock-server.mjs",
+      "sha256": "1e6522869413e9198997366f433cee3f2e6202be973fb4b13f0c01eb9442bf9a",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/src/ratio-tool.mjs",
+      "destination": "Back/C/src/ratio-tool.mjs",
+      "sha256": "3029f27d7327106d6bb244b47de42cff4d06f27b2d3d73bbbb19be264db8d8d2",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/src/run-contract-integration.mjs",
+      "destination": "Back/C/src/run-contract-integration.mjs",
+      "sha256": "39d943d8dd002efa68c360819e6a6375139e7e828d6a1ccc49da1250826eb8fa",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/src/run-e2e.mjs",
+      "destination": "Back/C/src/run-e2e.mjs",
+      "sha256": "7a568c789ede174ee07f934a4965d2a3fa23a876af148057820dae4a6f82e21e",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/src/run-evaluation.mjs",
+      "destination": "Back/C/src/run-evaluation.mjs",
+      "sha256": "fc76bd8b1f0f4e287f7f4a9492a2c67d5489bce1fc04085e36c959d962805758",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/STATUS.md",
+      "destination": "Back/C/STATUS.md",
+      "sha256": "a2d19feab20a87280e379cca8a46413c5db6b202af21a0210e87169d234c9a2a",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/templates/commercial-leasing-v1.json",
+      "destination": "Back/C/templates/commercial-leasing-v1.json",
+      "sha256": "97a94c1f2a0cd4fe0d5f86432cd64e3f479e07b0589478f9f0bd7c0750e3cdb0",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/templates/non-leasing-counterexample-v1.json",
+      "destination": "Back/C/templates/non-leasing-counterexample-v1.json",
+      "sha256": "a76c19e95b019df5db00257b0dd083a44006858c089c58c945b484c13098745a",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/test/calculation-tool.test.mjs",
+      "destination": "Back/C/test/calculation-tool.test.mjs",
+      "sha256": "3ab4119515e5ccf8f8c3ba02924271d86a0ca5e5083bd9b1769144184f5d310f",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/test/case-pack.test.mjs",
+      "destination": "Back/C/test/case-pack.test.mjs",
+      "sha256": "46532591e51c4e0f372dc20f1007e9f98bb5044a9043a42b9d766d52cb0b0fef",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/test/contract-adapter.test.mjs",
+      "destination": "Back/C/test/contract-adapter.test.mjs",
+      "sha256": "833c8141294032d8d3df339e87b40665183158c4136857311f37b0d7d08714fb",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/test/mock-server.test.mjs",
+      "destination": "Back/C/test/mock-server.test.mjs",
+      "sha256": "e0245034cece8eb46a13d6252eb1973e8eccd5557a42992626e3b778c3ec340c",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/test/ratio-tool.test.mjs",
+      "destination": "Back/C/test/ratio-tool.test.mjs",
+      "sha256": "1d9e0f62e3168c0d87c51f409b936e8092beca5e0862c393c3040da84a022171",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "C/test/run-all.mjs",
+      "destination": "Back/C/test/run-all.mjs",
+      "sha256": "e852b83722f370da1dc32bc121db5e2541cb29ee50f2d04dedae3ecebbd9fb7c",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "CONTRACT.md",
+      "destination": "Back/CONTRACT.md",
+      "sha256": "e5228ba077a9ba3ba6e8fe97c2aa0d15d0cba5a36efc2485a91c6b39dbaad4e6",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/ACCEPTANCE_MATRIX.md",
+      "destination": "Back/D/ACCEPTANCE_MATRIX.md",
+      "sha256": "705897f730c46e99cd966d39eb699a287675c2477a8ba3d7897a4812fe2feb84",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/config/sut.example.json",
+      "destination": "Back/D/config/sut.example.json",
+      "sha256": "e1aac1a5e6406203ad30ba0c3ad5e8431ac9e3841e44e9882914ad6c85006d1b",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/DEFECTS.md",
+      "destination": "Back/D/DEFECTS.md",
+      "sha256": "c7745ee15b0c5b11b1a67e21bc2288fe0245588ee516647feb6005399b9c2939",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/harness/adapter.mjs",
+      "destination": "Back/D/harness/adapter.mjs",
+      "sha256": "c63c3b10e4c78fad631a0e23b78360312b98fc19d365e19f8bfac24a85bb4dd7",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/harness/assert.mjs",
+      "destination": "Back/D/harness/assert.mjs",
+      "sha256": "991e40b61fc432ae13e04b26cd17f6c9576396e5f8632e9fc3faf21b96e23248",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/harness/freeze.mjs",
+      "destination": "Back/D/harness/freeze.mjs",
+      "sha256": "a3d0ba4481606f74127e14c16fe1f1f1c6c867ba127cdae1f9761ae3f49e3b79",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/harness/http.mjs",
+      "destination": "Back/D/harness/http.mjs",
+      "sha256": "db705c69d35c64bad0983cba070a0aeeeded04a509bf682074da73c7208fc3ac",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/harness/leakscan.mjs",
+      "destination": "Back/D/harness/leakscan.mjs",
+      "sha256": "e7e5b2221ec82b363c2031b0189ba3e4034e99deffb793c552bbcb4da385aca9",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/harness/pgctl.mjs",
+      "destination": "Back/D/harness/pgctl.mjs",
+      "sha256": "19d906b23aa3edffdacfe5c70285837f7b331dd8c3d2b347ed7bbb8dab37330b",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/harness/proc.mjs",
+      "destination": "Back/D/harness/proc.mjs",
+      "sha256": "67bfba69916ad572d17cc1a13d157aa1faf9bf7b20364f2a7e20a763a35fab0d",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/harness/run-all.mjs",
+      "destination": "Back/D/harness/run-all.mjs",
+      "sha256": "f868c60a1cfc03457ed43200cbd36eebddbba60c27b7dd62137befc0f4d9a7d1",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/harness/runner.mjs",
+      "destination": "Back/D/harness/runner.mjs",
+      "sha256": "a098a5f1ae9919a299ca804f7dd7d18e5d2bfb9cc0eecfb8e89e40e5a7320a73",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/harness/sutctl.mjs",
+      "destination": "Back/D/harness/sutctl.mjs",
+      "sha256": "df52d200fca5261fbbd1bf3c6765a31a92536eee646f5e0f82bcfe42fc274cb0",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/README.md",
+      "destination": "Back/D/README.md",
+      "sha256": "24a023ac3409491c401c9c0549947c97e437ae72bb99f1e0ceca4eb5694eef0d",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/RESULT.md",
+      "destination": "Back/D/RESULT.md",
+      "sha256": "00f020391ac2d81a6697cd8fab822dceb032a8c0400c276f4a12e8e7285feb9c",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/STATUS.md",
+      "destination": "Back/D/STATUS.md",
+      "sha256": "7a68574d1530bca293cb90f660000bcc3e6e4ec967ce16db0e73dc1aa4da6249",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/suites/g0_runner_selftest.test.mjs",
+      "destination": "Back/D/suites/g0_runner_selftest.test.mjs",
+      "sha256": "1bef9097907ba389f790cb5e9c76deab9c26ded423b00c37231660d41c079fad",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/suites/g1_surface.test.mjs",
+      "destination": "Back/D/suites/g1_surface.test.mjs",
+      "sha256": "988a89b383bdd9c320cf42419b64f6df75d82c58ab5f11d5b2879a3e61273856",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/suites/g2_concurrency_lease.test.mjs",
+      "destination": "Back/D/suites/g2_concurrency_lease.test.mjs",
+      "sha256": "ac6b56d03d9d03da0bd2de1f76b317795a1fd9ddaf4bc50912a3addcae3b57e9",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/suites/g3_outbox_idem.test.mjs",
+      "destination": "Back/D/suites/g3_outbox_idem.test.mjs",
+      "sha256": "8af1905c9ae5f7eec4164d356269643de624c8316d54123717bc26d403ad4766",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/suites/g4_recovery.test.mjs",
+      "destination": "Back/D/suites/g4_recovery.test.mjs",
+      "sha256": "9ebd48e723697f4f853f0182b0c8c9ce69e9760eebaff9213f78fd38fadd19c0",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/suites/g5_human_loop.test.mjs",
+      "destination": "Back/D/suites/g5_human_loop.test.mjs",
+      "sha256": "7525871bd7a1733444bab5f422b1692d7e4f20f6e4e614e553d1d8e312906401",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/suites/g6_evidence_invalidation.test.mjs",
+      "destination": "Back/D/suites/g6_evidence_invalidation.test.mjs",
+      "sha256": "8924775ef301cdae0287aeff6f25a13e7eae16003663ca60f033739adc576cdb",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/suites/g7_security.test.mjs",
+      "destination": "Back/D/suites/g7_security.test.mjs",
+      "sha256": "6a95a54645252a713538d26b76feaafd2ab455d73b11f0a63f3f73ea962fbe32",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/suites/g8_gateway.test.mjs",
+      "destination": "Back/D/suites/g8_gateway.test.mjs",
+      "sha256": "7ae36751ec2ef699b120a39d5eb41eb369c2fe902640b83deb41935117c02a71",
+      "exists": true,
+      "equal": true
+    },
+    {
+      "source": "D/suites/g9_deliverability.test.mjs",
+      "destination": "Back/D/suites/g9_deliverability.test.mjs",
+      "sha256": "e30674b100e2b5bee24040258f18f1dd37c085d4ac42813613fd59dfae4fe9be",
+      "exists": true,
+      "equal": true
+    }
+  ]
+}

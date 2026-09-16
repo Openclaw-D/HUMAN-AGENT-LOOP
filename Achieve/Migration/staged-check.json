@@ -1,13 +1,27 @@
 {
-  "time": "2026-09-16T12:12:52.603Z",
+  "time": "2026-09-16T12:27:47.300Z",
   "gitRoot": "C:/Users/22673/Desktop/JW",
   "allRealPathsWithinRoot": true,
   "nonRegularEntries": [],
-  "stagedFiles": 7131,
-  "stagedBytes": 82256358,
+  "stagedFiles": 8028,
+  "stagedBytes": 906779361,
   "rawBlobMismatches": [],
   "forbiddenPaths": [],
   "highConfidenceCredentialFindings": [],
+  "reviewedFalsePositives": [
+    {
+      "file": "Achieve/Anthropic/V3/archive/V3_LEGACY_CONTEXT/assets/jw-v02/见微-旧版多项目展示.html",
+      "kind": "google",
+      "offset": 18209063,
+      "reason": "verified-PNG-base64-coincidence-exact-file-hash"
+    },
+    {
+      "file": "Achieve/Anthropic/V3/archive/V3_REFERENCE_MATERIALS/03-multi-case-ui-reference/见微-前端展示页.html",
+      "kind": "google",
+      "offset": 18209063,
+      "reason": "verified-PNG-base64-coincidence-exact-file-hash"
+    }
+  ],
   "missingPublishableCopies": [],
   "localOnlyCopies": 31,
   "commit": false,

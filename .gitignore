@@ -37,3 +37,6 @@ Achieve/**/.env
 Achieve/**/.env.local
 Achieve/**/*.pem
 Achieve/**/*.key
+# Explicit user deliverable: ready-to-view frontend build.
+!Front/dist/
+!Front/dist/**

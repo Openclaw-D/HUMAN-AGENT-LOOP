@@ -1,0 +1,24 @@
+{"kind":"slide","id":"sl/fzv24d","slide":1,"title":"Slide 1","textShapes":0}
+{"kind":"image","id":"im/fmlk3udc","slide":1,"name":"","alt":"见微 V3 八分钟六人舞台分镜 1","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/fzv24d","slide":1,"text":"时间：00:00—01:00\n舞台动作：晚会式串场在20秒内完成；随即由轻松转为严肃，客户成为视觉焦点。\n台词：业务 / 旁白：“真正的主角，是一家正在和产能窗口赛跑的企业。”\n能力边界：见微 V3 固定合成、去标识演示；模型 authority=none；正式动作必须由具名人员确认并留下 Receipt；现场八分钟不代表真实业务十分钟完成审批或放款。\n[Sources]\n- OpenAI ImageGen，当前任务生成的原创场景图：scene-01-opening.png\n- 用户确认的见微 V3 展示叙事与舞台约束，2026-08-30\n[/Sources]"}
+{"kind":"slide","id":"sl/kaqaz2","slide":2,"title":"Slide 2","textShapes":0}
+{"kind":"image","id":"im/1o3ahsra","slide":2,"name":"","alt":"见微 V3 八分钟六人舞台分镜 2","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/kaqaz2","slide":2,"text":"时间：01:00—02:00\n舞台动作：客户用手机提交最小事实；业务确认同一 Case，强调少材料、一个入口。\n台词：客户：“订单已经来了，我不想再拿着同一套材料跑四个部门。” 业务：“你只说一次，剩下的让系统去找人。”\n能力边界：见微 V3 固定合成、去标识演示；模型 authority=none；正式动作必须由具名人员确认并留下 Receipt；现场八分钟不代表真实业务十分钟完成审批或放款。\n[Sources]\n- OpenAI ImageGen，当前任务生成的原创场景图：scene-02-customer.png\n- 用户确认的见微 V3 展示叙事与舞台约束，2026-08-30\n[/Sources]"}
+{"kind":"slide","id":"sl/ji1278","slide":3,"title":"Slide 3","textShapes":0}
+{"kind":"image","id":"im/ovy1kfup","slide":3,"name":"","alt":"见微 V3 八分钟六人舞台分镜 3","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/ji1278","slide":3,"text":"时间：02:00—03:00\n舞台动作：业务具名确认；政策、信审、商务、资产各看同一事实的不同专业投影。\n台词：政策：“我判断它能不能进入规则边界。” 信审：“我判断经营事实能不能支持持续偿付。”\n能力边界：见微 V3 固定合成、去标识演示；模型 authority=none；正式动作必须由具名人员确认并留下 Receipt；现场八分钟不代表真实业务十分钟完成审批或放款。\n[Sources]\n- OpenAI ImageGen，当前任务生成的原创场景图：scene-03-parallel.png\n- 用户确认的见微 V3 展示叙事与舞台约束，2026-08-30\n[/Sources]"}
+{"kind":"slide","id":"sl/14lnnw","slide":4,"title":"Slide 4","textShapes":0}
+{"kind":"image","id":"im/nmx8vulw","slide":4,"name":"","alt":"见微 V3 八分钟六人舞台分镜 4","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/14lnnw","slide":4,"text":"时间：03:00—04:00\n舞台动作：客户补充订单集中度与回款周期变化；自动通道暂停，具名信审接手。\n台词：信审：“这不是否决客户，这是人工复核。” 业务：“快，不是掩盖风险。”\n能力边界：见微 V3 固定合成、去标识演示；模型 authority=none；正式动作必须由具名人员确认并留下 Receipt；现场八分钟不代表真实业务十分钟完成审批或放款。\n[Sources]\n- OpenAI ImageGen，当前任务生成的原创场景图：scene-04-human-review.png\n- 用户确认的见微 V3 展示叙事与舞台约束，2026-08-30\n[/Sources]"}
+{"kind":"slide","id":"sl/d7h4ag","slide":5,"title":"Slide 5","textShapes":0}
+{"kind":"image","id":"im/8zqpkza5","slide":5,"name":"","alt":"见微 V3 八分钟六人舞台分镜 5","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/d7h4ag","slide":5,"text":"时间：04:00—05:00\n舞台动作：业务组织节奏但不代签；四个专业 Gate 依次形成具名 Receipt。\n台词：政策：“例外边界，我负责。” 商务：“交易条件，我负责。” 资产：“设备和履约，我负责。”\n能力边界：见微 V3 固定合成、去标识演示；模型 authority=none；正式动作必须由具名人员确认并留下 Receipt；现场八分钟不代表真实业务十分钟完成审批或放款。\n[Sources]\n- OpenAI ImageGen，当前任务生成的原创场景图：scene-05-gates.png\n- 用户确认的见微 V3 展示叙事与舞台约束，2026-08-30\n[/Sources]"}
+{"kind":"slide","id":"sl/17ngt4","slide":6,"title":"Slide 6","textShapes":0}
+{"kind":"image","id":"im/ut4jeh8f","slide":6,"name":"","alt":"见微 V3 八分钟六人舞台分镜 6","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/17ngt4","slide":6,"text":"时间：05:00—06:00\n舞台动作：商务提交正式起租；大屏只展示上游 Gate、正式 Receipt 与产线启动。\n台词：商务：“上游判断完整，正式起租。” 业务：“不是模型拍板，是证据、专业和责任共同完成。”\n能力边界：见微 V3 固定合成、去标识演示；模型 authority=none；正式动作必须由具名人员确认并留下 Receipt；现场八分钟不代表真实业务十分钟完成审批或放款。\n[Sources]\n- OpenAI ImageGen，当前任务生成的原创场景图：scene-06-commencement.png\n- 用户确认的见微 V3 展示叙事与舞台约束，2026-08-30\n[/Sources]"}
+{"kind":"slide","id":"sl/w6xglf","slide":7,"title":"Slide 7","textShapes":0}
+{"kind":"image","id":"im/lg3mh8fq","slide":7,"name":"","alt":"见微 V3 八分钟六人舞台分镜 7","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/w6xglf","slide":7,"text":"时间：06:00—07:00\n舞台动作：普通咨询由 Agent 响应；重大追加投资只生成跨专业评估提案，不自动批准。\n台词：客户：“我们计划再扩一条线，追加一亿元，能不能评估？” 资产：“复杂需求已转人工，带着完整上下文继续。”\n能力边界：见微 V3 固定合成、去标识演示；模型 authority=none；正式动作必须由具名人员确认并留下 Receipt；现场八分钟不代表真实业务十分钟完成审批或放款。\n[Sources]\n- OpenAI ImageGen，当前任务生成的原创场景图：scene-07-lifecycle.png\n- 用户确认的见微 V3 展示叙事与舞台约束，2026-08-30\n[/Sources]"}
+{"kind":"slide","id":"sl/eyda1g","slide":8,"title":"Slide 8","textShapes":0}
+{"kind":"image","id":"im/wfq10rup","slide":8,"name":"","alt":"见微 V3 八分钟六人舞台分镜 8","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/eyda1g","slide":8,"text":"时间：07:00—08:00\n舞台动作：六人形成平等接续线；大屏定格实体产线与持续服务路径，7分50秒前结束。\n台词：业务 / 旁白：“让每一份真实需求被准确理解，让每一笔资金在可负责的判断中抵达。”\n能力边界：见微 V3 固定合成、去标识演示；模型 authority=none；正式动作必须由具名人员确认并留下 Receipt；现场八分钟不代表真实业务十分钟完成审批或放款。\n[Sources]\n- OpenAI ImageGen，当前任务生成的原创场景图：scene-08-closing.png\n- 用户确认的见微 V3 展示叙事与舞台约束，2026-08-30\n[/Sources]"}

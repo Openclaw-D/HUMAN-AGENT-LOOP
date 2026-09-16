@@ -1,0 +1,178 @@
+TAP version 13
+# Subtest: resolveServerModelConfig:三项全缺时列出全部缺项(含CONTRACT §4环境名),摘要无密钥
+ok 1 - resolveServerModelConfig:三项全缺时列出全部缺项(含CONTRACT §4环境名),摘要无密钥
+  ---
+  duration_ms: 1.5407
+  type: 'test'
+  ...
+# Subtest: resolveServerModelConfig:合法配置通过;mode=real 如实报告;mode 非法进 invalid
+ok 2 - resolveServerModelConfig:合法配置通过;mode=real 如实报告;mode 非法进 invalid
+  ---
+  duration_ms: 0.2434
+  type: 'test'
+  ...
+# Subtest: resolveServerModelConfig:端点非法(非http/凭据内嵌/无法解析)单独报 invalid
+ok 3 - resolveServerModelConfig:端点非法(非http/凭据内嵌/无法解析)单独报 invalid
+  ---
+  duration_ms: 0.195
+  type: 'test'
+  ...
+# Subtest: describeServerModelConfig:输出无秘密摘要,可安全进 STATUS/日志
+ok 4 - describeServerModelConfig:输出无秘密摘要,可安全进 STATUS/日志
+  ---
+  duration_ms: 0.1396
+  type: 'test'
+  ...
+# Subtest: transport 未配置:throw notSent TRANSPORT_NOT_CONFIGURED(缺项列全),fetch 桩零调用
+ok 5 - transport 未配置:throw notSent TRANSPORT_NOT_CONFIGURED(缺项列全),fetch 桩零调用
+  ---
+  duration_ms: 0.7828
+  type: 'test'
+  ...
+# Subtest: transport 仅缺密钥:同样送出前失败关闭,不回退占位符发送
+ok 6 - transport 仅缺密钥:同样送出前失败关闭,不回退占位符发送
+  ---
+  duration_ms: 0.2533
+  type: 'test'
+  ...
+# Subtest: 未配置经适配器端到端:cancelled/CANCELLED_BEFORE_SEND,预留释放,原因进 details
+ok 7 - 未配置经适配器端到端:cancelled/CANCELLED_BEFORE_SEND,预留释放,原因进 details
+  ---
+  duration_ms: 2.0476
+  type: 'test'
+  ...
+# Subtest: 成功(transport 层):POST chat/completions,证据正文进请求,Authorization 只发往服务端
+ok 8 - 成功(transport 层):POST chat/completions,证据正文进请求,Authorization 只发往服务端
+  ---
+  duration_ms: 0.5945
+  type: 'test'
+  ...
+# Subtest: 成功(apiKey 字符串通路与 getApiKey 等价)
+ok 9 - 成功(apiKey 字符串通路与 getApiKey 等价)
+  ---
+  duration_ms: 0.3969
+  type: 'test'
+  ...
+# Subtest: 成功(适配器端到端):SUCCEEDED(非 simulated)、usage 如实结算为 committed
+ok 10 - 成功(适配器端到端):SUCCEEDED(非 simulated)、usage 如实结算为 committed
+  ---
+  duration_ms: 1.3697
+  type: 'test'
+  ...
+# Subtest: enrich 返回对象:context 并入发往模型的副本,原 payload 冻结原件不被修改
+ok 11 - enrich 返回对象:context 并入发往模型的副本,原 payload 冻结原件不被修改
+  ---
+  duration_ms: 0.3381
+  type: 'test'
+  ...
+# Subtest: enrich 返回 null:不并 context,照常发送(CONTRACT §2 找不到内容不臆造)
+ok 12 - enrich 返回 null:不并 context,照常发送(CONTRACT §2 找不到内容不臆造)
+  ---
+  duration_ms: 0.5944
+  type: 'test'
+  ...
+# Subtest: enrich 抛异常:送出前失败关闭(notSent),fetch 零调用
+ok 13 - enrich 抛异常:送出前失败关闭(notSent),fetch 零调用
+  ---
+  duration_ms: 0.3541
+  type: 'test'
+  ...
+# Subtest: 超时(适配器竞速):unknown/TIMEOUT,预留 unknown_hold;opt-in deadlineAbort 真正中止 fetch
+ok 14 - 超时(适配器竞速):unknown/TIMEOUT,预留 unknown_hold;opt-in deadlineAbort 真正中止 fetch
+  ---
+  duration_ms: 0.5373
+  type: 'test'
+  ...
+# Subtest: 缺省(不启用 deadlineAbort):transport 不另设计时器,超时分类完全由适配器竞速给出
+ok 15 - 缺省(不启用 deadlineAbort):transport 不另设计时器,超时分类完全由适配器竞速给出
+  ---
+  duration_ms: 0.3389
+  type: 'test'
+  ...
+# Subtest: 送出后 opt-in deadline 到点:transport 返回 ok:indeterminate(结果不可知)
+ok 16 - 送出后 opt-in deadline 到点:transport 返回 ok:indeterminate(结果不可知)
+  ---
+  duration_ms: 0.1928
+  type: 'test'
+  ...
+# Subtest: 取消·送出前:适配器直接 cancelled(transport 未调用);transport 自查 throw notSent
+ok 17 - 取消·送出前:适配器直接 cancelled(transport 未调用);transport 自查 throw notSent
+  ---
+  duration_ms: 0.3932
+  type: 'test'
+  ...
+# Subtest: 取消·送出后外部中止:signal 透传,transport 返回 indeterminate(不谎称未发生外部调用)
+ok 18 - 取消·送出后外部中止:signal 透传,transport 返回 indeterminate(不谎称未发生外部调用)
+  ---
+  duration_ms: 0.2831
+  type: 'test'
+  ...
+# Subtest: HTTP 401(JSON 错误体):sent:true,错误码透传,适配器判 failed/TRANSPORT_ERROR
+ok 19 - HTTP 401(JSON 错误体):sent:true,错误码透传,适配器判 failed/TRANSPORT_ERROR
+  ---
+  duration_ms: 0.3978
+  type: 'test'
+  ...
+# Subtest: HTTP 401 超长错误消息:截断到 200 字符内(CONTRACT §1 脱敏),不回显全文
+ok 20 - HTTP 401 超长错误消息:截断到 200 字符内(CONTRACT §1 脱敏),不回显全文
+  ---
+  duration_ms: 0.1705
+  type: 'test'
+  ...
+# Subtest: HTTP 429 错误体带 usage:调用已发生,usage 仍如实结算(committed)
+ok 21 - HTTP 429 错误体带 usage:调用已发生,usage 仍如实结算(committed)
+  ---
+  duration_ms: 0.2725
+  type: 'test'
+  ...
+# Subtest: HTTP 503(非JSON错误体):报 HTTP_503,不回显原始响应体
+ok 22 - HTTP 503(非JSON错误体):报 HTTP_503,不回显原始响应体
+  ---
+  duration_ms: 0.2062
+  type: 'test'
+  ...
+# Subtest: 2xx 响应体非JSON:SERVER_HTTP_NOT_JSON,适配器判 failed
+ok 23 - 2xx 响应体非JSON:SERVER_HTTP_NOT_JSON,适配器判 failed
+  ---
+  duration_ms: 0.3374
+  type: 'test'
+  ...
+# Subtest: 2xx JSON 但 content 字符串非JSON:复用既有 PROVIDER_CONTENT_NOT_JSON,不伪装成功
+ok 24 - 2xx JSON 但 content 字符串非JSON:复用既有 PROVIDER_CONTENT_NOT_JSON,不伪装成功
+  ---
+  duration_ms: 0.1733
+  type: 'test'
+  ...
+# Subtest: 引用越界(适配器端到端):EVIDENCE_DANGLING,违规输出不得放行,usage 仍如实结算
+ok 25 - 引用越界(适配器端到端):EVIDENCE_DANGLING,违规输出不得放行,usage 仍如实结算
+  ---
+  duration_ms: 0.6229
+  type: 'test'
+  ...
+# Subtest: 无来源发现(引用为空):同样失败关闭 UNSOURCED_FINDING
+ok 26 - 无来源发现(引用为空):同样失败关闭 UNSOURCED_FINDING
+  ---
+  duration_ms: 0.3968
+  type: 'test'
+  ...
+# Subtest: 网络错误·连接被拒(ECONNREFUSED):throw notSent,适配器判 cancelled 并释放预留
+ok 27 - 网络错误·连接被拒(ECONNREFUSED):throw notSent,适配器判 cancelled 并释放预留
+  ---
+  duration_ms: 0.4721
+  type: 'test'
+  ...
+# Subtest: 网络错误·连接后中断(无错误码):indeterminate,不谎称失败或未计费
+ok 28 - 网络错误·连接后中断(无错误码):indeterminate,不谎称失败或未计费
+  ---
+  duration_ms: 0.1711
+  type: 'test'
+  ...
+1..28
+# tests 28
+# suites 0
+# pass 28
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 105.4053

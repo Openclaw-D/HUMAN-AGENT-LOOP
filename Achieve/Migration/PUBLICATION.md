@@ -23,3 +23,11 @@ node_modules、构建缓存、真实凭据、数据库、原始运行日志与�
 首次commit/push后，比对本地HEAD与远端refs/heads/main，并只读核对远端顶层目录。staged-check.json中的commit:false/push:false是检查时点，不是持续更新状态；实际Git状态使用git与远端核验。
 
 本次是源码和资料公开，不部署服务，不承诺前后端已接线、真实模型已验证或遗留缺陷已关闭。现有功能验证与问题仍以VERIFICATION.md和根部README为准。
+
+## 体积标准补充与第二次同步
+
+首次提交d67b940已推送，远端main与本地HEAD核对一致。用户随后明确几十MB资料无需因体积排除，已补回886份历史参考资料；最大单文件约45MiB。原excluded.json为首次筛选快照，补齐后的实际范围见manifest.json与size-policy-supplement.json。补齐内容约823MB（原始文件总和），全部落在JW/Achieve，不从旧Anthropic根直接提交。依赖/临时状态仍排除。
+
+两份内容相同的旧HTML触发Google key模式，独立检查确认命中位于内嵌PNG的base64随机串（PNG签名有效），不是配置凭据。扫描器仅对精确SHA256、位置、长度与图片边界匹配的已核实误报作记录，其余匹配仍阻断；未修改历史HTML原文。
+
+用户进一步要求完整前后端联调交付，当前尚未满足；见DELIVERY_STATUS.md。公开上传资料不等于该功能目标已经完成。

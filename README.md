@@ -1,45 +1,56 @@
-# JW · V0.1
+# JW · HUMAN-AGENT-LOOP
 
-独立的人机目标协作项目。2026-09-16从Anthropic当前成果迁入，以小步迭代推进0.2、0.3；V0.1是可追溯的开发基线，前后端仍有已知问题。
+**人和智能系统围绕共同目标协作的决赛演示项目。** 以合成的融资租赁案例为起点，展示业务、政策、信审、商务、资产与见微如何共享事实、发现风险、推进任务，并由人承担正式判断和责任。AI用于辅助，不替代人的审批权限。
 
-## 三个目录
+当前版本 **V0.1**。这个仓库供队员运行演示、讨论逻辑、记录进度和持续开发，后续按0.2、0.3小步迭代。
 
-| 目录 | 内容 |
+> 当前前端可以独立运行；最新后端源码完整保留。**两端尚未接通，前端仍为本地模拟演示。** 不要将本版本描述为已经完成前后端联调或生产可用。
+
+## 想先看演示？
+
+1. 下载/克隆本仓库，先完整解压。Windows电脑需要安装 **Node.js 22.23.1或更新的22.x版本**；已有则无需重复安装。
+2. 双击根目录 **`Start-JW.cmd`**，浏览器会打开 `http://127.0.0.1:3618/`。
+3. 保持启动窗口开启，结束时按 `Ctrl+C` 或关闭窗口。
+
+**不用先运行npm install，也不用安装Docker才能看前端。** 仓库已经包含 `Front/dist` 构建结果。不要直接双击其中的index.html；启动入口会提供所需的本地HTTP服务。端口被占用时会提示，不会关闭其他程序。
+
+macOS/Linux或希望使用命令行：`node Front/start-preview.mjs --no-open`，再打开上述地址。演示中的案例、对话和状态均为合成模拟，启动入口不会连接真实模型、调用付费API或启动后端。
+
+## 文件夹里是什么？
+
+| 目录 | 用途 |
 |---|---|
-| Front | 六角色前端、4个合成案例、模拟交互、构建和测试 |
-| Back | A业务内核、B执行器、C案例与mock、D验收；保留模块相邻关系以减少迁移风险 |
-| Achieve | 历史文档/代码/证据，及Migration迁移清单；默认不扫描，按需检索 |
+| **Front** | 当前六角色前端、4个演示案例、源码、测试、独立依赖锁、可直接运行的dist与启动服务 |
+| **Back** | 最新V7/backend-next后端：A业务内核/数据库、B任务执行器、C规则与mock、D集成验收；含源码、迁移、模板、测试和配置示例 |
+| **Achieve** | 历史决策、roadmap、旧代码、截图、PPT及迁移证据；用于查历史，不是第二个活动项目 |
 
-先读 [决定](DECISIONS.md)、[下一步](ROADMAP.md) 和 [交接](HANDOFF.md)。旧Anthropic保留恢复参考，日常开发应以本目录为工作根，不从旧任务默认路径继续写。
+日常开发只在本JW目录的Front/Back进行。Achieve默认不参与日常检索；需要历史时按版本定点查，不运行其中的旧任务书。原Anthropic文件夹保留备份参考，不需要它才能运行本前端。
 
-## 当前能力与问题
+## 后端怎样运行？
 
-前端从原3607六角色预览迁入，仍是浏览器内合成模拟；后端从V7/backend-next迁入，使用Node/TypeScript、PostgreSQL及LangGraph。两者尚未接线。模型真实调用为0；模拟工程结果不代表真实模型或生产权限通过。
+后端需要 **Node.js 22.23.1+、PostgreSQL**（本机验证通过Docker运行）。按 [Back/START.md](Back/START.md) 初始化依赖、独立数据库，并启动A、B、C。数据库迁移和配置示例已包含；不会上传或复制旧数据库、真实密钥和node_modules。
 
-原批次最终记录：D按40个唯一id汇总37 PASS、1 FAIL、2被新用例替代的历史BLOCKED。D-25e的预算重启目标状态存在不稳定，原因未定；v1.3 staleReviewAck放行规则仍待用户业务裁决；生产身份及部分读取/证据提交的项目隔离未验收。证据见 [最终收口原文](Achieve/Anthropic/V7/DISPATCH_STATUS.md) 与 [D原始结果](Back/D/RESULT.md) 的最终附录，旧正文若矛盾以最终附录为证据入口。本次实际迁移验证见 [验证报告](Achieve/Migration/VERIFICATION.md)。
+来源为 `V7/backend-next`，不是较旧的 `V7/backend`。上传前逐文件对账见 [最新后端核对](Achieve/Migration/latest-backend-check.json)。这里的“完整”指保留该版本可开发、安装和验证的源码材料，**不表示已知缺陷已经全部修复或前端已经接线**。
 
-## 本地启动
+## 修改前端
 
-Node 22.23.1为本次验证环境。新Front不依赖旧site的node_modules或链接：
+在Front目录运行：
 
 ```powershell
-cd C:\Users\22673\Desktop\JW\Front
 npm ci
 npm run dev
 ```
 
-新预览默认端口3617，保留旧3607；仅本机。`npm run build`、`npm test`、`npm run typecheck`分别验证构建、模拟逻辑、完整保留类型面。
+开发端口为3617；`npm run build`更新dist，`npm test`和`npm run typecheck`运行检查。当前dist已随仓库提供，修改源码后须重新构建，才能让双击入口展示新版本。
 
-后端操作见 [启动说明](Back/START.md)；A/B/C各自安装锁定依赖。数据库需要单独初始化，不会自动拷贝旧数据或连接生产服务。Back内部包名与协议标识暂保留来源版本，顶层交付版本为V0.1。
+## 当前验证与下一步
 
-## 历史查询与恢复
+已验证：前端build/typecheck及11项模拟逻辑测试；A类型检查；B63项、C34项测试；新独立数据库上的部分API幂等、权限拒绝与重启恢复。启动服务另有自动化检查。
 
-Achieve/Anthropic保留原相对目录；其中的决策/路线图/任务书属于原始快照，不自动变成当前指令。查询时指定版本：`rg --no-ignore "关键词" Achieve/Anthropic/V7`。
+尚未完成：前后端真实联调、D-25e稳定性、部分生产身份/项目隔离、真实模型调用、第二台电脑及用户视觉验收。v1.3部分复核政策仍需业务决定。完整说明见 [交付状态](Achieve/Migration/DELIVERY_STATUS.md)，不能仅凭单元测试通过宣称完整系统验收。
 
-[迁移分析](Achieve/Migration/ANALYSIS.md)、[逐文件SHA256清单](Achieve/Migration/manifest.json)、[未迁移项](Achieve/Migration/excluded.json)记录来源与恢复位置。依赖、缓存、数据库原目录、凭据、原始日志和大二进制仍留在Anthropic；本次不是磁盘或数据库备份。
+下一步优先形成JW内可启动、可验证的真实前后端闭环；本次按用户要求先交付当前前端、最新后端和简单启动包装，不趁迁移重写业务逻辑。
 
-## 公开仓库与范围
+团队接手先读：[当前决定](DECISIONS.md) · [路线图](ROADMAP.md) · [交接](HANDOFF.md)。迁移保留912份原始Markdown，几十MB资料也保留；[清单](Achieve/Migration/manifest.json)可逐文件核对来源和SHA256。
 
-用户于2026-09-16最终指定公开仓库：[Openclaw-D/HUMAN-AGENT-LOOP](https://github.com/Openclaw-D/HUMAN-AGENT-LOOP)，用于决赛演示、逻辑与队员进度协作；明确同意公开JW中已迁移的全部代码、文档和历史归档。
-
-唯一提交根为本JW目录，不将旁边的Anthropic工作区作为Git根或再次整目录加入。`Achieve/Anthropic`是已经复制进JW、供历史追溯的快照，不是第二个活动项目，其中也保留早期探索/研究资料；它们不是决赛功能承诺。依赖、缓存、凭据及临时运行状态仍不提交。发布核对见 [范围说明](Achieve/Migration/PUBLICATION.md)。
+公开仓库：[Openclaw-D/HUMAN-AGENT-LOOP](https://github.com/Openclaw-D/HUMAN-AGENT-LOOP)。仅提交本JW目录；依赖、凭据、数据库和临时状态不上传。

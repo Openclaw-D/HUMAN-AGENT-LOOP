@@ -4,11 +4,11 @@ A业务事实HTTP/PG，B执行器，C合成模板/mock，D验收脚本。字母�
 
 在A、B执行`npm ci --no-audit --no-fund`；C零运行依赖。Node22.23.1。
 
-独立数据库示例（仅本机开发、演示密码，不能用于生产；先核对15442未占用）：
+独立数据库示例（仅本机开发、演示密码，不能用于生产；先核对15442未占用）。从仓库根目录打开PowerShell执行；如果此前已创建同名容器，先核实是本项目容器，再用`docker start jw-v01-pg`恢复，不重复docker run、不删除原数据：
 
 ```powershell
 docker run -d --name jw-v01-pg -e POSTGRES_USER=jw -e POSTGRES_PASSWORD=jw-local-demo -e POSTGRES_DB=jw -p 127.0.0.1:15442:5432 -v jw_v01_pgdata:/var/lib/postgresql/data postgres:16
-cd C:\Users\22673\Desktop\JW\Back\A
+cd .\Back\A
 $env:V7NEXT_A_DB_URL='postgres://jw:jw-local-demo@127.0.0.1:15442/jw'
 node src/db/migrate-cli.ts
 node src/index.ts --port 48180 --dispatch

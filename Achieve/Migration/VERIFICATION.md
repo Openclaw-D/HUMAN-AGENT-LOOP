@@ -49,3 +49,7 @@ GitHub CLI账号已只读确认Openclaw-D，仓库名待用户最终确认；独
 ## 2026-09-16 后续发布决定
 
 用户最终指定Openclaw-D/HUMAN-AGENT-LOOP，明确要求全部公开上传；覆盖上文快照中的名称待定/未授权发布状态。目标仓库在首次推送前为空、公开。唯一提交根为JW，不包含原Anthropic工作区，只包含已复制进JW的历史快照。详见PUBLICATION.md；首次提交前最新检查见staged-check.json，推送完成以Git远端main与本地HEAD相同为准。业务代码未因发布发生变化，不重复功能测试。
+
+后续体积纠偏补齐886份历史参考资料，新增副本均在复制前后核对源与目标SHA256。累计manifest为8,019条，902,237,245字节；staged-check.json更新为此次增补提交前的全量核对，不是仅初始提交。两份HTML内嵌PNG随机串误报的精确审查记录见PUBLICATION.md与扫描结果。前后端运行验证未因归档增补重新执行；完整联调仍未完成。
+
+最新包装验证：重新运行Front构建通过（29模块）；Front/start-preview.test.mjs验证dist首页、JS/CSS资源、HEAD、404、非法写请求、越界路径拒绝与端口冲突不抢占全部通过。使用Node标准库，无Vite运行依赖。Back当前来源再核对148份文件，缺失0、差异0，见latest-backend-check.json。应用新JW项目已登记并核实，替代上文“等待添加项目”的历史状态；不是旧Anthropic项目。

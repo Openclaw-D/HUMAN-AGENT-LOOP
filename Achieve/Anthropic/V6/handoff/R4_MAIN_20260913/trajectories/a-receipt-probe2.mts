@@ -1,0 +1,10 @@
+import * as svc from '../../../../jianwei-v3/site/lib/v5-preview/remote-service.ts';
+import { readFileSync, writeFileSync } from 'node:fs';
+const store = JSON.parse(readFileSync(process.env.V5_PREVIEW_DATA_DIR + '/remote-store.json', 'utf8'));
+const t1 = store.sessions.filter((s: any) => s.title.includes('轨迹1')).at(-1);
+const det = svc.getRemoteSessionDetail(t1.sessionId);
+const annN = svc.createAnnotation({ requestId: 'a-rcpt-ann-' + Date.now().toString(36), expectedVersion: det.remoteVersion, sessionId: t1.sessionId, evidenceId: det.evidence[0].evidenceId, evidenceVersion: 1, question: 'A回执探针：请说明该区域情况（合成）', rect: { x: 0.2, y: 0.6, w: 0.3, h: 0.2 } });
+const r = await svc.simulateFollowUps({ requestId: 'a-receipt-full-' + Date.now().toString(36), expectedVersion: annN.remoteVersion, sessionId: t1.sessionId, annotationId: annN.annotation.annotationId });
+const full = JSON.stringify(r, null, 1);
+console.log(full.slice(0, 2200));
+writeFileSync(process.env.V5_PREVIEW_DATA_DIR + '/a-receipt-simulate.json', full, 'utf8');
