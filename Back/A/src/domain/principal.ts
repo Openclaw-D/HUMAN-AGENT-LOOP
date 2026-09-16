@@ -20,6 +20,7 @@ export const ANONYMOUS: Principal = {
   kind: 'agent',
   roles: [],
   projects: 'all',
+  tenants: 'all',
 };
 
 export interface Auth {
@@ -54,6 +55,14 @@ export function authorizeProject(principal: Principal, projectId: string): void 
   if (principal.projects === 'all') return;
   if (!principal.projects.includes(projectId)) {
     throw forbidden('PROJECT_FORBIDDEN', `principal 无该项目授权：${projectId}`);
+  }
+}
+
+/** v2 授信域租户范围校验（A10）：范围外一律 NOT_FOUND 语义由调用方处理，这里只判权。 */
+export function authorizeTenant(principal: Principal, tenantId: string): void {
+  if (principal.tenants === 'all') return;
+  if (!principal.tenants.includes(tenantId)) {
+    throw forbidden('CUSTOMER_SCOPE_VIOLATION', 'principal 无该租户授权');
   }
 }
 

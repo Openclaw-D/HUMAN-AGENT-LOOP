@@ -1,0 +1,19 @@
+{
+  "_comment": "微信客服（U-KF 94670, 脱敏）：sync_msg cursor 增量（读取窗口3天）；send_msg 返回 msgid；发送失败以 msg_send_fail 事件异步通知(fail_type)。对外无已读回执 -> sent_ok/send_failed/unknown 三态的依据。",
+  "sync_msg_request": { "url": "https://qyapi.weixin.qq.com/cgi-bin/kf/sync_msg?access_token=ACCESS_TOKEN", "body": { "cursor": "", "token": "DEMO_TOKEN", "limit": 1000 } },
+  "sync_msg_response": {
+    "errcode": 0,
+    "next_cursor": "demo_cursor_2",
+    "msg_list": [
+      { "msgid": "kf_msg_demo_1", "open_kfid": "kf_demo", "external_userid": "wo_demo_external_1", "send_time": 1760000100000, "origin": 3, "msgtype": "text", "text": { "content": "demo: 客户来信" } },
+      {
+        "msgid": "kf_evt_demo_fail_1", "open_kfid": "kf_demo", "external_userid": "wo_demo_external_1",
+        "send_time": 1760000200000, "origin": 4, "msgtype": "msg_send_fail",
+        "msg_send_fail": { "msgid": "kf_msg_demo_sent_9", "fail_type": 3 }
+      }
+    ]
+  },
+  "send_msg_request": { "url": "https://qyapi.weixin.qq.com/cgi-bin/kf/send_msg?access_token=ACCESS_TOKEN", "body": { "touser": "wo_demo_external_1", "open_kfid": "kf_demo", "msgid": "idempotent_demo_1", "msgtype": "text", "text": { "content": "demo" } } },
+  "send_msg_response": { "errcode": 0, "msgid": "kf_msg_demo_sent_9" },
+  "fail_type_notes": "fail_type: 1网络/2参数/3内容违规或限制/4频率限制/5其他（以官方 94677 为准，E2 重核）"
+}

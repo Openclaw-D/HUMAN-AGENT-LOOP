@@ -83,7 +83,29 @@ export function createModelTransport(p = {}) {
         throw new Error(`budget.${k} 必须为正有限数(收到 ${String(b[k])});预算配置不完整或非法 = 失败关闭`);
       }
     }
-    return { maxTotalCost: b.maxTotalCost, perCallEstimate: b.perCallEstimate, currency: b.currency ?? 'CNY' };
+    // 任务 03(S3 多粒度预算):可选客户/会话子限额与调用次数上限;非法即抛错失败关闭。
+    // 未配置子限额时行为与旧版完全一致(仅全局)。
+    for (const k of ['maxCalls', 'maxCallsPerSession']) {
+      if (b[k] !== undefined && !(Number.isInteger(b[k]) && b[k] > 0)) {
+        throw new Error(`budget.${k} 必须为正整数(收到 ${String(b[k])})`);
+      }
+    }
+    const sub = (v, name) => {
+      if (v === undefined) return null;
+      if (typeof v !== 'number' || !Number.isFinite(v) || v <= 0) {
+        throw new Error(`budget.${name} 必须为正有限数(收到 ${String(v)})`);
+      }
+      return v;
+    };
+    return {
+      maxTotalCost: b.maxTotalCost,
+      perCallEstimate: b.perCallEstimate,
+      currency: b.currency ?? 'CNY',
+      customerMax: sub(b.customer?.maxTotalCost ?? b.customerMax, 'customer.maxTotalCost'),
+      sessionMax: sub(b.session?.maxTotalCost ?? b.sessionMax, 'session.maxTotalCost'),
+      maxCalls: b.maxCalls ?? null,
+      maxCallsPerSession: b.maxCallsPerSession ?? null,
+    };
   })();
   const ledgerDir = costLogPath ? costLogPath.replace(/[/\\][^/\\]+$/, '') : null;
   const lockPath = costLogPath ? `${ledgerDir}/budget.lock` : null;
@@ -153,8 +175,8 @@ export function createModelTransport(p = {}) {
     }
   }
 
-  /** 严格读账:ENOENT(新账本)=0;目录/权限等其他读错误或任何坏行 → 抛错失败关闭,不跳过。 */
-  async function ledgerSumStrict() {
+  /** 严格读账:ENOENT(新账本)=空表;目录/权限等其他读错误或任何坏行 → 抛错失败关闭,不跳过。 */
+  async function ledgerEntriesStrict() {
     const { fs } = await import('../deps.mjs');
     if (!costLogPath) {
       throw Object.assign(new Error('预算已启用但账本路径未配置:失败关闭'), { code: 'BUDGET_LEDGER_UNREADABLE' });
@@ -163,10 +185,10 @@ export function createModelTransport(p = {}) {
     try {
       text = await fs.readFile(costLogPath, 'utf8');
     } catch (e) {
-      if (e.code === 'ENOENT') return 0; // 全新账本
+      if (e.code === 'ENOENT') return []; // 全新账本
       throw Object.assign(new Error(`账本不可读(${e.code},路径可能是目录或权限不足):失败关闭`), { code: 'BUDGET_LEDGER_UNREADABLE' });
     }
-    let sum = 0;
+    const entries = [];
     for (const [i, line] of text.split('\n').entries()) {
       if (!line.trim()) continue;
       let e;
@@ -176,9 +198,9 @@ export function createModelTransport(p = {}) {
       if (typeof e.amount !== 'number' || !Number.isFinite(e.amount) || e.amount < 0) {
         throw Object.assign(new Error(`账本第 ${i + 1} 行损坏(amount 非有限数值):失败关闭`), { code: 'BUDGET_LEDGER_CORRUPT' });
       }
-      sum += e.amount;
+      entries.push(e);
     }
-    return sum;
+    return entries;
   }
 
   async function ledgerAppendStrict(entry) {
@@ -187,9 +209,12 @@ export function createModelTransport(p = {}) {
     await fs.appendFile(costLogPath, `${JSON.stringify(entry)}\n`, 'utf8');
   }
 
-  /** 出站前预算门(互斥临界区):超限/账本异常/锁超时 → 确定未发送(fail-closed);
-   *  通过 → 记 reserve(保守预占)。任何错误都以 failed/notSent 结果返回,绝不吞错后出站。 */
-  async function budgetGate(requestId) {
+  /** 出站前预算门(互斥临界区):全局 + 可选客户/会话子限额与调用次数上限;
+   *  超限/账本异常/锁超时 → 确定未发送(fail-closed);通过 → 记 reserve(保守预占)。
+   *  保守原则:无 scope 标注的旧条目计入所有作用域合计(不因升级放松约束)。
+   *  任何错误都以 failed/notSent 结果返回,绝不吞错后出站。 */
+  async function budgetGate(request) {
+    const requestId = request.requestId;
     if (!budget) return null;
     if (!lockPath) {
       return {
@@ -197,18 +222,64 @@ export function createModelTransport(p = {}) {
         error: { code: 'BUDGET_LEDGER_UNREADABLE', messageZh: '预算已启用但账本路径未配置:失败关闭,调用未发送' },
       };
     }
+    const customerKey = request.contextTags?.projectId ?? null; // 客户/项目隔离键(同项目内共享预算面)
+    const sessionKey = request.contextTags?.runId ?? null;
     try {
       const res = await withBudgetLock(async () => {
-        const used = await ledgerSumStrict();
-        if (used + budget.perCallEstimate > budget.maxTotalCost) {
+        const entries = await ledgerEntriesStrict();
+        const sumAll = entries.filter((e) => e.type === 'reserve').reduce((a, e) => a + e.amount, 0);
+        const sumFor = (scopeField, scopeVal) => entries
+          .filter((e) => e.type === 'reserve' && (scopeVal === null || e[scopeField] === undefined || e[scopeField] === scopeVal))
+          .reduce((a, e) => a + e.amount, 0);
+        const countFor = (scopeField, scopeVal) => entries
+          .filter((e) => e.type === 'reserve' && (scopeVal === null || e[scopeField] === undefined || e[scopeField] === scopeVal))
+          .length;
+        const usedCustomer = sumFor('customerKey', customerKey);
+        const usedSession = sumFor('sessionKey', sessionKey);
+        if (usedAllCheck(sumAll)) {
           return {
             blocked: {
               code: 'BUDGET_EXCEEDED',
-              messageZh: `预算上限失败关闭:已入账 ${used} + 本次估算 ${budget.perCallEstimate} > 上限 ${budget.maxTotalCost} ${budget.currency};调用未发送(reserve/actual 语义见 HANDOFF-D §2)`,
+              messageZh: `预算上限失败关闭:全局已入账 ${sumAll} + 本次估算 ${budget.perCallEstimate} > 上限 ${budget.maxTotalCost} ${budget.currency};调用未发送(reserve/actual 语义见 HANDOFF-D §2)`,
             },
           };
         }
-        await ledgerAppendStrict({ type: 'reserve', requestId, amount: budget.perCallEstimate, currency: budget.currency, at: new Date().toISOString() });
+        if (budget.customerMax != null && usedCustomer + budget.perCallEstimate > budget.customerMax) {
+          return {
+            blocked: {
+              code: 'BUDGET_CUSTOMER_EXCEEDED',
+              messageZh: `客户级预算失败关闭:客户 ${customerKey} 已入账 ${usedCustomer} + 估算 ${budget.perCallEstimate} > 上限 ${budget.customerMax};调用未发送`,
+            },
+          };
+        }
+        if (budget.sessionMax != null && usedSession + budget.perCallEstimate > budget.sessionMax) {
+          return {
+            blocked: {
+              code: 'BUDGET_SESSION_EXCEEDED',
+              messageZh: `会话级预算失败关闭:会话 ${sessionKey} 已入账 ${usedSession} + 估算 ${budget.perCallEstimate} > 上限 ${budget.sessionMax};调用未发送`,
+            },
+          };
+        }
+        if (budget.maxCalls != null && countFor(null, null) + 1 > budget.maxCalls) {
+          return {
+            blocked: {
+              code: 'BUDGET_CALLS_EXCEEDED',
+              messageZh: `调用次数上限失败关闭:已 ${countFor(null, null)} 次 + 1 > 上限 ${budget.maxCalls};调用未发送`,
+            },
+          };
+        }
+        if (budget.maxCallsPerSession != null && countFor('sessionKey', sessionKey) + 1 > budget.maxCallsPerSession) {
+          return {
+            blocked: {
+              code: 'BUDGET_CALLS_SESSION_EXCEEDED',
+              messageZh: `会话调用次数上限失败关闭:已 ${countFor('sessionKey', sessionKey)} 次 + 1 > 上限 ${budget.maxCallsPerSession};调用未发送`,
+            },
+          };
+        }
+        await ledgerAppendStrict({
+          type: 'reserve', requestId, amount: budget.perCallEstimate, currency: budget.currency,
+          customerKey, sessionKey, at: new Date().toISOString(),
+        });
         return {};
       });
       if (res?.blocked) {
@@ -227,6 +298,10 @@ export function createModelTransport(p = {}) {
     }
   }
 
+  function usedAllCheck(sumAll) {
+    return sumAll + budget.perCallEstimate > budget.maxTotalCost;
+  }
+
   async function recordCost(entry) {
     costLedgerMem.push(entry);
     // actual = 观测+超额补记:预算扣减主体是 reserve(已按估算入账);仅当真实用量超过估算
@@ -234,7 +309,10 @@ export function createModelTransport(p = {}) {
     // 记录失败不静默:visible 于 costSnapshot(预算按 reserve 保守扣减,不受影响)。
     try {
       const delta = Math.max(0, (entry.amount ?? 0) - (budget?.perCallEstimate ?? 0));
-      await ledgerAppendStrict({ type: 'actual', requestId: entry.requestId, amount: delta, at: entry.at });
+      // 任务 03:真实账单未知时显式标记 billKnown=false(报告按“未知”呈现,不记为 0 费用)。
+      // mock 名义值 / 已注入费率的 real 估算 → billKnown 按来源如实标注。
+      const billKnown = entry.mode === 'mock' ? true : entry.cost?.estimated != null;
+      await ledgerAppendStrict({ type: 'actual', requestId: entry.requestId, amount: delta, billKnown, at: entry.at });
     } catch (e) {
       costLedgerMem.push({ type: 'actual-unpersisted', requestId: entry.requestId, error: String(e.code ?? e.message) });
     }
@@ -260,11 +338,28 @@ export function createModelTransport(p = {}) {
     return null;
   }
 
+  // 任务 03(S3 限额族):请求体大小上限(平台未提供 token 计数时的保守代理;
+  // 真实 token 计量属 provider usage 对账,未知时按未知呈现)。超限=确定未发送。
+  const maxRequestChars = (() => {
+    const v = p.limits?.maxRequestChars ?? p.real?.limits?.maxRequestChars;
+    if (v === undefined) return null;
+    if (!(Number.isInteger(v) && v > 0)) {
+      throw new Error(`limits.maxRequestChars 必须为正整数(收到 ${String(v)})`);
+    }
+    return v;
+  })();
+
   /**
    * 单次补全调用(七状态结果,供编排桥接)。
    * @param request buildModelRequest 产物
    */
   async function complete(request) {
+    if (maxRequestChars != null && typeof request.text === 'string' && request.text.length > maxRequestChars) {
+      return {
+        status: 'failed', sentFlag: false, deduped: false, source: { mode: mode ?? 'none' },
+        error: { code: 'REQUEST_TOO_LARGE', messageZh: `请求文本 ${request.text.length} 字符超过上限 ${maxRequestChars}:调用未发送(失败关闭)` },
+      };
+    }
     if (mode === undefined) {
       return {
         status: 'not_configured', sentFlag: false, candidate: null, deduped: false,
@@ -273,7 +368,7 @@ export function createModelTransport(p = {}) {
       };
     }
     if (mode === 'mock') {
-      const gate = await budgetGate(request.requestId);
+      const gate = await budgetGate(request);
       if (gate) return gate;
       // C mock 接口约定:路径以 /chat/completions 结尾(OpenAI 兼容形状;MOCK_API.md §2)
       return callHttp({ endpoint: `${p.mock.baseUrl.replace(/\/$/, '')}/chat/completions`, apiKey: null, mockMode: true, request });
@@ -281,7 +376,7 @@ export function createModelTransport(p = {}) {
     // real:出站允许门先于任何网络动作;预算门其次(未发送即失败关闭)
     const blocked = checkOutbound(p.real.endpoint);
     if (blocked) return blocked;
-    const gate = await budgetGate(request.requestId);
+    const gate = await budgetGate(request);
     if (gate) return gate;
     return callHttp({ endpoint: p.real.endpoint, apiKey: p.real.apiKey ?? null, mockMode: false, request });
   }

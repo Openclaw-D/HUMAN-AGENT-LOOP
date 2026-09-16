@@ -138,3 +138,9 @@ blocked ──(deps accepted+输入kind当前证据齐备)──▶ ready ──
 ## 7｜基线门
 
 全部产物在 `V7/backend-next/**`；未触碰 `V7/backend/**`、site/V6/home/3607/3467、既有 Dify 容器与数据；无 Git 操作；无真实密钥/付费调用（GLM-5.2 0 调用）。测试库 `v7next_a_test_*` 由测试自动建删，与业务库隔离。
+
+## 8｜v2 增量契约登记（2026-09-17，本轮任务02 集成 writer）
+
+- **v2.1 决策闭环**（任务02；客户授信之上的交付收口）：差异复核（decision_findings）、评估依据包（decision_packages/package_domain_results，冻结修订+逐域当前性）、会后授权视图（report_views，internal/customer 分受众）、对象显式重关联（object_relinks）、提额冷却（credit_facilities.cooling_until，`--credit-cooling-seconds` 显式配置才启用）。API/事件/语义见 `A/docs/DECISION_LOOP_V1.md`；错误码新增 REVIEW_REQUIRED / REVIEW_EVIDENCE_REQUIRED / GATE_BLOCKED / COOLING_ACTIVE（errors.ts）。迁移 004 号位归任务02；003 号位为任务一 `003_inspection_sessions.sql`。v1（§0–§7）语义不变。
+- **检查会话域**（任务一）：设计见 `A/docs/INSPECTION_SESSION_V1.md`（错误码 PLAN_CHANGED 等 11 项已在 errors.ts 登记）。
+- 本节为登记性指针，不改变 §0–§7 已冻结文字的效力。

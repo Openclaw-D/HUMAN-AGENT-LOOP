@@ -8,7 +8,9 @@ import pg from 'pg';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const A_ROOT = path.resolve(__dirname, '..');
-const ADMIN_DB = 'postgres://v7next:v7next@127.0.0.1:15432/postgres';
+// 管理库可经 JW_A_ADMIN_DB_URL 指向本任务的隔离容器（如 jw-cc-kernel-pg@15444）；
+// 未设置时保持历史默认（v7next-a-pg@15432），旧流程行为不变。
+const ADMIN_DB = process.env.JW_A_ADMIN_DB_URL ?? 'postgres://v7next:v7next@127.0.0.1:15432/postgres';
 const BASE_PORT = 48100;
 
 export const TOKENS = {
@@ -40,7 +42,9 @@ export async function createTestDb(prefix = 'v7next_a_test') {
   const admin = new pg.Pool({ connectionString: ADMIN_DB });
   await admin.query(`CREATE DATABASE ${name}`);
   await admin.end();
-  return { name, url: `postgres://v7next:v7next@127.0.0.1:15432/${name}` };
+  const base = new URL(ADMIN_DB);
+  base.pathname = `/${name}`;
+  return { name, url: base.toString() };
 }
 
 export async function dropTestDb(name) {
@@ -49,11 +53,12 @@ export async function dropTestDb(name) {
   await admin.end();
 }
 
-/** 启动内核进程；返回 {port, stop, dbUrl, pool(直连DB, 白盒时间操纵用)}。keepDb=true 时 stop 不删库（重启测试用）。 */
-export async function startKernel({ portOffset = 0, leaseSeconds = 90, dispatch = false, dbUrl = null, keepDb = false, extraArgs = [] } = {}) {
+/** 启动内核进程；返回 {port, stop, dbUrl, pool(直连DB, 白盒时间操纵用)}。keepDb=true 时 stop 不删库（重启测试用）。
+ *  principalSpec 可选：v2 授信域测试需租户限定身份（第5段 tenants），默认保持 v1 合成目录。 */
+export async function startKernel({ portOffset = 0, leaseSeconds = 90, dispatch = false, dbUrl = null, keepDb = false, extraArgs = [], principalSpec = PRINCIPAL_SPEC } = {}) {
   const db = dbUrl === null ? await createTestDb() : { name: null, url: dbUrl };
   const port = BASE_PORT + Math.floor(Math.random() * 400) + portOffset;
-  const args = ['src/index.ts', '--port', String(port), '--db', db.url, '--principal-tokens', PRINCIPAL_SPEC,
+  const args = ['src/index.ts', '--port', String(port), '--db', db.url, '--principal-tokens', principalSpec,
     '--lease-seconds', String(leaseSeconds)];
   if (dispatch) args.push('--dispatch');
   if (extraArgs.length > 0) args.push(...extraArgs);

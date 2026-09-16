@@ -1,0 +1,12 @@
+{
+  "_note": "Edge live 模式身份目录示例（任务三交付）。复制为 edge-auth.json（Git 排除，勿提交真实值）后以 --auth-file 指向。credential 必须与 A 内核 --principal-tokens 目录中的令牌一致；Edge 只存 sha256 与映射，原文仅存服务端内存。以下为合成演示值（仿 A tok-* 公开测试值模式），禁止用于真实身份。",
+  "entries": [
+    { "credential": "tok-biz1", "principalId": "biz1", "roles": ["business"] },
+    { "credential": "tok-jw1", "principalId": "jianwei1", "roles": ["jianwei"] },
+    { "credential": "tok-pol1", "principalId": "policy1", "roles": ["policy"] },
+    { "credential": "tok-credit1", "principalId": "credit1", "roles": ["credit"] },
+    { "credential": "tok-comm1", "principalId": "commerce1", "roles": ["commerce"] },
+    { "credential": "tok-asset1", "principalId": "asset1", "roles": ["asset"] },
+    { "credential": "tok-admin", "principalId": "admin1", "roles": ["admin"] }
+  ]
+}

@@ -1,0 +1,218 @@
+{
+  "schemaVersion": "jw.s5-drill.v1",
+  "drilledAt": "2026-09-16T18:29:15.637Z",
+  "isolation": {
+    "containerPrefix": "v7d-",
+    "port": 15434,
+    "dataDir": "Back/Edge/.run/drill-pg",
+    "note": "不触碰 v7next-a-pg / jw-v01-pg / Dify 等其他容器；仅销毁本演练容器"
+  },
+  "database": {
+    "name": "v7d_drill",
+    "migrationApplied": "全部迁移（001..00N，见 report.steps[2].detail）",
+    "dataScope": "全部合成数据（drill-* 命名）"
+  },
+  "steps": [
+    {
+      "name": "1 建自有隔离PG容器(v7d-前缀,15434)",
+      "ok": true,
+      "detail": {
+        "name": "v7d-pg-dee8b5e16a",
+        "port": 15434,
+        "host": "127.0.0.1",
+        "user": "v7next",
+        "password": "v7next",
+        "dsn": "postgres://v7next:v7next@127.0.0.1:15434/v7d_boot"
+      },
+      "ms": 6303
+    },
+    {
+      "name": "2 建演练库（幂等：先丢弃上次残留）",
+      "ok": true,
+      "detail": {
+        "db": "v7d_drill"
+      },
+      "ms": 6457
+    },
+    {
+      "name": "3 应用全部迁移(docker cp+psql -f，按序)",
+      "ok": true,
+      "detail": {
+        "migrations": [
+          "001_init.sql",
+          "002_customer_credit.sql",
+          "003_inspection_sessions.sql",
+          "004_decision_loop.sql"
+        ]
+      },
+      "ms": 2482
+    },
+    {
+      "name": "4 灌合成数据(12表)",
+      "ok": true,
+      "detail": {
+        "seeded": "12 tables"
+      },
+      "ms": 196
+    },
+    {
+      "name": "5 备份前逐表行数+全行指纹",
+      "ok": true,
+      "detail": {
+        "goal_templates": {
+          "rows": 1,
+          "md5": "dc25d627983c3b77a049147587189c8b"
+        },
+        "projects": {
+          "rows": 1,
+          "md5": "54fbe2f9589b783c6d6f38049d0927d9"
+        },
+        "goals": {
+          "rows": 1,
+          "md5": "63c8db0c16a3bf4651ff2a97785fbb7f"
+        },
+        "evidence": {
+          "rows": 1,
+          "md5": "a532e68b223241f98f75fb9eacd32b5b"
+        },
+        "task_assignments": {
+          "rows": 1,
+          "md5": "91efa878b0efdcd0a18ec798d1ccfd14"
+        },
+        "human_requests": {
+          "rows": 1,
+          "md5": "e3dd32ba1c8356e142110392976c0ee9"
+        },
+        "execution_receipts": {
+          "rows": 1,
+          "md5": "282a194be4f68d9decae0d65f1289eb1"
+        },
+        "audit_events": {
+          "rows": 1,
+          "md5": "0f3e030d5ae9e6a939b62731572cb642"
+        },
+        "outbox_events": {
+          "rows": 1,
+          "md5": "c65146a7c0b6f95e698ffe27522b168a"
+        },
+        "subscriptions": {
+          "rows": 1,
+          "md5": "206a06555b4d607bea2c393ac9a30405"
+        },
+        "outbox_deliveries": {
+          "rows": 1,
+          "md5": "c64ce90ea17bd021391f179caadb4efd"
+        },
+        "idempotency": {
+          "rows": 1,
+          "md5": "1e9cfd34c37dcb23b2a4bc3a27d8bc11"
+        }
+      },
+      "ms": 3529
+    },
+    {
+      "name": "6 pg_dump -Fc 备份",
+      "ok": true,
+      "detail": {
+        "dump": "Back\\Edge\\.run\\drill-pg\\drill-backup-20260916-182846.dump"
+      },
+      "ms": 397
+    },
+    {
+      "name": "7 模拟损毁：DROP DATABASE",
+      "ok": true,
+      "detail": null,
+      "ms": 1782
+    },
+    {
+      "name": "8 重建空库",
+      "ok": true,
+      "detail": null,
+      "ms": 1475
+    },
+    {
+      "name": "9 pg_restore 恢复",
+      "ok": true,
+      "detail": {
+        "restored": true
+      },
+      "ms": 1587
+    },
+    {
+      "name": "10 恢复后逐表行数+全行指纹",
+      "ok": true,
+      "detail": {
+        "goal_templates": {
+          "rows": 1,
+          "md5": "dc25d627983c3b77a049147587189c8b"
+        },
+        "projects": {
+          "rows": 1,
+          "md5": "54fbe2f9589b783c6d6f38049d0927d9"
+        },
+        "goals": {
+          "rows": 1,
+          "md5": "63c8db0c16a3bf4651ff2a97785fbb7f"
+        },
+        "evidence": {
+          "rows": 1,
+          "md5": "a532e68b223241f98f75fb9eacd32b5b"
+        },
+        "task_assignments": {
+          "rows": 1,
+          "md5": "91efa878b0efdcd0a18ec798d1ccfd14"
+        },
+        "human_requests": {
+          "rows": 1,
+          "md5": "e3dd32ba1c8356e142110392976c0ee9"
+        },
+        "execution_receipts": {
+          "rows": 1,
+          "md5": "282a194be4f68d9decae0d65f1289eb1"
+        },
+        "audit_events": {
+          "rows": 1,
+          "md5": "0f3e030d5ae9e6a939b62731572cb642"
+        },
+        "outbox_events": {
+          "rows": 1,
+          "md5": "c65146a7c0b6f95e698ffe27522b168a"
+        },
+        "subscriptions": {
+          "rows": 1,
+          "md5": "206a06555b4d607bea2c393ac9a30405"
+        },
+        "outbox_deliveries": {
+          "rows": 1,
+          "md5": "c64ce90ea17bd021391f179caadb4efd"
+        },
+        "idempotency": {
+          "rows": 1,
+          "md5": "1e9cfd34c37dcb23b2a4bc3a27d8bc11"
+        }
+      },
+      "ms": 3925
+    },
+    {
+      "name": "11 指纹比对",
+      "ok": true,
+      "detail": {
+        "tables": 12,
+        "verdict": "ALL_MATCH"
+      },
+      "ms": 0
+    },
+    {
+      "name": "12 销毁自有容器",
+      "ok": true,
+      "detail": "v7d-pg-dee8b5e16a",
+      "ms": 0
+    }
+  ],
+  "verdict": "PASS",
+  "notes": [
+    "代码回滚不等于数据库回滚：本演练证明的是\"库损毁/误删后可从备份还原\"；不可逆迁移需另备向前修复方案（任务01迁移策略落定时复核）",
+    "数据在容器卷与备份文件中，不随 Git reset 消失；备份文件 .dump 留存于 Back/Edge/.run（Git 排除），不入公开仓库",
+    "真实客户数据/正式环境的备份演练需获准环境与授权，另行执行（E2/E3 门）"
+  ]
+}

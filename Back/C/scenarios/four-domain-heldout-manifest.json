@@ -1,0 +1,21 @@
+{
+  "manifestVersion": "1.0.0",
+  "algorithm": "sha256(canonical-json(rounds[].expected))",
+  "discipline": "评测前校验：任一 held-out 期望块哈希不符 → 判定被篡改，拒绝评测（不在看到失败后改标准；若确需修正，重生成 manifest 并在 RESULT 披露污染）",
+  "entries": {
+    "S03-normal-heldout-no-commerce-facts": "82663b9fcccd72e0bc14748b5f65ac452ff2b6a89424c6a2e34d79f692a713c6",
+    "S07-dup-whitespace-variant-heldout": "8610fcb11cc6012d05ea85b369af80832202c4ac80a5ae5b338b36f0e20cdba6",
+    "S13-caliber-same-value-not-conflict-heldout": "33f30e245a615a48c5211bdfde0043380c0eacb016b5dd5dcaa356a31abf9f9c",
+    "S14-three-way-conflict-heldout": "32c602b662a139fee20726570ea34cad59991ed0989464b0fafe06438f988cfa",
+    "S17-expired-mixed-heldout": "f7b8e4d02da9e1e550a5d1f54fb6b3794d701bf58c19539205a0860b0add3115",
+    "S22-asset-observed-plus-conflict-heldout": "773a7ad94e6f1cee903f33ed6c1e8642f44b7e05e9bdb833e66785344457c75f",
+    "S25-txn-financial-leasing-block-heldout": "725fb96e5ec3fd84f8d595ff129faeced3b6a09a140b3407bdbc4d9a755d42f2",
+    "S27-txn-inventory-financing-heldout": "e892afcbd16cdc398f64e3fffc2db333b0fe060c3c17a3d2d65db833c0699001",
+    "S29-neg-cashflow-correction-heldout": "0565ccaa5f655dcbae8c8806ef5ebfddf64637bb8ed5ee2b07dc2776d84d5966",
+    "S32-neg-correction-reuploaded-heldout": "4a8dd7e3a99067e07a74b8004bc8b582c01ba122301726a2ad6178c838e7c1ea",
+    "S34-weak-video-unsupported-modality-heldout": "5a5c73c9fd73d7674f5bb9a567b7d3ce33e9479aefbaf20d8419c7cc82c5c104",
+    "S36-weak-quality-flag-only-heldout": "8b410b01364c1b42c70c57f49abd64593c0407f8ebf02a008098c9d478cb5e18",
+    "S40-inj-inside-conflict-heldout": "37a1ab70bdbb5355b1bb8a15ea6fad4c2ecd8dc10f66111d3754873e4627965d",
+    "S42-xcust-adverse-only-b-heldout": "98a1bfaa06a23c3db55059f53eb0ff3f19f292280c6ed1ba3bf7e83b3d73f101"
+  }
+}

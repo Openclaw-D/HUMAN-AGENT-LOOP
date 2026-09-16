@@ -8,6 +8,11 @@ import { authenticate, authorizeProject, requireAdmin, requireRole, requireSensi
 import { type GoalRow } from './status.ts';
 import { findCycle, invalidateForEvidence, loadGoals, recomputeReady, type TxHelpers } from './recompute.ts';
 import { computeStaleMap, type StaleInfo } from './staleness.ts';
+import { buildCreditCommands, type CreditV2Api } from './credit.ts';
+import { buildReviewCommands, type ReviewApi } from './review.ts';
+import { buildPackageCommands, type PackageApi } from './package.ts';
+import { buildReportCommands, type ReportsApi } from './reports.ts';
+import { buildInspectionCommands, type InspectionApi } from './inspection.ts';
 
 const MAX_BODY_JSON = 1 << 20;      // 1MB 请求体上限
 const MAX_RESULT_JSON = 64 << 10;   // 候选结果上限（上下文限额守卫的一部分）
@@ -64,7 +69,8 @@ async function withCommand<T extends object>(
   kernel: Kernel, frame: RequestFrame, op: string,
   fn: (tx: PoolClient, helpers: TxHelpers, actor: string | null) => Promise<Record<string, unknown>>,
 ): Promise<Record<string, unknown>> {
-  const { requestId, credential, ...payload } = frame;
+  const { requestId, credential, __path, ...payload } = frame;
+  void __path; // v1 幂等载荷哈希不含路径：保持 v1 行为不变（v2 在 credit.ts 内另行绑定路径资源）
   if (typeof requestId !== 'string' || requestId.length < 1 || requestId.length > 128) {
     throw invalid('requestId 必须是 1..128 长度的 string');
   }
@@ -170,11 +176,30 @@ export class Kernel {
   readonly pool: Pool;
   private readonly config: Config;
   private readonly verifier: PrincipalVerifier | null;
+  /** v2 客户授信 + 决策闭环命令面（任务01 授信 + 任务02 评审/依据包/报告；共用 pool/config/verifier）。 */
+  readonly v2: CreditV2Api & ReviewApi & PackageApi & ReportsApi;
+  /** 检查会话命令面（任务一；联合尽调会话的运行/收口/调度/恢复）。 */
+  readonly ix: InspectionApi;
 
   constructor(pool: Pool, options: KernelOptions) {
     this.pool = pool;
     this.config = options.config;
     this.verifier = options.verifier;
+    this.v2 = {
+      ...buildCreditCommands(this),
+      ...buildReviewCommands(this),
+      ...buildPackageCommands(this),
+      ...buildReportCommands(this),
+    } as CreditV2Api & ReviewApi & PackageApi & ReportsApi;
+    this.ix = buildInspectionCommands(this);
+  }
+
+  /** v2 授信域访问可信身份源与配置（credit.ts 只经此读取，保持单一 Kernel 实例）。 */
+  verifierForV2(): PrincipalVerifier | null {
+    return this.verifier;
+  }
+  configForV2(): Config {
+    return this.config;
   }
 
   /** 审计用 actor 标签（只记 principalId，绝不记凭据）。验证失败在 authenticate 内抛 403。 */
@@ -1127,6 +1152,13 @@ export class Kernel {
       model: this.config.modelTransport === null ? 'not_configured' : 'configured',
       principalVerifier: this.verifier === null ? 'not_configured' : 'configured',
       leaseSeconds: this.config.leaseSeconds,
+      contractVersion: 'v1.3+v2.1-credit+decision-loop(task01+task02)',
+      creditPolicy: {
+        capCnyMinor: this.config.creditCapCnyMinor,
+        matrixVersion: this.config.creditMatrixVersion,
+        concentrationPolicyVersion: this.config.concentrationPolicyVersion,
+        coolingSeconds: this.config.creditCoolingSeconds,
+      },
       uptime: process.uptime(),
     };
   }

@@ -54,3 +54,30 @@ node src/run-contract-integration.mjs [--credential <A发布的合成token>]   #
 - C→A 实库集成：BLOCKED（A 服务未上线；adapter 投影已完成并单测）。A 上线且合成 token 发布后重跑 §4 第 4 条。
 - mock 与 real 边界：mock 永不进生产路径；`malformed_response`/`partial_response` 的 B 侧分流处理属 B 职责，C 仅提供演练场与语义文档。
 - 本轮全部为合成数据；行业/地区/金额是标注变量，禁止地区标签拒绝（规则包 userConstraints 强制）。
+
+## 6. 任务 03 四域交付（2026-09-16 追加；E1）
+
+| 交付物 | 路径 | 消费方 |
+|---|---|---|
+| 输出 Schema（AnalysisRun/DomainAssessment） | `domains/schema.mjs` | B、D（判据） |
+| 模型能力注册表 | `domains/capability-registry.mjs` | B、任务 02 对接 |
+| 共享感知层（去重/取代/冲突/质量/投影） | `domains/perception.mjs` | B |
+| 四域确定性评估器 | `domains/assessors.mjs` | B |
+| 三阶段流水线 + 组合入口 + packOverride | `domains/pipeline.mjs` | B、评测 |
+| 规则 Schema/引擎/Gate/阈值 | `rules/rule-schema.mjs` · `rules/engine.mjs` · `rules/gate.mjs` · `rules/thresholds.mjs` | B、D |
+| 规则包 v1（simulation_only） | `rules/four-domain-rule-pack-v1.json` | B、D（判据） |
+| 角色指令模板（E2 prompt 基线） | `domains/templates/four-domain-prompts-v1.json` | B（E2 授权后） |
+| 提问计划/金额候选/单一下一步 | `questions/planner.mjs` · `amount/candidate.mjs` · `coordination/next-step.mjs` | B |
+| 42 场景集（14 冻结 held-out） | `scenarios/four-domain-cases-v1.json` + `four-domain-heldout-manifest.json` | 评测/D 复跑 |
+| 评测 runner / AB 对照 / 矩阵映射 | `src/evaluation/run-four-domain-evaluation.mjs` · `src/evaluation/ab-experiment.mjs` · `evidence/four-domain-matrix-map.md` | D |
+
+D 复跑命令（全部零付费，A/B 服务不依赖）：
+
+```bash
+cd Back/C
+node src/evaluation/run-four-domain-evaluation.mjs --all   # 42 场景（main+heldout，196 断言）；exit 2=held-out 被篡改
+node src/evaluation/ab-experiment.mjs                      # §8 单助手 vs 四域对照（冻结 held-out）
+node test/run-all.mjs                                      # 72 项单测（含 four-domain 29 项）
+```
+
+B 侧消费：`tools.mode='four-domain'` + `routesPath` 指向 `Back/B/config/routes-four-domain.json`；工具实现 `Back/B/src/domains/four-domain-tools.mjs`。held-out 纪律：期望块 sha256 冻结，修改必须重生成 manifest 并在 RESULT 披露污染风险。

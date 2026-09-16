@@ -10,6 +10,10 @@
     "test": "node test/run-all.mjs",
     "eval": "node src/run-evaluation.mjs",
     "eval:heldout": "node src/run-evaluation.mjs --heldout",
+    "eval4d": "node src/evaluation/run-four-domain-evaluation.mjs",
+    "eval4d:heldout": "node src/evaluation/run-four-domain-evaluation.mjs --heldout",
+    "eval4d:all": "node src/evaluation/run-four-domain-evaluation.mjs --all",
+    "ab": "node src/evaluation/ab-experiment.mjs",
     "e2e": "node src/run-e2e.mjs"
   }
 }

@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "jw.version-seal.v1",
+  "sealedAt": "2026-09-16T16:03:01.470Z",
+  "buildId": "8718af354c4d7cc0",
+  "git": {
+    "gitSha": "9c724c0efa0cc0cc6b70db39c94b431bd0db683a",
+    "sourceDirty": true,
+    "dirtyCount": 14,
+    "dirtyPaths": [
+      "Back/C/amount/",
+      "Back/C/coordination/",
+      "Back/C/domains/",
+      "Back/C/questions/",
+      "Back/C/rules/engine.mjs",
+      "Back/C/rules/four-domain-rule-pack-v1.json",
+      "Back/C/rules/gate.mjs",
+      "Back/C/rules/rule-schema.mjs",
+      "Back/C/rules/thresholds.mjs",
+      "Back/Connectors/",
+      "Back/D/evidence/",
+      "Back/Edge/",
+      "JW_customer_credit_backend_tasks/",
+      "docs/"
+    ]
+  },
+  "sourceDigest": {
+    "back": {
+      "files": 213,
+      "sha256": "18bb6c57d42218ef2537cf8a49d3202a89005008edec7378f2c731a235267516"
+    },
+    "frontSrc": {
+      "files": 7,
+      "sha256": "a028e3fb9ea801a4e59d1ef02cc79206c3b6b986b10560cb9cd56a08da9a9053"
+    }
+  },
+  "dist": {
+    "frontend": {
+      "files": 3,
+      "sha256": "167bb898be095e53e1259294d737dba4a765c037334f2aa3a226ec4614075bbf"
+    }
+  },
+  "contractVersion": "v1.3",
+  "contractDigest": "e5228ba077a9ba3ba6e8fe97c2aa0d15d0cba5a36efc2485a91c6b39dbaad4e6",
+  "migrationVersion": {
+    "count": 1,
+    "sha256": "0a9f0ba841c553e26221cd5cdcd6051d8ae97a4e0ee23e7bf7a168bd9a744133",
+    "latest": "001_init.sql"
+  },
+  "rulesetVersion": {
+    "files": 6,
+    "sha256": "01248d9af70aa148d814e8fecbfc84a01f60173f8604d8f5d57b528f181b9a8e"
+  },
+  "runtime": {
+    "node": "v22.23.1",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "capabilities": {
+    "model": "not_configured",
+    "video": "not_wired",
+    "recording": "not_wired",
+    "policy": "not_wired",
+    "credit": "not_wired",
+    "docker": "available",
+    "note": "能力位逐一独立报告；禁止汇总为 all_ok"
+  },
+  "services": [
+    {
+      "name": "pg-jw-15442",
+      "port": 15442,
+      "open": false,
+      "detail": "ECONNREFUSED"
+    },
+    {
+      "name": "pg-legacy-15432",
+      "port": 15432,
+      "open": true,
+      "detail": "tcp connect ok",
+      "note": "legacy：旧工作区遗留端口，其健康状态不计入 JW 运行版本"
+    },
+    {
+      "name": "front-3618",
+      "port": 3618,
+      "open": false,
+      "detail": "ECONNREFUSED"
+    },
+    {
+      "name": "kernel-jw-48180",
+      "port": 48180,
+      "open": false,
+      "detail": "ECONNREFUSED"
+    },
+    {
+      "name": "kernel-legacy-48080",
+      "port": 48080,
+      "open": true,
+      "detail": "tcp connect ok",
+      "note": "legacy：旧工作区遗留端口，其健康状态不计入 JW 运行版本",
+      "health": {
+        "ok": true,
+        "detail": {
+          "status": 200,
+          "ok": true,
+          "db": "up",
+          "model": "not_configured"
+        },
+        "note": "A内核 /healthz 的 ok 字段含 liveness 混淆，业务就绪以 db===up 为准"
+      },
+      "edgeVersionzResponds": false,
+      "notEdge": true
+    },
+    {
+      "name": "edge-48200",
+      "port": 48200,
+      "open": false,
+      "detail": "ECONNREFUSED"
+    }
+  ]
+}

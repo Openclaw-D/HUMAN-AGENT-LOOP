@@ -73,10 +73,10 @@ export function startHttpServer(kernel: Kernel, port: number): Promise<Server> {
                 const raw = await readBody(req);
                 body = raw.trim().length === 0 ? {} : JSON.parse(raw); // eslint-disable-line @typescript-eslint/no-unsafe-assignment
             }
-            // 身份凭据：头优先，body 字段同义
+            // 身份凭据：头优先，body 字段同义；__path 供 v2 幂等哈希绑定路径资源（v1 哈希显式剔除，行为不变）
             const credential = req.headers['x-principal-credential'] ??
                 (body !== null && typeof body === 'object' ? (body as Record<string, unknown>).principalCredential : undefined);
-            const frame = { ...(body as Record<string, unknown>), credential };
+            const frame = { ...(body as Record<string, unknown>), credential, __path: path };
             const result = await r.handler(req, res, params, url.searchParams, frame);
             if (result !== undefined) writeJson(res, 200, result);
             return;
@@ -109,6 +109,10 @@ export function startHttpServer(kernel: Kernel, port: number): Promise<Server> {
     const k = kernel;
     const S = (v: string | undefined): string => v ?? '';
     const F = (body: Record<string, unknown>): Record<string, unknown> => body;
+    /** 读端点身份：头优先，body.principalCredential 同义（GET 也可带查询凭据头）。 */
+    const cred = (body: Record<string, unknown> | undefined, req: IncomingMessage): unknown =>
+      req.headers['x-principal-credential'] ??
+      (body !== null && typeof body === 'object' ? (body as Record<string, unknown>).principalCredential : undefined);
     route('GET', '/api/v1/templates/:templateId', async (_q, _s, p) => k.getTemplate(S(p.templateId)));
     route('POST', '/api/v1/templates', async (_q, _s, _p, _sp, body) => k.createTemplate(F(body)));
     route('POST', '/api/v1/projects', async (_q, _s, _p, _sp, body) => k.createProject(F(body)));
@@ -141,6 +145,95 @@ export function startHttpServer(kernel: Kernel, port: number): Promise<Server> {
     });
     route('POST', '/api/v1/subscriptions', async (_q, _s, _p, _sp, body) => k.subscribe(F(body)));
     route('GET', '/api/v1/receipts/:requestId', async (_q, _s, p) => k.getReceipt(S(p.requestId)));
+
+    // ---- v2 客户授信内核（任务01；契约见 docs/customer-next/S1_API_V2_SCHEMA_PROPOSAL.md）----
+    const C = k.v2;
+    route('POST', '/api/v2/customers', async (_q, _s, _p, _sp, body) => C.createCustomer(F(body)));
+    route('GET', '/api/v2/customers/:customerId', async (_q, _s, p, _sp, body) => C.getCustomer(cred(body, _q), S(p.customerId)));
+    route('POST', '/api/v2/customers/:customerId/relationships', async (_q, _s, p, _sp, body) => C.declareRelationship(F(body), S(p.customerId)));
+    route('GET', '/api/v2/customers/:customerId/relationships', async (_q, _s, p, _sp, body) => C.listRelationships(cred(body, _q), S(p.customerId)));
+    route('POST', '/api/v2/customers/:customerId/artifacts', async (_q, _s, p, _sp, body) => C.registerArtifact(F(body), S(p.customerId)));
+    route('GET', '/api/v2/customers/:customerId/artifacts', async (_q, _s, p, _sp, body) => C.listArtifacts(cred(body, _q), S(p.customerId)));
+    route('POST', '/api/v2/customers/:customerId/assessments', async (_q, _s, p, _sp, body) => C.createAssessment(F(body), S(p.customerId)));
+    route('GET', '/api/v2/assessments/:assessmentId', async (_q, _s, p, _sp, body) => C.getAssessment(cred(body, _q), S(p.assessmentId)));
+    route('POST', '/api/v2/assessments/:assessmentId/candidate', async (_q, _s, p, _sp, body) => C.submitCandidate(F(body), S(p.assessmentId)));
+    route('POST', '/api/v2/assessments/:assessmentId/submit-review', async (_q, _s, p, _sp, body) => C.submitForReview(F(body), S(p.assessmentId)));
+    route('POST', '/api/v2/assessments/:assessmentId/decide', async (_q, _s, p, _sp, body) => C.decideAssessment(F(body), S(p.assessmentId)));
+    route('POST', '/api/v2/customers/:customerId/facilities', async (_q, _s, p, _sp, body) => C.proposeFacility(F(body), S(p.customerId)));
+    route('POST', '/api/v2/facilities/:facilityId/approve', async (_q, _s, p, _sp, body) => C.approveFacility(F(body), S(p.facilityId)));
+    route('POST', '/api/v2/facilities/:facilityId/activate', async (_q, _s, p, _sp, body) => C.activateFacility(F(body), S(p.facilityId)));
+    route('POST', '/api/v2/facilities/:facilityId/suspend', async (_q, _s, p, _sp, body) => C.suspendFacility(F(body), S(p.facilityId)));
+    route('POST', '/api/v2/facilities/:facilityId/reduce', async (_q, _s, p, _sp, body) => C.reduceFacility(F(body), S(p.facilityId)));
+    route('GET', '/api/v2/facilities/:facilityId', async (_q, _s, p, _sp, body) => C.getFacility(cred(body, _q), S(p.facilityId)));
+    route('POST', '/api/v2/customers/:customerId/financing-requests', async (_q, _s, p, _sp, body) => C.createFinancingRequest(F(body), S(p.customerId)));
+    route('GET', '/api/v2/financing-requests/:frId', async (_q, _s, p, _sp, body) => C.getFinancingRequest(cred(body, _q), S(p.frId)));
+    route('POST', '/api/v2/financing-requests/:frId/reserve', async (_q, _s, p, _sp, body) => C.reserveFinancing(F(body), S(p.frId)));
+    route('POST', '/api/v2/financing-requests/:frId/release', async (_q, _s, p, _sp, body) => C.releaseFinancing(F(body), S(p.frId)));
+    route('POST', '/api/v2/financing-requests/:frId/commit', async (_q, _s, p, _sp, body) => C.commitFinancing(F(body), S(p.frId)));
+    route('POST', '/api/v2/financing-requests/:frId/disburse', async (_q, _s, p, _sp, body) => C.disburseFinancing(F(body), S(p.frId)));
+    route('POST', '/api/v2/financing-requests/:frId/settle', async (_q, _s, p, _sp, body) => C.settleFinancing(F(body), S(p.frId)));
+    route('POST', '/api/v2/financing-requests/:frId/confirm-external', async (_q, _s, p, _sp, body) => C.confirmExternal(F(body), S(p.frId)));
+    route('GET', '/api/v2/customers/:customerId/exposure', async (_q, _s, p, _sp, body) => C.getCustomerExposure(cred(body, _q), S(p.customerId)));
+    route('GET', '/api/v2/customers/:customerId/events', async (_q, _s, p, sp, body) => {
+      const after = Number(sp.get('after') ?? 0);
+      const limit = Number(sp.get('limit') ?? 100);
+      if (!Number.isFinite(after) || !Number.isFinite(limit)) {
+        throw new AppError('INVALID_INPUT', 'after/limit 必须是数字');
+      }
+      return C.listCustomerEvents(cred(body, _q), S(p.customerId), after, limit);
+    });
+    route('GET', '/api/v2/receipts/:requestId', async (_q, _s, p, _sp, body) => C.getV2Receipt(cred(body, _q), S(p.requestId)));
+
+    // ---- v2 决策闭环（任务02；契约见 Back/A/docs/DECISION_LOOP_V1.md）----
+    route('POST', '/api/v2/customers/:customerId/findings', async (_q, _s, p, _sp, body) => C.createFinding(F(body), S(p.customerId)));
+    route('GET', '/api/v2/customers/:customerId/findings', async (_q, _s, p, _sp, body) => C.listFindings(cred(body, _q), S(p.customerId)));
+    route('GET', '/api/v2/findings/:findingId', async (_q, _s, p, _sp, body) => C.getFinding(cred(body, _q), S(p.findingId)));
+    route('POST', '/api/v2/findings/:findingId/resolve', async (_q, _s, p, _sp, body) => C.resolveFinding(F(body), S(p.findingId)));
+    route('POST', '/api/v2/customers/:customerId/object-relinks', async (_q, _s, p, _sp, body) => C.registerObjectRelink(F(body), S(p.customerId)));
+    route('GET', '/api/v2/customers/:customerId/object-inventory', async (_q, _s, p, _sp, body) => C.listObjectInventory(cred(body, _q), S(p.customerId)));
+    route('POST', '/api/v2/customers/:customerId/decision-packages', async (_q, _s, p, _sp, body) => C.createPackage(F(body), S(p.customerId)));
+    route('POST', '/api/v2/decision-packages/:packageId/revisions', async (_q, _s, p, _sp, body) => C.revisePackage(F(body), S(p.packageId)));
+    route('POST', '/api/v2/decision-packages/:packageId/domain-results', async (_q, _s, p, _sp, body) => C.recordDomainResult(F(body), S(p.packageId)));
+    route('POST', '/api/v2/decision-packages/:packageId/adoption', async (_q, _s, p, _sp, body) => C.adoptDomainOpinion(F(body), S(p.packageId)));
+    route('POST', '/api/v2/decision-packages/:packageId/gate', async (_q, _s, p, _sp, body) => C.recordGateResult(F(body), S(p.packageId)));
+    route('POST', '/api/v2/decision-packages/:packageId/refresh-currency', async (_q, _s, p, _sp, body) => C.refreshPackageCurrency(F(body), S(p.packageId)));
+    route('GET', '/api/v2/decision-packages/:packageId', async (_q, _s, p, _sp, body) => C.getPackage(cred(body, _q), S(p.packageId)));
+    route('GET', '/api/v2/customers/:customerId/decision-status', async (_q, _s, p, _sp, body) => C.getCustomerDecisionStatus(cred(body, _q), S(p.customerId)));
+    route('POST', '/api/v2/customers/:customerId/reports', async (_q, _s, p, _sp, body) => C.generateReport(F(body), S(p.customerId)));
+    route('GET', '/api/v2/customers/:customerId/reports', async (_q, _s, p, _sp, body) => C.listReports(cred(body, _q), S(p.customerId)));
+    route('GET', '/api/v2/reports/:reportId', async (_q, _s, p, sp, body) => C.getReport(cred(body, _q), S(p.reportId), sp.get('format')));
+    route('GET', '/api/v2/financing-requests/:frId/use-readiness', async (_q, _s, p, _sp, body) => C.getUseReadiness(cred(body, _q), S(p.frId)));
+
+    // ---- 检查会话（任务一；契约见 Back/A/docs/INSPECTION_SESSION_V1.md）----
+    const IX = k.ix;
+    route('POST', '/api/v1/projects/:projectId/inspections', async (_q, _s, p, _sp, body) => IX.createSession(F(body), S(p.projectId)));
+    route('GET', '/api/v1/inspections/:sessionId', async (_q, _s, p) => IX.getSession(S(p.sessionId)));
+    route('GET', '/api/v1/inspections/:sessionId/next-actions', async (_q, _s, p) => IX.getNextActions(S(p.sessionId)));
+    route('POST', '/api/v1/inspections/:sessionId/plan', async (_q, _s, p, _sp, body) => IX.revisePlan(F(body), S(p.sessionId)));
+    route('POST', '/api/v1/inspections/:sessionId/scene', async (_q, _s, p, _sp, body) => IX.reviseScene(F(body), S(p.sessionId)));
+    route('POST', '/api/v1/inspections/:sessionId/start', async (_q, _s, p, _sp, body) => IX.startSession(F(body), S(p.sessionId)));
+    route('POST', '/api/v1/inspections/:sessionId/pause', async (_q, _s, p, _sp, body) => IX.pauseSession(F(body), S(p.sessionId)));
+    route('POST', '/api/v1/inspections/:sessionId/resume', async (_q, _s, p, _sp, body) => IX.resumeSession(F(body), S(p.sessionId)));
+    route('POST', '/api/v1/inspections/:sessionId/end', async (_q, _s, p, _sp, body) => IX.endSession(F(body), S(p.sessionId)));
+    route('POST', '/api/v1/inspections/:sessionId/close', async (_q, _s, p, _sp, body) => IX.closeSession(F(body), S(p.sessionId)));
+    route('POST', '/api/v1/inspections/:sessionId/presence', async (_q, _s, p, _sp, body) => IX.setPresence(F(body), S(p.sessionId)));
+    route('POST', '/api/v1/inspections/:sessionId/takeover', async (_q, _s, p, _sp, body) => IX.takeoverSession(F(body), S(p.sessionId)));
+    route('POST', '/api/v1/inspections/:sessionId/items', async (_q, _s, p, _sp, body) => IX.addItem(F(body), S(p.sessionId)));
+    route('POST', '/api/v1/inspections/:sessionId/items/:itemId/verify', async (_q, _s, p, _sp, body) => IX.verifyItem(F(body), S(p.sessionId), S(p.itemId)));
+    route('POST', '/api/v1/inspections/:sessionId/items/:itemId/rebind', async (_q, _s, p, _sp, body) => IX.rebindItem(F(body), S(p.sessionId), S(p.itemId)));
+    route('POST', '/api/v1/inspections/:sessionId/items/:itemId/reassign', async (_q, _s, p, _sp, body) => IX.reassignItem(F(body), S(p.sessionId), S(p.itemId)));
+    route('POST', '/api/v1/inspections/:sessionId/questions', async (_q, _s, p, _sp, body) => IX.createQuestion(F(body), S(p.sessionId)));
+    route('POST', '/api/v1/inspections/:sessionId/questions/:questionId/answer', async (_q, _s, p, _sp, body) => IX.answerQuestion(F(body), S(p.sessionId), S(p.questionId)));
+    route('POST', '/api/v1/inspections/:sessionId/questions/:questionId/reask', async (_q, _s, p, _sp, body) => IX.reaskQuestion(F(body), S(p.sessionId), S(p.questionId)));
+    route('POST', '/api/v1/inspections/:sessionId/outbound/grant', async (_q, _s, p, _sp, body) => IX.grantOutbound(F(body), S(p.sessionId)));
+    route('POST', '/api/v1/inspections/:sessionId/outbound/:sendId/result', async (_q, _s, p, _sp, body) => IX.outboundResult(F(body), S(p.sessionId), S(p.sendId)));
+    route('POST', '/api/v1/inspections/:sessionId/sweep', async (_q, _s, p, _sp, body) => IX.sweep(F(body), S(p.sessionId)));
+    route('POST', '/api/v1/inspections/:sessionId/evidence', async (_q, _s, p, _sp, body) => IX.addLateEvidence(F(body), S(p.sessionId)));
+    route('POST', '/api/v1/inspections/:sessionId/checkpoint', async (_q, _s, p, _sp, body) => IX.writeCheckpointCommand(F(body), S(p.sessionId)));
+    route('GET', '/api/v1/inspections/:sessionId/summary', async (_q, _s, p, sp, body) => {
+      const revision = sp.get('revision');
+      return IX.getSummaries(S(p.sessionId), sp.get('audience'), revision === null ? null : Number(revision), cred(body, _q));
+    });
 
     return new Promise((resolve, reject) => {
         server.once('error', reject);

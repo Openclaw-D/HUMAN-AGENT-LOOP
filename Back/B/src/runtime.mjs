@@ -11,6 +11,10 @@ import { FileCheckpointSaver } from './langgraph/file-checkpointer.mjs';
 import { createTaskRunOrchestrator } from './graph/task-run-orchestrator.mjs';
 import { createWorker } from './worker/worker.mjs';
 import { LocalFileReceipts, ToolsPort, LocalStubCalculation, ReceiptsPort } from './ports.mjs';
+import { createFourDomainTools } from './domains/four-domain-tools.mjs';
+
+import { fs } from './deps.mjs';
+import { readFileSync } from 'node:fs';
 
 /** 事实版本端口:A 是事实权威,B 经契约只读投影(目标乐观版本+stale 投影)。 */
 export function createContractFactVersions(contract) {
@@ -64,10 +68,17 @@ export function createBRuntime({
       costLogPath: config.transport?.costLogPath ?? `${dataDir}/cost-ledger.jsonl`,
     });
 
-  const router = overrides.router ?? createRouter(config.routes);
+  const router = overrides.router ?? createRouter(config.routesPath
+    // 任务 03:路由表可来自 JSON 文件(如 config/routes-four-domain.json),避免内联巨配置
+    ? JSON.parse(readFileSync(config.routesPath, 'utf8'))
+    : config.routes);
 
   const receipts = overrides.receipts ?? new ReceiptsPort(new LocalFileReceipts(dataDir));
-  const tools = overrides.tools ?? new ToolsPort(new LocalStubCalculation());
+  const tools = overrides.tools ?? (config.tools?.mode === 'four-domain'
+    // 任务 03:四域确定性工具集(消费 C 流水线;任务参数经 task.params 传入,step 间
+    // 经 _priorOutputs 传递)。路由须使用 config/routes-four-domain.json 的 fd:* 规则。
+    ? new ToolsPort(createFourDomainTools())
+    : new ToolsPort(new LocalStubCalculation()));
   const factVersions = overrides.factVersions ?? createContractFactVersions(contract);
 
   const checkpointer = overrides.checkpointer ?? new FileCheckpointSaver(`${dataDir}/checkpoints`);

@@ -1,0 +1,11 @@
+{
+  "_comment": "解密后消息体：外部联系人同意/取消同意存档（U1 同意会话聊天内容）。agree/disagree 即 U2 同意状态在存档流内的反映。",
+  "msgid": "msgid_demo_0003",
+  "action": "send",
+  "from": "wo_demo_external_1",
+  "tolist": ["userid_demo_sales_1"],
+  "roomid": "",
+  "msgtime": 1760000002000,
+  "msgtype": "agree",
+  "agree": { "user": { "userid": "wo_demo_external_1" } }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "jw-edge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "JW 任务04 Edge：版本/健康拆分接口、客户工作台只读聚合与 SSE 传输语义（E0 骨架；真实内核集成待任务01冻结契约）",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node scripts/edge-start.mjs",
+    "stop": "node scripts/edge-stop.mjs",
+    "seal": "node scripts/version-seal.mjs",
+    "test": "node test/run-all.mjs"
+  }
+}

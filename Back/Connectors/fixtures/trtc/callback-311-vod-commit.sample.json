@@ -1,0 +1,8 @@
+{
+  "_comment": "TRTC 311 录制文件提交 VOD 回调（S4, 脱敏）。注意官方文档明示：收到本回调后约 30 秒~3 分钟内文件才可播放 -> '回调称完成'不等于'对象可读'，I14 的官方依据。",
+  "EventGroupId": 3, "EventType": 311, "CallbackTs": 1760000610000,
+  "EventInfo": {
+    "RoomId": "room_demo_1", "TaskId": "task_demo_1", "Status": 0, "SubStatus": 0,
+    "TencentVod": { "SubAppId": 0, "FileId": "vod_fileid_demo_1", "VideoUrl": "https://demo.vod2.example/REDACTED/playlist.f9.m3u8", "CacheFile": ["https://demo.vod2.example/REDACTED/0.mp4"], "StartTimeStamp": 1760000300000, "EndTimeStamp": 1760000580000 }
+  }
+}

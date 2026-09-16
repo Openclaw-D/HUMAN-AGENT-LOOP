@@ -1,0 +1,11 @@
+{
+  "_comment": "TRTC 310 MP4 录制文件上传 COS 完成回调（S4, 脱敏）。Status: 0=全部上传成功 / 1=至少一片滞留(gap) / 2=录制机异常退出。FileMessage 轨道字段含 TrackType/MediaId/起止毫秒。",
+  "EventGroupId": 3, "EventType": 310, "CallbackTs": 1760000600000,
+  "EventInfo": {
+    "RoomId": "room_demo_1", "TaskId": "task_demo_1", "Status": 0, "SubStatus": 0, "CreateTimeTs": 1760000299000, "RecBeginTimeTs": 1760000300000, "RecEndTimeTs": 1760000590000,
+    "File": { "CosPath": "demo-bucket/room_demo_1/task_demo_1/", "Region": "ap-demo", "Bucket": "demo-bucket" },
+    "FileList": [
+      { "FileName": "task_demo_1_main.mp4", "UserId": "wo_demo_external_1", "TrackType": "audio_video", "MediaId": "main", "StartTimeStamp": 1760000300000, "EndTimeStamp": 1760000580000 }
+    ]
+  }
+}

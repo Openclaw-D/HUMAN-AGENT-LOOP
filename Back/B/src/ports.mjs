@@ -72,7 +72,7 @@ export class LocalFileReceipts {
 export class MemoryReceipts {
   constructor() { this.mem = new Map(); }
   async get(requestId) { return this.mem.get(requestId) ?? null; }
-  async put(receipt) { this.mem.set(requestId, receipt); }
+  async put(receipt) { this.mem.set(receipt.requestId, receipt); }
 }
 
 /**
@@ -115,9 +115,39 @@ export class LocalStubCalculation {
   }
 }
 
-/** 原子 JSON 写:随机临时文件 + rename,并发写同一路径不互相踩临时名。 */
+/**
+ * 原子 JSON 写：随机临时文件 + rename，并发写同一路径不互相踩临时名。
+ * Windows EPERM 修复（任务 03/C24）：目标文件被占用（杀软扫描/并发读句柄）时 rename 抛
+ * EPERM/EACCES/EBUSY——按有界退避重试（20ms→400ms，共 5 次 ≈840ms），仍失败则清理临时
+ * 文件并抛结构化错误 ATOMIC_WRITE_FAILED（不吞错、不无限重试；旧内容保持原样=状态不损坏）。
+ * EISDIR/ENOENT 等非占用类错误不重试（确定性失败，直接清理并抛出）。
+ */
+const EPERM_RETRYABLE = new Set(['EPERM', 'EACCES', 'EBUSY']);
+const EPERM_BACKOFF_MS = [20, 50, 120, 250, 400];
+
 export async function atomicWriteJson(filePath, obj) {
   const tmp = `${filePath}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2, 8)}.tmp`;
-  await fs.writeFile(tmp, JSON.stringify(obj, null, 2), 'utf8');
-  await fs.rename(tmp, filePath);
+  const payload = JSON.stringify(obj, null, 2);
+  try {
+    await fs.writeFile(tmp, payload, 'utf8');
+  } catch (e) {
+    await fs.rm(tmp, { force: true }).catch(() => {});
+    throw Object.assign(new Error(`原子写临时文件失败(${e.code}):目标状态未改动,失败关闭`), { code: 'ATOMIC_WRITE_FAILED', cause: e });
+  }
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      await fs.rename(tmp, filePath);
+      return;
+    } catch (e) {
+      const retryable = EPERM_RETRYABLE.has(e.code) && attempt < EPERM_BACKOFF_MS.length;
+      if (!retryable) {
+        await fs.rm(tmp, { force: true }).catch(() => {}); // 清理残留（历史实测可见 .tmp 遗留文件）
+        throw Object.assign(
+          new Error(`原子写替换失败(${e.code},尝试 ${attempt + 1} 次):旧内容保持原样,失败关闭`),
+          { code: 'ATOMIC_WRITE_FAILED', cause: e },
+        );
+      }
+      await new Promise((r) => setTimeout(r, EPERM_BACKOFF_MS[attempt]));
+    }
+  }
 }

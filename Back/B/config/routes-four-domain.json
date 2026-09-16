@@ -1,0 +1,64 @@
+{
+  "_comment": "任务 03 四域路由配置(规则限定可信路由;消费 B/src/domains/four-domain-tools.mjs)。全部为确定性工具步,零外部调用;线性计划前序=数组前项,_priorOutputs 由编排器注入,四域共享同一感知快照(E1 同源)。fd:* 工具由 B/src/domains/four-domain-tools.mjs 提供;calc:* 由 C 确定性工具提供。",
+  "roles": ["policy", "credit", "commerce", "asset", "jianwei"],
+  "rules": [
+    {
+      "ruleId": "FD-FULL-EVALUATION",
+      "when": { "taskKind": "four_domain_evaluation" },
+      "plan": [
+        { "stepId": "fd:perception", "kind": "tool", "toolName": "fd:perception" },
+        { "stepId": "fd:assess:policy", "kind": "tool", "toolName": "fd:assess:policy" },
+        { "stepId": "fd:assess:credit", "kind": "tool", "toolName": "fd:assess:credit" },
+        { "stepId": "fd:assess:commerce", "kind": "tool", "toolName": "fd:assess:commerce" },
+        { "stepId": "fd:assess:asset", "kind": "tool", "toolName": "fd:assess:asset" },
+        { "stepId": "fd:gate", "kind": "tool", "toolName": "fd:gate" },
+        { "stepId": "fd:questions", "kind": "tool", "toolName": "fd:questions" },
+        { "stepId": "fd:amount", "kind": "tool", "toolName": "fd:amount" },
+        { "stepId": "fd:nextstep", "kind": "tool", "toolName": "fd:nextstep" }
+      ]
+    },
+    {
+      "ruleId": "FD-RECALC-POLICY",
+      "when": { "taskKind": "four_domain_recalc", "role": "policy" },
+      "plan": [
+        { "stepId": "fd:perception", "kind": "tool", "toolName": "fd:perception" },
+        { "stepId": "fd:assess:policy", "kind": "tool", "toolName": "fd:assess:policy" },
+        { "stepId": "fd:gate", "kind": "tool", "toolName": "fd:gate" }
+      ]
+    },
+    {
+      "ruleId": "FD-RECALC-CREDIT",
+      "when": { "taskKind": "four_domain_recalc", "role": "credit" },
+      "plan": [
+        { "stepId": "fd:perception", "kind": "tool", "toolName": "fd:perception" },
+        { "stepId": "fd:assess:credit", "kind": "tool", "toolName": "fd:assess:credit" },
+        { "stepId": "fd:gate", "kind": "tool", "toolName": "fd:gate" }
+      ]
+    },
+    {
+      "ruleId": "FD-RECALC-COMMERCE",
+      "when": { "taskKind": "four_domain_recalc", "role": "commerce" },
+      "plan": [
+        { "stepId": "fd:perception", "kind": "tool", "toolName": "fd:perception" },
+        { "stepId": "fd:assess:commerce", "kind": "tool", "toolName": "fd:assess:commerce" },
+        { "stepId": "fd:gate", "kind": "tool", "toolName": "fd:gate" }
+      ]
+    },
+    {
+      "ruleId": "FD-RECALC-ASSET",
+      "when": { "taskKind": "four_domain_recalc", "role": "asset" },
+      "plan": [
+        { "stepId": "fd:perception", "kind": "tool", "toolName": "fd:perception" },
+        { "stepId": "fd:assess:asset", "kind": "tool", "toolName": "fd:assess:asset" },
+        { "stepId": "fd:gate", "kind": "tool", "toolName": "fd:gate" }
+      ]
+    },
+    {
+      "ruleId": "FD-GATE-ONLY",
+      "when": { "taskKind": "four_domain_gate" },
+      "plan": [
+        { "stepId": "fd:gate", "kind": "tool", "toolName": "fd:gate" }
+      ]
+    }
+  ]
+}

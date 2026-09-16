@@ -283,8 +283,19 @@ function makeAdvance(ctx) {
     const stepsPatch = { [stepId]: updated };
 
     if (step.kind === 'tool') {
-      // 本地确定性计算:无外部副作用,可安全重跑(不走回执门)
-      const toolResult = await ports.tools.calculate({ toolName: step.toolName, inputs: state.toolInputs ?? {} });
+      // 本地确定性计算:无外部副作用,可安全重跑(不走回执门)。
+      // 任务 03:工具步可读取计划中前序工具步的输出(_priorOutputs,按计划顺序、
+      // 仅 succeeded/simulated 步),供四域流水线等复合工具链在步间传递中间产物;
+      // 模型步语义不变(仍只消费 task inputs)。
+      const planIdx = state.plan.indexOf(stepId);
+      const priorOutputs = state.plan.slice(0, planIdx < 0 ? state.plan.length : planIdx)
+        .map((id) => state.steps[id])
+        .filter((s) => s && (s.state === STEP_STATE.SUCCEEDED || s.state === STEP_STATE.SIMULATED) && s.toolOutput !== undefined)
+        .map((s) => ({ stepId: s.id, toolName: s.toolName, output: s.toolOutput, inputHash: s.inputHash ?? null }));
+      const toolResult = await ports.tools.calculate({
+        toolName: step.toolName,
+        inputs: { ...(state.toolInputs ?? {}), _priorOutputs: priorOutputs },
+      });
       if (toolResult.ok) {
         updated.state = STEP_STATE.SUCCEEDED;
         updated.candidate = toolCandidate(toolResult, stepId);

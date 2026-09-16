@@ -1,0 +1,21 @@
+{
+  "_comment": "WeWorkFinanceSdk GetChatData 返回结构（U1, 脱敏合成）。errcode=0; chatdata[] 按 seq 递增; encrypt_random_key 为 RSA(publicKey_ver) 加密的会话随机密钥; encrypt_chat_msg 为 AES 加密的消息体。",
+  "errcode": 0,
+  "errmsg": "ok",
+  "chatdata": [
+    {
+      "seq": 100001,
+      "msgid": "msgid_demo_0001",
+      "publickey_ver": 1,
+      "encrypt_random_key": "REDACTED_BASE64_RSA_ENCRYPTED_RANDOM_KEY",
+      "encrypt_chat_msg": "REDACTED_BASE64_AES_ENCRYPTED_CHAT_MSG"
+    },
+    {
+      "seq": 100002,
+      "msgid": "msgid_demo_0002",
+      "publickey_ver": 1,
+      "encrypt_random_key": "REDACTED_BASE64_RSA_ENCRYPTED_RANDOM_KEY",
+      "encrypt_chat_msg": "REDACTED_BASE64_AES_ENCRYPTED_CHAT_MSG"
+    }
+  ]
+}

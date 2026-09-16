@@ -12,11 +12,13 @@ if (files.length === 0) {
   process.exit(1);
 }
 console.log(`[test] ${files.length} 个测试文件（串行执行：crash 套件会重启共享 PG 容器，并行会互扰）：\n  ${files.join('\n  ')}`);
-// 前置：PostgreSQL 必须可达（隔离容器 v7next-a-pg @127.0.0.1:15432）
+// 前置：PostgreSQL 必须可达。默认历史隔离容器 v7next-a-pg @127.0.0.1:15432；
+// 可用 JW_A_ADMIN_DB_URL 指向本任务的隔离容器（如 jw-cc-kernel-pg @15444）。
 const ping = spawnSync('node', ['-e', `
 import pg from 'pg';
-const p = new pg.Pool({connectionString:'postgres://v7next:v7next@127.0.0.1:15432/postgres'});
-p.query('SELECT 1').then(()=>{console.log('[test] postgres OK');return p.end()}).catch(e=>{console.error('[test] postgres 不可达:',e.message);process.exit(1)});
+const url = process.env.JW_A_ADMIN_DB_URL ?? 'postgres://v7next:v7next@127.0.0.1:15432/postgres';
+const p = new pg.Pool({connectionString:url});
+p.query('SELECT 1').then(()=>{console.log('[test] postgres OK:',url.replace(/:[^:@/]+@/,':***@'));return p.end()}).catch(e=>{console.error('[test] postgres 不可达:',e.message);process.exit(1)});
 `], { cwd: path.resolve(__dirname, '..'), stdio: 'inherit' });
 if (ping.status !== 0) process.exit(1);
 

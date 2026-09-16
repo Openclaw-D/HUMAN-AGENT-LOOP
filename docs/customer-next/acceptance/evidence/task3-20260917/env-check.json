@@ -1,0 +1,209 @@
+{
+  "checkedAt": "2026-09-16T18:29:27.540Z",
+  "counts": {
+    "pass": 9,
+    "free": 9,
+    "busy": 1,
+    "warn": 0,
+    "blocked": 3,
+    "fail": 0
+  },
+  "checks": [
+    {
+      "name": "node-version",
+      "status": "PASS",
+      "detail": {
+        "actual": "v22.23.1",
+        "note": "交付口径：22.x（Front engines >=22.13）"
+      }
+    },
+    {
+      "name": "git-input-version",
+      "status": "PASS",
+      "detail": {
+        "head": "9c724c0efa0cc0cc6b70db39c94b431bd0db683a",
+        "dirtyFiles": 86,
+        "note": "本轮各任务交付为未提交工作区变更；封存以 dirty 指纹如实记录（提交需用户授权）"
+      }
+    },
+    {
+      "name": "docker",
+      "status": "PASS",
+      "detail": {
+        "runningContainers": 16
+      }
+    },
+    {
+      "name": "jw-containers",
+      "status": "PASS",
+      "detail": {
+        "found": [
+          "jw-cc-kernel-pg\tUp 5 minutes\t127.0.0.1:15444->5432/tcp",
+          "jw-connectors-pg\tExited (0) 2 hours ago\t",
+          "jw-v01-pg\tExited (0) 18 hours ago\t",
+          "v7next-a-pg\tExited (0) 2 hours ago\t",
+          "jw-dify-1132-nginx-1\tExited (137) 4 days ago\t",
+          "jw-dify-1132-worker-1\tExited (137) 4 days ago\t",
+          "jw-dify-1132-worker_beat-1\tExited (137) 4 days ago\t",
+          "jw-dify-1132-api-1\tExited (0) 4 days ago\t",
+          "jw-dify-1132-plugin_daemon-1\tExited (137) 4 days ago\t",
+          "jw-dify-1132-web-1\tExited (0) 4 days ago\t",
+          "jw-dify-1132-db_postgres-1\tExited (0) 4 days ago\t",
+          "jw-dify-1132-redis-1\tExited (0) 4 days ago\t",
+          "jw-dify-1132-init_permissions-1\tExited (0) 4 days ago\t",
+          "jw-dify-1132-sandbox-1\tExited (2) 4 days ago\t",
+          "jw-dify-1132-weaviate-1\tExited (0) 4 days ago\t",
+          "jw-dify-1132-ssrf_proxy-1\tExited (137) 4 days ago\t"
+        ],
+        "note": "只读列出；启动/停止走各自脚本的启动标识复核"
+      }
+    },
+    {
+      "name": "port-15442",
+      "status": "FREE",
+      "detail": {
+        "expect": "jw-v01-pg (Back/START 形态)",
+        "note": "空闲"
+      }
+    },
+    {
+      "name": "port-15444",
+      "status": "BUSY",
+      "detail": {
+        "expect": "jw-cc-kernel-pg (任务一隔离库)",
+        "note": "被占用：不强杀；确认归属后再决定复用或换端口"
+      }
+    },
+    {
+      "name": "port-15434",
+      "status": "FREE",
+      "detail": {
+        "expect": "E1 测试段（期望空闲）",
+        "note": "空闲"
+      }
+    },
+    {
+      "name": "port-17919",
+      "status": "FREE",
+      "detail": {
+        "expect": "E1 测试段 A 内核（期望空闲）",
+        "note": "空闲"
+      }
+    },
+    {
+      "name": "port-48180",
+      "status": "FREE",
+      "detail": {
+        "expect": "A 内核（JW 形态默认）",
+        "note": "空闲"
+      }
+    },
+    {
+      "name": "port-48200",
+      "status": "FREE",
+      "detail": {
+        "expect": "Edge（任务三交付入口）",
+        "note": "空闲"
+      }
+    },
+    {
+      "name": "port-48100",
+      "status": "FREE",
+      "detail": {
+        "expect": "Connectors（任务02）",
+        "note": "空闲"
+      }
+    },
+    {
+      "name": "port-3730",
+      "status": "FREE",
+      "detail": {
+        "expect": "C mock",
+        "note": "空闲"
+      }
+    },
+    {
+      "name": "port-3617",
+      "status": "FREE",
+      "detail": {
+        "expect": "Front dev",
+        "note": "空闲"
+      }
+    },
+    {
+      "name": "port-3618",
+      "status": "FREE",
+      "detail": {
+        "expect": "Front preview（Start-JW.cmd）",
+        "note": "空闲"
+      }
+    },
+    {
+      "name": "migrations",
+      "status": "PASS",
+      "detail": {
+        "files": [
+          "001_init.sql",
+          "002_customer_credit.sql",
+          "003_inspection_sessions.sql",
+          "004_decision_loop.sql"
+        ]
+      }
+    },
+    {
+      "name": "consumed-surface",
+      "status": "PASS",
+      "detail": {
+        "path": "Back/Edge/contract/consumed-surface-v1.json"
+      }
+    },
+    {
+      "name": "front-dist",
+      "status": "PASS",
+      "detail": {
+        "note": "dist 随仓库交付（改动源码后须 npm run build 更新）"
+      }
+    },
+    {
+      "name": "lockfiles",
+      "status": "PASS",
+      "detail": {
+        "found": [
+          "Back/A/package-lock.json",
+          "Front/package-lock.json"
+        ],
+        "note": "Back/C、Back/Edge、Back/D 为零运行时依赖"
+      }
+    },
+    {
+      "name": "rule-pack",
+      "status": "PASS",
+      "detail": {
+        "path": "Back/C/rules/four-domain-rule-pack-v1.json"
+      }
+    },
+    {
+      "name": "capability-video",
+      "status": "BLOCKED",
+      "detail": {
+        "note": "企微/TRTC 真实提供方未获授权（Connectors CAPABILITY_MATRIX）"
+      }
+    },
+    {
+      "name": "capability-model",
+      "status": "BLOCKED",
+      "detail": {
+        "note": "真实模型未授权/未配置；GLM transport 预留 0 调用"
+      }
+    },
+    {
+      "name": "capability-real-disbursement",
+      "status": "BLOCKED",
+      "detail": {
+        "note": "仅受控模拟回执（simulation_only）"
+      }
+    }
+  ],
+  "exitCode": 0
+}
+ENV_CHECK_EXIT=0

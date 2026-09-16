@@ -1,0 +1,5 @@
+{
+  "_comment": "TRTC 305 状态回调 Status=1：至少一个文件滞留（gap 官方语义, S4, 脱敏）。I12/I13 缺口可见的依据。",
+  "EventGroupId": 3, "EventType": 305, "CallbackTs": 1760000400000,
+  "EventInfo": { "RoomId": "room_demo_1", "TaskId": "task_demo_1", "Status": 1, "SubStatus": 0 }
+}

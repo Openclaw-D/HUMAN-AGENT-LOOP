@@ -1,0 +1,17 @@
+{
+  "_comment": "解密后消息体：音视频通话（U1 voiptext）。原生通话仅元数据+事后音档(meeting_voice_call sdkfileid)，无实时画面流 -> A路线受限的依据。",
+  "msgid": "msgid_demo_0004",
+  "action": "send",
+  "from": "userid_demo_sales_1",
+  "tolist": ["wo_demo_external_1"],
+  "roomid": "",
+  "msgtime": 1760000003000,
+  "msgtype": "voiptext",
+  "voiptext": {
+    "invitetype": 2,
+    "callduration": 655,
+    "text": [
+      { "savetime": 1760000010000, "talker": "userid_demo_sales_1", "content": "demo: 通话文本记录示例" }
+    ]
+  }
+}
