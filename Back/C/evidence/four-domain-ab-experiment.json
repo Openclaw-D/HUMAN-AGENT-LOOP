@@ -1,0 +1,183 @@
+{
+  "runAt": "2026-09-16T17:43:30.595Z",
+  "design": {
+    "arms": "single-assistant+rules vs four-domain+same-rules",
+    "scenarioSet": "four-domain-cases-v1（仅 heldOut=true 的冻结分区）",
+    "prelockedMetrics": [
+      "必要风险遗漏",
+      "错误警报",
+      "追问数量",
+      "人工修正",
+      "耗时",
+      "费用"
+    ],
+    "decisionRule": "若四域没有减少关键遗漏/修正，或只增加成本与干扰：保留专业域模块与权限分工，减少实际模型调用，不为多 Agent 保留四次无效生成（任务书 §8）"
+  },
+  "limitations": [
+    "两臂均为确定性实现（E1）；本实验不测真实模型质量（E2 须另行批准）",
+    "n=14 且为合成场景；结论只对“本冻结集+本确定性规则”成立，不外推为真实世界效果",
+    "预标为 synthetic_prelabel_v1 合成占位，待业务指定审核者复核",
+    "耗时/费用指标在零外部调用下无业务含义，如实按 0 报告",
+    "单助手臂刻意不含跨来源冲突保留/域完成性/重复去重（实现差异已在 pipeline 注释声明，非隐藏稻草人：规则引擎、阈值、unknown 传播两臂完全一致）"
+  ],
+  "tallies": {
+    "four": {
+      "missedRisk": 0,
+      "falseAlarm": 0,
+      "questions": 2,
+      "corrections": 0,
+      "durationMs": 0,
+      "externalCalls": 0
+    },
+    "single": {
+      "missedRisk": 4,
+      "falseAlarm": 0,
+      "questions": 1,
+      "corrections": 4,
+      "durationMs": 0,
+      "externalCalls": 0
+    }
+  },
+  "rows": [
+    {
+      "caseId": "S03-normal-heldout-no-commerce-facts",
+      "category": "normal",
+      "expected": "confirmed_clear",
+      "four": "confirmed_clear",
+      "single": "confirmed_clear",
+      "fourQuestions": 0,
+      "singleQuestions": 0,
+      "divergent": false
+    },
+    {
+      "caseId": "S07-dup-whitespace-variant-heldout",
+      "category": "duplicate-source",
+      "expected": "confirmed_clear",
+      "four": "confirmed_clear",
+      "single": "confirmed_clear",
+      "fourQuestions": 0,
+      "singleQuestions": 0,
+      "divergent": false
+    },
+    {
+      "caseId": "S13-caliber-same-value-not-conflict-heldout",
+      "category": "source-conflict",
+      "expected": "confirmed_clear",
+      "four": "confirmed_clear",
+      "single": "confirmed_clear",
+      "fourQuestions": 0,
+      "singleQuestions": 0,
+      "divergent": false
+    },
+    {
+      "caseId": "S14-three-way-conflict-heldout",
+      "category": "source-conflict",
+      "expected": "hold",
+      "four": "hold",
+      "single": "confirmed_clear",
+      "fourQuestions": 0,
+      "singleQuestions": 0,
+      "divergent": true
+    },
+    {
+      "caseId": "S17-expired-mixed-heldout",
+      "category": "expired-material",
+      "expected": "hold",
+      "four": "hold",
+      "single": "confirmed_clear",
+      "fourQuestions": 1,
+      "singleQuestions": 0,
+      "divergent": true
+    },
+    {
+      "caseId": "S22-asset-observed-plus-conflict-heldout",
+      "category": "key-asset-anomaly",
+      "expected": "hold",
+      "four": "hold",
+      "single": "confirmed_clear",
+      "fourQuestions": 0,
+      "singleQuestions": 0,
+      "divergent": true
+    },
+    {
+      "caseId": "S25-txn-financial-leasing-block-heldout",
+      "category": "different-financing-transaction",
+      "expected": "hard_block",
+      "four": "hard_block",
+      "single": "hard_block",
+      "fourQuestions": 0,
+      "singleQuestions": 0,
+      "divergent": false
+    },
+    {
+      "caseId": "S27-txn-inventory-financing-heldout",
+      "category": "different-financing-transaction",
+      "expected": "confirmed_clear",
+      "four": "confirmed_clear",
+      "single": "confirmed_clear",
+      "fourQuestions": 0,
+      "singleQuestions": 0,
+      "divergent": false
+    },
+    {
+      "caseId": "S29-neg-cashflow-correction-heldout",
+      "category": "chinese-number-negation",
+      "expected": "confirmed_clear",
+      "four": "confirmed_clear",
+      "single": "confirmed_clear",
+      "fourQuestions": 0,
+      "singleQuestions": 0,
+      "divergent": false
+    },
+    {
+      "caseId": "S32-neg-correction-reuploaded-heldout",
+      "category": "chinese-number-negation",
+      "expected": "hold",
+      "four": "hold",
+      "single": "hold",
+      "fourQuestions": 0,
+      "singleQuestions": 0,
+      "divergent": false
+    },
+    {
+      "caseId": "S34-weak-video-unsupported-modality-heldout",
+      "category": "weak-network",
+      "expected": "needs_evidence",
+      "four": "needs_evidence",
+      "single": "needs_evidence",
+      "fourQuestions": 1,
+      "singleQuestions": 1,
+      "divergent": false
+    },
+    {
+      "caseId": "S36-weak-quality-flag-only-heldout",
+      "category": "weak-network",
+      "expected": "confirmed_clear",
+      "four": "confirmed_clear",
+      "single": "confirmed_clear",
+      "fourQuestions": 0,
+      "singleQuestions": 0,
+      "divergent": false
+    },
+    {
+      "caseId": "S40-inj-inside-conflict-heldout",
+      "category": "prompt-injection",
+      "expected": "hold",
+      "four": "hold",
+      "single": "confirmed_clear",
+      "fourQuestions": 0,
+      "singleQuestions": 0,
+      "divergent": true
+    },
+    {
+      "caseId": "S42-xcust-adverse-only-b-heldout",
+      "category": "cross-customer",
+      "expected": "confirmed_clear",
+      "four": "confirmed_clear",
+      "single": "confirmed_clear",
+      "fourQuestions": 0,
+      "singleQuestions": 0,
+      "divergent": false
+    }
+  ]
+}

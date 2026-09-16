@@ -1,0 +1,11 @@
+{
+  "_comment": "解密后消息体：文本（U1 消息格式, 脱敏）。action=send; from/to 为 userid 或 external_userid (wf/wo 前缀演示)。",
+  "msgid": "msgid_demo_0001",
+  "action": "send",
+  "from": "wo_demo_external_1",
+  "tolist": ["userid_demo_sales_1"],
+  "roomid": "",
+  "msgtime": 1760000000000,
+  "msgtype": "text",
+  "text": { "content": "demo: 我们下周一可以安排设备现场视频。发票金额 120000 元。" }
+}

@@ -1,0 +1,411 @@
+{
+  "runAt": "2026-09-16T17:43:30.474Z",
+  "set": {
+    "id": "jw-four-domain-scenarios-v1",
+    "version": "1.0.0",
+    "counts": {
+      "total": 42,
+      "heldOut": 14,
+      "main": 28
+    }
+  },
+  "mode": "all",
+  "parts": [
+    {
+      "partition": "main",
+      "cases": [
+        {
+          "caseId": "S01-normal-direct-clean",
+          "category": "normal",
+          "group": "G-norm-01",
+          "matrixRef": null,
+          "checks": 5,
+          "failures": []
+        },
+        {
+          "caseId": "S02-normal-leaseback-clean",
+          "category": "normal",
+          "group": "G-norm-02",
+          "matrixRef": null,
+          "checks": 2,
+          "failures": []
+        },
+        {
+          "caseId": "S04-normal-with-commerce-plan",
+          "category": "normal",
+          "group": "G-norm-01",
+          "matrixRef": null,
+          "checks": 3,
+          "failures": []
+        },
+        {
+          "caseId": "S05-normal-amount-model-unconfigured",
+          "category": "normal",
+          "group": "G-norm-05",
+          "matrixRef": null,
+          "checks": 4,
+          "failures": []
+        },
+        {
+          "caseId": "S06-dup-same-invoice-thrice",
+          "category": "duplicate-source",
+          "group": "G-dup-01",
+          "matrixRef": "C01",
+          "checks": 4,
+          "failures": []
+        },
+        {
+          "caseId": "S08-dup-transcript-twice",
+          "category": "duplicate-source",
+          "group": "G-dup-02",
+          "matrixRef": "C01",
+          "checks": 4,
+          "failures": []
+        },
+        {
+          "caseId": "S09-dup-then-corrected",
+          "category": "duplicate-source",
+          "group": "G-dup-01",
+          "matrixRef": "C08",
+          "checks": 6,
+          "failures": []
+        },
+        {
+          "caseId": "S10-conflict-invoice-contract",
+          "category": "source-conflict",
+          "group": "G-conf-01",
+          "matrixRef": "C05",
+          "checks": 6,
+          "failures": []
+        },
+        {
+          "caseId": "S11-conflict-nameplate-model",
+          "category": "source-conflict",
+          "group": "G-conf-02",
+          "matrixRef": "C05",
+          "checks": 4,
+          "failures": []
+        },
+        {
+          "caseId": "S12-conflict-dominates-clean",
+          "category": "source-conflict",
+          "group": "G-conf-01",
+          "matrixRef": "C05",
+          "checks": 3,
+          "failures": []
+        },
+        {
+          "caseId": "S15-expired-ownership-doc",
+          "category": "expired-material",
+          "group": "G-exp-01",
+          "matrixRef": null,
+          "checks": 4,
+          "failures": []
+        },
+        {
+          "caseId": "S16-fresh-all-clear",
+          "category": "expired-material",
+          "group": "G-exp-02",
+          "matrixRef": null,
+          "checks": 3,
+          "failures": []
+        },
+        {
+          "caseId": "S18-expired-then-refreshed",
+          "category": "expired-material",
+          "group": "G-exp-02",
+          "matrixRef": "C08",
+          "checks": 7,
+          "failures": []
+        },
+        {
+          "caseId": "S19-asset-video-no-ownership-doc",
+          "category": "key-asset-anomaly",
+          "group": "G-asset-01",
+          "matrixRef": "C04",
+          "checks": 5,
+          "failures": []
+        },
+        {
+          "caseId": "S20-asset-ownership-third-party",
+          "category": "key-asset-anomaly",
+          "group": "G-asset-02",
+          "matrixRef": "C02",
+          "checks": 6,
+          "failures": []
+        },
+        {
+          "caseId": "S21-asset-only-suspected-anomaly",
+          "category": "key-asset-anomaly",
+          "group": "G-asset-03",
+          "matrixRef": "C03",
+          "checks": 6,
+          "failures": []
+        },
+        {
+          "caseId": "S23-asset-registered-and-clear",
+          "category": "key-asset-anomaly",
+          "group": "G-asset-04",
+          "matrixRef": null,
+          "checks": 3,
+          "failures": []
+        },
+        {
+          "caseId": "S24-txn-financial-leasing-missing-ownership",
+          "category": "different-financing-transaction",
+          "group": "G-txn-01",
+          "matrixRef": null,
+          "checks": 5,
+          "failures": []
+        },
+        {
+          "caseId": "S26-txn-operating-lease-coverage-out-of-scope",
+          "category": "different-financing-transaction",
+          "group": "G-txn-02",
+          "matrixRef": null,
+          "checks": 4,
+          "failures": []
+        },
+        {
+          "caseId": "S28-neg-new-debt-correction",
+          "category": "chinese-number-negation",
+          "group": "G-neg-01",
+          "matrixRef": "C07",
+          "checks": 8,
+          "failures": []
+        },
+        {
+          "caseId": "S30-neg-ownership-retract",
+          "category": "chinese-number-negation",
+          "group": "G-neg-02",
+          "matrixRef": "C08",
+          "checks": 6,
+          "failures": []
+        },
+        {
+          "caseId": "S31-neg-chinese-numeral-amount",
+          "category": "chinese-number-negation",
+          "group": "G-neg-03",
+          "matrixRef": null,
+          "checks": 4,
+          "failures": []
+        },
+        {
+          "caseId": "S33-weak-low-asr",
+          "category": "weak-network",
+          "group": "G-weak-01",
+          "matrixRef": "C17",
+          "checks": 6,
+          "failures": []
+        },
+        {
+          "caseId": "S35-weak-connection-interrupted",
+          "category": "weak-network",
+          "group": "G-weak-02",
+          "matrixRef": null,
+          "checks": 6,
+          "failures": []
+        },
+        {
+          "caseId": "S37-inj-approve-instruction",
+          "category": "prompt-injection",
+          "group": "G-inj-01",
+          "matrixRef": "C13",
+          "checks": 5,
+          "failures": []
+        },
+        {
+          "caseId": "S38-inj-fake-ownership-declared",
+          "category": "prompt-injection",
+          "group": "G-inj-01",
+          "matrixRef": "C13",
+          "checks": 6,
+          "failures": []
+        },
+        {
+          "caseId": "S39-inj-exfil-address",
+          "category": "prompt-injection",
+          "group": "G-inj-02",
+          "matrixRef": "C13",
+          "checks": 4,
+          "failures": []
+        },
+        {
+          "caseId": "S41-xcust-same-materials-two-customers",
+          "category": "cross-customer",
+          "group": "G-xcust-01",
+          "matrixRef": "C25",
+          "checks": 4,
+          "failures": []
+        }
+      ],
+      "totals": {
+        "pass": 28,
+        "fail": 0,
+        "checks": 133
+      }
+    },
+    {
+      "partition": "heldout",
+      "cases": [
+        {
+          "caseId": "S03-normal-heldout-no-commerce-facts",
+          "category": "normal",
+          "group": "G-norm-03",
+          "matrixRef": null,
+          "checks": 3,
+          "failures": []
+        },
+        {
+          "caseId": "S07-dup-whitespace-variant-heldout",
+          "category": "duplicate-source",
+          "group": "G-dup-03",
+          "matrixRef": "C01",
+          "checks": 3,
+          "failures": []
+        },
+        {
+          "caseId": "S13-caliber-same-value-not-conflict-heldout",
+          "category": "source-conflict",
+          "group": "G-conf-03",
+          "matrixRef": "C05",
+          "checks": 3,
+          "failures": []
+        },
+        {
+          "caseId": "S14-three-way-conflict-heldout",
+          "category": "source-conflict",
+          "group": "G-conf-04",
+          "matrixRef": "C05",
+          "checks": 5,
+          "failures": []
+        },
+        {
+          "caseId": "S17-expired-mixed-heldout",
+          "category": "expired-material",
+          "group": "G-exp-03",
+          "matrixRef": null,
+          "checks": 3,
+          "failures": []
+        },
+        {
+          "caseId": "S22-asset-observed-plus-conflict-heldout",
+          "category": "key-asset-anomaly",
+          "group": "G-asset-05",
+          "matrixRef": "C05",
+          "checks": 4,
+          "failures": []
+        },
+        {
+          "caseId": "S25-txn-financial-leasing-block-heldout",
+          "category": "different-financing-transaction",
+          "group": "G-txn-04",
+          "matrixRef": null,
+          "checks": 4,
+          "failures": []
+        },
+        {
+          "caseId": "S27-txn-inventory-financing-heldout",
+          "category": "different-financing-transaction",
+          "group": "G-txn-03",
+          "matrixRef": null,
+          "checks": 5,
+          "failures": []
+        },
+        {
+          "caseId": "S29-neg-cashflow-correction-heldout",
+          "category": "chinese-number-negation",
+          "group": "G-neg-04",
+          "matrixRef": "C08",
+          "checks": 8,
+          "failures": []
+        },
+        {
+          "caseId": "S32-neg-correction-reuploaded-heldout",
+          "category": "chinese-number-negation",
+          "group": "G-neg-05",
+          "matrixRef": "C08",
+          "checks": 5,
+          "failures": []
+        },
+        {
+          "caseId": "S34-weak-video-unsupported-modality-heldout",
+          "category": "weak-network",
+          "group": "G-weak-04",
+          "matrixRef": null,
+          "checks": 6,
+          "failures": []
+        },
+        {
+          "caseId": "S36-weak-quality-flag-only-heldout",
+          "category": "weak-network",
+          "group": "G-weak-03",
+          "matrixRef": null,
+          "checks": 4,
+          "failures": []
+        },
+        {
+          "caseId": "S40-inj-inside-conflict-heldout",
+          "category": "prompt-injection",
+          "group": "G-inj-03",
+          "matrixRef": null,
+          "checks": 5,
+          "failures": []
+        },
+        {
+          "caseId": "S42-xcust-adverse-only-b-heldout",
+          "category": "cross-customer",
+          "group": "G-xcust-02",
+          "matrixRef": "C25",
+          "checks": 5,
+          "failures": []
+        }
+      ],
+      "totals": {
+        "pass": 14,
+        "fail": 0,
+        "checks": 63
+      }
+    }
+  ],
+  "metrics": {
+    "note": "全部指标给出分母；预标为合成占位（synthetic_prelabel_v1），通过率不构成真实业务质量结论",
+    "evidence_location_accuracy": {
+      "correct": 5,
+      "total": 5,
+      "note": "分母=含定位类判据的场景数"
+    },
+    "must_flag_risk_recall": {
+      "caught": 12,
+      "total": 12,
+      "note": "分母=预标 hold/hard_block 的场景数"
+    },
+    "false_alarm_on_clear": {
+      "count": 0,
+      "total": 23
+    },
+    "unnecessary_reask_violations": {
+      "count": 0,
+      "total": 196,
+      "note": "C16 机械纪律违规次数"
+    },
+    "negation_numeric_errors": {
+      "failed_checks": 0,
+      "rounds": 8
+    },
+    "human_correction_cases": {
+      "count": 0,
+      "total": 42
+    },
+    "external_calls_per_customer": {
+      "count": 0,
+      "note": "确定性管线零外部调用（E1；真实模型调用属 E2，未授权不运行）"
+    },
+    "totals": {
+      "checks": 196,
+      "failed": 0,
+      "scenarios": 42
+    }
+  },
+  "heldoutManifest": "verified"
+}

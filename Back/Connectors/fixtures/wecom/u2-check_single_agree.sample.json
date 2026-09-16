@@ -1,0 +1,19 @@
+{
+  "_comment": "U2 check_single_agree 请求/响应（脱敏）。注意官方字段拼写即 exteranalopenid。单聊 2500次/分, 群聊 1500次/分, 批量<=100条。",
+  "request": {
+    "url": "https://qyapi.weixin.qq.com/cgi-bin/msgaudit/check_single_agree?access_token=ACCESS_TOKEN",
+    "body": { "info": [ { "userid": "userid_demo_sales_1", "exteranalopenid": "wo_demo_external_1" } ] }
+  },
+  "response": {
+    "errcode": 0,
+    "errmsg": "ok",
+    "agreeinfo": [
+      {
+        "userid": "userid_demo_sales_1",
+        "exteranalopenid": "wo_demo_external_1",
+        "agree_status": "Agree",
+        "status_change_time": 1759990000
+      }
+    ]
+  }
+}

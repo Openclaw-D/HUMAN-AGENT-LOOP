@@ -11,6 +11,8 @@ const files = [
   'ratio-tool.test.mjs',
   'case-pack.test.mjs',
   'contract-adapter.test.mjs',
+  'four-domain.test.mjs',
+  'four-domain-matrix.test.mjs',
 ].map((f) => path.join(here, f));
 
 const only = process.argv.slice(2);

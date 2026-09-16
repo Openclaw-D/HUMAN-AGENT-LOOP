@@ -1,0 +1,17 @@
+{
+  "name": "jw-connectors",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "JW 任务02：企业微信沟通、真实视频与可追溯证据接入（Connectors）。真实提供方链路未获授权前一律 BLOCKED，本地/合成验证用真实HTTP+PG+对象存储。",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test test/",
+    "test:e0": "node --test test/ --test-name-pattern=\"^E0\" ",
+    "start": "node scripts/start-connectors.mjs",
+    "e2e:local": "node scripts/e2e-local.mjs"
+  },
+  "dependencies": {
+    "pg": "^8.14.0"
+  }
+}

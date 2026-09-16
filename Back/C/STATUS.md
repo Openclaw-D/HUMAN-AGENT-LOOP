@@ -5,6 +5,21 @@
 
 ## 当前概要（滚动更新，新条目在上）
 
+### CP15 · 2026-09-16 · 任务 03：四域 Agent、确定性红线与持续尽调协作（E1）
+
+任务书：`JW_customer_credit_backend_tasks/03_FOUR_DOMAIN_AGENTS_AND_GATES.md`。只写 `Back/C/**`（新增 `C/domains/**`、`C/questions/**`、`C/amount/**`、`C/coordination/**`）；零真实模型调用（E1）。
+
+**已做（全部有自动化验证）**：
+- **S1**：`AnalysisRun`/`DomainAssessment` 输出 Schema（`domains/schema.mjs`，authority≠none 结构拒绝、confidence 字段拒收、发现定位强制）；模型能力注册表（`domains/capability-registry.mjs`，未登记模态=不可处理，不假设文本通道支持视频）；共享感知层（`domains/perception.mjs`：一次规范化、内容规范化哈希同源去重（C01）、版本取代（C08）、跨来源冲突保留（C05）、质量标记不判诚信（C17）、域投影最小化）；四域确定性评估器（`domains/assessors.mjs`，域"不能做"结构化落实）；角色指令模板（`domains/templates/four-domain-prompts-v1.json`，E2 入口基线）。
+- **S2**：版本化规则 Schema+激活判定（`rules/rule-schema.mjs`，只认 `simulation_rule`；未批准/过期/来源不明不激活）；确定性规则引擎（`rules/engine.mjs`，前提核验等级不足=precondition_missing 不猜命中；派生事实口径：覆盖率/压力覆盖率/材料新鲜度）；业务 Gate（`rules/gate.mjs`，CLEAR/NEEDS_EVIDENCE/HOLD_FOR_REVIEW/HARD_BLOCK 语义+不可豁免结构性不可覆盖+无例外政策=无放行接口+policy_pending）；业务/系统阈值两包分离（`rules/thresholds.mjs`）；规则包 `rules/four-domain-rule-pack-v1.json`（boundary= simulation_only）。
+- **S4**：提问计划（`questions/planner.mjs`，whyNeeded/expectedEvidence/targetFact/优先级/可选/客户负担/停止条件，C16 去重）；金额候选（`amount/candidate.mjs`，确定性偿债感知公式、字段五分、不利事实确定性降额/置零、材料数非输入）；单一下一步协调（`coordination/next-step.mjs`，customer/internal 受众分离、targeted escalation、分歧呈现不表决）。
+- **评测（§7/§8）**：42 个合成/脱敏场景（`scenarios/four-domain-cases-v1.json`，9 必备类别+跨客户；37 分组；14 冻结 held-out，期望块 sha256 冻结于 `scenarios/four-domain-heldout-manifest.json`，不符拒绝评测）；确定性 runner（`src/evaluation/run-four-domain-evaluation.mjs`：main 28/28+heldout 14/14、196 断言全过、C16 全局断言、质量指标全部带分母）；最小可证伪对照实验（`src/evaluation/ab-experiment.mjs`：冻结集上单助手臂漏报 4/四域臂 0、误报双 0，预锁决策规则触发"保留四域分工"路径）；C01–C28 矩阵映射 `evidence/four-domain-matrix-map.md`。
+- **流水线**：`domains/pipeline.mjs` 三阶段（perceptionStage/assessStage/finalizeStage）+组合入口，供 B 工具链步间复用（少重复感知、少无关重算）；packOverride 机制（C28 演示；规则文件本体不可变）。
+
+**验证**：`node test/run-all.mjs` = 72/72（含 four-domain 20 项 + 矩阵 9 项）；`npm run eval4d:all` = 42/42 场景全过；`npm run ab` 全过。B 侧接线与矩阵见 `../B/STATUS.md` CP15。
+
+**边界（如实）**：预标为 synthetic_prelabel_v1 合成占位，待业务指定审核者复核后才能作为真实质量基线；E2（真实模型/真实政策/真实费用）全部 BLOCKED 待授权；Windows 之外平台未测。
+
 ### CP14 · 2026-09-16 06:40 · 夜间终审：全链复跑 6/6 退出码 0，交付闭环
 
 **已做**：

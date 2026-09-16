@@ -1,0 +1,18 @@
+{
+  "_comment": "样例配置：复制到 .run/config.json（git 排除）并填入本地值。所有真实凭据不入 Git。allowRealWecom/allowRealTrtc 缺省 false = BLOCKED（安全默认）。",
+  "port": 48100,
+  "defaultTenantId": "tenant_demo",
+  "pg": { "host": "127.0.0.1", "port": 15443, "user": "cnext", "password": "cnext", "database": "cnext" },
+  "objectRoot": "path/to/.run/objects",
+  "signingSecret": "GENERATE_RANDOM_32B_HEX",
+  "serviceToken": "GENERATE_RANDOM_32B_HEX",
+  "wecom": {
+    "allowRealWecom": false,
+    "corpid": "REPLACE_corpid",
+    "archiveSecret": "REPLACE_msgaudit_secret",
+    "callbackToken": "REPLACE_callback_token",
+    "encodingAESKey": "REPLACE_43_CHAR_ENCODING_AES_KEY"
+  },
+  "trtc": { "callbackKey": "REPLACE_trtc_callback_key", "allowRealTrtc": false },
+  "a": { "baseUrl": "http://127.0.0.1:48080", "credential": "tok-business" }
+}

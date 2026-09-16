@@ -1,0 +1,11 @@
+{
+  "_comment": "解密后消息体：图片（U1）。sdkfileid 经 GetMediaData 分片拉取，单片<=512KB, is_finish 结束。",
+  "msgid": "msgid_demo_0002",
+  "action": "send",
+  "from": "wo_demo_external_1",
+  "tolist": ["userid_demo_sales_1"],
+  "roomid": "",
+  "msgtime": 1760000001000,
+  "msgtype": "image",
+  "image": { "sdkfileid": "sdkfileid_demo_image_1", "md5sum": "demo_md5", "filesize": 123456 }
+}
