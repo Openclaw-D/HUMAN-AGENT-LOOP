@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "jw.s5-drill.v1",
+  "drilledAt": "2026-09-16T16:35:23.533Z",
+  "isolation": {
+    "containerPrefix": "v7d-",
+    "port": 15434,
+    "dataDir": "Back/Edge/.run/drill-pg",
+    "note": "不触碰 v7next-a-pg / jw-v01-pg / Dify 等其他容器；仅销毁本演练容器"
+  },
+  "database": {
+    "name": "v7d_drill",
+    "migrationApplied": "001_init.sql",
+    "dataScope": "全部合成数据（drill-* 命名）"
+  },
+  "steps": [
+    {
+      "name": "1 建自有隔离PG容器(v7d-前缀,15434)",
+      "ok": false,
+      "detail": "docker run pg failed: failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.\n",
+      "ms": 436
+    }
+  ],
+  "verdict": "FAIL",
+  "notes": [
+    "代码回滚不等于数据库回滚：本演练证明的是\"库损毁/误删后可从备份还原\"；不可逆迁移需另备向前修复方案（任务01迁移策略落定时复核）",
+    "数据在容器卷与备份文件中，不随 Git reset 消失；备份文件 .dump 留存于 Back/Edge/.run（Git 排除），不入公开仓库",
+    "真实客户数据/正式环境的备份演练需获准环境与授权，另行执行（E2/E3 门）"
+  ]
+}

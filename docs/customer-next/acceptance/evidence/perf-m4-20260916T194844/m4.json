@@ -1,0 +1,18 @@
+{
+  "measuredAt": "2026-09-16T19:48:31.308Z",
+  "environment": {
+    "node": "v22.23.1",
+    "network": "loopback 同机",
+    "pollIntervalMs": 600,
+    "providerMode": "not_configured"
+  },
+  "target": "p95<=1s（任务书§7：业务事件提交到其他客户端可见）",
+  "samples": {
+    "n": 20,
+    "p50": 607.5,
+    "p95": 611.8,
+    "p99": 628.3,
+    "max": 628.3
+  },
+  "verdict": "WITHIN_TARGET"
+}

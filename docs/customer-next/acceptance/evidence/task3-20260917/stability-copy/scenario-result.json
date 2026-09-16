@@ -1,0 +1,22 @@
+{
+  "at": "2026-09-16T18:34:36.776Z",
+  "result": "PASS",
+  "automated": true,
+  "covered": [
+    "C02-matrix-automated",
+    "C03-role-scope",
+    "C04-sse-live-event",
+    "C05-idempotent-retry",
+    "C07-restart-recovery",
+    "C12-api-direct"
+  ],
+  "customer": {
+    "customerId": "cust-mu4fwq0i-9c417871571b",
+    "facilityId": "fac-mu4fwx81-144ccdcb743c",
+    "fr1": "fr-mu4fwxbu-c4dbc6df34a4",
+    "fr2": "fr-mu4fwxd5-272cd495164a"
+  },
+  "migrationNotes": [
+    "004_decision_loop.sql 属任务二在制品：随内核启动应用，本路不消费其路由"
+  ]
+}

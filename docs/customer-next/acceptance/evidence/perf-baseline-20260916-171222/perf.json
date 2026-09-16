@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "jw.perf-baseline.v1",
+  "measuredAt": "2026-09-16T17:13:24.122Z",
+  "environment": {
+    "cpu": "12x AMD Ryzen 5 5600X 6-Core Processor",
+    "ramGB": 15.9,
+    "os": "Windows_NT 10.0.26200",
+    "node": "v22.23.1",
+    "network": "loopback 同机",
+    "providerMode": "not_configured（外部模型/ASR/RTC 时延不在本测量内）",
+    "dataScale": {
+      "customers": 100,
+      "events": 100000
+    },
+    "seedMs": 254
+  },
+  "targetsNote": "目标为任务书\"待确认的测试提案\"，不是生产容量承诺；SLO 全链路（内核DB提交段）待任务01集成后补测",
+  "steps": [
+    {
+      "name": "M1 快照读(100客户;store含10万事件)",
+      "detail": {
+        "target": "p95<=500ms(提案)",
+        "n": 500,
+        "p50": 0.3,
+        "p95": 0.53,
+        "p99": 1.06,
+        "max": 9.59
+      },
+      "at": "2026-09-16T17:12:23.385Z"
+    },
+    {
+      "name": "M2 简单事务命令(会话交换199/消息发送200)",
+      "detail": {
+        "target": "p95<=1s(提案)",
+        "sessionExchange": {
+          "n": 199,
+          "p50": 0.26,
+          "p95": 0.41,
+          "p99": 0.51,
+          "max": 0.55
+        },
+        "messageSend": {
+          "n": 200,
+          "p50": 0.25,
+          "p95": 0.41,
+          "p99": 0.7,
+          "max": 1.1
+        }
+      },
+      "at": "2026-09-16T17:12:23.516Z"
+    },
+    {
+      "name": "M3 事件追加→5路SSE客户端可见",
+      "detail": {
+        "target": "p95<=1s(提案;不含内核DB提交段)",
+        "n": 200,
+        "p50": 0.39,
+        "p95": 0.66,
+        "p99": 0.74,
+        "max": 0.87
+      },
+      "at": "2026-09-16T17:12:23.606Z"
+    },
+    {
+      "name": "S 浸泡烟测60s",
+      "detail": {
+        "note": "任务书要求 2 小时受控运行——NOT_RUN 另行安排；本项仅为烟测",
+        "rssFirstMB": 168.2,
+        "rssLastMB": 137.8,
+        "heapGrowthMB": -8.5,
+        "eventsAppendedDuringSoak": 556
+      },
+      "at": "2026-09-16T17:13:24.122Z"
+    }
+  ]
+}
