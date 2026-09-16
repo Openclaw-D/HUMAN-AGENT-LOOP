@@ -2,9 +2,13 @@
 // 问题（≤3）、任务（补证后状态联动更新）、候选倾向与控制条件、共享事实（含证据版本）。
 // 见微额外显示全局缺口（跨域矛盾/缺证/未知，实时从运行态推导）。
 // 倾向是模型/模拟候选，不是正式审批；见微不是上级或超级审批人。
+// 任务三 C2：live 模式下追加"核验卡（真实后台）"与"额度与依据（真实后台）"两个块——
+// 只消费 Edge workspace 投影；本地模拟块原样保留（两种来源并列、各自标注，不互相冒充）。
 import type { CaseScenario, CaseState, RoleId } from './role-contract';
 import { FACT_STATUS_LABEL, ROLE_LABEL } from './role-contract';
 import { jianweiGaps } from './role-mock-adapter';
+import type { EdgeLiveApi } from '../../lib/v5-preview/edge/use-edge-live';
+import { EdgeCreditPanel, EdgeVerifyCards } from './edge-panels';
 import styles from './home-overview.module.css';
 
 const TASK_STATUS_LABEL: Record<string, string> = {
@@ -25,10 +29,12 @@ export function HomeRoleView({
   scenario,
   state,
   roleId,
+  edge,
 }: {
   scenario: CaseScenario;
   state: CaseState;
   roleId: RoleId;
+  edge?: EdgeLiveApi;
 }) {
   const view = scenario.roleViews[roleId];
   const isJianwei = roleId === 'jianwei';
@@ -84,6 +90,9 @@ export function HomeRoleView({
           {view.conditions.length > 0 ? <span className={styles.tendencyCond}>条件：{view.conditions.join('；')}</span> : null}
         </p>
       </div>
+
+      {edge ? <EdgeVerifyCards edge={edge} /> : null}
+      {edge ? <EdgeCreditPanel edge={edge} /> : null}
 
       <div className={styles.roleViewBlock}>
         <h3 className={styles.roleViewTitle}>共享项目事实（全角色一致·含证据版本）</h3>

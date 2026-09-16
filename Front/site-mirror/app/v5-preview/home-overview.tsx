@@ -5,6 +5,7 @@
 // 不重开项目、不清消息）；所有角色共享同一案例事实；模拟对话经 role-mock-adapter（输入敏感、
 // 证据版本化、未识别输入=待澄清，不假装真实模型理解）。
 // 本地模拟闭环：不接 V7 真实后端、不调真实 LLM、无付费调用；倾向=模拟候选，非正式审批。
+// 任务三 C2：新增"连接/模式提示 + 会话操作条"（用户显式连接真实后台才激活；默认仍为本地合成演示）。
 import { useCallback, useState } from 'react';
 import type { DomainRow as DomainRowData, SegmentState } from '../../lib/v5-preview/shared-types';
 import { HomeHeader } from './home-header';
@@ -16,6 +17,8 @@ import { HomeChat } from './home-chat';
 import { SEED_SCENARIOS, findSeedScenario } from './role-cases';
 import { initialCaseState, submitCaseTurn, type CaseState } from './role-mock-adapter';
 import { ROLE_LABEL, type CaseMessage, type RoleId } from './role-contract';
+import { useEdgeLive } from '../../lib/v5-preview/edge/use-edge-live';
+import { EdgeSessionBar, EdgeStatusBar } from './edge-panels';
 import styles from './home-overview.module.css';
 
 type BottomTab = 'chat' | 'todo';
@@ -91,9 +94,11 @@ export default function HomeOverview() {
   );
   const stageIndex = Math.min(state.completedTurns.length, 4);
   const allDone = state.completedTurns.length >= scenario.turns.length;
+  const edge = useEdgeLive();
 
   return (
     <div className={styles.root}>
+      <EdgeStatusBar edge={edge} />
       <div className={styles.topArea}>
         <section className={styles.panel} aria-label="六角色案例预览（合成演示）">
           <div className={styles.headerRow}>
@@ -123,6 +128,7 @@ export default function HomeOverview() {
       </div>
 
       <div className={styles.bottomArea}>
+        <EdgeSessionBar edge={edge} />
         <div className={styles.tabPanel}>
           {tab === 'chat' ? (
             <HomeChat
@@ -137,7 +143,7 @@ export default function HomeOverview() {
               inputPlaceholder={`以${ROLE_LABEL[activeRole]}视角补充证据或留言（本地模拟；未识别内容将标待澄清）`}
             />
           ) : (
-            <HomeRoleView scenario={scenario} state={state} roleId={activeRole} />
+            <HomeRoleView scenario={scenario} state={state} roleId={activeRole} edge={edge} />
           )}
         </div>
         <div className={styles.tabBar} role="tablist" aria-label="下半内容切换">

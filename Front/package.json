@@ -3,18 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22.13.0" },
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "scripts": {
     "dev": "vite --config preview/vite.config.mjs",
     "build": "vite build --config preview/vite.config.mjs",
     "preview": "vite preview --config preview/vite.config.mjs --host 127.0.0.1 --port 3617 --strictPort",
     "typecheck": "tsc --noEmit -p preview/tsconfig.json",
-    "test": "node --experimental-strip-types --test preview/test/role-mock-adapter.test.mjs"
+    "test": "node --experimental-strip-types --test preview/test/role-mock-adapter.test.mjs preview/test/edge-logic.test.mjs"
   },
-  "dependencies": { "react": "19.2.6", "react-dom": "19.2.6" },
+  "dependencies": {
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
   "devDependencies": {
-    "@types/react": "19.2.14", "@types/react-dom": "19.2.3",
-    "@types/node": "22.19.19", "@vitejs/plugin-react": "6.0.2",
-    "typescript": "5.9.3", "vite": "8.0.13"
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@types/node": "22.19.19",
+    "@vitejs/plugin-react": "6.0.2",
+    "typescript": "5.9.3",
+    "vite": "8.0.13"
   }
 }
