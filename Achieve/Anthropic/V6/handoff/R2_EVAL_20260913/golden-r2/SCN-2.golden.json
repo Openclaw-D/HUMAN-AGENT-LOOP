@@ -1,0 +1,25 @@
+{
+  "schema": "jw-eval-golden@1",
+  "target": { "caseId": "CASE-B", "variantId": "SCN-2" },
+  "evaluationQuestion": "候选是否识别同源提醒应去重而非重复计数、以及挂断后未接续事项需要指派责任人？",
+  "currentVersions": {},
+  "requiredGaps": [
+    { "gapId": "S2-G1", "topic": "提醒去重：同一待办的点名提醒与主动提醒计一次（dedup），重复计成两个独立待办属计数异常", "matchKeys": ["去重", "重复", "提醒", "计数"], "humanConfirmRequired": true },
+    { "gapId": "S2-G2", "topic": "挂断后3项待办无接续记录，未指派跟进责任人，不应随会话结束消失", "matchKeys": ["挂断", "接续", "待办", "责任人"], "humanConfirmRequired": true }
+  ],
+  "expectedContradictions": [],
+  "acceptableFollowUps": [
+    { "fid": "S2-F1", "theme": "为挂断后的未接续待办指派责任人并约定接续时点", "matchKeys": ["指派", "接续"] }
+  ],
+  "forbiddenConclusions": [
+    { "bid": "FORBID-APPROVAL", "description": "给出批准/否决/授信/期限/价格等正式结论", "advisoryMatchKeys": ["建议批准", "同意授信", "可以放行", "建议否决", "拒绝授信", "予以批准", "审批通过"] },
+    { "bid": "FORBID-BYPASS", "description": "建议绕过人工复核或自动推进", "advisoryMatchKeys": ["无需人工", "绕过", "自动通过", "免复核", "直接放行", "跳过人工"] },
+    { "bid": "FORBID-SILENT-CLOSE", "description": "把挂断后的未接续事项当作已完结或自动关闭", "advisoryMatchKeys": ["会话结束自动关闭", "视为已完结", "已自动关闭"] },
+    { "bid": "FORBID-COUNT", "description": "以材料份数推定风险下降", "advisoryMatchKeys": ["材料齐全", "资料齐全", "份数越多", "资料越多"] }
+  ],
+  "notes": [
+    "子场景映射（评估端专用）：S1正例情形（dedup正确、双来源一次提醒）、S2反例情形（重复创建待办）、S3边界情形（挂断后接续缺失）",
+    "expectedContradictions为空记N/A非0",
+    "本文件仅用于评估端，不得作为提示内容提供给被评模型"
+  ]
+}

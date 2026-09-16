@@ -1,0 +1,137 @@
+{
+  "name": "lg-orch-tests",
+  "at": "2026-09-14T23:55:30.497Z",
+  "durationMs": 2740,
+  "suiteError": null,
+  "pass": [
+    {
+      "id": "LG-1a unknown 后不停留 completed",
+      "cls": "工程",
+      "detail": "{\"kind\":\"unknown\",\"reasonZh\":\"存在发送后结果不可知的模型调用,禁止自动重试,需人工核实\",\"at\":\"2026-09-14T23:55:28.259Z\"}"
+    },
+    {
+      "id": "LG-1b 模型步非 succeeded（waiting/unknown/intent 族）",
+      "cls": "工程",
+      "detail": "unknown"
+    },
+    {
+      "id": "LG-1c adapter 恰好一次",
+      "cls": "工程",
+      "detail": 1
+    },
+    {
+      "id": "LG-1d 两次 continueRun 后不自动重发",
+      "cls": "工程",
+      "detail": 1
+    },
+    {
+      "id": "LG-1e FileCheckpointSaver 落盘非空",
+      "cls": "工程",
+      "detail": {
+        "ckptDir": "C:\\Users\\22673\\AppData\\Local\\Temp\\dqa-lg-FS009m\\lg1-ckpt",
+        "files": 17
+      }
+    },
+    {
+      "id": "LG-2a 到达模型步执行窗口（checkpoint 已含 intent 进度）",
+      "cls": "工程",
+      "detail": ""
+    },
+    {
+      "id": "LG-2b 同 checkpointer 重放恢复成功",
+      "cls": "工程",
+      "detail": "RECOVERED modelStepState=pending recoveryNote= adapterCallsAfterRecover=0\nAFTER_CONTINUE modelStepState=unknown terminal={\"kind\":\"unknown\",\"reasonZh\":\"存在发送后结果不可知的模型调用,禁止自动重试,需人工核实\",\"at\":\"2026-09-14T23:55:29.912Z\"} adapte"
+    },
+    {
+      "id": "LG-2c 中断步判 unknown/等待（不自动重发）",
+      "cls": "工程",
+      "detail": {
+        "state": "pending",
+        "calls": "0"
+      }
+    },
+    {
+      "id": "LG-2d continueRun 后仍零重发",
+      "cls": "工程",
+      "detail": {
+        "total": "0"
+      }
+    },
+    {
+      "id": "LG-3a 重入不产生第二份 completed 编排（去重或显式拒绝）",
+      "cls": "工程",
+      "detail": {
+        "t1": "completed",
+        "t2": "completed",
+        "calls": 1
+      }
+    },
+    {
+      "id": "LG-3b A 意见不重复",
+      "cls": "工程",
+      "detail": 1
+    },
+    {
+      "id": "LG-4a 匿名 resume 被拒（不抛异常，pauseNotice 承载或错误返回）",
+      "cls": "工程",
+      "detail": {
+        "ok": false,
+        "msg": "未配置可信身份验证器:恢复失败关闭(缺省无身份源)"
+      }
+    },
+    {
+      "id": "LG-4b role=model resume 被拒",
+      "cls": "工程",
+      "detail": {
+        "ok": false,
+        "msg": "未配置可信身份验证器:恢复失败关闭(缺省无身份源)"
+      }
+    },
+    {
+      "id": "LG-4c 版本漂移 resume 被拒",
+      "cls": "工程",
+      "detail": {
+        "ok": false,
+        "msg": "未配置可信身份验证器:恢复失败关闭(缺省无身份源)"
+      }
+    },
+    {
+      "id": "LG-5a 合法凭据+授权项目 resume 接受（gateStamp 盖章）",
+      "cls": "工程",
+      "detail": {
+        "stamp": true
+      }
+    },
+    {
+      "id": "LG-5b 授权器拒绝（作用域绑定生效）",
+      "cls": "工程",
+      "detail": {
+        "ok": false,
+        "msg": "O-5b 授权器拒绝"
+      }
+    },
+    {
+      "id": "LG-5c 错误凭据→PRINCIPAL_UNTRUSTED",
+      "cls": "工程",
+      "detail": {
+        "ok": false,
+        "msg": "principal 凭据验证失败:恢复被拒绝"
+      }
+    }
+  ],
+  "fail": [],
+  "notes": [
+    {
+      "at": "2026-09-14T23:55:28.205Z",
+      "msg": "fixture: project=p-mu1whvlp-m2k62evo rule=v1"
+    },
+    {
+      "at": "2026-09-14T23:55:30.151Z",
+      "msg": "LG-4 注：resume 走 LangGraph interrupt/Command 原生门；D-9 B 部分绑定修复交付后扩展可绑定身份断言"
+    },
+    {
+      "at": "2026-09-14T23:55:30.331Z",
+      "msg": "LG-5 注：D-9 B 部分修复验证通过（凭据→principalId→项目/动作授权三层；gateStamp 盖章进 run）。跨项目威胁面收敛为 token 持有范围+authorizer 策略。"
+    }
+  ]
+}

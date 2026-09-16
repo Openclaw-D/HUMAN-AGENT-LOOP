@@ -1,0 +1,15 @@
+== R4 最终验证集 ==
+2026-09-13 16:05
+
+replay selftest（工具 v1.1.0-r4）｜通过 33/33
+selftest exit=0
+metamorphic 断言 9/9
+metamorphic exit=0
+mobile mm-pass exit=0
+gate neg exit=4
+gate pos exit=0
+inputs-check exit=6（6=BLOCKED缺输入）
+selftest-r2（工具 v2.0.0）｜通过 109/109
+R2 exit=0
+replay selftest（工具 v1.0.0）｜通过 32/32
+R3 exit=0

@@ -1,0 +1,15 @@
+{
+  "#cursor": {
+    "eventSeq": 215
+  },
+  "v7d-b-worker:g-mu32f05y-77384489aa8f:c1": {
+    "status": "submitted",
+    "goalId": "g-mu32f05y-77384489aa8f",
+    "fencingToken": 1,
+    "startedAt": "2026-09-15T19:28:58.107Z",
+    "leaseUntil": "2026-09-15T19:29:28.093Z",
+    "outcomeState": "waiting_evidence",
+    "aGoalVersion": 4,
+    "at": "2026-09-15T19:28:58.190Z"
+  }
+}

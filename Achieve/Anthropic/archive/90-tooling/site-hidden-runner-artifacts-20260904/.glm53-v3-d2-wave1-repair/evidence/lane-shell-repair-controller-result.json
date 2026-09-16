@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "checkpointId": "v3-shell-child-process-repair",
+  "disposition": "accepted",
+  "worker": {
+    "terminal": "turn.completed",
+    "acceptanceRuns": 1,
+    "acceptancePassed": 18,
+    "scopeValid": true,
+    "changedFiles": [],
+    "providerErrorCount": 0,
+    "sandboxDenial": false,
+    "wallMs": 19183,
+    "usage": {
+      "input": 7491,
+      "cached": 3136,
+      "output": 269,
+      "fresh": 4355
+    }
+  },
+  "controller": {
+    "command": "node --experimental-strip-types --test ./.glm53-v3-d2-wave1/lane-shell-controller.test.mjs",
+    "exitCode": 0,
+    "passed": 3,
+    "failed": 0
+  },
+  "billing": {
+    "mode": "attested",
+    "leaseSha256": "A91AD1915262AADA7A8B5B7A05EF8907CFAC7EB424D16840943A99F57B8708AB",
+    "probeWeeklyPointsDelta": 1
+  },
+  "evidence": {
+    "jsonlSha256": "82FE39B2B0BA7565790C278B179FF89BAEC6E67AE228D5F9AB49EFA2AA02C7A8",
+    "laneResultSha256": "D802703141085C2D4F180BECD46BAADD302CDC8F3694F876E4A6C06906296904",
+    "activeFlashWorkersAfter": 0,
+    "checkedAt": "2026-08-29T22:01:12.0203252+08:00"
+  }
+}

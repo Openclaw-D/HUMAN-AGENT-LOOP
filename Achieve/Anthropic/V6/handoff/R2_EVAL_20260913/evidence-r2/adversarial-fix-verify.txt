@@ -1,0 +1,9 @@
+== adv4 未知字段走私决定 → 现在应schema失败（exit 2） ==
+[schema/用法失败] 候选 schema 校验失败 adv4-smuggle-decision.json:
+  - 顶层 含未知字段 "decision"：候选字段必须匹配 schema 允许名单（失败关闭，防越权内容走私）
+exit=2
+
+== adv6 矛盾假覆盖 → 现在应进人工复核清单（sidesCited交叉） ==
+matched: C-X1 sides: ["C-VIS-02","C-DOC-04"] sidesCited: []
+人工复核含代理命中项: 1 条
+矛盾代理命中（下界，须人工确认语义与证据对应）（golden两侧[C-VIS-02/C-DOC-04，候选实引无]）：C-X1 铭牌出厂年份2019 vs 发票/清单2022-06购入（HT-IM-2214）

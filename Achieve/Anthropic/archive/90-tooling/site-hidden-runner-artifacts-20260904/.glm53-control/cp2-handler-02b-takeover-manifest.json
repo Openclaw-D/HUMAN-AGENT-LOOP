@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 2,
+  "id": "cp2-handler-02b-takeover",
+  "taskType": "repair",
+  "objective": "Audit and minimally repair the frozen CP2-HANDLER-02B record_candidate candidate within four owned files.",
+  "workingDirectory": "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site",
+  "model": "glm-5.3-flash",
+  "effort": "high",
+  "sandboxMode": "workspace-write",
+  "allowedReads": [
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-command-types.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-store.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-command-handler.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\test\\v4-work-command-handler.test.mjs",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-aggregate.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\authority-policy.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\capability-governance-reducer.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\capability-admission.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\capability-admission-types.ts"
+  ],
+  "allowedWrites": [
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-command-types.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-store.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-command-handler.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\test\\v4-work-command-handler.test.mjs"
+  ],
+  "excluded": [
+    "cp2-handler-02b-takeover-task-pack.md",
+    "v4-work-command-handler-controller.test.mjs",
+    "directory enumeration",
+    "search",
+    "Git",
+    "dependencies",
+    "network",
+    "credentials",
+    "Human decision",
+    "Routing",
+    "POST",
+    "persistence"
+  ],
+  "baseline": {
+    "solutionInitiallyMissing": false,
+    "checks": [
+      "public handler 25/25",
+      "existing controller 1/1",
+      "full suite 372/372",
+      "typecheck lint build green"
+    ]
+  },
+  "acceptance": {
+    "command": "node --experimental-strip-types --test --experimental-test-isolation=none .\\test\\v4-work-command-handler.test.mjs",
+    "maxRuns": 1
+  },
+  "stopConditions": [
+    "provider_error",
+    "rate_limit",
+    "quota",
+    "authentication",
+    "network",
+    "timeout",
+    "permission_denial",
+    "scope_violation",
+    "acceptance_failure"
+  ],
+  "jsonlPath": "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\.glm53-evidence\\cp2-handler-02b-takeover-20260901-01.jsonl",
+  "contract": {
+    "taskPackPath": "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\.glm53-control\\cp2-handler-02b-takeover-task-pack.md",
+    "controllerTestPath": "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\test\\v4-work-command-handler-controller.test.mjs",
+    "controllerCommand": "node --experimental-strip-types --test --experimental-test-isolation=none .\\test\\v4-work-command-handler-controller.test.mjs",
+    "profiles": [
+      "exact-shape",
+      "clone",
+      "state"
+    ],
+    "requiredTerms": [
+      "record_candidate",
+      "authority=none",
+      "prepare_candidate_draft",
+      "pending_human_review",
+      "evaluateCapabilityAdmission",
+      "IDEMPOTENCY_CONFLICT",
+      "HUMAN_GATE_ASSIGNMENT_MISSING"
+    ]
+  },
+  "commandPolicy": {
+    "maxCommandEvents": 14,
+    "maxReadsPerAllowedFile": 1,
+    "forbidDirectoryEnumeration": true,
+    "rejectUnclassifiedCommands": true
+  },
+  "runner": {
+    "timeoutSeconds": 900,
+    "queueTimeoutSeconds": 900,
+    "skipGitRepoCheck": false,
+    "authorizedNonGitRoot": null
+  },
+  "roi": {
+    "directCodexMinutesLow": 90,
+    "parallelBenefitMinutesLow": 0,
+    "reuseBenefitMinutesLow": 20,
+    "taskPackMinutesHigh": 12,
+    "monitoringMinutesHigh": 6,
+    "reviewMinutesHigh": 15,
+    "handoffMinutesHigh": 5,
+    "expectedRepairMinutesHigh": 10,
+    "contextSwitchMinutesHigh": 5,
+    "providerRiskMinutesHigh": 5,
+    "minimumNetMinutes": 20,
+    "minimumBenefitCostRatio": 1.5
+  }
+}

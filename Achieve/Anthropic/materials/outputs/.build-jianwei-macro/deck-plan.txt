@@ -1,0 +1,24 @@
+Communication job
+By the end, internal business, management, IT, and AI colleagues should share a precise mental model of Jianwei as a Case-centered human-machine operating system and be able to discuss P0 research and the P1 credit living-cell experiment without treating the roadmap as frozen implementation.
+
+Narrative arc
+Reset the mixed abstractions -> define the product -> show the complete mechanism -> prove it through one living cell -> expand complexity one layer at a time -> decide what to preserve -> identify the few questions that require collective judgment.
+
+Visual route
+Custom 16:9 enterprise visual system. Warm off-white background; dark blue-gray typography; one muted blue as the primary accent and muted amber for gates/uncertainty. Native PowerPoint shapes and low-density diagrams only. No screenshots, dashboards, decorative icon walls, or unverified product UI.
+
+Slide sequence
+01 Cover
+02 Why reset
+03 What Jianwei is and is not
+04 Overall system
+05 Three loops
+06 Stable direction plus minimum implementation
+07 Living cell
+08 P1 credit paper run
+09 Expand to large-risk organization
+10 Business plus large-risk plus multi-Case management
+11 Real systems and organizations connect by controlled stages
+12 P0-P5 phased engineering and P0 Gate
+13 Current assets: preserve, refactor, isolate
+14 Tomorrow's consensus and open questions

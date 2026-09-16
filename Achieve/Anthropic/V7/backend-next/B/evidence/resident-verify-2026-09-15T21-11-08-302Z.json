@@ -1,0 +1,131 @@
+{
+  "at": "2026-09-15T21:11:08.303Z",
+  "projectId": "p-mu361yzm-73ce18d2183d",
+  "results": [
+    {
+      "name": "S0 A 内核可达",
+      "ok": true,
+      "detail": "db=up"
+    },
+    {
+      "name": "S0 C mock 可达",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "S1 建模板/项目/证据",
+      "ok": true,
+      "detail": "{\"ok\":true,\"evidenceId\":\"ev-mu361z0o-d832e9d9aaa4\",\"projectInputVersion\":2}"
+    },
+    {
+      "name": "T1 goal1 创建",
+      "ok": true,
+      "detail": "{\"ok\":true,\"goal\":{\"goalId\":\"g-mu3620z1-806abd75f019\",\"projectId\":\"p-mu361yzm-73ce18d2183d\",\"goalKey\":\"b_review\",\"title\""
+    },
+    {
+      "name": "T1 正常消费→candidate_ready",
+      "ok": true,
+      "detail": "status=candidate_ready"
+    },
+    {
+      "name": "T1 provider=simulation",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "T2 goal2 创建",
+      "ok": true,
+      "detail": "{\"ok\":true,\"goal\":{\"goalId\":\"g-mu3621cd-22d66a01b6fe\",\"projectId\":\"p-mu361yzm-73ce18d2183d\",\"goalKey\":\"b_review2\",\"title"
+    },
+    {
+      "name": "T2 goal2 已被常驻 worker 领取",
+      "ok": true,
+      "detail": "status=leased"
+    },
+    {
+      "name": "T2 unknown 持牌待重试(goal 留 leased,不冻结不抢跑)",
+      "ok": true,
+      "detail": "status=leased"
+    },
+    {
+      "name": "T2 零盲重发(恢复期 C 请求数不增)",
+      "ok": true,
+      "detail": "before=2 after=2"
+    },
+    {
+      "name": "T2 clarification 人工待办已建",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "T2 待办问题含不可知语义",
+      "ok": true,
+      "detail": "执行结果不可知,需人工核实后显式恢复:存在发送后结果不可知的调用,禁止自动重试,需人工核实"
+    },
+    {
+      "name": "T3 registry 有持牌 run",
+      "ok": true,
+      "detail": "b-worker-1:g-mu3621cd-22d66a01b6fe:c1-1789506651558"
+    },
+    {
+      "name": "T3 无凭据被拒且零新增调用",
+      "ok": true,
+      "detail": "calls=2"
+    },
+    {
+      "name": "T3 授权 retry_step CLI exit 0",
+      "ok": true,
+      "detail": "exit=0"
+    },
+    {
+      "name": "T3 人工恢复后到达 candidate_ready",
+      "ok": true,
+      "detail": "status=candidate_ready"
+    },
+    {
+      "name": "T3 授权重发恰一次(总调用=1中断+1授权重发)",
+      "ok": true,
+      "detail": "expected=3 actual=3"
+    },
+    {
+      "name": "T3 重复授权被拒(exit≠0)",
+      "ok": true,
+      "detail": "exit=2"
+    },
+    {
+      "name": "T3 重复授权零新增调用",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "T4 goal3 创建",
+      "ok": true,
+      "detail": "{\"ok\":true,\"goal\":{\"goalId\":\"g-mu3626in-b8795183cff3\",\"projectId\":\"p-mu361yzm-73ce18d2183d\",\"goalKey\":\"b_review3\",\"title"
+    },
+    {
+      "name": "T4 goal3 已领取",
+      "ok": true,
+      "detail": "status=leased"
+    },
+    {
+      "name": "T4 取消→fail 出口",
+      "ok": true,
+      "detail": "status=failed"
+    },
+    {
+      "name": "T4 取消产生人工待办",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "T5 A resume 受理(failed→ready)",
+      "ok": true,
+      "detail": "{\"ok\":true,\"status\":\"ready\",\"goalVersion\":6}"
+    },
+    {
+      "name": "T5 新周期→candidate_ready",
+      "ok": true,
+      "detail": "status=candidate_ready"
+    }
+  ]
+}

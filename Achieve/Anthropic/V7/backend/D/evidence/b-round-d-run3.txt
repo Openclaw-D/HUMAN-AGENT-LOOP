@@ -1,0 +1,19 @@
+  ok: C 规则包校验通过
+[seed] 项目 p-mu1mplp7-e6u7ud0a，证据 ev-mu1mplpj-flmoggnm/ev-mu1mplpy-77g83a1u，规则 v1
+[run] A run run-mu1mplq3-1fddykpk（factVersion=3，v1）
+  [start] b-brd-mu1mplob: ratio_query, 步数 2
+  [step] b-brd-mu1mplob::model:commerce:pricing_context::a0 → simulated(sent=false)
+  [a-sync] opinion b-brd-mu1mplob::op:model:commerce:pricing_context:a0 → runVersion 2
+  [tool] b-brd-mu1mplob:tool:calc:cash-flow-coverage → succeeded
+  [a-sync] calculation b-brd-mu1mplob::calc:tool:calc:cash-flow-coverage:a0 → runVersion 3
+  ok: B 编排跑至 completed（模型 simulated + 工具 succeeded + 前序满足）
+  ok: 模型候选意见经 sink 落库（provider=simulation, authority=none）
+file:///C:/Users/22673/Desktop/Anthropic/V7/backend/A/assembly/b-round.mjs:114
+expect('确定性回执 requestId（B runId::op::step::attempt）', aView.run.opinions[0].requestId.startsWith(`${bView.runId}::op:`), aView.run.opinions[0].requestId);
+                                                                                      ^
+
+TypeError: Cannot read properties of undefined (reading 'startsWith')
+    at file:///C:/Users/22673/Desktop/Anthropic/V7/backend/A/assembly/b-round.mjs:114:87
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+Node.js v22.23.1

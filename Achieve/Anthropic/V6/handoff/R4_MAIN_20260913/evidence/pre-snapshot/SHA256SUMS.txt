@@ -1,0 +1,10 @@
+b4261ea791b9ef9c67533443b545986a3cf372a70311096b87743ce7cd1cd565 *./app/v5-preview/page.tsx
+cd53328de8d45d807bcf7a44ce53eb6e4efcba38725c510408322d1acc218912 *./app/v5-preview/remote-session/camera-panel.tsx
+fe47890d551582cc8006d3632c491e58b7f39010fb40cc6ae31605fad168426a *./app/v5-preview/remote-session/page.tsx
+fd19c44a532239ed029e47264f123e8d28e4406c11ebf24a9de523c4b6e7a272 *./lib/v5-preview/camera/camera-controller.mjs
+8722747b7a560f73dcf72120accd658310419590df6ea0ad07fdad786c6f042e *./lib/v5-preview/camera/thumbnail.mjs
+87cd96307974319bf2e92094678d5f1e31fc3cf0111a0f8a33f86bd024e58a61 *./lib/v5-preview/model-adapter/adapter.mjs
+423fc00bf72365ac6d4c878d6d237b42c4e8b21d0c0ca87fb60d89efe6951dc1 *./lib/v5-preview/remote-model-adapter-bridge.ts
+a7041e617ccff62972326a96aa0ad39254fc13a539e6be0d507e41ed2f823dbb *./lib/v5-preview/remote-request-registry.ts
+0151d038a274d1f77cb334ea5598a16089e0b957079194120a1ca8a413b0aaa8 *./lib/v5-preview/remote-service.ts
+456b2f9844e456677be688e47cc5cee530d1963c6ff26f986e61a8fa3f3806ae *./lib/v5-preview/remote-types.ts

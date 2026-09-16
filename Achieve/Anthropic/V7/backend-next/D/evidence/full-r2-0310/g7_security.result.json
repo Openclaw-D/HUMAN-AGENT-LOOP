@@ -1,0 +1,44 @@
+{
+  "suite": "g7_security",
+  "results": [
+    {
+      "id": "D-21",
+      "title": "跨项目隔离：p1-bound principal对p2敏感写全403；正向控制p1可写；开放写按契约明示记录",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 38,
+      "failures": [],
+      "ms": 1704,
+      "note": ""
+    },
+    {
+      "id": "D-22",
+      "title": "提示注入不提权：content按契约不作禁用键扫描（惰性存储）；无任何状态/权限副作用",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 33,
+      "failures": [],
+      "ms": 324,
+      "note": ""
+    },
+    {
+      "id": "D-23",
+      "title": "凭据异常零泄漏：403响应不回显凭据；SUT日志/DB不落原始凭据",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 19,
+      "failures": [],
+      "ms": 10065,
+      "note": ""
+    }
+  ],
+  "pass": 3,
+  "fail": 0,
+  "skip": 0,
+  "blocked": 0,
+  "totalAssertions": 90,
+  "runnerError": null
+}

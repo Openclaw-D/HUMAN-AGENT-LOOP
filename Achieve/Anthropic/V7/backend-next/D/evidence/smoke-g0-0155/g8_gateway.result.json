@@ -1,0 +1,91 @@
+{
+  "suite": "g8_gateway",
+  "results": [
+    {
+      "id": "D-24",
+      "title": "模型未配置如实拒绝：real_http→409 MODEL_NOT_CONFIGURED；无静默mock成功",
+      "severity": "P0",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 0,
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "Error: ENOENT: no such file or directory, mkdir 'C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\file:\\C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\.run\\pg-d\\pgdata'\n    at mkdirSync (node:fs:1370:26)\n    at Module.ensurePg (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/pgctl.mjs:37:3)\n    at Module.startSut (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/sutctl.mjs:28:26)\n    at sut (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:16:34)\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:40:23)\n    at file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:47:40\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ],
+      "ms": 1,
+      "note": "exception"
+    },
+    {
+      "id": "D-26",
+      "title": "mock/real来源强标记：provider字段落库可读；C假API响应带simulation标记头",
+      "severity": "P1",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 0,
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "Error: ENOENT: no such file or directory, mkdir 'C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\file:\\C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\.run\\pg-d\\pgdata'\n    at mkdirSync (node:fs:1370:26)\n    at Module.ensurePg (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/pgctl.mjs:37:3)\n    at Module.startSut (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/sutctl.mjs:28:26)\n    at sut (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:16:34)\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:64:23)\n    at file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:47:40\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ],
+      "ms": 1,
+      "note": "exception"
+    },
+    {
+      "id": "D-23b",
+      "title": "C假API凭据纪律：请求体含key→anomaly标记；无效key→401掩码不泄漏",
+      "severity": "P1",
+      "owner": "C",
+      "state": "fail",
+      "assertions": 0,
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "Error: ENOENT: no such file or directory, mkdir 'C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\file:\\C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\.run\\pg-d\\pgdata'\n    at mkdirSync (node:fs:1370:26)\n    at Module.ensurePg (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/pgctl.mjs:37:3)\n    at Module.startSut (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/sutctl.mjs:28:26)\n    at sut (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:16:34)\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:93:23)\n    at file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:47:40\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ],
+      "ms": 1,
+      "note": "exception"
+    },
+    {
+      "id": "D-27p",
+      "title": "unknown探针就绪度：C假API断连场景可注入（D-27 B侧部分留门）",
+      "severity": "P1",
+      "owner": "D",
+      "state": "fail",
+      "assertions": 0,
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "Error: ENOENT: no such file or directory, mkdir 'C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\file:\\C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\.run\\pg-d\\pgdata'\n    at mkdirSync (node:fs:1370:26)\n    at Module.ensurePg (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/pgctl.mjs:37:3)\n    at Module.startSut (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/sutctl.mjs:28:26)\n    at sut (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:16:34)\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:112:23)\n    at file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:47:40\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ],
+      "ms": 1,
+      "note": "exception"
+    },
+    {
+      "id": "D-25",
+      "title": "费用/上下文限额：本轮接口面无成本字段——BLOCKED留门如实记录",
+      "severity": "P1",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 0,
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "Error: ENOENT: no such file or directory, mkdir 'C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\file:\\C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\.run\\pg-d\\pgdata'\n    at mkdirSync (node:fs:1370:26)\n    at Module.ensurePg (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/pgctl.mjs:37:3)\n    at Module.startSut (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/sutctl.mjs:28:26)\n    at sut (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:16:34)\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:129:23)\n    at file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:47:40\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ],
+      "ms": 0,
+      "note": "exception"
+    }
+  ],
+  "pass": 0,
+  "fail": 5,
+  "skip": 0,
+  "blocked": 0,
+  "totalAssertions": 0,
+  "runnerError": null
+}

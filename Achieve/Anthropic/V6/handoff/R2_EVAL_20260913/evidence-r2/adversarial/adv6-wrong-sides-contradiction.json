@@ -1,0 +1,44 @@
+{
+  "schema": "jw-eval-candidate@2",
+  "candidateId": "ADV-06-WRONG-SIDES-CONTRADICTION",
+  "caseId": "CASE-C",
+  "variantId": null,
+  "respondent": {
+    "kind": "adversarial_probe_handwritten",
+    "note": "SA-9 人工构造探针，不构成任何真实模型质量证据。意图：漏报探测——矛盾 finding 的 statement 命中 golden C-X1 的 matchKeys（2019/2022/铭牌），但 evidenceRefs 指向与 golden sides（C-VIS-02/C-DOC-04）完全无关的两个真实来源（C-QA-01/C-DOC-01）。预期：PROXY 记 C-X1 matched、单侧检查通过、零 critical，且 matched 项不进人工复核清单——即'覆盖分拿到了、证据挂错了地方'无任何提示。"
+  },
+  "findings": [
+    {
+      "findingId": "F-ADV6-01",
+      "type": "contradiction",
+      "statement": "铭牌出厂年份2019与发票显示2022年6月购入存在矛盾。",
+      "evidenceRefs": [
+        { "sourceId": "C-QA-01", "version": 1 },
+        { "sourceId": "C-DOC-01", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-ADV6-02",
+      "type": "note",
+      "statement": "现场问答中实控人对设备来源作出口头解释，该解释属声称，未获厂家凭证支持。",
+      "evidenceRefs": [{ "sourceId": "C-QA-01", "version": 1 }]
+    }
+  ],
+  "questions": [
+    {
+      "questionId": "Q-ADV6-01",
+      "text": "请向厂家索取出厂记录与报关单核实真实出厂年份。",
+      "evidenceRefs": [{ "sourceId": "C-FC-01", "version": 1 }]
+    }
+  ],
+  "conclusions": [
+    {
+      "conclusionId": "C-ADV6-01",
+      "kind": "clarification_needed",
+      "statement": "购置链条矛盾未闭合前暂停判断。",
+      "evidenceRefs": [{ "sourceId": "C-DOC-04", "version": 1 }]
+    }
+  ],
+  "decisions": [],
+  "unresolved": []
+}

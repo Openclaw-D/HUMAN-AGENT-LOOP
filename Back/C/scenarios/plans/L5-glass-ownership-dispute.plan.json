@@ -1,0 +1,102 @@
+{
+  "planVersion": "1.0.0",
+  "contractRef": "A CONTRACT v0.1",
+  "templateRef": {
+    "templateId": "goal-template-commercial-leasing-v1",
+    "note": "A 落库后以实际 templateId 回填实例化"
+  },
+  "caseId": "L5-glass-ownership-dispute",
+  "steps": [
+    {
+      "step": "createProject",
+      "templateId": "goal-template-commercial-leasing-v1",
+      "name": "L5-glass-ownership-dispute"
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 1,
+      "evidenceId": "L5-ev-invoice-a",
+      "version": 1,
+      "payload": {
+        "kind": "equipment_ownership_status",
+        "content": {
+          "indicator": "equipment_ownership_status",
+          "caliber": "购入发票+登记",
+          "grade": "confirmed",
+          "value": null,
+          "note": "A 设备发票与登记名头一致（合成）。"
+        }
+      }
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 1,
+      "evidenceId": "L5-ev-invoice-b",
+      "version": 1,
+      "payload": {
+        "kind": "equipment_ownership_status",
+        "content": {
+          "indicator": "equipment_ownership_status",
+          "caliber": "购入发票+登记",
+          "grade": "unverified",
+          "value": null,
+          "note": "B 设备发票名头为第三方公司，客户口述代购关系，无书面代购协议（合成）。权属存在争议信号。"
+        }
+      }
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 1,
+      "evidenceId": "L5-ev-cashflow",
+      "version": 1,
+      "payload": {
+        "kind": "monthly_operating_cash_flow",
+        "content": {
+          "indicator": "monthly_operating_cash_flow",
+          "caliber": "经营现金流·租金后",
+          "grade": "source_supported",
+          "value": 66,
+          "note": "月经营现金流（租金后）66 万元（合成）。"
+        }
+      }
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 1,
+      "evidenceId": "L5-ev-debt",
+      "version": 1,
+      "payload": {
+        "kind": "monthly_debt_service",
+        "content": {
+          "indicator": "monthly_debt_service",
+          "caliber": "月度租金+利息",
+          "grade": "confirmed",
+          "value": 55,
+          "note": "报价月租金+利息 55 万元（合成）。"
+        }
+      }
+    },
+    {
+      "step": "createHumanRequest",
+      "turn": 1,
+      "payload": {
+        "kind": "clarification",
+        "question": "第三方公司与客户及实控人的关系？",
+        "requestedRole": "business",
+        "requiredEvidenceKinds": []
+      }
+    },
+    {
+      "step": "createHumanRequest",
+      "turn": 1,
+      "payload": {
+        "kind": "clarification",
+        "question": "能否取得书面代购协议与付款凭证？",
+        "requestedRole": "business",
+        "requiredEvidenceKinds": []
+      }
+    }
+  ],
+  "stepCount": 7,
+  "divergences": []
+}

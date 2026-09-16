@@ -1,0 +1,55 @@
+{
+  "run": "d28-manifest-r1",
+  "startedUtc": "d28-manifest-r1",
+  "endedUtc": "2026-09-15T20:27:13.850Z",
+  "suites": [
+    {
+      "file": "g9_deliverability.test.mjs",
+      "exitCode": 0,
+      "crashed": false,
+      "res": {
+        "suite": "g9_deliverability",
+        "results": [
+          {
+            "id": "D-28",
+            "title": "依赖manifest：assembly/manifest.json覆盖入口传递源图+package.json+lockfile",
+            "severity": "P0",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 7,
+            "failures": [],
+            "ms": 11,
+            "note": ""
+          }
+        ],
+        "pass": 1,
+        "fail": 0,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 7,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    }
+  ],
+  "totals": {
+    "suites": 1,
+    "crashed": 0,
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "blocked": 0,
+    "totalAssertions": 7
+  },
+  "flat": [
+    {
+      "id": "D-28",
+      "title": "依赖manifest：assembly/manifest.json覆盖入口传递源图+package.json+lockfile",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 7,
+      "ms": 11
+    }
+  ]
+}

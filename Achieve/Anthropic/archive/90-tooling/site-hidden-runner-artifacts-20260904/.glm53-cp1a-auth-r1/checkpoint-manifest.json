@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 2,
+  "id": "cp1a-auth-r1",
+  "taskType": "repair",
+  "objective": "Repair five frozen CP1A authority evaluator defects in one file and run the in-process public acceptance once.",
+  "workingDirectory": "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site",
+  "model": "glm-5.3-flash",
+  "effort": "high",
+  "sandboxMode": "workspace-write",
+  "allowedReads": [
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\authority-types.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\test\\v4-authority-policy.test.mjs",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\authority-policy.ts"
+  ],
+  "allowedWrites": [
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\authority-policy.ts"
+  ],
+  "excluded": [
+    "task-pack.zh-CN.md",
+    "v4-authority-policy-controller.test.mjs",
+    "checkpoint-manifest.json",
+    "docs",
+    "index",
+    "capability files",
+    "V3",
+    "package",
+    "app/frontend",
+    "Git metadata",
+    "runner evidence",
+    "network",
+    "credentials"
+  ],
+  "baseline": {
+    "solutionInitiallyMissing": false,
+    "checks": [
+      "node --experimental-strip-types --check ./lib/v4/authority-policy.ts",
+      "node --check ./test/v4-authority-policy.test.mjs"
+    ]
+  },
+  "acceptance": {
+    "command": "node --experimental-strip-types --test --experimental-test-isolation=none ./test/v4-authority-policy.test.mjs",
+    "maxRuns": 1
+  },
+  "stopConditions": [
+    "provider_error",
+    "rate_limit",
+    "quota",
+    "authentication",
+    "network",
+    "timeout",
+    "permission_denial",
+    "scope_violation",
+    "test_failure",
+    "incomplete_terminal"
+  ],
+  "jsonlPath": "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\.glm53-cp1a-auth-r1\\evidence\\events.jsonl",
+  "contract": {
+    "taskPackPath": "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\.glm53-cp1a-auth-r1\\task-pack.zh-CN.md",
+    "controllerTestPath": "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\test\\v4-authority-policy-controller.test.mjs",
+    "controllerCommand": "node --experimental-strip-types --test --experimental-test-isolation=none ./test/v4-authority-policy-controller.test.mjs",
+    "profiles": [
+      "exact-shape",
+      "clone",
+      "algorithm"
+    ],
+    "requiredTerms": [
+      "./authority-types.ts",
+      "INVALID_ROLE_ASSIGNMENT",
+      "RESOURCE_SCOPE_MISMATCH",
+      "presentedInvitationId",
+      "scopeCoversResource",
+      "ordinal string comparison",
+      "full action vocabulary",
+      "INVALID_IDENTITY",
+      "EXPLICIT_DENY",
+      "MISSING_GRANT",
+      "STALE_CONTEXT",
+      "STALE_POLICY",
+      "CAPABILITY_PREPARE_ONLY",
+      "EXTERNAL_SCOPE_RESTRICTED",
+      "AUTHORITY_SOURCE_UNKNOWN",
+      "ALLOWED"
+    ]
+  },
+  "commandPolicy": {
+    "maxCommandEvents": 3,
+    "maxReadsPerAllowedFile": 1,
+    "forbidDirectoryEnumeration": true,
+    "rejectUnclassifiedCommands": true
+  },
+  "runner": {
+    "timeoutSeconds": 900,
+    "queueTimeoutSeconds": 900,
+    "skipGitRepoCheck": false,
+    "authorizedNonGitRoot": null
+  },
+  "roi": {
+    "directCodexMinutesLow": 90,
+    "parallelBenefitMinutesLow": 0,
+    "reuseBenefitMinutesLow": 20,
+    "taskPackMinutesHigh": 12,
+    "monitoringMinutesHigh": 4,
+    "reviewMinutesHigh": 16,
+    "handoffMinutesHigh": 5,
+    "expectedRepairMinutesHigh": 10,
+    "contextSwitchMinutesHigh": 4,
+    "providerRiskMinutesHigh": 5,
+    "minimumNetMinutes": 10,
+    "minimumBenefitCostRatio": 1.25
+  }
+}

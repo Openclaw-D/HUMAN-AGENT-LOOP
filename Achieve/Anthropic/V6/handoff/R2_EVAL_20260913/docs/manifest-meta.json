@@ -1,0 +1,46 @@
+{
+  "interfaceVersions": {
+    "jw-eval-candidate": "1与2（双接受；v2=conclusions可带evidenceRefs）",
+    "jw-eval-scorecard": "2",
+    "jw-eval-golden": "1",
+    "jw-eval-variant": "1",
+    "jw-eval-manifest": "1",
+    "eval-cli-r2": "2.0.0"
+  },
+  "baselineDependency": {
+    "r1Batch": "../PARALLEL_EVAL_20260913/（只读运行时基线：inputs/case-*、golden/、candidate-responses/{independent,controls}）",
+    "r1Manifest": "../PARALLEL_EVAL_20260913/MANIFEST.json（R1批次自身清单；R2不改其任何文件）"
+  },
+  "reproducibleCommands": [
+    "node tools/eval-cli-r2.mjs list",
+    "node tools/eval-cli-r2.mjs selftest",
+    "node tools/eval-cli-r2.mjs score --candidate candidate-responses/independent-r2/EVT-1.json --out evidence-r2/scorecards/EVT-1.scorecard.json",
+    "node tools/eval-cli-r2.mjs score --candidate candidate-responses/controls-r2/neg11-conclusion-fabricated-ref.json --fail-on-critical",
+    "node tools/eval-cli-r2.mjs score --candidate ../../CODEX_REVIEW_FOUR_TASKS_20260913/c-conclusion-probe.json --fail-on-critical",
+    "node tools/eval-cli-r2.mjs render --case CASE-B --variant EVT-1",
+    "node tools/eval-cli-r2.mjs manifest"
+  ],
+  "knownLimitations": [
+    "PROXY matchKeys 仍为预登记别名下界，假阴性/假阳性须人工复核；语义改写可使命中下降（metamorphic T1 实证）",
+    "Unicode 同形字符短句可同时躲过精确与近似去重（SA-9 adv2，低危已知局限；收敛须新批次做script-mixing检测）",
+    "合法 kind + 越权措辞躲开 advisory 别名属 ADVISORY 层设计边界，扩充别名须走新 golden 批次（SA-9 adv4b）",
+    "conclusions 引用为可选字段：v1候选不带时无引用可查（bySource.conclusions=0 不是缺陷）",
+    "近似重复问题（Jaccard>=0.8）为 advisory，非语义等价",
+    "真实模型质量、真机Safari、真实ASR/视频均 NOT TESTED",
+    "independent/controls 均为人工固定样例，评分只证明评估工具可运行"
+  ],
+  "constraints": {
+    "realModelCalls": 0,
+    "newDependencies": 0,
+    "servicesStarted": 0,
+    "gitWriteOperations": 0,
+    "productApiCalls": 0,
+    "codexOperations": 0,
+    "writeScope": "V6/handoff/R2_EVAL_20260913/"
+  },
+  "notes": [
+    "golden（R1 golden/ 与 R2 golden-r2/）只存评估端，不进任何模型请求",
+    "演示六分钟为录制预算，不是业务SLA；语音/视频/模型均未接通，演示物料必须带显著标识",
+    "R2测试输出只写本批次 evidence-r2/，不回写R1冻结批次"
+  ]
+}

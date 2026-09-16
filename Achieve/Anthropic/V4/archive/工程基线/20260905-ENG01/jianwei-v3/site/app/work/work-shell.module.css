@@ -1,0 +1,229 @@
+/* /work 工作壳布局（主 Agent 整合层，2026-09-04）
+   桌面：顶部 Context + 左主（看板/事项/检查轨）+ 右辅（Case Chat）；
+   Mobile（<960px）：紧凑 Context + 「看板 / 事项 / 协同」三入口。
+   视觉基因：暖白底 + 深灰文字 + 单一小面积橙强调；状态文字+图形双通道。 */
+
+.shell {
+  min-height: 100vh;
+  background: #f5f3ef;
+  color: #26303e;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px clamp(12px, 2.5vw, 32px) 28px;
+  font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+}
+
+.contextBar {
+  background: #ffffff;
+  border: 1px solid #e4e0d8;
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contextRow {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.demoBadge {
+  background: #7a4a12;
+  color: #ffe9cf;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.caseName {
+  font-size: clamp(17px, 1.6vw, 22px);
+  font-weight: 800;
+  margin: 0;
+}
+
+.caseMeta {
+  font-size: 13px;
+  color: #5c6774;
+}
+
+.contextActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.upstreamNote {
+  margin: 0;
+  font-size: 12px;
+  color: #75808d;
+  line-height: 1.6;
+}
+
+.ghostButton,
+.dangerArmed {
+  border: 1px solid #d4cec2;
+  background: #faf8f4;
+  color: #4a5462;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  min-height: 34px;
+}
+
+.ghostButton:hover { border-color: #b8b0a0; }
+.dangerArmed {
+  background: #b3361c;
+  border-color: #b3361c;
+  color: #fff;
+  font-weight: 700;
+}
+.ghostButton:focus-visible,
+.dangerArmed:focus-visible { outline: 3px solid #c96a1f; outline-offset: 2px; }
+
+.actorSwitcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.actorChip,
+.actorChipActive {
+  border: 1px solid #d4cec2;
+  background: #ffffff;
+  color: #4a5462;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  min-height: 40px;
+}
+
+.actorChipActive {
+  background: #123a6b;
+  border-color: #123a6b;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.actorChip:focus-visible,
+.actorChipActive:focus-visible { outline: 3px solid #c96a1f; outline-offset: 2px; }
+
+.switchHint { font-size: 11px; color: #8a94a0; }
+
+/* 桌面布局 */
+.desktopGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 16px;
+  align-items: start;
+}
+
+.mainCol { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.chatCol { position: sticky; top: 16px; }
+
+.mobileTabs,
+.mobilePane { display: none; }
+
+/* Case Chat */
+.chatPanel {
+  background: #ffffff;
+  border: 1px solid #e4e0d8;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chatHeader { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.chatTitle { margin: 0; font-size: 16px; font-weight: 800; }
+.chatBadge {
+  background: #ece7dd;
+  color: #5c5344;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.chatSection { margin: 6px 0 2px; font-size: 13px; color: #123a6b; }
+.chatNote { margin: 0; font-size: 12px; color: #75808d; line-height: 1.6; }
+.chatList { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.chatLine { font-size: 13px; line-height: 1.6; }
+
+.chatInputRow { display: flex; gap: 8px; margin-top: 4px; }
+.chatInput {
+  flex: 1;
+  min-width: 0;
+  border: 1.5px solid #d4cec2;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  background: #f4f1ea;
+  color: #8a94a0;
+}
+.chatSend {
+  border: 1px solid #d4cec2;
+  background: #efece4;
+  color: #8a94a0;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  cursor: not-allowed;
+}
+
+/* 移动布局 */
+@media (max-width: 959px) {
+  .desktopGrid { display: none; }
+
+  .mobileTabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #f5f3ef;
+    padding: 6px 0;
+    border-bottom: 2px solid #e4e0d8;
+  }
+
+  .mobileTab,
+  .mobileTabActive {
+    border: 1px solid #d4cec2;
+    background: #ffffff;
+    color: #4a5462;
+    border-radius: 10px;
+    padding: 12px 0;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    min-height: 48px;
+  }
+
+  .mobileTabActive {
+    background: #123a6b;
+    border-color: #123a6b;
+    color: #ffffff;
+  }
+
+  .mobileTab:focus-visible,
+  .mobileTabActive:focus-visible { outline: 3px solid #c96a1f; outline-offset: 2px; }
+
+  .mobilePane { display: block; }
+  .mobilePane[hidden] { display: none; }
+  .chatCol { position: static; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell * { transition: none !important; animation: none !important; }
+}

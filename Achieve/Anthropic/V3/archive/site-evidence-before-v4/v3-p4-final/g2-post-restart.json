@@ -1,0 +1,51 @@
+{
+  "phase": "post-restart",
+  "baseUrl": "http://localhost:4311",
+  "routes": [
+    {
+      "pathname": "/",
+      "status": 200
+    },
+    {
+      "pathname": "/collaboration",
+      "status": 200
+    },
+    {
+      "pathname": "/value",
+      "status": 200
+    },
+    {
+      "pathname": "/opportunity",
+      "status": 200
+    },
+    {
+      "pathname": "/insight",
+      "status": 200
+    },
+    {
+      "pathname": "/business",
+      "status": 200
+    },
+    {
+      "pathname": "/policy",
+      "status": 200
+    },
+    {
+      "pathname": "/credit",
+      "status": 200
+    },
+    {
+      "pathname": "/commercial",
+      "status": 200
+    },
+    {
+      "pathname": "/asset",
+      "status": 200
+    }
+  ],
+  "runtimeEpochBefore": "DEMO-EPOCH-0009",
+  "runtimeEpochAfter": "DEMO-EPOCH-0009",
+  "messagesAfterRestart": 0,
+  "candidatesAfterRestart": 0,
+  "resetPersistence": "PASS"
+}

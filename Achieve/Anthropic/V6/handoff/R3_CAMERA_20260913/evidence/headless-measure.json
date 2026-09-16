@@ -1,0 +1,1260 @@
+{
+  "generatedAt": "2026-09-12T23:15:02.430Z",
+  "chrome": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "base": "http://127.0.0.1:51347",
+  "emulation": "CDP Emulation.setDeviceMetricsOverride (true layout, not image scaling)",
+  "results": [
+    {
+      "scenario": "r3-01-idle-402x874-dpr3",
+      "url": "http://127.0.0.1:51347/src/standalone/index.html?measure=1",
+      "requestedViewport": {
+        "w": 402,
+        "h": 874,
+        "dpr": 3
+      },
+      "png": {
+        "width": 1206,
+        "height": 2622
+      },
+      "measure": {
+        "href": "http://127.0.0.1:51347/src/standalone/index.html?measure=1&collect=r3-01-idle-402x874-dpr3",
+        "innerWidth": 402,
+        "innerHeight": 874,
+        "clientWidth": 402,
+        "clientHeight": 874,
+        "devicePixelRatio": 3,
+        "bodyWidth": 402,
+        "noticeLength": 0,
+        "rects": {
+          "notice": {
+            "x": 12,
+            "y": 193,
+            "w": 378,
+            "h": 21
+          },
+          "state": {
+            "x": 54,
+            "y": 143,
+            "w": 135,
+            "h": 19
+          },
+          "open": {
+            "x": 12,
+            "y": 224,
+            "w": 107,
+            "h": 47
+          },
+          "shot": {
+            "x": 127,
+            "y": 224,
+            "w": 141,
+            "h": 47
+          },
+          "pickBtn": {
+            "x": 12,
+            "y": 279,
+            "w": 216,
+            "h": 45
+          },
+          "close": {
+            "x": 187,
+            "y": 334,
+            "w": 107,
+            "h": 45
+          },
+          "dispose": {
+            "x": 12,
+            "y": 387,
+            "w": 152,
+            "h": 45
+          }
+        }
+      },
+      "receipt": {
+        "kind": "camera-resource-receipt",
+        "version": "0.3.0-r3-candidate",
+        "reason": "snapshot",
+        "startedAt": 566,
+        "endedAt": 1167,
+        "micRequests": 0,
+        "uploadsAttempted": 0,
+        "gumCallsTotal": 0,
+        "streamsAdopted": 0,
+        "tracksStoppedByController": 0,
+        "urlsCreated": 0,
+        "urlsRevoked": 0,
+        "danglingUrls": 0,
+        "liveTracksAtEnd": 0,
+        "urlsHeldAtEnd": 0,
+        "stateAtEnd": "idle",
+        "eventLog": []
+      },
+      "checks": {
+        "realLayoutViewport": true,
+        "realDpr3": true,
+        "physicalSizeMatchesDpr3": true,
+        "bodyFitsViewport": true,
+        "receiptMicZero": true,
+        "receiptUploadsZero": true,
+        "receiptReason": "snapshot"
+      }
+    },
+    {
+      "scenario": "r3-02-preview-402x874-dpr3",
+      "url": "http://127.0.0.1:51347/src/standalone/index.html?autoInject=png&measure=1",
+      "requestedViewport": {
+        "w": 402,
+        "h": 874,
+        "dpr": 3
+      },
+      "png": {
+        "width": 1206,
+        "height": 2622
+      },
+      "measure": {
+        "href": "http://127.0.0.1:51347/src/standalone/index.html?autoInject=png&measure=1&collect=r3-02-preview-402x874-dpr3",
+        "innerWidth": 402,
+        "innerHeight": 874,
+        "clientWidth": 402,
+        "clientHeight": 874,
+        "devicePixelRatio": 3,
+        "bodyWidth": 402,
+        "noticeLength": 0,
+        "rects": {
+          "notice": {
+            "x": 12,
+            "y": 193,
+            "w": 378,
+            "h": 21
+          },
+          "state": {
+            "x": 54,
+            "y": 143,
+            "w": 165,
+            "h": 19
+          },
+          "open": {
+            "x": 12,
+            "y": 224,
+            "w": 107,
+            "h": 47
+          },
+          "shot": {
+            "x": 127,
+            "y": 224,
+            "w": 141,
+            "h": 47
+          },
+          "pickBtn": {
+            "x": 12,
+            "y": 279,
+            "w": 216,
+            "h": 45
+          },
+          "close": {
+            "x": 187,
+            "y": 334,
+            "w": 107,
+            "h": 45
+          },
+          "dispose": {
+            "x": 12,
+            "y": 387,
+            "w": 152,
+            "h": 45
+          }
+        }
+      },
+      "receipt": {
+        "kind": "camera-resource-receipt",
+        "version": "0.3.0-r3-candidate",
+        "reason": "snapshot",
+        "startedAt": 62,
+        "endedAt": 673,
+        "micRequests": 0,
+        "uploadsAttempted": 0,
+        "gumCallsTotal": 0,
+        "streamsAdopted": 0,
+        "tracksStoppedByController": 0,
+        "urlsCreated": 2,
+        "urlsRevoked": 0,
+        "danglingUrls": 2,
+        "liveTracksAtEnd": 0,
+        "urlsHeldAtEnd": 2,
+        "stateAtEnd": "preview",
+        "eventLog": [
+          {
+            "t": 532,
+            "kind": "state",
+            "from": "idle",
+            "to": "preview"
+          },
+          {
+            "t": 532,
+            "kind": "preview",
+            "id": "pv-1-1789254883993",
+            "byteLength": 2882143
+          }
+        ]
+      },
+      "checks": {
+        "realLayoutViewport": true,
+        "realDpr3": true,
+        "physicalSizeMatchesDpr3": true,
+        "bodyFitsViewport": true,
+        "receiptMicZero": true,
+        "receiptUploadsZero": true,
+        "snapshotHeldByDesign": true,
+        "receiptReason": "snapshot"
+      }
+    },
+    {
+      "scenario": "r3-03-discard-contract-402x874-dpr3",
+      "url": "http://127.0.0.1:51347/src/standalone/index.html?autoInject=png&auto=wait:2500,click:discard,wait:400,receipt:discard&measure=1&collectWait=1",
+      "requestedViewport": {
+        "w": 402,
+        "h": 874,
+        "dpr": 3
+      },
+      "png": {
+        "width": 1206,
+        "height": 2622
+      },
+      "measure": {
+        "href": "http://127.0.0.1:51347/src/standalone/index.html?autoInject=png&auto=wait:2500,click:discard,wait:400,receipt:discard&measure=1&collectWait=1&collect=r3-03-discard-contract-402x874-dpr3",
+        "innerWidth": 402,
+        "innerHeight": 874,
+        "clientWidth": 402,
+        "clientHeight": 874,
+        "devicePixelRatio": 3,
+        "bodyWidth": 402,
+        "noticeLength": 31,
+        "rects": {
+          "notice": {
+            "x": 12,
+            "y": 193,
+            "w": 378,
+            "h": 42
+          },
+          "state": {
+            "x": 54,
+            "y": 143,
+            "w": 75,
+            "h": 19
+          },
+          "open": {
+            "x": 12,
+            "y": 245,
+            "w": 107,
+            "h": 47
+          },
+          "shot": {
+            "x": 127,
+            "y": 245,
+            "w": 141,
+            "h": 47
+          },
+          "pickBtn": {
+            "x": 12,
+            "y": 300,
+            "w": 216,
+            "h": 45
+          },
+          "close": {
+            "x": 187,
+            "y": 355,
+            "w": 107,
+            "h": 45
+          },
+          "dispose": {
+            "x": 12,
+            "y": 408,
+            "w": 152,
+            "h": 45
+          }
+        }
+      },
+      "receipt": {
+        "kind": "camera-resource-receipt",
+        "version": "0.3.0-r3-candidate",
+        "reason": "discard",
+        "startedAt": 62,
+        "endedAt": 3577,
+        "micRequests": 0,
+        "uploadsAttempted": 0,
+        "gumCallsTotal": 0,
+        "streamsAdopted": 0,
+        "tracksStoppedByController": 0,
+        "urlsCreated": 2,
+        "urlsRevoked": 2,
+        "danglingUrls": 0,
+        "liveTracksAtEnd": 0,
+        "urlsHeldAtEnd": 0,
+        "stateAtEnd": "disposed",
+        "eventLog": [
+          {
+            "t": 535,
+            "kind": "state",
+            "from": "idle",
+            "to": "preview"
+          },
+          {
+            "t": 535,
+            "kind": "preview",
+            "id": "pv-1-1789254885232",
+            "byteLength": 2882143
+          },
+          {
+            "t": 3113,
+            "kind": "state",
+            "from": "preview",
+            "to": "idle"
+          },
+          {
+            "t": 3113,
+            "kind": "action",
+            "op": "discard",
+            "ok": true,
+            "code": null,
+            "hasLiveStream": false
+          },
+          {
+            "t": 3515,
+            "kind": "state",
+            "from": "idle",
+            "to": "disposed"
+          }
+        ]
+      },
+      "checks": {
+        "realLayoutViewport": true,
+        "realDpr3": true,
+        "physicalSizeMatchesDpr3": true,
+        "bodyFitsViewport": true,
+        "receiptMicZero": true,
+        "receiptUploadsZero": true,
+        "receiptDanglingZero": true,
+        "receiptTerminalClean": true,
+        "receiptReason": "discard"
+      }
+    },
+    {
+      "scenario": "r3-04-requesting-cancel-exit-402x874",
+      "url": "http://127.0.0.1:51347/src/standalone/index.html?fakeMedia=hang&auto=click:open,wait:600&measure=1",
+      "requestedViewport": {
+        "w": 402,
+        "h": 874,
+        "dpr": 3
+      },
+      "png": {
+        "width": 1206,
+        "height": 2622
+      },
+      "measure": {
+        "href": "http://127.0.0.1:51347/src/standalone/index.html?fakeMedia=hang&auto=click:open,wait:600&measure=1&collect=r3-04-requesting-cancel-exit-402x874",
+        "innerWidth": 402,
+        "innerHeight": 874,
+        "clientWidth": 402,
+        "clientHeight": 874,
+        "devicePixelRatio": 3,
+        "bodyWidth": 402,
+        "noticeLength": 0,
+        "rects": {
+          "notice": {
+            "x": 12,
+            "y": 193,
+            "w": 378,
+            "h": 21
+          },
+          "state": {
+            "x": 54,
+            "y": 143,
+            "w": 119,
+            "h": 19
+          },
+          "open": {
+            "x": 12,
+            "y": 224,
+            "w": 107,
+            "h": 47
+          },
+          "shot": {
+            "x": 127,
+            "y": 224,
+            "w": 141,
+            "h": 47
+          },
+          "pickBtn": {
+            "x": 12,
+            "y": 279,
+            "w": 216,
+            "h": 45
+          },
+          "close": {
+            "x": 187,
+            "y": 334,
+            "w": 107,
+            "h": 45
+          },
+          "dispose": {
+            "x": 12,
+            "y": 387,
+            "w": 152,
+            "h": 45
+          }
+        }
+      },
+      "receipt": {
+        "kind": "camera-resource-receipt",
+        "version": "0.3.0-r3-candidate",
+        "reason": "snapshot",
+        "startedAt": 64,
+        "endedAt": 1278,
+        "micRequests": 0,
+        "uploadsAttempted": 0,
+        "gumCallsTotal": 1,
+        "streamsAdopted": 0,
+        "tracksStoppedByController": 0,
+        "urlsCreated": 0,
+        "urlsRevoked": 0,
+        "danglingUrls": 0,
+        "liveTracksAtEnd": 0,
+        "urlsHeldAtEnd": 0,
+        "stateAtEnd": "requesting",
+        "eventLog": [
+          {
+            "t": 610,
+            "kind": "state",
+            "from": "idle",
+            "to": "requesting"
+          },
+          {
+            "t": 610,
+            "kind": "gum",
+            "audio": false
+          },
+          {
+            "t": 610,
+            "kind": "action",
+            "op": "open"
+          }
+        ]
+      },
+      "checks": {
+        "realLayoutViewport": true,
+        "realDpr3": true,
+        "physicalSizeMatchesDpr3": true,
+        "bodyFitsViewport": true,
+        "receiptMicZero": true,
+        "receiptUploadsZero": true,
+        "receiptReason": "snapshot"
+      }
+    },
+    {
+      "scenario": "r3-05-hangup-receipt-402x874",
+      "url": "http://127.0.0.1:51347/src/standalone/index.html?fakeMedia=hang&auto=click:open,wait:600,click:close,wait:400,receipt:hangup&measure=1",
+      "requestedViewport": {
+        "w": 402,
+        "h": 874,
+        "dpr": 3
+      },
+      "png": {
+        "width": 1206,
+        "height": 2622
+      },
+      "measure": {
+        "href": "http://127.0.0.1:51347/src/standalone/index.html?fakeMedia=hang&auto=click:open,wait:600,click:close,wait:400,receipt:hangup&measure=1&collect=r3-05-hangup-receipt-402x874",
+        "innerWidth": 402,
+        "innerHeight": 874,
+        "clientWidth": 402,
+        "clientHeight": 874,
+        "devicePixelRatio": 3,
+        "bodyWidth": 402,
+        "noticeLength": 20,
+        "rects": {
+          "notice": {
+            "x": 12,
+            "y": 193,
+            "w": 378,
+            "h": 21
+          },
+          "state": {
+            "x": 54,
+            "y": 143,
+            "w": 75,
+            "h": 19
+          },
+          "open": {
+            "x": 12,
+            "y": 224,
+            "w": 107,
+            "h": 47
+          },
+          "shot": {
+            "x": 127,
+            "y": 224,
+            "w": 141,
+            "h": 47
+          },
+          "pickBtn": {
+            "x": 12,
+            "y": 279,
+            "w": 216,
+            "h": 45
+          },
+          "close": {
+            "x": 187,
+            "y": 334,
+            "w": 107,
+            "h": 45
+          },
+          "dispose": {
+            "x": 12,
+            "y": 387,
+            "w": 152,
+            "h": 45
+          }
+        }
+      },
+      "receipt": {
+        "kind": "camera-resource-receipt",
+        "version": "0.3.0-r3-candidate",
+        "reason": "hangup",
+        "startedAt": 59,
+        "endedAt": 1675,
+        "micRequests": 0,
+        "uploadsAttempted": 0,
+        "gumCallsTotal": 1,
+        "streamsAdopted": 0,
+        "tracksStoppedByController": 0,
+        "urlsCreated": 0,
+        "urlsRevoked": 0,
+        "danglingUrls": 0,
+        "liveTracksAtEnd": 0,
+        "urlsHeldAtEnd": 0,
+        "stateAtEnd": "disposed",
+        "eventLog": [
+          {
+            "t": 606,
+            "kind": "state",
+            "from": "idle",
+            "to": "requesting"
+          },
+          {
+            "t": 606,
+            "kind": "gum",
+            "audio": false
+          },
+          {
+            "t": 606,
+            "kind": "action",
+            "op": "open"
+          },
+          {
+            "t": 1212,
+            "kind": "state",
+            "from": "requesting",
+            "to": "idle"
+          },
+          {
+            "t": 1212,
+            "kind": "action",
+            "op": "cancel",
+            "ok": true,
+            "code": null
+          },
+          {
+            "t": 1616,
+            "kind": "state",
+            "from": "idle",
+            "to": "disposed"
+          }
+        ]
+      },
+      "checks": {
+        "realLayoutViewport": true,
+        "realDpr3": true,
+        "physicalSizeMatchesDpr3": true,
+        "bodyFitsViewport": true,
+        "receiptMicZero": true,
+        "receiptUploadsZero": true,
+        "receiptDanglingZero": true,
+        "receiptTerminalClean": true,
+        "receiptReason": "hangup"
+      }
+    },
+    {
+      "scenario": "r3-06-denied-402x874",
+      "url": "http://127.0.0.1:51347/src/standalone/index.html?fakeMedia=deny&auto=click:open,wait:400&measure=1",
+      "requestedViewport": {
+        "w": 402,
+        "h": 874,
+        "dpr": 3
+      },
+      "png": {
+        "width": 1206,
+        "height": 2622
+      },
+      "measure": {
+        "href": "http://127.0.0.1:51347/src/standalone/index.html?fakeMedia=deny&auto=click:open,wait:400&measure=1&collect=r3-06-denied-402x874",
+        "innerWidth": 402,
+        "innerHeight": 874,
+        "clientWidth": 402,
+        "clientHeight": 874,
+        "devicePixelRatio": 3,
+        "bodyWidth": 402,
+        "noticeLength": 42,
+        "rects": {
+          "notice": {
+            "x": 12,
+            "y": 193,
+            "w": 378,
+            "h": 42
+          },
+          "state": {
+            "x": 54,
+            "y": 143,
+            "w": 120,
+            "h": 19
+          },
+          "open": {
+            "x": 12,
+            "y": 245,
+            "w": 107,
+            "h": 47
+          },
+          "shot": {
+            "x": 127,
+            "y": 245,
+            "w": 141,
+            "h": 47
+          },
+          "pickBtn": {
+            "x": 12,
+            "y": 300,
+            "w": 216,
+            "h": 45
+          },
+          "close": {
+            "x": 187,
+            "y": 355,
+            "w": 107,
+            "h": 45
+          },
+          "dispose": {
+            "x": 12,
+            "y": 408,
+            "w": 152,
+            "h": 45
+          }
+        }
+      },
+      "receipt": {
+        "kind": "camera-resource-receipt",
+        "version": "0.3.0-r3-candidate",
+        "reason": "snapshot",
+        "startedAt": 66,
+        "endedAt": 1075,
+        "micRequests": 0,
+        "uploadsAttempted": 0,
+        "gumCallsTotal": 1,
+        "streamsAdopted": 0,
+        "tracksStoppedByController": 0,
+        "urlsCreated": 0,
+        "urlsRevoked": 0,
+        "danglingUrls": 0,
+        "liveTracksAtEnd": 0,
+        "urlsHeldAtEnd": 0,
+        "stateAtEnd": "denied",
+        "eventLog": [
+          {
+            "t": 603,
+            "kind": "state",
+            "from": "idle",
+            "to": "requesting"
+          },
+          {
+            "t": 603,
+            "kind": "gum",
+            "audio": false
+          },
+          {
+            "t": 603,
+            "kind": "action",
+            "op": "open"
+          },
+          {
+            "t": 604,
+            "kind": "state",
+            "from": "requesting",
+            "to": "denied"
+          },
+          {
+            "t": 604,
+            "kind": "error",
+            "code": "NOT_ALLOWED"
+          }
+        ]
+      },
+      "checks": {
+        "realLayoutViewport": true,
+        "realDpr3": true,
+        "physicalSizeMatchesDpr3": true,
+        "bodyFitsViewport": true,
+        "receiptMicZero": true,
+        "receiptUploadsZero": true,
+        "receiptReason": "snapshot"
+      }
+    },
+    {
+      "scenario": "r3-07-error-invalid-402x874",
+      "url": "http://127.0.0.1:51347/src/standalone/index.html?autoInject=bad&measure=1",
+      "requestedViewport": {
+        "w": 402,
+        "h": 874,
+        "dpr": 3
+      },
+      "png": {
+        "width": 1206,
+        "height": 2622
+      },
+      "measure": {
+        "href": "http://127.0.0.1:51347/src/standalone/index.html?autoInject=bad&measure=1&collect=r3-07-error-invalid-402x874",
+        "innerWidth": 402,
+        "innerHeight": 874,
+        "clientWidth": 402,
+        "clientHeight": 874,
+        "devicePixelRatio": 3,
+        "bodyWidth": 402,
+        "noticeLength": 25,
+        "rects": {
+          "notice": {
+            "x": 12,
+            "y": 193,
+            "w": 378,
+            "h": 21
+          },
+          "state": {
+            "x": 54,
+            "y": 143,
+            "w": 135,
+            "h": 19
+          },
+          "open": {
+            "x": 12,
+            "y": 224,
+            "w": 107,
+            "h": 47
+          },
+          "shot": {
+            "x": 127,
+            "y": 224,
+            "w": 141,
+            "h": 47
+          },
+          "pickBtn": {
+            "x": 12,
+            "y": 279,
+            "w": 216,
+            "h": 45
+          },
+          "close": {
+            "x": 187,
+            "y": 334,
+            "w": 107,
+            "h": 45
+          },
+          "dispose": {
+            "x": 12,
+            "y": 387,
+            "w": 152,
+            "h": 45
+          }
+        }
+      },
+      "receipt": {
+        "kind": "camera-resource-receipt",
+        "version": "0.3.0-r3-candidate",
+        "reason": "snapshot",
+        "startedAt": 65,
+        "endedAt": 673,
+        "micRequests": 0,
+        "uploadsAttempted": 0,
+        "gumCallsTotal": 0,
+        "streamsAdopted": 0,
+        "tracksStoppedByController": 0,
+        "urlsCreated": 0,
+        "urlsRevoked": 0,
+        "danglingUrls": 0,
+        "liveTracksAtEnd": 0,
+        "urlsHeldAtEnd": 0,
+        "stateAtEnd": "idle",
+        "eventLog": [
+          {
+            "t": 517,
+            "kind": "error",
+            "code": "NOT_AN_IMAGE"
+          }
+        ]
+      },
+      "checks": {
+        "realLayoutViewport": true,
+        "realDpr3": true,
+        "physicalSizeMatchesDpr3": true,
+        "bodyFitsViewport": true,
+        "receiptMicZero": true,
+        "receiptUploadsZero": true,
+        "receiptReason": "snapshot"
+      }
+    },
+    {
+      "scenario": "r3-08-unsupported-picker-ok-402x874",
+      "url": "http://127.0.0.1:51347/src/standalone/index.html?fakeMedia=none&auto=click:open,wait:400&measure=1",
+      "requestedViewport": {
+        "w": 402,
+        "h": 874,
+        "dpr": 3
+      },
+      "png": {
+        "width": 1206,
+        "height": 2622
+      },
+      "measure": {
+        "href": "http://127.0.0.1:51347/src/standalone/index.html?fakeMedia=none&auto=click:open,wait:400&measure=1&collect=r3-08-unsupported-picker-ok-402x874",
+        "innerWidth": 402,
+        "innerHeight": 874,
+        "clientWidth": 402,
+        "clientHeight": 874,
+        "devicePixelRatio": 3,
+        "bodyWidth": 402,
+        "noticeLength": 88,
+        "rects": {
+          "notice": {
+            "x": 12,
+            "y": 193,
+            "w": 378,
+            "h": 63
+          },
+          "state": {
+            "x": 54,
+            "y": 143,
+            "w": 210,
+            "h": 19
+          },
+          "open": {
+            "x": 12,
+            "y": 266,
+            "w": 107,
+            "h": 47
+          },
+          "shot": {
+            "x": 127,
+            "y": 266,
+            "w": 141,
+            "h": 47
+          },
+          "pickBtn": {
+            "x": 12,
+            "y": 321,
+            "w": 216,
+            "h": 45
+          },
+          "close": {
+            "x": 187,
+            "y": 376,
+            "w": 107,
+            "h": 45
+          },
+          "dispose": {
+            "x": 12,
+            "y": 429,
+            "w": 152,
+            "h": 45
+          }
+        }
+      },
+      "receipt": {
+        "kind": "camera-resource-receipt",
+        "version": "0.3.0-r3-candidate",
+        "reason": "snapshot",
+        "startedAt": 80,
+        "endedAt": 1092,
+        "micRequests": 0,
+        "uploadsAttempted": 0,
+        "gumCallsTotal": 0,
+        "streamsAdopted": 0,
+        "tracksStoppedByController": 0,
+        "urlsCreated": 0,
+        "urlsRevoked": 0,
+        "danglingUrls": 0,
+        "liveTracksAtEnd": 0,
+        "urlsHeldAtEnd": 0,
+        "stateAtEnd": "unsupported",
+        "eventLog": [
+          {
+            "t": 610,
+            "kind": "state",
+            "from": "idle",
+            "to": "unsupported"
+          },
+          {
+            "t": 610,
+            "kind": "error",
+            "code": "UNSUPPORTED"
+          }
+        ]
+      },
+      "checks": {
+        "realLayoutViewport": true,
+        "realDpr3": true,
+        "physicalSizeMatchesDpr3": true,
+        "bodyFitsViewport": true,
+        "receiptMicZero": true,
+        "receiptUploadsZero": true,
+        "receiptReason": "snapshot"
+      }
+    },
+    {
+      "scenario": "r3-09-long-notice-not-blocking-402x874",
+      "url": "http://127.0.0.1:51347/src/standalone/index.html?fakeMedia=deny&longNotice=1&auto=click:open,wait:500,wait:2600&measure=1",
+      "requestedViewport": {
+        "w": 402,
+        "h": 874,
+        "dpr": 3
+      },
+      "png": {
+        "width": 1206,
+        "height": 2622
+      },
+      "measure": {
+        "href": "http://127.0.0.1:51347/src/standalone/index.html?fakeMedia=deny&longNotice=1&auto=click:open,wait:500,wait:2600&measure=1&collect=r3-09-long-notice-not-blocking-402x874",
+        "innerWidth": 402,
+        "innerHeight": 874,
+        "clientWidth": 402,
+        "clientHeight": 874,
+        "devicePixelRatio": 3,
+        "bodyWidth": 402,
+        "noticeLength": 220,
+        "rects": {
+          "notice": {
+            "x": 12,
+            "y": 193,
+            "w": 378,
+            "h": 168
+          },
+          "state": {
+            "x": 54,
+            "y": 143,
+            "w": 120,
+            "h": 19
+          },
+          "open": {
+            "x": 12,
+            "y": 371,
+            "w": 107,
+            "h": 47
+          },
+          "shot": {
+            "x": 127,
+            "y": 371,
+            "w": 141,
+            "h": 47
+          },
+          "pickBtn": {
+            "x": 12,
+            "y": 426,
+            "w": 216,
+            "h": 45
+          },
+          "close": {
+            "x": 187,
+            "y": 481,
+            "w": 107,
+            "h": 45
+          },
+          "dispose": {
+            "x": 12,
+            "y": 534,
+            "w": 152,
+            "h": 45
+          }
+        }
+      },
+      "receipt": {
+        "kind": "camera-resource-receipt",
+        "version": "0.3.0-r3-candidate",
+        "reason": "snapshot",
+        "startedAt": 67,
+        "endedAt": 3800,
+        "micRequests": 0,
+        "uploadsAttempted": 0,
+        "gumCallsTotal": 1,
+        "streamsAdopted": 0,
+        "tracksStoppedByController": 0,
+        "urlsCreated": 0,
+        "urlsRevoked": 0,
+        "danglingUrls": 0,
+        "liveTracksAtEnd": 0,
+        "urlsHeldAtEnd": 0,
+        "stateAtEnd": "denied",
+        "eventLog": [
+          {
+            "t": 610,
+            "kind": "state",
+            "from": "idle",
+            "to": "requesting"
+          },
+          {
+            "t": 610,
+            "kind": "gum",
+            "audio": false
+          },
+          {
+            "t": 610,
+            "kind": "action",
+            "op": "open"
+          },
+          {
+            "t": 610,
+            "kind": "state",
+            "from": "requesting",
+            "to": "denied"
+          },
+          {
+            "t": 610,
+            "kind": "error",
+            "code": "NOT_ALLOWED"
+          }
+        ]
+      },
+      "checks": {
+        "realLayoutViewport": true,
+        "realDpr3": true,
+        "physicalSizeMatchesDpr3": true,
+        "bodyFitsViewport": true,
+        "receiptMicZero": true,
+        "receiptUploadsZero": true,
+        "receiptReason": "snapshot",
+        "longNoticeNotCoveringButtons": true
+      }
+    },
+    {
+      "scenario": "r3-10-preview-390x844-real",
+      "url": "http://127.0.0.1:51347/src/standalone/index.html?autoInject=png&measure=1",
+      "requestedViewport": {
+        "w": 390,
+        "h": 844,
+        "dpr": 3
+      },
+      "png": {
+        "width": 1170,
+        "height": 2532
+      },
+      "measure": {
+        "href": "http://127.0.0.1:51347/src/standalone/index.html?autoInject=png&measure=1&collect=r3-10-preview-390x844-real",
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "clientWidth": 390,
+        "clientHeight": 844,
+        "devicePixelRatio": 3,
+        "bodyWidth": 390,
+        "noticeLength": 0,
+        "rects": {
+          "notice": {
+            "x": 12,
+            "y": 193,
+            "w": 366,
+            "h": 21
+          },
+          "state": {
+            "x": 54,
+            "y": 143,
+            "w": 165,
+            "h": 19
+          },
+          "open": {
+            "x": 12,
+            "y": 224,
+            "w": 107,
+            "h": 47
+          },
+          "shot": {
+            "x": 127,
+            "y": 224,
+            "w": 141,
+            "h": 47
+          },
+          "pickBtn": {
+            "x": 12,
+            "y": 279,
+            "w": 216,
+            "h": 45
+          },
+          "close": {
+            "x": 187,
+            "y": 334,
+            "w": 107,
+            "h": 45
+          },
+          "dispose": {
+            "x": 12,
+            "y": 387,
+            "w": 152,
+            "h": 45
+          }
+        }
+      },
+      "receipt": {
+        "kind": "camera-resource-receipt",
+        "version": "0.3.0-r3-candidate",
+        "reason": "snapshot",
+        "startedAt": 70,
+        "endedAt": 673,
+        "micRequests": 0,
+        "uploadsAttempted": 0,
+        "gumCallsTotal": 0,
+        "streamsAdopted": 0,
+        "tracksStoppedByController": 0,
+        "urlsCreated": 2,
+        "urlsRevoked": 0,
+        "danglingUrls": 2,
+        "liveTracksAtEnd": 0,
+        "urlsHeldAtEnd": 2,
+        "stateAtEnd": "preview",
+        "eventLog": [
+          {
+            "t": 538,
+            "kind": "state",
+            "from": "idle",
+            "to": "preview"
+          },
+          {
+            "t": 538,
+            "kind": "preview",
+            "id": "pv-1-1789254900817",
+            "byteLength": 2882143
+          }
+        ]
+      },
+      "checks": {
+        "realLayoutViewport": true,
+        "realDpr3": true,
+        "physicalSizeMatchesDpr3": true,
+        "bodyFitsViewport": true,
+        "receiptMicZero": true,
+        "receiptUploadsZero": true,
+        "snapshotHeldByDesign": true,
+        "receiptReason": "snapshot"
+      }
+    },
+    {
+      "scenario": "r3-11-preview-360x800-real",
+      "url": "http://127.0.0.1:51347/src/standalone/index.html?autoInject=png&measure=1",
+      "requestedViewport": {
+        "w": 360,
+        "h": 800,
+        "dpr": 3
+      },
+      "png": {
+        "width": 1080,
+        "height": 2400
+      },
+      "measure": {
+        "href": "http://127.0.0.1:51347/src/standalone/index.html?autoInject=png&measure=1&collect=r3-11-preview-360x800-real",
+        "innerWidth": 360,
+        "innerHeight": 800,
+        "clientWidth": 360,
+        "clientHeight": 800,
+        "devicePixelRatio": 3,
+        "bodyWidth": 360,
+        "noticeLength": 0,
+        "rects": {
+          "notice": {
+            "x": 12,
+            "y": 213,
+            "w": 336,
+            "h": 21
+          },
+          "state": {
+            "x": 54,
+            "y": 162,
+            "w": 165,
+            "h": 19
+          },
+          "open": {
+            "x": 12,
+            "y": 244,
+            "w": 107,
+            "h": 47
+          },
+          "shot": {
+            "x": 127,
+            "y": 244,
+            "w": 141,
+            "h": 47
+          },
+          "pickBtn": {
+            "x": 12,
+            "y": 299,
+            "w": 216,
+            "h": 45
+          },
+          "close": {
+            "x": 187,
+            "y": 354,
+            "w": 107,
+            "h": 45
+          },
+          "dispose": {
+            "x": 12,
+            "y": 407,
+            "w": 152,
+            "h": 45
+          }
+        }
+      },
+      "receipt": {
+        "kind": "camera-resource-receipt",
+        "version": "0.3.0-r3-candidate",
+        "reason": "snapshot",
+        "startedAt": 64,
+        "endedAt": 671,
+        "micRequests": 0,
+        "uploadsAttempted": 0,
+        "gumCallsTotal": 0,
+        "streamsAdopted": 0,
+        "tracksStoppedByController": 0,
+        "urlsCreated": 2,
+        "urlsRevoked": 0,
+        "danglingUrls": 2,
+        "liveTracksAtEnd": 0,
+        "urlsHeldAtEnd": 2,
+        "stateAtEnd": "preview",
+        "eventLog": [
+          {
+            "t": 525,
+            "kind": "state",
+            "from": "idle",
+            "to": "preview"
+          },
+          {
+            "t": 525,
+            "kind": "preview",
+            "id": "pv-1-1789254901972",
+            "byteLength": 2882143
+          }
+        ]
+      },
+      "checks": {
+        "realLayoutViewport": true,
+        "realDpr3": true,
+        "physicalSizeMatchesDpr3": true,
+        "bodyFitsViewport": true,
+        "receiptMicZero": true,
+        "receiptUploadsZero": true,
+        "snapshotHeldByDesign": true,
+        "receiptReason": "snapshot"
+      }
+    }
+  ]
+}

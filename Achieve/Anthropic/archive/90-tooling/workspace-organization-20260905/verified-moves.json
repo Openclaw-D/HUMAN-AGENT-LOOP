@@ -1,0 +1,155 @@
+[
+  {
+    "From": "archive\\00-pre-financing-leasing-mvp",
+    "To": "历史代码\\早期平台快照",
+    "Files": 801,
+    "Bytes": 227172172,
+    "Links": 1,
+    "Digest": "BD5B503960F7F6B3EAC3DE0449DDC3EFFCB55B4BD3517D53CBC96D79B503D06E",
+    "VerifiedAt": "2026-09-05T12:08:35.3703603+08:00"
+  },
+  {
+    "From": "archive\\10-v2z-experiments",
+    "To": "历史代码\\V2Z实验",
+    "Files": 16,
+    "Bytes": 237972,
+    "Links": 0,
+    "Digest": "FBF322CCA72AFC4C5472C3D29BE53257032DC51668F44FBA192D188CF549283E",
+    "VerifiedAt": "2026-09-05T12:08:35.4165505+08:00"
+  },
+  {
+    "From": "archive\\20-p2-discovery",
+    "To": "V2\\archive\\P2探索",
+    "Files": 3,
+    "Bytes": 33802,
+    "Links": 0,
+    "Digest": "098084A3B2E35370E1A14804056FE3940905FE77E9932453C5FFC0A41EBC684B",
+    "VerifiedAt": "2026-09-05T12:08:35.4301722+08:00"
+  },
+  {
+    "From": "archive\\30-v3-materials\\eye-unity",
+    "To": "Unity",
+    "Files": 136,
+    "Bytes": 15172724,
+    "Links": 0,
+    "Digest": "9E1115B5B10414C87C398FD550974AAA2210537C71F7C66A6ECCCFFA6C59175A",
+    "VerifiedAt": "2026-09-05T12:08:35.5547449+08:00"
+  },
+  {
+    "From": "archive\\30-v3-materials\\legacy-static-shell-20260828",
+    "To": "历史代码\\V3静态展示壳",
+    "Files": 15,
+    "Bytes": 10064698,
+    "Links": 0,
+    "Digest": "2B8F8A3BE1251F153AE66FDAD548A2068D6ACBF3636DB1F0104CF0CFB8FF9B79",
+    "VerifiedAt": "2026-09-05T12:08:35.5974227+08:00"
+  },
+  {
+    "From": "archive\\30-v3-materials\\prototype",
+    "To": "历史代码\\V3原型",
+    "Files": 26,
+    "Bytes": 1416090,
+    "Links": 0,
+    "Digest": "55EB5B6EB205D739C068844E90D4C00B33C7A9C7FE445145DB3AA1C3C3344D44",
+    "VerifiedAt": "2026-09-05T12:08:35.6330036+08:00"
+  },
+  {
+    "From": "archive\\30-v3-materials",
+    "To": "V3\\archive",
+    "Files": 208,
+    "Bytes": 107576205,
+    "Links": 0,
+    "Digest": "4D3122BBE9104863D4B5B76991C8BDA8E30043AC03BB7CB6163ED4FC6FA68587",
+    "VerifiedAt": "2026-09-05T12:08:36.1688638+08:00"
+  },
+  {
+    "From": "versions\\V4",
+    "To": "V4",
+    "Files": 5,
+    "Bytes": 109720,
+    "Links": 0,
+    "Digest": "67FAFD30D1F6A9F11EF74C719E8AAE899B094F09ACFC8C2B1F238C53C946C4FB",
+    "VerifiedAt": "2026-09-05T12:08:36.1816444+08:00"
+  },
+  {
+    "From": "archive\\40-v4-life-convergence",
+    "To": "V4\\archive\\产品收敛记录",
+    "Files": 12,
+    "Bytes": 83272,
+    "Links": 0,
+    "Digest": "191915E90F009448E6073EDB282463C0A831D8E176C7AA008CB04803CBA087F3",
+    "VerifiedAt": "2026-09-05T12:08:36.1999890+08:00"
+  },
+  {
+    "From": "materials\\showcase\\jianwei-v3-showcase",
+    "To": "V3\\materials\\展示与PPT",
+    "Files": 41,
+    "Bytes": 91969292,
+    "Links": 1,
+    "Digest": "B3061F7C7AC0EBF8CC5585113385160D412DCCEA5116FC5C352D81AAE2A8C361",
+    "VerifiedAt": "2026-09-05T12:08:36.4630917+08:00"
+  },
+  {
+    "From": "jianwei-v3\\site\\docs\\v4\\ZCODE_BACKEND_GOAL.md",
+    "To": "V4\\archive\\执行任务书\\ZCODE_BACKEND_GOAL.md",
+    "Files": 1,
+    "Bytes": 5872,
+    "Links": 0,
+    "Digest": "1010D0A009DD5632F13EC0262D0A578BA0BC605458BF808157701DC40B448623",
+    "VerifiedAt": "2026-09-05T12:08:36.4723829+08:00"
+  },
+  {
+    "From": "jianwei-v3\\site\\docs\\v4\\ZCODE_CONCURRENCY_TRIAL.md",
+    "To": "V4\\archive\\执行任务书\\ZCODE_CONCURRENCY_TRIAL.md",
+    "Files": 1,
+    "Bytes": 3230,
+    "Links": 0,
+    "Digest": "031EEAE9378B4608BE3BF3A18A62B479F8EBE49D282DD88B22ED13A0ACD819F4",
+    "VerifiedAt": "2026-09-05T12:08:36.4802627+08:00"
+  },
+  {
+    "From": "jianwei-v3\\site\\docs\\v4\\ZCODE_OVERNIGHT_MASTER_PROMPT.md",
+    "To": "V4\\archive\\执行任务书\\ZCODE_OVERNIGHT_MASTER_PROMPT.md",
+    "Files": 1,
+    "Bytes": 9156,
+    "Links": 0,
+    "Digest": "B37509334ABB620323630BB51651A2C240801343DF539226151CE487CEB12BEE",
+    "VerifiedAt": "2026-09-05T12:08:36.4882044+08:00"
+  },
+  {
+    "From": "jianwei-v3\\site\\docs\\v4\\ZCODE_OVERNIGHT_WORKSPACE_GOAL.md",
+    "To": "V4\\archive\\执行任务书\\ZCODE_OVERNIGHT_WORKSPACE_GOAL.md",
+    "Files": 1,
+    "Bytes": 41424,
+    "Links": 0,
+    "Digest": "C93390D3F2E4112F06EB3B1A6BF4EA481D3C24ED3CB7EF48F6FE66D37BF78A92",
+    "VerifiedAt": "2026-09-05T12:08:36.4955366+08:00"
+  },
+  {
+    "From": "jianwei-v3\\site\\docs\\v4\\BACKEND_PROGRESS.md",
+    "To": "V4\\archive\\工程验收\\BACKEND_PROGRESS.md",
+    "Files": 1,
+    "Bytes": 24895,
+    "Links": 0,
+    "Digest": "D9073F33E2CDD05C43FCE3896F99B86578C43FB7D4EB1AB51D9239A196B32432",
+    "VerifiedAt": "2026-09-05T12:08:36.5044428+08:00"
+  },
+  {
+    "From": "jianwei-v3\\site\\docs\\v4\\ACCEPTANCE.md",
+    "To": "V4\\archive\\工程验收\\ACCEPTANCE.md",
+    "Files": 1,
+    "Bytes": 9870,
+    "Links": 0,
+    "Digest": "9C11CA441B3B5A63F747CB5890716BFD2817C357C00B04B2BC105E562B61EA29",
+    "VerifiedAt": "2026-09-05T12:08:36.5119339+08:00"
+  },
+  {
+    "From": "jianwei-v3\\site\\docs\\v4\\ZCODE_RUN_STATUS.md",
+    "To": "V4\\archive\\工程验收\\ZCODE_RUN_STATUS.md",
+    "Files": 1,
+    "Bytes": 7345,
+    "Links": 0,
+    "Digest": "FEDA7414F0FDC5D74F9020860E1D82601FD7AFD2F6651F0CF0E088A5A1A2F4B4",
+    "VerifiedAt": "2026-09-05T12:08:36.5193059+08:00"
+  }
+]

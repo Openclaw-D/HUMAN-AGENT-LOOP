@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "checkpointId": "v3-shell-child-process-repair",
+  "status": "completed",
+  "runnerThrew": false,
+  "runnerFailureCategory": null,
+  "runnerTelemetry": {
+    "runnerVersion": "flash-runner/2026-08-29.6",
+    "wallMs": 19183,
+    "queueWaitMs": 6,
+    "promptSha256": "EF90CBF802CE77ED51300F8D76EA574A73D22EFAABA3073B51FB45BF44006160",
+    "trustedDangerFullAccess": true,
+    "dangerFullAccessReason": "child-process-required",
+    "billingMode": "attested",
+    "billingLeasePath": "C:\\Users\\22673\\Desktop\\GLM\\benchmarks\\billing-attestation-v1\\20260829-2155\\billing-lease.json",
+    "billingLeaseSha256": "A91AD1915262AADA7A8B5B7A05EF8907CFAC7EB424D16840943A99F57B8708AB",
+    "billingLeaseExpiresAt": "2026-08-29T16:57:26.0627148+00:00"
+  },
+  "evidence": {
+    "schemaVersion": 1,
+    "checkpointId": "v3-shell-child-process-repair",
+    "disposition": "controller_pending",
+    "stopScheduling": false,
+    "transport": {
+      "runnerStatus": "completed",
+      "terminal": "turn.completed",
+      "failureKind": null,
+      "providerErrorCount": 0,
+      "rateLimit": false,
+      "quota": false,
+      "authentication": false,
+      "sandboxDenial": false,
+      "network": false,
+      "usage": {
+        "input": 7491,
+        "cached": 3136,
+        "output": 269,
+        "fresh": 4355
+      }
+    },
+    "execution": {
+      "scopeValid": true,
+      "commandCount": 1,
+      "acceptanceRuns": 1,
+      "changedFiles": [],
+      "issues": []
+    },
+    "controller": {
+      "status": "pending",
+      "exitCode": null
+    }
+  }
+}

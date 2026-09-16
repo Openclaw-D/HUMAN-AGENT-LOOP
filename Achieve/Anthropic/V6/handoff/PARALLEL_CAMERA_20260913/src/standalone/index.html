@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>设备拍照模块·本地预览样例（测试壳）</title>
+<style>
+  /* 低保真测试壳样式，非产品前端 */
+  body { font-family: system-ui, sans-serif; margin: 16px; max-width: 720px; line-height: 1.5; }
+  button { margin: 4px 8px 4px 0; padding: 8px 12px; font-size: 14px; }
+  video, img { max-width: 100%; border: 1px solid #999; display: block; margin: 8px 0; }
+  pre { background: #f4f4f4; padding: 8px; overflow-x: auto; }
+  .banner { border: 1px solid #666; padding: 8px; margin: 8px 0; }
+  .notice { min-height: 1.4em; font-weight: 600; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+  <h1>设备拍照模块·本地预览样例</h1>
+  <div class="banner">
+    仅本地预览：不上传、不持久保存、不发送给模型；刷新后预览会丢失。
+    文件可能来自相册或截图，“capture=environment”系统提示也不证明文件为现场拍摄。
+  </div>
+  <p>状态：<strong id="state">待机</strong>　活动预览：<span id="hint">无</span></p>
+  <p class="notice" id="notice"></p>
+  <p>
+    <button id="open" type="button">开启摄像头（可选拍照增强）</button>
+    <button id="shot" type="button" disabled>拍照 takePhoto</button>
+    <button id="close" type="button" disabled>关闭摄像头</button>
+    <button id="pick-btn" type="button">选择文件（系统拍照/相册）</button>
+    <button id="dispose" type="button">释放全部</button>
+    <input id="pick" type="file" accept="image/*" capture="environment" hidden>
+  </p>
+  <p>能力检测（只看API/安全上下文，不启动设备）：</p>
+  <pre id="cap"></pre>
+  <video id="vf" muted playsinline hidden></video>
+  <img id="shot-img" alt="最近一次本地预览照片" hidden>
+  <pre id="meta"></pre>
+  <script type="module" src="./standalone-main.mjs"></script>
+</body>
+</html>

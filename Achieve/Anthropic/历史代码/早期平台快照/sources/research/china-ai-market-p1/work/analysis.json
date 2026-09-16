@@ -1,0 +1,1698 @@
+{
+  "generated_at": "2026-08-26T16:25:45.425Z",
+  "normalized_unique_count": 1344,
+  "analysis_pool_count": 845,
+  "excluded_top3_count": 136,
+  "analysis_source_counts": {
+    "boss": 302,
+    "other": 216,
+    "official": 127,
+    "zhaopin": 112,
+    "linkedin": 88
+  },
+  "analysis_grade_counts": {
+    "C": 718,
+    "B": 127
+  },
+  "analysis_high_salary_counts": {
+    "none": 581,
+    "confirmed_floor": 183,
+    "monthly_only": 43,
+    "possible_ceiling": 31,
+    "below_threshold": 7
+  },
+  "themes": [
+    {
+      "theme": "other_ai",
+      "count": 131,
+      "named_company_count": 25,
+      "named_companies": [
+        "阿里巴巴/蚂蚁",
+        "百川智能",
+        "百度",
+        "比亚迪",
+        "滴滴",
+        "第四范式",
+        "海康威视",
+        "金蝶",
+        "京东",
+        "京东/美团",
+        "科大讯飞",
+        "联想",
+        "蚂蚁集团",
+        "美团",
+        "拼多多",
+        "腾讯",
+        "网易",
+        "蔚来",
+        "小米",
+        "携程",
+        "用友",
+        "智谱 AI",
+        "字节跳动",
+        "MiniMax",
+        "OPPO"
+      ],
+      "source_counts": {
+        "boss": 42,
+        "official": 33,
+        "other": 25,
+        "linkedin": 18,
+        "zhaopin": 13
+      },
+      "grade_counts": {
+        "C": 98,
+        "B": 33
+      },
+      "high_salary_count": 29,
+      "confirmed_salary_floor_count": 24,
+      "freshness_signal_count": 83,
+      "frontier_count": 102,
+      "frontier_share": 0.7786,
+      "representatives": [
+        {
+          "candidate_id": "P1-00041",
+          "company_query": "京东",
+          "title": "职位详情",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=219681",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00002",
+          "company_query": "字节跳动",
+          "title": "Machine Learning Engineer, AI Search (ByteDance Singapore)",
+          "url": "https://joinbytedance.com/search/7611471155291343109?gh_src=Lead+Edge+Capital+job+board",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00005",
+          "company_query": "字节跳动",
+          "title": "AI Agent Engineering Project Intern (Corporate Service System - Procurement) - 2026 Start（BS/MS）",
+          "url": "https://joinbytedance.com/search/7672387044303227141",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00048",
+          "company_query": "京东",
+          "title": "职位详情",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=217808",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00268",
+          "company_query": "小米",
+          "title": "小米-北京-研发工程师-机器视觉研究员-职位详情",
+          "url": "https://hr.xiaomi.com/job/view/650",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00334",
+          "company_query": "联想",
+          "title": "职位搜索 | Lenovo",
+          "url": "https://jobs.lenovo.com/zh_CN/careers/SearchJobs?3_112_3=298&3_113_3=2435&3_138_3=326204&3_169_3=1513636&jobId=68829&title=Emplois+similaires",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00052",
+          "company_query": "京东",
+          "title": "职位详情",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=221791",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00325",
+          "company_query": "联想",
+          "title": "招聘岗位",
+          "url": "https://talent.lenovo.com.cn/position?jobTypeName=%E8%81%8C%E8%83%BD%E6%96%B9%E5%90%91&workPlace=1",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        }
+      ]
+    },
+    {
+      "theme": "embodied_robotics_auto",
+      "count": 121,
+      "named_company_count": 14,
+      "named_companies": [
+        "百川智能",
+        "百度",
+        "比亚迪",
+        "滴滴",
+        "海康威视",
+        "华为",
+        "京东",
+        "京东/美团",
+        "美团",
+        "商汤科技",
+        "蔚来",
+        "小米",
+        "字节跳动",
+        "DeepSeek"
+      ],
+      "source_counts": {
+        "boss": 32,
+        "other": 32,
+        "linkedin": 20,
+        "official": 20,
+        "zhaopin": 17
+      },
+      "grade_counts": {
+        "C": 101,
+        "B": 20
+      },
+      "high_salary_count": 17,
+      "confirmed_salary_floor_count": 13,
+      "freshness_signal_count": 95,
+      "frontier_count": 101,
+      "frontier_share": 0.8347,
+      "representatives": [
+        {
+          "candidate_id": "P1-00013",
+          "company_query": "字节跳动",
+          "title": "Research Engineer – Multimodal Training Infrastructure (Seed Infra)",
+          "url": "https://joinbytedance.com/search/7610544143185709365",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00055",
+          "company_query": "京东",
+          "title": "职位详情",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=221328",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00057",
+          "company_query": "京东",
+          "title": "职位详情",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=221147",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00020",
+          "company_query": "字节跳动",
+          "title": "Research Engineer - LLM Training Infrastructure - Seed Infra",
+          "url": "https://joinbytedance.com/search/7630899686830311685",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00058",
+          "company_query": "京东",
+          "title": "职位详情",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=221150",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00022",
+          "company_query": "字节跳动",
+          "title": "Research Engineer – Reinforcement Learning (RL) Systems & Infrastructure (Seed Infra)",
+          "url": "https://joinbytedance.com/search/7610949520813525253",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00061",
+          "company_query": "京东",
+          "title": "职位详情",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=220091",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00063",
+          "company_query": "美团",
+          "title": "LongCat大模型人才招聘",
+          "url": "https://zhaopin.meituan.com/longcatprogram",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        }
+      ]
+    },
+    {
+      "theme": "multimodal_content",
+      "count": 109,
+      "named_company_count": 24,
+      "named_companies": [
+        "百度",
+        "比亚迪",
+        "第四范式",
+        "海康威视",
+        "华为",
+        "阶跃星辰",
+        "京东",
+        "科大讯飞",
+        "快手",
+        "蚂蚁集团",
+        "商汤科技",
+        "顺丰",
+        "腾讯",
+        "网易",
+        "蔚来",
+        "小米",
+        "携程",
+        "月之暗面",
+        "智谱 AI",
+        "字节跳动",
+        "DeepSeek",
+        "MiniMax",
+        "OPPO",
+        "vivo"
+      ],
+      "source_counts": {
+        "other": 39,
+        "boss": 33,
+        "zhaopin": 20,
+        "official": 15,
+        "linkedin": 2
+      },
+      "grade_counts": {
+        "C": 94,
+        "B": 15
+      },
+      "high_salary_count": 19,
+      "confirmed_salary_floor_count": 15,
+      "freshness_signal_count": 84,
+      "frontier_count": 106,
+      "frontier_share": 0.9725,
+      "representatives": [
+        {
+          "candidate_id": "P1-00053",
+          "company_query": "京东",
+          "title": "职位详情",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=217540",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00265",
+          "company_query": "小米",
+          "title": "小米-北京-研发工程师-高级Android工程师（语音搜索）-职位详情",
+          "url": "https://hr.xiaomi.com/job/view/582",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00049",
+          "company_query": "京东",
+          "title": "职位详情",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=221161",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00294",
+          "company_query": "OPPO",
+          "title": "OPPO招聘 - 加入我们 join us - 岗位详情",
+          "url": "https://careers.oppo.com/university/oppo/campus/post/1438?recruitType=doctor",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00760",
+          "company_query": "顺丰",
+          "title": "顺丰人才招聘系统-社会招聘-视觉多模态算法高级工程师",
+          "url": "https://hr.sf-express.com/JobSearchById/61302%2C3",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00295",
+          "company_query": "OPPO",
+          "title": "OPPO招聘 - 加入我们 join us - 岗位详情",
+          "url": "https://careers.oppo.com/university/oppo/campus/post/1454?recruitType=Intern",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00107",
+          "company_query": "华为",
+          "title": "挑战课题专项招聘",
+          "url": "https://career.huawei.com/cn/young-genius",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00286",
+          "company_query": "OPPO",
+          "title": "OPPO招聘 - 加入我们 join us - 岗位详情",
+          "url": "https://careers.oppo.com/university/oppo/campus/post/1396?recruitType=Intern",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        }
+      ]
+    },
+    {
+      "theme": "foundation_model_infra",
+      "count": 104,
+      "named_company_count": 14,
+      "named_companies": [
+        "百度",
+        "滴滴",
+        "华为",
+        "快手",
+        "联想",
+        "蚂蚁集团",
+        "拼多多",
+        "商汤科技",
+        "蔚来",
+        "携程",
+        "月之暗面",
+        "智谱 AI",
+        "字节跳动",
+        "OPPO"
+      ],
+      "source_counts": {
+        "linkedin": 29,
+        "other": 26,
+        "boss": 24,
+        "official": 17,
+        "zhaopin": 8
+      },
+      "grade_counts": {
+        "C": 87,
+        "B": 17
+      },
+      "high_salary_count": 22,
+      "confirmed_salary_floor_count": 18,
+      "freshness_signal_count": 73,
+      "frontier_count": 88,
+      "frontier_share": 0.8462,
+      "representatives": [
+        {
+          "candidate_id": "P1-00014",
+          "company_query": "字节跳动",
+          "title": "Research Scientist - DPU & AI Infra",
+          "url": "https://joinbytedance.com/search/7554211007771822354",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00015",
+          "company_query": "字节跳动",
+          "title": "Research Engineer - LLM/VLM Inference Optimization (Seed Infra)",
+          "url": "https://joinbytedance.com/search/7626484869123836165",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00004",
+          "company_query": "字节跳动",
+          "title": "Research Scientist - AI Agent Memory Infrastructure - Global Frontier Tech Recruitment Program - 2027 Start (PhD)",
+          "url": "https://joinbytedance.com/search/7629126645119650101?gh_src=Lead+Edge+Capital+job+board",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00016",
+          "company_query": "字节跳动",
+          "title": "Senior Research Scientist, ByteBrain Infrastructure Operation",
+          "url": "https://joinbytedance.com/search/7639485455186528517",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00017",
+          "company_query": "字节跳动",
+          "title": "Senior Software Engineer - AI Compute Infrastructure",
+          "url": "https://joinbytedance.com/search/7553906394808142098",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00018",
+          "company_query": "字节跳动",
+          "title": "Research Scientist - AI Compute & DPU - Global Frontier Tech Recruitment Program - 2027 Start (PhD)",
+          "url": "https://joinbytedance.com/search/7633538176269306117",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00019",
+          "company_query": "字节跳动",
+          "title": "Research Scientist - AI Compute & DPU - Global Frontier Tech Recruitment Program - 2027 Start (PhD)",
+          "url": "https://joinbytedance.com/search/7633537809438689541",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00008",
+          "company_query": "字节跳动",
+          "title": "Senior Software Engineer - AI Agent Memory Infrastructure",
+          "url": "https://joinbytedance.com/search/7626144409813387573",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        }
+      ]
+    },
+    {
+      "theme": "commerce_growth",
+      "count": 83,
+      "named_company_count": 18,
+      "named_companies": [
+        "阿里巴巴/蚂蚁",
+        "百川智能",
+        "百度",
+        "华为",
+        "阶跃星辰",
+        "京东",
+        "京东/美团",
+        "科大讯飞",
+        "快手",
+        "蚂蚁集团",
+        "拼多多",
+        "腾讯",
+        "网易",
+        "用友",
+        "月之暗面",
+        "字节跳动",
+        "DeepSeek",
+        "OPPO"
+      ],
+      "source_counts": {
+        "boss": 47,
+        "other": 15,
+        "zhaopin": 9,
+        "official": 8,
+        "linkedin": 4
+      },
+      "grade_counts": {
+        "C": 75,
+        "B": 8
+      },
+      "high_salary_count": 41,
+      "confirmed_salary_floor_count": 36,
+      "freshness_signal_count": 52,
+      "frontier_count": 80,
+      "frontier_share": 0.9639,
+      "representatives": [
+        {
+          "candidate_id": "P1-00045",
+          "company_query": "京东",
+          "title": "职位详情",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=217376",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00046",
+          "company_query": "京东",
+          "title": "职位详情",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=218961",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00010",
+          "company_query": "字节跳动",
+          "title": "Machine Learning Engineer - E-commerce Merchant Growth (LLM & Agentic Systems)",
+          "url": "https://joinbytedance.com/search/7616680923447527733?gh_src=Technology+Crossover+Ventures+job+board",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00060",
+          "company_query": "京东",
+          "title": "职位详情",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=218891",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00108",
+          "company_query": "华为",
+          "title": "华为招聘-找工作-求职-最新招聘信息-华为招聘官方网站",
+          "url": "https://career.huawei.com/reccampportal",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00289",
+          "company_query": "OPPO",
+          "title": "OPPO招聘 - 加入我们 join us - 岗位详情",
+          "url": "https://careers.oppo.com/university/oppo/campus/post/1812?recruitType=Intern",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00302",
+          "company_query": "OPPO",
+          "title": "OPPO招聘 - 加入我们 join us - 岗位详情",
+          "url": "https://careers.oppo.com/university/oppo/campus/post/1575",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00101",
+          "company_query": "百度",
+          "title": "百度校园招聘",
+          "url": "https://talent.baidu.com/jobs/detail/GRADUATE/2df21b8d-b533-40e4-ad89-6dea847a44c8",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        }
+      ]
+    },
+    {
+      "theme": "enterprise_productivity",
+      "count": 70,
+      "named_company_count": 16,
+      "named_companies": [
+        "百度",
+        "海康威视",
+        "华为",
+        "金蝶",
+        "金山办公",
+        "京东",
+        "快手",
+        "拼多多",
+        "商汤科技",
+        "腾讯",
+        "网易",
+        "蔚来",
+        "携程",
+        "用友",
+        "智谱 AI",
+        "vivo"
+      ],
+      "source_counts": {
+        "other": 31,
+        "boss": 19,
+        "official": 9,
+        "zhaopin": 8,
+        "linkedin": 3
+      },
+      "grade_counts": {
+        "C": 61,
+        "B": 9
+      },
+      "high_salary_count": 10,
+      "confirmed_salary_floor_count": 9,
+      "freshness_signal_count": 39,
+      "frontier_count": 62,
+      "frontier_share": 0.8857,
+      "representatives": [
+        {
+          "candidate_id": "P1-00056",
+          "company_query": "京东",
+          "title": "职位详情",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=221515",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00047",
+          "company_query": "京东",
+          "title": "职位详情",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=220736",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00079",
+          "company_query": "百度",
+          "title": "百度校园招聘",
+          "url": "https://talent.baidu.com/jobs/detail/GRADUATE/02f73086-be71-4d09-8d6e-f1c6981b8b48",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00351",
+          "company_query": "蔚来",
+          "title": "百度校园招聘",
+          "url": "https://talent.baidu.com/jobs/list?projectType=3&recruitType=GRADUATE",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00093",
+          "company_query": "百度",
+          "title": "百度校园招聘",
+          "url": "https://talent.baidu.com/jobs/detail/GRADUATE/d34cbaff-ddab-41ba-b043-5f8529fec40e",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00740",
+          "company_query": "海康威视",
+          "title": "研究院-AI Agent算法工程师-杭州-社会招聘-海康威视招聘",
+          "url": "https://talent.hikvision.com/home/socity/position?postId=7B2DBB784A24DE5A546F20B335743343",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00111",
+          "company_query": "华为",
+          "title": "走进华为",
+          "url": "https://career.huawei.com/cn/entering-huawei",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00089",
+          "company_query": "百度",
+          "title": "百度校园招聘",
+          "url": "https://talent.baidu.com/jobs/detail/SOCIAL/c8821b51-c061-4652-8fad-61d8a49b9f52",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        }
+      ]
+    },
+    {
+      "theme": "customer_service",
+      "count": 49,
+      "named_company_count": 9,
+      "named_companies": [
+        "阿里巴巴/蚂蚁",
+        "滴滴",
+        "京东",
+        "京东/美团",
+        "美团",
+        "拼多多",
+        "网易",
+        "小米",
+        "携程"
+      ],
+      "source_counts": {
+        "boss": 24,
+        "other": 10,
+        "zhaopin": 6,
+        "linkedin": 5,
+        "official": 4
+      },
+      "grade_counts": {
+        "C": 45,
+        "B": 4
+      },
+      "high_salary_count": 17,
+      "confirmed_salary_floor_count": 16,
+      "freshness_signal_count": 32,
+      "frontier_count": 42,
+      "frontier_share": 0.8571,
+      "representatives": [
+        {
+          "candidate_id": "P1-00275",
+          "company_query": "小米",
+          "title": "小米-北京-研发工程师-算法工程师-职位详情",
+          "url": "https://hr.xiaomi.com/job/view/640",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00050",
+          "company_query": "京东",
+          "title": "职位详情",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=219903",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00141",
+          "company_query": "滴滴",
+          "title": "滴滴招聘",
+          "url": "https://talent.didiglobal.com/m?jobType=1",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00064",
+          "company_query": "美团",
+          "title": "北斗计划 | 美团招聘",
+          "url": "https://zhaopin.meituan.com/web/beidouprogram?staffSsoId=2910215",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-01333",
+          "company_query": "行业应用",
+          "title": "Merck Life Science正在招聘高级专家，客户服务AI及数字化解决方案 (上海市) | 领英",
+          "url": "https://cn.linkedin.com/jobs/view/%E9%AB%98%E7%BA%A7%E4%B8%93%E5%AE%B6%EF%BC%8C%E5%AE%A2%E6%88%B7%E6%9C%8D%E5%8A%A1ai%E5%8F%8A%E6%95%B0%E5%AD%97%E5%8C%96%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-at-merck-life-science-4437192111",
+          "source_platform": "linkedin",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-01300",
+          "company_query": "终端大厂",
+          "title": "小米科技正在招聘算法工程师 (北京市, 中国) | 领英",
+          "url": "https://cn.linkedin.com/jobs/view/%E7%AE%97%E6%B3%95%E5%B7%A5%E7%A8%8B%E5%B8%88-at-xiaomi-technology-4435061179",
+          "source_platform": "linkedin",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-01325",
+          "company_query": "基础模型公司",
+          "title": "凯捷中国正在招聘大模型算法工程师 (沈阳) | 领英",
+          "url": "https://cn.linkedin.com/jobs/view/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%AE%97%E6%B3%95%E5%B7%A5%E7%A8%8B%E5%B8%88-at-%E5%87%AF%E6%8D%B7%E4%B8%AD%E5%9B%BD-4247972092",
+          "source_platform": "linkedin",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-01291",
+          "company_query": "互联网大厂",
+          "title": "Meitu Inc.正在招聘Agent开发实习生（北京） (北京市) | 领英",
+          "url": "https://cn.linkedin.com/jobs/view/agent%E5%BC%80%E5%8F%91%E5%AE%9E%E4%B9%A0%E7%94%9F%EF%BC%88%E5%8C%97%E4%BA%AC%EF%BC%89-at-meitu-inc-4363522508",
+          "source_platform": "linkedin",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        }
+      ]
+    },
+    {
+      "theme": "supply_chain_logistics",
+      "count": 49,
+      "named_company_count": 8,
+      "named_companies": [
+        "菜鸟",
+        "华为",
+        "金山办公",
+        "京东",
+        "京东/美团",
+        "联想",
+        "顺丰",
+        "OPPO"
+      ],
+      "source_counts": {
+        "boss": 21,
+        "other": 11,
+        "official": 9,
+        "zhaopin": 7,
+        "linkedin": 1
+      },
+      "grade_counts": {
+        "C": 40,
+        "B": 9
+      },
+      "high_salary_count": 14,
+      "confirmed_salary_floor_count": 12,
+      "freshness_signal_count": 31,
+      "frontier_count": 37,
+      "frontier_share": 0.7551,
+      "representatives": [
+        {
+          "candidate_id": "P1-00054",
+          "company_query": "京东",
+          "title": "京东招聘-首页",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=180640",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00044",
+          "company_query": "京东",
+          "title": "职位详情",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=212557",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00062",
+          "company_query": "京东",
+          "title": "京东招聘-首页",
+          "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=195629",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00103",
+          "company_query": "华为",
+          "title": "华为社招最新招聘信息-华为社会招聘",
+          "url": "https://career.huawei.com/reccampportal/portal5/social-recruitment-ai.html",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00327",
+          "company_query": "联想",
+          "title": "招聘岗位",
+          "url": "https://talent.lenovo.com.cn/position?deptId=88&projectType=1",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00330",
+          "company_query": "联想",
+          "title": "招聘岗位",
+          "url": "https://talent.lenovo.com.cn/position?jobTypeName=AI%E5%BC%80%E5%8F%91%E7%B1%BB&projectType=1",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00290",
+          "company_query": "OPPO",
+          "title": "OPPO招聘 - 加入我们 join us - 岗位详情",
+          "url": "https://careers.oppo.com/university/oppo/campus/post/1580?recruitType=Graduate",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00291",
+          "company_query": "OPPO",
+          "title": "OPPO招聘 - 加入我们 join us - 岗位详情",
+          "url": "https://careers.oppo.com/university/oppo/campus/post/1807?recruitType=Graduate",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        }
+      ]
+    },
+    {
+      "theme": "healthcare",
+      "count": 41,
+      "named_company_count": 5,
+      "named_companies": [
+        "阿里巴巴/蚂蚁",
+        "百川智能",
+        "菜鸟",
+        "科大讯飞",
+        "商汤科技"
+      ],
+      "source_counts": {
+        "boss": 19,
+        "other": 13,
+        "zhaopin": 8,
+        "linkedin": 1
+      },
+      "grade_counts": {
+        "C": 41
+      },
+      "high_salary_count": 15,
+      "confirmed_salary_floor_count": 12,
+      "freshness_signal_count": 28,
+      "frontier_count": 36,
+      "frontier_share": 0.878,
+      "representatives": [
+        {
+          "candidate_id": "P1-00983",
+          "company_query": "LinkedIn中国公开样本",
+          "title": "Sovenson Limited正在招聘AI 算法工程师 / 大模型工程师（LLM / NLP 方向） (中国) | 领英",
+          "url": "https://cn.linkedin.com/jobs/view/ai-%E7%AE%97%E6%B3%95%E5%B7%A5%E7%A8%8B%E5%B8%88-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%B7%A5%E7%A8%8B%E5%B8%88%EF%BC%88llm-nlp-%E6%96%B9%E5%90%91%EF%BC%89-at-sovenson-limited-4387672649",
+          "source_platform": "linkedin",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-01156",
+          "company_query": "高薪公开样本",
+          "title": "「杭州医疗算法工程师招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/71824a2fda47284b0nR43t24GQ~~",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-50K·15薪"
+        },
+        {
+          "candidate_id": "P1-01157",
+          "company_query": "高薪公开样本",
+          "title": "「北京阿里图像算法专家招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/632bc7847feb768b03N72t27EA~~",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-60K·15薪"
+        },
+        {
+          "candidate_id": "P1-01158",
+          "company_query": "高薪公开样本",
+          "title": "「医疗算法工程师招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/967d3540a64437e70HN43d-4",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-60K·15薪"
+        },
+        {
+          "candidate_id": "P1-00813",
+          "company_query": "高薪公开样本",
+          "title": "「上海效率工程产品经理招聘信息」-BOSS直聘",
+          "url": "https://m.zhipin.com/zhaopin/3ff0231eeb97340c03V83t-1GQ~~",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "50-80K·15薪"
+        },
+        {
+          "candidate_id": "P1-01159",
+          "company_query": "高薪公开样本",
+          "title": "「上海联影医疗算法工程师招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/1699950a611bef5203d43929",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-60K·14薪"
+        },
+        {
+          "candidate_id": "P1-01160",
+          "company_query": "高薪公开样本",
+          "title": "「算法工程师医疗招聘信息」-BOSS直聘",
+          "url": "https://m.zhipin.com/zhaopin/d9940e25ba354b571nJ53928GA~~",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-60K·16薪"
+        },
+        {
+          "candidate_id": "P1-01098",
+          "company_query": "AI企业",
+          "title": "「深圳市商汤科技有限公司招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/f3f313002428b5b90HB72g~~",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "40-60K·15薪"
+        }
+      ]
+    },
+    {
+      "theme": "marketing_sales",
+      "count": 25,
+      "named_company_count": 5,
+      "named_companies": [
+        "华为",
+        "蚂蚁集团",
+        "顺丰",
+        "蔚来",
+        "智谱 AI"
+      ],
+      "source_counts": {
+        "boss": 14,
+        "zhaopin": 5,
+        "official": 3,
+        "other": 3
+      },
+      "grade_counts": {
+        "C": 22,
+        "B": 3
+      },
+      "high_salary_count": 10,
+      "confirmed_salary_floor_count": 10,
+      "freshness_signal_count": 13,
+      "frontier_count": 23,
+      "frontier_share": 0.92,
+      "representatives": [
+        {
+          "candidate_id": "P1-00104",
+          "company_query": "华为",
+          "title": "社会招聘",
+          "url": "https://career.huawei.com/cn/social-recruitment",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00762",
+          "company_query": "顺丰",
+          "title": "招聘",
+          "url": "https://crs-pub.sf-express.com/recruitcenter?appName=sfzp&code=033G4a4R19u3W511fm5R1h8n4R1G4a4z&role=3&state=123",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00767",
+          "company_query": "顺丰",
+          "title": "招聘",
+          "url": "https://crs-k8.sf-express.com/recruitcenter?role=3",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00852",
+          "company_query": "高薪公开样本",
+          "title": "「杭州精准营销算法专家招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/2c4893ee4b20cf2033Z52tS_",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "40-70K·15薪"
+        },
+        {
+          "candidate_id": "P1-01151",
+          "company_query": "高薪公开样本",
+          "title": "「科大讯飞市场营销招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/f25f715d876c34990XJ_09-1",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-60K·14薪"
+        },
+        {
+          "candidate_id": "P1-01195",
+          "company_query": "高薪公开样本",
+          "title": "「快手广告算法招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/2eac0e4459cdd4131nd_3Ny8FA~~",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-60K·16薪"
+        },
+        {
+          "candidate_id": "P1-01090",
+          "company_query": "基础模型公司",
+          "title": "「深圳市视维科技股份有限公司招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/59bb9d5f8ff27e110XB73NS-",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-45K·14薪"
+        },
+        {
+          "candidate_id": "P1-00242",
+          "company_query": "蚂蚁集团",
+          "title": "「高级产品专家蚂蚁招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/0b342c485f6336c61nR53tm5FQ~~",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "40-60K·15薪"
+        }
+      ]
+    },
+    {
+      "theme": "device_os",
+      "count": 18,
+      "named_company_count": 5,
+      "named_companies": [
+        "比亚迪",
+        "华为",
+        "联想",
+        "OPPO",
+        "vivo"
+      ],
+      "source_counts": {
+        "official": 7,
+        "boss": 5,
+        "linkedin": 3,
+        "other": 2,
+        "zhaopin": 1
+      },
+      "grade_counts": {
+        "C": 11,
+        "B": 7
+      },
+      "high_salary_count": 3,
+      "confirmed_salary_floor_count": 3,
+      "freshness_signal_count": 14,
+      "frontier_count": 12,
+      "frontier_share": 0.6667,
+      "representatives": [
+        {
+          "candidate_id": "P1-00105",
+          "company_query": "华为",
+          "title": "部门列表",
+          "url": "https://career.huawei.com/cn/department-list",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00298",
+          "company_query": "OPPO",
+          "title": "OPPO招聘 - 加入我们 join us - 岗位详情",
+          "url": "https://careers.oppo.com/university/oppo/campus/post/1218?recruitType=Graduate",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00300",
+          "company_query": "OPPO",
+          "title": "OPPO招聘 - 加入我们 join us - 岗位详情",
+          "url": "https://careers.oppo.com/university/oppo/campus/post/1461",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00335",
+          "company_query": "联想",
+          "title": "智算云开发工程师 - - 70024",
+          "url": "https://jobs.lenovo.com/zh_CN/careers/JobDetail/70024",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00344",
+          "company_query": "联想",
+          "title": "异构计算资深研究员 - - 70440",
+          "url": "https://jobs.lenovo.com/zh_CN/careers/JobDetail/70440",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00303",
+          "company_query": "OPPO",
+          "title": "OPPO招聘 - 加入我们 join us - 岗位详情",
+          "url": "https://careers.oppo.com/university/oppo/campus/post/1804?recruitType=Graduate",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00336",
+          "company_query": "联想",
+          "title": "大语言模型算法专家 - - 66861",
+          "url": "https://jobs.lenovo.com/zh_CN/careers/JobDetail/Parent-Evergreen/66861",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-01321",
+          "company_query": "基础模型公司",
+          "title": "罗技科技有限公司正在招聘Lead Embedded Software Engineer ID209000 (苏州市) | 领英",
+          "url": "https://cn.linkedin.com/jobs/view/lead-embedded-software-engineer-id209000-at-%E7%BD%97%E6%8A%80%E7%A7%91%E6%8A%80%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8-4412065329",
+          "source_platform": "linkedin",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        }
+      ]
+    },
+    {
+      "theme": "data_analytics",
+      "count": 16,
+      "named_company_count": 4,
+      "named_companies": [
+        "海康威视",
+        "小米",
+        "携程",
+        "字节跳动"
+      ],
+      "source_counts": {
+        "boss": 10,
+        "zhaopin": 3,
+        "official": 2,
+        "other": 1
+      },
+      "grade_counts": {
+        "C": 14,
+        "B": 2
+      },
+      "high_salary_count": 10,
+      "confirmed_salary_floor_count": 9,
+      "freshness_signal_count": 6,
+      "frontier_count": 13,
+      "frontier_share": 0.8125,
+      "representatives": [
+        {
+          "candidate_id": "P1-00266",
+          "company_query": "小米",
+          "title": "小米-北京-研发工程师-数据分析经理-职位详情",
+          "url": "https://hr.xiaomi.com/job/view/688",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00738",
+          "company_query": "海康威视",
+          "title": "研究院-大模型应用算法工程师-杭州-社会招聘-海康威视招聘",
+          "url": "https://talent.hikvision.com/home/socity/position?postId=F3572C5AD0A1263CE644BEF27E2AA66F",
+          "source_platform": "official",
+          "evidence_grade": "B",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00830",
+          "company_query": "高薪公开样本",
+          "title": "「BI架构师招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/b6157891b6db30a2031429q6",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-60K·15薪"
+        },
+        {
+          "candidate_id": "P1-01205",
+          "company_query": "高薪公开样本",
+          "title": "「阿里巴巴数据产品经理招聘信息」-BOSS直聘",
+          "url": "https://m.zhipin.com/zhaopin/93913dd8cf2f8e751nR63tW7FQ~~",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-60K·16薪"
+        },
+        {
+          "candidate_id": "P1-01206",
+          "company_query": "高薪公开样本",
+          "title": "「阿里巴巴BI招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/8eb9128c190e3bf51nV53N28Fg~~",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-50K·16薪"
+        },
+        {
+          "candidate_id": "P1-01207",
+          "company_query": "高薪公开样本",
+          "title": "「字节跳动数据分析师招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/6ec9e8a18c9ddde21ndy29S9Ew~~",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-60K·15薪"
+        },
+        {
+          "candidate_id": "P1-01210",
+          "company_query": "高薪公开样本",
+          "title": "「数据分析师字节跳动招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/44422fc4175687f21nd43NW_GA~~",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-60K·15薪"
+        },
+        {
+          "candidate_id": "P1-01026",
+          "company_query": "字节跳动",
+          "title": "「无锡字节跳动招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/b776dc26eac4538e1nx92t26EA~~",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "40-70K·15薪"
+        }
+      ]
+    },
+    {
+      "theme": "gaming",
+      "count": 13,
+      "named_company_count": 2,
+      "named_companies": [
+        "网易",
+        "DeepSeek"
+      ],
+      "source_counts": {
+        "other": 6,
+        "boss": 5,
+        "linkedin": 2
+      },
+      "grade_counts": {
+        "C": 13
+      },
+      "high_salary_count": 3,
+      "confirmed_salary_floor_count": 3,
+      "freshness_signal_count": 9,
+      "frontier_count": 11,
+      "frontier_share": 0.8462,
+      "representatives": [
+        {
+          "candidate_id": "P1-01299",
+          "company_query": "终端大厂",
+          "title": "Lenovo Vehicle Computing的游戏AI平台产品经理 — 北京市 | 领英职位",
+          "url": "https://cn.linkedin.com/jobs/view/%E6%B8%B8%E6%88%8Fai%E5%B9%B3%E5%8F%B0%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86-at-lenovo-vehicle-computing-4438997871",
+          "source_platform": "linkedin",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-01302",
+          "company_query": "终端大厂",
+          "title": "Lenovo Vehicle Computing正在招聘游戏场景AI原生方案产品经理 (北京市) | 领英",
+          "url": "https://cn.linkedin.com/jobs/view/%E6%B8%B8%E6%88%8F%E5%9C%BA%E6%99%AFai%E5%8E%9F%E7%94%9F%E6%96%B9%E6%A1%88%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86-at-lenovo-vehicle-computing-4438989964",
+          "source_platform": "linkedin",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-01175",
+          "company_query": "高薪公开样本",
+          "title": "「网易游戏产品运营招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/a808b8895ddac8231HN73dS1",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-60K·16薪"
+        },
+        {
+          "candidate_id": "P1-00229",
+          "company_query": "网易",
+          "title": "「网易游戏机器学习招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/fa7dcb26eebe444f1HF63Nu5",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-60K·16薪"
+        },
+        {
+          "candidate_id": "P1-01179",
+          "company_query": "高薪公开样本",
+          "title": "「游戏机器学习招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/235bb401b9f727e11nJ62NW-Fg~~",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-60K·16薪"
+        },
+        {
+          "candidate_id": "P1-00212",
+          "company_query": "网易",
+          "title": "AI 平台研发工程师（AI Agent Infra）（社招）- 网易游戏（互娱） | 职先机",
+          "url": "https://jobs.ultraai.site/jobs/netease/72340",
+          "source_platform": "other",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00224",
+          "company_query": "网易",
+          "title": "AI Infra 研发专家（社招）- 网易游戏（互娱） | 职先机",
+          "url": "https://jobs.ultraai.site/jobs/netease/74021",
+          "source_platform": "other",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00214",
+          "company_query": "网易",
+          "title": "〖平台〗AI产品策划（AI大模型方向）（社招）- 网易游戏（互娱） | 职先机",
+          "url": "https://jobs.ultraai.site/jobs/netease/77290",
+          "source_platform": "other",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        }
+      ]
+    },
+    {
+      "theme": "finance_investment",
+      "count": 12,
+      "named_company_count": 1,
+      "named_companies": [
+        "蚂蚁集团"
+      ],
+      "source_counts": {
+        "boss": 5,
+        "zhaopin": 5,
+        "other": 2
+      },
+      "grade_counts": {
+        "C": 12
+      },
+      "high_salary_count": 4,
+      "confirmed_salary_floor_count": 3,
+      "freshness_signal_count": 8,
+      "frontier_count": 10,
+      "frontier_share": 0.8333,
+      "representatives": [
+        {
+          "candidate_id": "P1-00882",
+          "company_query": "高薪公开样本",
+          "title": "「马上消费金融高级机器视觉算法研究员招聘信息」-BOSS直聘",
+          "url": "https://m.zhipin.com/zhaopin/eb62481604f9769a1HV73926EA~~",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "50-80K·15薪"
+        },
+        {
+          "candidate_id": "P1-01212",
+          "company_query": "高薪公开样本",
+          "title": "「字节跳动数据产品实习招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/4dcc2317a083db6b1nx63Ny6EA~~",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "30-60K·15薪"
+        },
+        {
+          "candidate_id": "P1-01093",
+          "company_query": "基础模型公司",
+          "title": "「北京强化学习算法研究员招聘信息」-BOSS直聘",
+          "url": "https://m.zhipin.com/zhaopin/d67bf68e4838395603N_3d6_FA~~",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "confirmed_floor",
+          "salary_text": "40-70K·16薪"
+        },
+        {
+          "candidate_id": "P1-00818",
+          "company_query": "高薪公开样本",
+          "title": "「同花顺移动产品经理招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/c80090e029b98dff0nVy096-",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "possible_ceiling",
+          "salary_text": "25-40K·15薪"
+        },
+        {
+          "candidate_id": "P1-01274",
+          "company_query": "行业应用",
+          "title": "金融创新人才招聘网招聘信息 - 智联招聘",
+          "url": "https://www.zhaopin.com/zhaopin/fe267a0e0af0426493d6bb956cc03734",
+          "source_platform": "zhaopin",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00236",
+          "company_query": "蚂蚁集团",
+          "title": "〖蚂蚁星〗财富AI Lab-大模型Agent算法-27届（校招）- 蚂蚁集团 | 职先机",
+          "url": "https://jobs.ultraai.site/jobs/ant_campus/26042809825811",
+          "source_platform": "other",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00237",
+          "company_query": "蚂蚁集团",
+          "title": "〖蚂蚁星〗财富AI Lab-大模型训练与应用-27届（校招）- 蚂蚁集团 | 职先机",
+          "url": "https://jobs.ultraai.site/jobs/ant_campus/26042809825810",
+          "source_platform": "other",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00924",
+          "company_query": "智联公开样本",
+          "title": "AIOps架构师招聘_亚信科技招聘 - 智联招聘",
+          "url": "https://www.zhaopin.com/jobdetail/CC139131340J40754861211.htm",
+          "source_platform": "zhaopin",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        }
+      ]
+    },
+    {
+      "theme": "education",
+      "count": 4,
+      "named_company_count": 1,
+      "named_companies": [
+        "第四范式"
+      ],
+      "source_counts": {
+        "boss": 2,
+        "zhaopin": 2
+      },
+      "grade_counts": {
+        "C": 4
+      },
+      "high_salary_count": 0,
+      "confirmed_salary_floor_count": 0,
+      "freshness_signal_count": 2,
+      "frontier_count": 4,
+      "frontier_share": 1,
+      "representatives": [
+        {
+          "candidate_id": "P1-01166",
+          "company_query": "高薪公开样本",
+          "title": "「字节跳动教育产品招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/a4c6acfaa322b5440HFy2di8",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "below_threshold",
+          "salary_text": "15-30K·15薪"
+        },
+        {
+          "candidate_id": "P1-01245",
+          "company_query": "终端大厂",
+          "title": "AI Engineer招聘_联想教育科技(北京)有限公司招聘 - 智联招聘",
+          "url": "https://www.zhaopin.com/jobdetail/CC840683300J40733381511.htm",
+          "source_platform": "zhaopin",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-00646",
+          "company_query": "第四范式",
+          "title": "「第四范式产品经理招聘信息」-BOSS直聘",
+          "url": "https://www.zhipin.com/zhaopin/8896d1802f8097891Xx_0tm5",
+          "source_platform": "boss",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        },
+        {
+          "candidate_id": "P1-01246",
+          "company_query": "终端大厂",
+          "title": "ai算法工程师招聘_联想教育科技(北京)有限公司招聘 - 智联招聘",
+          "url": "https://www.zhaopin.com/jobdetail/CC840683300J40854228311.htm",
+          "source_platform": "zhaopin",
+          "evidence_grade": "C",
+          "high_salary_signal": "none",
+          "salary_text": ""
+        }
+      ]
+    }
+  ]
+}

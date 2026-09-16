@@ -1,0 +1,44 @@
+[
+  {
+    "person": "LQF",
+    "opaque_face_pixels_verified": 9702,
+    "max_RGB_delta_from_prepared_source_layer_on_opaque_face": 0,
+    "geometry": "uniform source scaling only",
+    "note": "Bounding rectangle includes silhouette exterior. Only opaque source face pixels are compared."
+  },
+  {
+    "person": "JS",
+    "opaque_face_pixels_verified": 8238,
+    "max_RGB_delta_from_prepared_source_layer_on_opaque_face": 0,
+    "geometry": "uniform source scaling only",
+    "note": "Bounding rectangle includes silhouette exterior. Only opaque source face pixels are compared."
+  },
+  {
+    "person": "WZH",
+    "opaque_face_pixels_verified": 5856,
+    "max_RGB_delta_from_prepared_source_layer_on_opaque_face": 0,
+    "geometry": "uniform source scaling only",
+    "note": "Bounding rectangle includes silhouette exterior. Only opaque source face pixels are compared."
+  },
+  {
+    "person": "DWD",
+    "opaque_face_pixels_verified": 8512,
+    "max_RGB_delta_from_prepared_source_layer_on_opaque_face": 0,
+    "geometry": "uniform source scaling only",
+    "note": "Bounding rectangle includes silhouette exterior. Only opaque source face pixels are compared."
+  },
+  {
+    "person": "LJT",
+    "opaque_face_pixels_verified": 9200,
+    "max_RGB_delta_from_prepared_source_layer_on_opaque_face": 0,
+    "geometry": "uniform source scaling only",
+    "note": "Bounding rectangle includes silhouette exterior. Only opaque source face pixels are compared."
+  },
+  {
+    "person": "mentor",
+    "opaque_face_pixels_verified": 9684,
+    "max_RGB_delta_from_prepared_source_layer_on_opaque_face": 0,
+    "geometry": "uniform source scaling only",
+    "note": "Bounding rectangle includes silhouette exterior. Only opaque source face pixels are compared."
+  }
+]

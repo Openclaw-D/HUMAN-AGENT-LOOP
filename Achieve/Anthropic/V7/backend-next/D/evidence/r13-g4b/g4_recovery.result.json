@@ -1,0 +1,46 @@
+{
+  "suite": "g4_recovery",
+  "results": [
+    {
+      "id": "D-12",
+      "title": "运行中杀worker→恢复续跑：已回执步不重执行、unknown零盲重发（B侧）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 22,
+      "failures": [
+        {
+          "msg": "实例化calc任务目标 返回2xx",
+          "detail": "{\"status\":409,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"GOAL_EXISTS\\\",\\\"message\\\":\\\"目标已实例化：review\\\"}\"}"
+        },
+        {
+          "msg": "实例化calc任务目标 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"GOAL_EXISTS\\\",\\\"message\\\":\\\"目标已实例化：review\\\"}\"}"
+        },
+        {
+          "msg": "杀worker后恢复续跑至candidate_ready",
+          "detail": "{\"actual\":\"blocked\",\"expected\":\"candidate_ready\"}"
+        }
+      ],
+      "ms": 94723,
+      "note": ""
+    },
+    {
+      "id": "D-15",
+      "title": "checkpoint与worker存储凭据零泄漏（B侧；A侧审计/事件面已由D-23覆盖）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "pass",
+      "assertions": 2,
+      "failures": [],
+      "ms": 16,
+      "note": ""
+    }
+  ],
+  "pass": 1,
+  "fail": 1,
+  "skip": 0,
+  "blocked": 0,
+  "totalAssertions": 24,
+  "runnerError": null
+}

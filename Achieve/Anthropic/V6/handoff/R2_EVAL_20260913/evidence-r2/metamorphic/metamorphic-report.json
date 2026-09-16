@@ -1,0 +1,66 @@
+{
+  "schema": "jw-eval-metamorphic-report@1",
+  "tool": "metamorphic-test.mjs",
+  "probeCandidate": "PARALLEL_EVAL_20260913/candidate-responses/independent/CASE-B.json（固定人工样例）",
+  "declaration": "本套件验证评分器在输入变换下的确定性性质；不测试、也不证明任何真实模型能力。T1 的 PROXY 下降是有意的诚实实证：别名覆盖属人工代理指标。",
+  "packsWritten": [
+    "pack-t2-irrelevant.json",
+    "pack-t3-duplicate.json",
+    "pack-t4-reordered.json",
+    "pack-t5-version-bump.json"
+  ],
+  "assertions": [
+    {
+      "name": "T1 语义改写: EXACT critical 不变",
+      "pass": true,
+      "detail": "[] vs []"
+    },
+    {
+      "name": "T1 语义改写: 引用计数不变",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "T1 语义改写: PROXY 允许下降（人工代理指标——实证别名依赖，不是准确率）",
+      "pass": true,
+      "detail": "缺口下界命中 7→7（下降 0，须人工复核语义等价）"
+    },
+    {
+      "name": "T2 无关文字: EXACT 评分不变（仅 packStats 变化）",
+      "pass": true,
+      "detail": "剔除packStats后评分卡应字节一致"
+    },
+    {
+      "name": "T2 无关文字: packStats 来源数 +1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "T3 同源重复: 不产生新 critical",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "name": "T3 同源重复: packStats 变化被记录",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "T4 顺序变化: 评分卡字节一致",
+      "pass": true,
+      "detail": "一致"
+    },
+    {
+      "name": "T5 版本替换: 引用旧版本的候选被翻转判 stale（golden 无覆盖时以包内最大版本为当前）",
+      "pass": true,
+      "detail": "[{\"sourceId\":\"B-DOC-05\",\"version\":1,\"owner\":\"finding:F-B-02\",\"source\":\"findings\",\"expectedCurrent\":2},{\"sourceId\":\"B-DOC-05\",\"version\":1,\"owner\":\"question:Q-B-02\",\"source\":\"questions\",\"expectedCurrent\":2}]"
+    },
+    {
+      "name": "T5 版本替换: critical 含 stale_version_as_current",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "passed": 10,
+  "total": 10
+}

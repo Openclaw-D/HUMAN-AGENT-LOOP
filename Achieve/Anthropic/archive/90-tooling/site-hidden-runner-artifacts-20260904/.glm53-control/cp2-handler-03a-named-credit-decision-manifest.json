@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 2,
+  "id": "cp2-handler-03a-named-credit-decision",
+  "taskType": "implementation",
+  "objective": "Implement synchronous named Human credit approval with an atomic stored canonical Decision Receipt after the existing pending Human Gate.",
+  "workingDirectory": "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site",
+  "model": "glm-5.3-flash",
+  "effort": "high",
+  "sandboxMode": "workspace-write",
+  "allowedReads": [
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-command-types.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-aggregate.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-store.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-command-handler.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\authority-types.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\authority-policy.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\test\\v4-work-command-handler.test.mjs",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\docs\\v4\\V4_BACKEND_REFACTOR_CONTROL.md",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\docs\\v4\\V4_CONTRACT.md",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\docs\\v4\\V4_ACCEPTANCE.md",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\package.json"
+  ],
+  "allowedWrites": [
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-command-types.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-aggregate.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-store.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-command-handler.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\test\\v4-work-command-handler-03a.test.mjs"
+  ],
+  "excluded": [
+    "cp2-handler-03a-named-credit-decision-task-pack.md",
+    "v4-work-command-handler-03a-controller.test.mjs",
+    "directory enumeration",
+    "search",
+    "Git",
+    "dependencies",
+    "network",
+    "credentials",
+    "HTTP POST",
+    "SQLite",
+    "authorized_rule",
+    "Routing",
+    "frontend",
+    "V3",
+    "localhost"
+  ],
+  "baseline": {
+    "solutionInitiallyMissing": true,
+    "checks": [
+      "hidden controller fixture syntax/loadability",
+      "frozen Decision Receipt store contract",
+      "frozen authority and error priority"
+    ]
+  },
+  "acceptance": {
+    "command": "node --experimental-strip-types --test --experimental-test-isolation=none .\\test\\v4-work-command-handler-03a.test.mjs",
+    "maxRuns": 1
+  },
+  "stopConditions": [
+    "provider_error",
+    "rate_limit",
+    "quota",
+    "authentication",
+    "network",
+    "timeout",
+    "permission_denial",
+    "scope_violation",
+    "acceptance_failure"
+  ],
+  "jsonlPath": "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\.glm53-evidence\\cp2-handler-03a-named-credit-decision-20260902-01.jsonl",
+  "contract": {
+    "taskPackPath": "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\.glm53-control\\cp2-handler-03a-named-credit-decision-task-pack.md",
+    "controllerTestPath": "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\test\\v4-work-command-handler-03a-controller.test.mjs",
+    "controllerCommand": "node --experimental-strip-types --test --experimental-test-isolation=none .\\test\\v4-work-command-handler-03a-controller.test.mjs .\\test\\v4-work-command-handler-controller.test.mjs",
+    "profiles": ["exact-shape", "clone", "state"],
+    "requiredTerms": [
+      "submit_credit_decision",
+      "V4CreditDecisionReceipt",
+      "professional_decide",
+      "credit_decide",
+      "HUMAN_GATE_NOT_PENDING",
+      "HUMAN_GATE_ACTOR_MISMATCH",
+      "DECISION_LINEAGE_INVALID",
+      "authority=none"
+    ]
+  },
+  "commandPolicy": {
+    "maxCommandEvents": 12,
+    "maxReadsPerAllowedFile": 1,
+    "forbidDirectoryEnumeration": true,
+    "rejectUnclassifiedCommands": true
+  },
+  "runner": {
+    "timeoutSeconds": 900,
+    "queueTimeoutSeconds": 900,
+    "skipGitRepoCheck": false,
+    "authorizedNonGitRoot": null
+  },
+  "roi": {
+    "directCodexMinutesLow": 105,
+    "parallelBenefitMinutesLow": 0,
+    "reuseBenefitMinutesLow": 20,
+    "taskPackMinutesHigh": 15,
+    "monitoringMinutesHigh": 8,
+    "reviewMinutesHigh": 25,
+    "handoffMinutesHigh": 5,
+    "expectedRepairMinutesHigh": 15,
+    "contextSwitchMinutesHigh": 5,
+    "providerRiskMinutesHigh": 7,
+    "minimumNetMinutes": 20,
+    "minimumBenefitCostRatio": 1.5
+  }
+}

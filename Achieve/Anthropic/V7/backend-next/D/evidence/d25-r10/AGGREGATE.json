@@ -1,0 +1,86 @@
+{
+  "run": "d25-r10",
+  "startedUtc": "d25-r10",
+  "endedUtc": "2026-09-15T22:21:22.646Z",
+  "suites": [
+    {
+      "file": "g8_gateway.test.mjs",
+      "exitCode": 1,
+      "crashed": false,
+      "res": {
+        "suite": "g8_gateway",
+        "results": [
+          {
+            "id": "D-25a",
+            "title": "跨进程并发预算门：预算1/1，3 worker同抢3目标→恰1次mock调用，其余诚实失败",
+            "severity": "P0",
+            "owner": "B",
+            "state": "pass",
+            "assertions": 33,
+            "failures": [],
+            "ms": 28841,
+            "note": ""
+          },
+          {
+            "id": "D-25e",
+            "title": "预算重启持久：第一笔消耗后重启worker，第二目标BUDGET_EXCEEDED（账本持久不绕过）",
+            "severity": "P0",
+            "owner": "B",
+            "state": "fail",
+            "assertions": 24,
+            "failures": [
+              {
+                "msg": "两目标恰1个到candidate（预算1/1的确定性语义；领取顺序非确定）",
+                "detail": "{\"actual\":0,\"expected\":1}"
+              }
+            ],
+            "ms": 19964,
+            "note": ""
+          }
+        ],
+        "pass": 1,
+        "fail": 1,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 57,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    }
+  ],
+  "totals": {
+    "suites": 1,
+    "crashed": 0,
+    "pass": 1,
+    "fail": 1,
+    "skip": 0,
+    "blocked": 0,
+    "totalAssertions": 57
+  },
+  "flat": [
+    {
+      "id": "D-25a",
+      "title": "跨进程并发预算门：预算1/1，3 worker同抢3目标→恰1次mock调用，其余诚实失败",
+      "severity": "P0",
+      "owner": "B",
+      "state": "pass",
+      "assertions": 33,
+      "ms": 28841
+    },
+    {
+      "id": "D-25e",
+      "title": "预算重启持久：第一笔消耗后重启worker，第二目标BUDGET_EXCEEDED（账本持久不绕过）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 24,
+      "ms": 19964,
+      "failures": [
+        {
+          "msg": "两目标恰1个到candidate（预算1/1的确定性语义；领取顺序非确定）",
+          "detail": "{\"actual\":0,\"expected\":1}"
+        }
+      ]
+    }
+  ]
+}

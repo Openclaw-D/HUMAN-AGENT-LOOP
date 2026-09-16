@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 2,
+  "id": "v3-shell-child-process-repair",
+  "taskType": "repair",
+  "objective": "Verify the frozen V3 Node acceptance under the trusted global child-process runner repair without changing business code.",
+  "workingDirectory": "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site",
+  "model": "glm-5.3-flash",
+  "effort": "low",
+  "sandboxMode": "danger-full-access",
+  "allowedReads": [
+    "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/test/v3-shell-model.test.mjs"
+  ],
+  "allowedWrites": [
+    "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/test/v3-shell-model.test.mjs"
+  ],
+  "excluded": [
+    "lane-shell-repair-task-pack.md",
+    "lane-shell-controller.test.mjs",
+    "directory enumeration",
+    "other files",
+    "Git",
+    "dependencies",
+    "network",
+    "credentials",
+    "provider settings"
+  ],
+  "baseline": {
+    "solutionInitiallyMissing": false,
+    "checks": [
+      "Controller public acceptance passed 18/18",
+      "Controller hidden acceptance passed 3/3",
+      "Global runner health passed 56/56"
+    ]
+  },
+  "acceptance": {
+    "command": "node --experimental-strip-types --test ./test/v3-shell-model.test.mjs",
+    "maxRuns": 1
+  },
+  "stopConditions": [
+    "provider_error",
+    "rate_limit",
+    "timeout",
+    "quota_or_auth",
+    "network_or_timeout",
+    "permission_denial",
+    "scope_violation",
+    "acceptance_failure"
+  ],
+  "jsonlPath": "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/.glm53-v3-d2-wave1-repair/evidence/lane-shell-repair.jsonl",
+  "contract": {
+    "taskPackPath": "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/.glm53-v3-d2-wave1-repair/lane-shell-repair-task-pack.md",
+    "controllerTestPath": "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/.glm53-v3-d2-wave1/lane-shell-controller.test.mjs",
+    "controllerCommand": "node --experimental-strip-types --test ./.glm53-v3-d2-wave1/lane-shell-controller.test.mjs",
+    "profiles": ["state"],
+    "requiredTerms": ["spawn EPERM", "child-process-required", "turn.completed"]
+  },
+  "commandPolicy": {
+    "maxCommandEvents": 1,
+    "maxReadsPerAllowedFile": 1,
+    "forbidDirectoryEnumeration": true,
+    "rejectUnclassifiedCommands": true
+  },
+  "runner": {
+    "timeoutSeconds": 180,
+    "queueTimeoutSeconds": 120,
+    "skipGitRepoCheck": true,
+    "authorizedNonGitRoot": "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site",
+    "allowTrustedDangerFullAccess": true,
+    "dangerFullAccessReason": "child-process-required",
+    "billingLeasePath": "C:/Users/22673/Desktop/GLM/benchmarks/billing-attestation-v1/20260829-2155/billing-lease.json"
+  },
+  "roi": {
+    "directCodexMinutesLow": 18,
+    "parallelBenefitMinutesLow": 0,
+    "reuseBenefitMinutesLow": 12,
+    "taskPackMinutesHigh": 3,
+    "monitoringMinutesHigh": 2,
+    "reviewMinutesHigh": 3,
+    "handoffMinutesHigh": 1,
+    "expectedRepairMinutesHigh": 2,
+    "contextSwitchMinutesHigh": 1,
+    "providerRiskMinutesHigh": 1,
+    "minimumNetMinutes": 10,
+    "minimumBenefitCostRatio": 1.5
+  }
+}

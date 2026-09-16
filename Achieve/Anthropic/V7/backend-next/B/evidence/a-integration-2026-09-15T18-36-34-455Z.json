@@ -1,0 +1,71 @@
+{
+  "at": "2026-09-15T18:36:34.455Z",
+  "aBase": "http://127.0.0.1:48080",
+  "results": [
+    {
+      "name": "S0 A 内核可达",
+      "ok": true,
+      "detail": "db=up model=not_configured"
+    },
+    {
+      "name": "S0 C mock 可达(3731)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "S1 建模板",
+      "ok": true,
+      "detail": "{\"ok\":true,\"templateId\":\"tpl-mu30jlti-c07a675c533f\",\"template\":{\"templateId\":\"tpl-mu30jlti-c07a675c533f\",\"version\":1,\"na"
+    },
+    {
+      "name": "S1 建项目",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "S1 提交证据",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "S1 建目标×2",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "S1 目标1 到达 candidate_ready",
+      "ok": true,
+      "detail": "status=candidate_ready"
+    },
+    {
+      "name": "S1 provider=simulation 且有观察",
+      "ok": true,
+      "detail": "{\"at\":\"2026-09-15T18:36:34.042Z\",\"notes\":\"ruleId=R-BUSINESS-REVIEW generation=1\",\"output\":{\"assumptions\":[],\"uncertainty\":[],\"evidenceRefs\":[],\"observations\":[\""
+    },
+    {
+      "name": "S2 无路由目标 failed",
+      "ok": true,
+      "detail": "status=failed"
+    },
+    {
+      "name": "S2 clarification 人工待办已建",
+      "ok": false,
+      "detail": ""
+    },
+    {
+      "name": "S3 A 有完成回执",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "S4 非法写回被 A 拒绝",
+      "ok": true,
+      "detail": "error=STALE_FENCING_TOKEN"
+    },
+    {
+      "name": "S4 错误码为门序拒绝而非 VERSION_CONFLICT 掩盖",
+      "ok": true,
+      "detail": "error=STALE_FENCING_TOKEN"
+    }
+  ]
+}

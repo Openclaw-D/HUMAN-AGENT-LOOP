@@ -1,0 +1,52 @@
+{
+  "schema": "R3_BRIDGE_RECEIPT@1",
+  "generatedAt": "2026-09-13T06:30:00+08:00",
+  "requestEcho": {
+    "requestId": "rsess-remote-001-g1-risk_review-1",
+    "projectId": "2026PA21001",
+    "sessionId": "sess-remote-001",
+    "protocolGeneration": 1,
+    "contextVersion": "rv7"
+  },
+  "bridgeMeta": {
+    "bridgeId": "jianwei.r3.product-bridge@1",
+    "productGeneration": 0,
+    "remoteVersion": 7,
+    "evidenceCount": 3,
+    "supersededFiltered": 0
+  },
+  "outcome": {
+    "status": "simulated",
+    "errorCode": null,
+    "errorMessage": null,
+    "findingsCount": 3,
+    "questionsCount": 1,
+    "dissentCount": 0,
+    "usageUnknown": false,
+    "costLedgerState": "committed",
+    "deduped": false,
+    "scope": null
+  },
+  "uiAction": {
+    "uiAction": "show_simulated_banner",
+    "zh": "结果来自受控模拟通道：界面必须显著标注“模拟”，输出仅供参考，不得当作真实尽调结论或成功结果。",
+    "allowRetry": false,
+    "mustHumanVerify": true
+  },
+  "ledgerTotals": {
+    "reservedTokens": 0,
+    "committedTokens": 0,
+    "unknownHoldTokens": 0,
+    "releasedTokens": 0,
+    "rejectedCount": 0,
+    "occupiedTokens": 0,
+    "maxReservedTokens": null
+  },
+  "checks": {
+    "viaBridge": true,
+    "generationOffsetApplied": true,
+    "atomicReaderUsed": true,
+    "sevenStatusUsed": true,
+    "noSecondBusinessStateCopy": true
+  }
+}

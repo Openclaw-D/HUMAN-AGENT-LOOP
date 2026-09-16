@@ -1,0 +1,39 @@
+# Dependencies and generated files
+**/node_modules/
+**/dist/
+**/.vite/
+**/.next*/
+**/__pycache__/
+**/.venv/
+**/*.tsbuildinfo
+# Private configuration and runtime state
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.sample
+**/b-config.json
+**/runtime/
+**/.run/
+**/.tmp/
+**/.data/
+**/pgdata/
+**/checkpoints/
+**/receipts/
+**/registry/
+**/.b-final*
+**/.assembly*
+**/*.log
+**/*.sqlite*
+**/*.pem
+**/*.key
+.local/
+Achieve/Migration/Local-Test-State/
+# Historical source files, including historical runtime test scripts, are intentional snapshots.
+!Achieve/Anthropic/**/
+!Achieve/Anthropic/**/*
+# Never allow credentials or dependencies even inside historical snapshots.
+Achieve/**/node_modules/
+Achieve/**/.env
+Achieve/**/.env.local
+Achieve/**/*.pem
+Achieve/**/*.key

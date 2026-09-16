@@ -1,0 +1,7 @@
+== R2 评估器回归（selftest 零写入，evidence 归档到本路） ==
+selftest-r2（工具 v2.0.0）｜通过 109/109
+exit=0
+
+== MAIN 导出轨迹检查 ==
+0
+0

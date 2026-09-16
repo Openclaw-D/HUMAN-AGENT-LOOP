@@ -1,0 +1,9 @@
+f1b0d405131562d51d5d2edcdd3d37b785a8fe9f2c5fe32a0505ef19e41de4c7 *lib/v5-preview/remote-service.ts
+423fc00bf72365ac6d4c878d6d237b42c4e8b21d0c0ca87fb60d89efe6951dc1 *lib/v5-preview/remote-model-adapter-bridge.ts
+a7041e617ccff62972326a96aa0ad39254fc13a539e6be0d507e41ed2f823dbb *lib/v5-preview/remote-request-registry.ts
+ed4a716a1b5c1b3517fa7a27b71ff772f3abe0c4a512c07476c9222850e28003 *lib/v5-preview/remote-store.ts
+456b2f9844e456677be688e47cc5cee530d1963c6ff26f986e61a8fa3f3806ae *lib/v5-preview/remote-types.ts
+48f15030737ad5f33b7591d3efe8980d63e0a84a46eb3b445b5a8e10d556caa2 *lib/v5-preview/model-adapter/providers/http-json.mjs
+a0e461f1bcc7e193cb4ad3d938de97e762da69126ddfec3719235620dbefd479 *lib/v5-preview/model-adapter/simulated.mjs
+e0e6c1d3fa3143042664c2e741907691e1770c4d47b634d6769871b51211e05d *app/api/v5-preview/remote-session/annotations/simulate/route.ts
+f098e6974503a58f3fb57b5ef28e0c2b4bebb0c600f96db0e3cc838b02cb8d16 *app/v5-preview/remote-session/page.tsx

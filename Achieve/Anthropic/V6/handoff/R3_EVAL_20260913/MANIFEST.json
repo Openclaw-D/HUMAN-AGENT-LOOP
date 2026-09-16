@@ -1,0 +1,225 @@
+{
+  "schema": "jw-eval-manifest@1",
+  "generatedBy": "node tools/replay-cli.mjs manifest（runtime/ 为可变输出，不入冻结清单）",
+  "interfaceVersions": {
+    "product-trajectory": "1（冻结；字段取自产品 remote-types.ts/remote-timeline.ts）",
+    "mobile-measurement": "1",
+    "trajectory-verdict": "1",
+    "mobile-verdict": "1",
+    "replay-cli": "1.0.0"
+  },
+  "baselineDependency": {
+    "r2EvalBatch": "../R2_EVAL_20260913/（只读；本轮仅运行其零写入 selftest 作 109/109 回归，未重跑会写 evidence 的 metamorphic）",
+    "productModel": "jianwei-v3/site/lib/v5-preview/{remote-types,remote-timeline}.ts（只读依据；trajectory schema 字段与其对齐）"
+  },
+  "reproducibleCommands": [
+    "node tools/replay-cli.mjs selftest",
+    "node tools/replay-cli.mjs metamorphic",
+    "node tools/replay-cli.mjs replay --trajectory trajectories/handwritten/pos-1-full-lifecycle.json",
+    "node tools/replay-cli.mjs replay --trajectory trajectories/handwritten/neg-pre-overreach.json",
+    "node tools/mobile-measure-check.mjs --measurement trajectories/mobile-fixtures/mm-pass.json",
+    "node tools/mobile-measure-check.mjs --measurement trajectories/mobile-fixtures/mm-fail-overflow.json",
+    "node tools/export-trajectory-from-store.mjs --store evidence-r3/runtime/synthetic-store-fixture.json --session SESS-R3P1 --timeline-from session --out evidence-r3/runtime/exported-trajectory.json",
+    "node ../R2_EVAL_20260913/tools/eval-cli-r2.mjs selftest",
+    "node tools/replay-cli.mjs manifest"
+  ],
+  "knownLimitations": [
+    "INTEGRATION BLOCKED：尚未收到任何 MAIN 来源轨迹（要求≥3条），整体闭环按 DoD 不接受；工具侧就绪",
+    "手机量测 BLOCKED：未收到 MAIN 真实 DOM 量测；合成夹具仅验证检查器本身",
+    "回放判定为事件/记录级结构判定，语义完备性不做声称；UNDECIDED 项路由人工",
+    "手写控制轨迹（source=handwritten）只证明回放器判定正确，不代表产品已执行",
+    "真实模型质量、真机 Safari、真实ASR/视频 NOT TESTED"
+  ],
+  "constraints": {
+    "realModelCalls": 0,
+    "newDependencies": 0,
+    "productCodeChanges": 0,
+    "servicesStarted": 0,
+    "gitWriteOperations": 0,
+    "codexOperations": 0,
+    "writeScope": "V6/handoff/R3_EVAL_20260913/"
+  },
+  "notes": [
+    "golden 不进入任何被评对象；轨迹来源标记强制（product_export/handwritten 双校验）",
+    "可变输出全部在 evidence-r3/runtime/（不入冻结清单）；R2 冻结 evidence 未被覆盖（仅重跑零写入 selftest）",
+    "手机量测无原始 DOM 量测文件不 PASS；截图仅为佐证"
+  ],
+  "fileCount": 35,
+  "files": [
+    {
+      "path": "AGENT_LEDGER.md",
+      "sha256": "0bbf06ca272dc9391c97942bcbdd4cafc77ebf181445f9e9ee45f4a2f1ef6b37",
+      "bytes": 2362
+    },
+    {
+      "path": "docs/manifest-meta.json",
+      "sha256": "8e1f326b00c81c3478b63747b91c6aba06d95ba016243c188611b6c3d460f68c",
+      "bytes": 2548
+    },
+    {
+      "path": "docs/MOBILE_MEASUREMENT_SCHEMA.md",
+      "sha256": "6c8ed62f030c84cdabdb2d4e90020152d3439cd8518fbea740adeabfbc431789",
+      "bytes": 2471
+    },
+    {
+      "path": "docs/TRAJECTORY_SCHEMA.md",
+      "sha256": "04cd262b709c5cd80465c3e51f13dded7dac9a9b9de89178a6aa994dc8c24537",
+      "bytes": 4166
+    },
+    {
+      "path": "evidence-r3/exporter-roundtrip.txt",
+      "sha256": "1956d58eb6bb601bc5ef0c1dd3cc82a28ba9d887cbbffa45bc1dd7781d4a35a6",
+      "bytes": 823
+    },
+    {
+      "path": "evidence-r3/mobile-fixtures-verify.txt",
+      "sha256": "454851f395f4cda208305e74140af4b02aff82f2e9fb4457a77ecf5f6804da89",
+      "bytes": 1179
+    },
+    {
+      "path": "evidence-r3/r2-regression-and-main-check.txt",
+      "sha256": "0d9fca97386beb105bfbbebdd4562d5c30566a673ec05eb5ade8aa6f56032e46",
+      "bytes": 166
+    },
+    {
+      "path": "evidence-r3/selftest-r3-output.txt",
+      "sha256": "c54c38281ce356088a5609c05f9a5f888d00e28dfa31a2f34c22f9e4ada32f0c",
+      "bytes": 3384
+    },
+    {
+      "path": "INTEGRATION.md",
+      "sha256": "f8e66a4e7c4d84ae96726f32083ac4baec6090e8ebf4457e0fdb761a34a9964a",
+      "bytes": 2038
+    },
+    {
+      "path": "MOBILE_ACCEPTANCE.md",
+      "sha256": "152aee3adb12d32b6bbb93f637bf56ae90baf50751ba56ea63919d462d348596",
+      "bytes": 1865
+    },
+    {
+      "path": "MORNING_REPORT.md",
+      "sha256": "529015400075a9cc6df130fd340643a34d0a3c07ddce0b89d22631192bb25725",
+      "bytes": 3303
+    },
+    {
+      "path": "REPORT.md",
+      "sha256": "20df2cc3d37ec88289301cc4556dd1099cd77efc9db13a98c9183b2a2df4b22e",
+      "bytes": 3516
+    },
+    {
+      "path": "RISK_MATRIX.md",
+      "sha256": "d72f77d2ea29c862cdee2889e65ea67763af6e472d89a1d5936b9b5b07a41b29",
+      "bytes": 2936
+    },
+    {
+      "path": "STATUS.md",
+      "sha256": "f0c766ac02bac4ce679ca511398daddbc60d364935dbbfe5148b15b64815cce6",
+      "bytes": 3539
+    },
+    {
+      "path": "tools/export-trajectory-from-store.mjs",
+      "sha256": "dc043c7010bc9f2d0e9dcef3e3bbb90a03df2a668e986b8c893d043e27f6411a",
+      "bytes": 4022
+    },
+    {
+      "path": "tools/mobile-measure-check.mjs",
+      "sha256": "8645ac184d0b0d075f0a46e5df6db686be0a15b350d7ffdd9fc65f0b94f19737",
+      "bytes": 4588
+    },
+    {
+      "path": "tools/replay-cli.mjs",
+      "sha256": "62b390a20f192b8e1de114b5026dfab61a7ac0b9a3a6c65e2ccd1410d01c837f",
+      "bytes": 37171
+    },
+    {
+      "path": "trajectories/handwritten/neg-dup-todo-flip.json",
+      "sha256": "33ecdc233614f8efa849e30982108a40af14e34a1258e7d6ab8dbc4e05d12656",
+      "bytes": 6451
+    },
+    {
+      "path": "trajectories/handwritten/neg-hangup-loss.json",
+      "sha256": "3228f70993eb6fc1c6784374d9b62f142e74154de4b2945796349eb00e392227",
+      "bytes": 6872
+    },
+    {
+      "path": "trajectories/handwritten/neg-human-missing.json",
+      "sha256": "6933649b85f8105dab577d252884085819d2e83b84af9c28fb20a45bd867519b",
+      "bytes": 5512
+    },
+    {
+      "path": "trajectories/handwritten/neg-late-pause.json",
+      "sha256": "4ddf0545ed1e8a49e4ff1781b36c0b95f5ee7aa2d454c3953b387a635a5238a4",
+      "bytes": 7831
+    },
+    {
+      "path": "trajectories/handwritten/neg-opinion-lost.json",
+      "sha256": "096cf4f25915e8cf2adb83eef68fe61db8fab59233a1ea86b92e99ea0a9a1f05",
+      "bytes": 5976
+    },
+    {
+      "path": "trajectories/handwritten/neg-pre-overreach.json",
+      "sha256": "3e745322e78207a0842e20ef7c615157c7beda5b86dbc37032749b328d732df2",
+      "bytes": 6309
+    },
+    {
+      "path": "trajectories/handwritten/neg-rule-escalation.json",
+      "sha256": "bdc04981613279bed5a8055072fddd60abe2c44f8d45d35660b567222ff5eb5b",
+      "bytes": 6005
+    },
+    {
+      "path": "trajectories/handwritten/neg-version-missing.json",
+      "sha256": "813f29e86aaedc015245a98320fc2a2da394018617874cfd97ee968bd6c25bf1",
+      "bytes": 5057
+    },
+    {
+      "path": "trajectories/handwritten/neg-wrong-session.json",
+      "sha256": "099690a89a29d471c50039bae6d7746c4dbe2a6a57623b051a9aeb7128570b5f",
+      "bytes": 5059
+    },
+    {
+      "path": "trajectories/handwritten/pos-1-full-lifecycle.json",
+      "sha256": "511b96ddf58ad236ecce35a09e6b0d0ec2c913d638698fdc4ad0a60c026317b3",
+      "bytes": 10282
+    },
+    {
+      "path": "trajectories/handwritten/pos-2-human-control-hangup.json",
+      "sha256": "92eda58caa4eb3a825df1c49b92e0e426d12c95e220d05929e1c050712811428",
+      "bytes": 10694
+    },
+    {
+      "path": "trajectories/handwritten/pos-3-corrections-scoped.json",
+      "sha256": "c28586446c24e40a8db8ace15556b14c27f28ff162084be527e7c9b4d356cbbe",
+      "bytes": 8738
+    },
+    {
+      "path": "trajectories/main-export/demo-synthetic-roundtrip.json",
+      "sha256": "9eceb210dc6a41106a45dbc149ab7a7c09e74cf7ef0dfbe60ebef8c7d339814d",
+      "bytes": 4306
+    },
+    {
+      "path": "trajectories/mobile-fixtures/mm-fail-first-screen.json",
+      "sha256": "6b1a010db6e4d556708497af89a75d630d279db07ed0f45e907cf2c6cc83cc7e",
+      "bytes": 1413
+    },
+    {
+      "path": "trajectories/mobile-fixtures/mm-fail-hangup.json",
+      "sha256": "c937ed46961af9c5cba6adc94b6e1624dcbdd613b1d39cdf64089e61d419e13e",
+      "bytes": 1421
+    },
+    {
+      "path": "trajectories/mobile-fixtures/mm-fail-overflow.json",
+      "sha256": "c88d2883f422c806f227780640a49d77e44569949642ee839f8824f069307e28",
+      "bytes": 1413
+    },
+    {
+      "path": "trajectories/mobile-fixtures/mm-fail-viewport.json",
+      "sha256": "cc0b7d8af1d83d8a7ae0ede621fcddfb6d57d1f50048cd0eed213687f4eb48cd",
+      "bytes": 1472
+    },
+    {
+      "path": "trajectories/mobile-fixtures/mm-pass.json",
+      "sha256": "a9cdc01ea4b67b3aa32eba6a08c07bb7d6d50544eaa5f7bed4be77a2ac978eff",
+      "bytes": 1412
+    }
+  ]
+}

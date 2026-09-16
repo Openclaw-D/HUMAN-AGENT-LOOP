@@ -1,0 +1,60 @@
+{
+  "suite": "g4_recovery",
+  "results": [
+    {
+      "id": "D-13",
+      "title": "杀API重启：目标/待办/证据/回执全量持久，版本不变",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 35,
+      "failures": [],
+      "ms": 1993,
+      "note": ""
+    },
+    {
+      "id": "D-14",
+      "title": "重启DB容器：数据完整、API自动恢复、新写正常",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 30,
+      "failures": [],
+      "ms": 7218,
+      "note": ""
+    },
+    {
+      "id": "D-12",
+      "title": "运行中杀worker→恢复续跑：已回执步不重执行、unknown零盲重发（B侧）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 19,
+      "failures": [
+        {
+          "msg": "worker已领取",
+          "detail": "{\"actual\":\"ready\",\"expected\":\"leased\"}"
+        }
+      ],
+      "ms": 64691,
+      "note": ""
+    },
+    {
+      "id": "D-15",
+      "title": "checkpoint与worker存储凭据零泄漏（B侧；A侧审计/事件面已由D-23覆盖）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "blocked",
+      "assertions": 0,
+      "failures": [],
+      "ms": 1,
+      "note": "BLOCKED: B checkpoint存储未发布；留门：B就绪后以注入凭据跑恢复链再扫描"
+    }
+  ],
+  "pass": 2,
+  "fail": 1,
+  "skip": 0,
+  "blocked": 1,
+  "totalAssertions": 84,
+  "runnerError": null
+}

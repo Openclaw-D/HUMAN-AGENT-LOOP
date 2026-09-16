@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "checkpointId": "cp2-handler-02b-r1-human-identity",
+  "status": "preflight_passed",
+  "model": "glm-5.3-flash",
+  "effort": "high",
+  "sandboxMode": "workspace-write",
+  "trustedDangerFullAccess": false,
+  "dangerFullAccessReason": "",
+  "promptUtf8Bytes": 5940,
+  "promptSha256": "7D7C876453850F95ECAAE8795E3D5B04F01366F3E0BF6EFA1D0B53A940EFD7C0",
+  "runnerVersion": "flash-runner/2026-09-01.1",
+  "runnerConcurrencyCeiling": 4
+}

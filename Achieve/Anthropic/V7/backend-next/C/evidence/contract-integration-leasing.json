@@ -1,0 +1,79 @@
+{
+  "runAt": "2026-09-15T22:36:40.952Z",
+  "base": "http://127.0.0.1:48080",
+  "contract": "A CONTRACT v1.0",
+  "credentialProvided": true,
+  "template": "leasing",
+  "outcome": "ok",
+  "steps": [
+    {
+      "name": "health",
+      "status": "PASS",
+      "detail": "status=200 db=up model=not_configured"
+    },
+    {
+      "name": "post-template-anon-403",
+      "status": "PASS",
+      "detail": "status=403 error=PRINCIPAL_UNTRUSTED"
+    },
+    {
+      "name": "project-template",
+      "status": "PASS",
+      "detail": "goals=9 roles=6"
+    },
+    {
+      "name": "post-template-auth",
+      "status": "PASS",
+      "detail": "status=200 {\"ok\":true,\"templateId\":\"tpl-mu394eky-158ad78037ed\",\"template\":{\"templateId\":\"tpl-mu394eky-158ad78037ed\",\"version\":1,\"name\":\"goal-template-commercial-leasing-v1\",\"industry\":\"commercial_financing_lease"
+    },
+    {
+      "name": "post-project",
+      "status": "PASS",
+      "detail": "status=200 projectId=p-mu394eln-57d1cba82041"
+    },
+    {
+      "name": "evidence:L3-ev-statements",
+      "status": "PASS",
+      "detail": "status=200 {\"ok\":true,\"evidenceId\":\"ev-mu394emi-954136630cce\",\"projectInputVersion\":2}"
+    },
+    {
+      "name": "evidence:L3-ev-flow",
+      "status": "PASS",
+      "detail": "status=200 {\"ok\":true,\"evidenceId\":\"ev-mu394emw-27be63fbb733\",\"projectInputVersion\":3}"
+    },
+    {
+      "name": "evidence:L3-ev-quote",
+      "status": "PASS",
+      "detail": "status=200 {\"ok\":true,\"evidenceId\":\"ev-mu394enc-907e4625a519\",\"projectInputVersion\":4}"
+    },
+    {
+      "name": "evidence:supersede-flow",
+      "status": "PASS",
+      "detail": "status=200 {\"ok\":true,\"newEvidenceId\":\"ev-mu394ens-540eb8ebee84\",\"superseded\":\"ev-mu394emw-27be63fbb733\",\"projectInputVersion\":5}"
+    },
+    {
+      "name": "human-request:create",
+      "status": "PASS",
+      "detail": "status=200 {\"ok\":true,\"hrequestId\":\"hr-mu394eo6-d538b8c6bff5\"}"
+    },
+    {
+      "name": "project:readback",
+      "status": "PASS",
+      "detail": "goals=0 status=200"
+    },
+    {
+      "name": "goal-instantiate:fact_intake",
+      "status": "PASS",
+      "detail": "status=200 goalId=g-mu394ep4-3718608d20a2"
+    },
+    {
+      "name": "goal-duplicate-409",
+      "status": "PASS",
+      "detail": "status=409 error=GOAL_EXISTS"
+    },
+    {
+      "name": "calc-complete-projection",
+      "status": "PASS"
+    }
+  ]
+}

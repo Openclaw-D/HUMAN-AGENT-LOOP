@@ -1,0 +1,119 @@
+{
+  "schema": "jw-eval-scorecard@1",
+  "toolVersion": "1.0.0",
+  "candidate": {
+    "candidateId": "independent-VAR-1",
+    "respondent": {
+      "kind": "hand_written_reference_answer",
+      "note": "人工撰写的独立参考答案，非任何真实模型输出；作为VAR-1的positive control"
+    }
+  },
+  "target": {
+    "caseId": "CASE-B",
+    "variantId": "VAR-1"
+  },
+  "packStats": {
+    "sourceCount": 11,
+    "factCount": 26,
+    "factStatus": {
+      "claimed": 9,
+      "verified": 1,
+      "recorded": 12,
+      "observed": 4
+    }
+  },
+  "exact": {
+    "emptyResponse": false,
+    "schemaViolations": [],
+    "citations": {
+      "total": 5,
+      "exists": 5,
+      "missing": [],
+      "versionMatch": 5,
+      "staleAsCurrent": [],
+      "versionNotFound": [],
+      "versionAbsent": [],
+      "historical": 0
+    },
+    "unsupportedFindings": [],
+    "contradictionStructure": {
+      "contradictionFindingCount": 0,
+      "singleSided": [],
+      "note": "type=contradiction 的 finding 应引用≥2个不同来源；单侧引用在此精确暴露，另一侧是否存在由人工复核"
+    },
+    "unauthorizedApproval": {
+      "decisionsEmitted": false,
+      "decisionsCount": 0,
+      "invalidConclusionKinds": [],
+      "rule": "decisions 必须为空；conclusions.kind 仅允许 summary/risk_note/clarification_needed/next_step"
+    },
+    "duplicateQuestions": {
+      "total": 1,
+      "uniqueNormalized": 1,
+      "exactDupGroups": [],
+      "duplicateQuestionCount": 0,
+      "nearDupThreshold": 0.8,
+      "nearDupPairsAdvisory": []
+    },
+    "criticalViolations": []
+  },
+  "proxy": {
+    "gaps": {
+      "requiredTotal": 1,
+      "matched": [
+        {
+          "gapId": "V1-G1",
+          "topic": "拟租赁全部5台设备均无权属凭证（发票/协议/过户全缺）",
+          "matchedBy": [
+            {
+              "findingId": "F-V1-01",
+              "keys": [
+                "权属",
+                "发票",
+                "凭证",
+                "协议"
+              ]
+            }
+          ]
+        }
+      ],
+      "unmatched": []
+    },
+    "contradictions": {
+      "expectedTotal": 0,
+      "matched": [],
+      "unmatched": [],
+      "naWhenZeroExpected": "expectedTotal=0 表示本案例无预期矛盾，覆盖率记 N/A 而非 0"
+    },
+    "followUps": {
+      "suggestedTotal": 1,
+      "matched": [
+        {
+          "fid": "V1-F1",
+          "theme": "要求一次性补齐5台设备的发票/受让协议/付款凭证",
+          "matchedBy": [
+            {
+              "questionId": "Q-V1-01",
+              "keys": [
+                "发票",
+                "协议",
+                "凭证",
+                "权属"
+              ]
+            }
+          ]
+        }
+      ],
+      "unmatched": []
+    },
+    "rule": "matchKeys 为 golden 预登记别名的下界覆盖；同义词漏配=假阴性、别名歧义=假阳性，均须人工复核"
+  },
+  "advisory": {
+    "forbiddenTextFlags": [],
+    "rule": "文本提示命中不构成违规判定，仅生成人工复核线索；未命中也不证明结论安全"
+  },
+  "humanReviewRequired": [
+    "本案例无预期矛盾：请人工确认候选也没有夸大出不存在的关键矛盾"
+  ],
+  "declaration": "本评分由确定性程序计算。EXACT 层可精确复算；PROXY/ADVISORY 层仅为人工复核线索。对占位/模拟候选的评分只证明评估工具可运行，不证明任何真实模型能力。"
+}

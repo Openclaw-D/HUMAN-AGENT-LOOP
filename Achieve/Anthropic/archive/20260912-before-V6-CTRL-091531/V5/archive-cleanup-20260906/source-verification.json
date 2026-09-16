@@ -1,0 +1,73 @@
+{
+  "checked_at": 1788703123.864221,
+  "source_files": 181425,
+  "archive_hashes_verified": 5681,
+  "retained_verified": 450,
+  "protected": [
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/019fd645-7448-7792-ae09-2b23da402d09/c9f4d33c-3301-4ac7-8c9d-bf5d2dd9387a/1-Photo-1.jpg",
+      "sha256": "92f87d02799e8fe1e9682188fefe4c5bda65a2fa627a7772e7c1a6e6ba8d54e3",
+      "size": 57079
+    },
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/019fd645-7448-7792-ae09-2b23da402d09/c9f4d33c-3301-4ac7-8c9d-bf5d2dd9387a/2-Photo-2.jpg",
+      "sha256": "1ff2cb45a94043d6699347db86136fdb443f2203ec946c48f86a3e831debdd94",
+      "size": 60160
+    },
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/019fd645-7448-7792-ae09-2b23da402d09/c9f4d33c-3301-4ac7-8c9d-bf5d2dd9387a/3-Photo-3.jpg",
+      "sha256": "5204ebda4b7b3546ec261494e111170f6e22d1657a7131e3e0621f15eb5deee2",
+      "size": 63335
+    },
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/019fd645-7448-7792-ae09-2b23da402d09/c9f4d33c-3301-4ac7-8c9d-bf5d2dd9387a/4-Photo-4.jpg",
+      "sha256": "761c330ca6301b2c35a7755b9207c892ffb94738e7ed7bd93449a5176d21da54",
+      "size": 56812
+    },
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/019fdcd9-0e44-71b1-98a9-8003e9157a7b/51b91241-4200-49a4-8350-76a442259d98/1-Photo-1.jpg",
+      "sha256": "aa325eb8e0da50257c4f64381090e887eca85158d137b8311a88e70bcc0c4764",
+      "size": 74892
+    },
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/019fefc2-875b-7441-9c57-de6b4455a98e/8a95cdbc-9aa0-453c-80f5-ab4c486e82f4/1-Photo-1.jpg",
+      "sha256": "dc875391a941d8dc23b2e77462ee05cce63c209d326b36b283006d7f4305a80c",
+      "size": 129314
+    },
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/019ff6b8-9826-7c82-8132-c4095a3989bb/8dfdf13b-5ed6-4c8f-be59-a1ec2f669539/1-Photo-1.jpg",
+      "sha256": "d7450ec4db6ba8e071c79683951b31b4d0926c4cdc6725c09f4c91014e24c8d8",
+      "size": 54547
+    },
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/019ff6b8-9826-7c82-8132-c4095a3989bb/b771f187-832c-4bc9-8fe8-b497f2a008fc/1-Photo-1.jpg",
+      "sha256": "546bca2a0c873e58e6bc50f4ea9465a8c69c6afc0d0a88a02cb7b75fbd343e33",
+      "size": 48503
+    },
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/01a0104a-8fd5-75d0-8a25-c7be5ae8fd2e/4487e008-4d5a-477a-bd4c-307e8954953b/1-Photo-1.jpg",
+      "sha256": "f5fe350eac6f7df9b13ea2cd7bd0c63aefa699512145477dcb1a935a62d995c6",
+      "size": 60777
+    },
+    {
+      "path": "TAG-sources-20260821/Stars/.codex-remote-attachments/019fcd4f-5629-7480-a500-a0afcef27dda/fb0880df-e875-431d-8724-2643cacada81/1-Photo-1.jpg",
+      "sha256": "461e26b07f7eb052634217003068844e04ce5654ee5c96f613a54167fb9ed5ae",
+      "size": 52429
+    },
+    {
+      "path": "TAG-sources-20260821/Stars/.codex-remote-attachments/019fcd4f-5629-7480-a500-a0afcef27dda/fb0880df-e875-431d-8724-2643cacada81/2-Photo-2.jpg",
+      "sha256": "37009bf93fa7e3897f603e9d7998f43660a5d04918078e82a9ee9a3fe5b34f3a",
+      "size": 47374
+    },
+    {
+      "path": "TAG-sources-20260821/Stars/.codex-remote-attachments/019fcd4f-5629-7480-a500-a0afcef27dda/fb0880df-e875-431d-8724-2643cacada81/3-Photo-3.jpg",
+      "sha256": "002c9895f1cd46f0131c28b0ad72348142d26c54455b9eddf1661a389eb7dcf6",
+      "size": 47338
+    }
+  ],
+  "links": [
+    "TAG-sources-20260821/Race/.ppt-build-jianwei-v2/node_modules",
+    "TAG-sources-20260821/Race/.ppt-build-jianwei-v4/node_modules"
+  ],
+  "ready_for_remote_verified_cleanup": true
+}

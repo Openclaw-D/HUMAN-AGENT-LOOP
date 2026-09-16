@@ -1,0 +1,606 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/wgvy6j",
+    "id": "wgvy6j",
+    "slide": 6,
+    "layoutId": "29118af3-f3c7-41f2-a30c-96bc9bef505a",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "7c1393ca-39ef-454e-93dd-5fc2bc213d10",
+    "masterLayoutName": "Master",
+    "backgroundColor": "#050608",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Microsoft YaHei"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "29118af3-f3c7-41f2-a30c-96bc9bef505a",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "7c1393ca-39ef-454e-93dd-5fc2bc213d10",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "7c1393ca-39ef-454e-93dd-5fc2bc213d10",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/ehc7ax4z",
+      "id": "1",
+      "bbox": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "alt": "见微 V3 六人舞台场景 6",
+      "contentType": "image/png",
+      "imageFit": "cover",
+      "asset": {
+        "assetId": "903b3577-91f7-4bda-b727-32576b466831",
+        "contentType": "image/png",
+        "byteLength": 1795734
+      }
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/03ahcje5",
+      "id": "2",
+      "name": "upper-gradient-6",
+      "bbox": [
+        0,
+        0,
+        1280,
+        235
+      ],
+      "geometry": "rect",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/l4jy5ovq",
+      "id": "3",
+      "name": "lower-gradient-6",
+      "bbox": [
+        0,
+        488,
+        1280,
+        232
+      ],
+      "geometry": "rect",
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/m5szetcb",
+      "id": "4",
+      "name": "scene-index-6",
+      "bbox": [
+        64,
+        38,
+        130,
+        28
+      ],
+      "geometry": "rect",
+      "text": "06 / 08",
+      "textPreview": "06 / 08",
+      "resolvedFontSize": 20,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 20,
+        "typeface": "Microsoft YaHei",
+        "color": "#FF8A3D",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "06 / 08"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "06 / 08",
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Microsoft YaHei",
+            "color": "#FF8A3D",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "06 / 08",
+              "fontSize": 20,
+              "typeface": "Microsoft YaHei",
+              "color": "#FF8A3D",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/n6107edw",
+      "id": "5",
+      "name": "scene-time-6",
+      "bbox": [
+        200,
+        38,
+        210,
+        28
+      ],
+      "geometry": "rect",
+      "text": "05:00—06:00",
+      "textPreview": "05:00—06:00",
+      "resolvedFontSize": 20,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 20,
+        "typeface": "Microsoft YaHei",
+        "color": "#C9CBCB",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "05:00—06:00"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "05:00—06:00",
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Microsoft YaHei",
+            "color": "#C9CBCB",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "05:00—06:00",
+              "fontSize": 20,
+              "typeface": "Microsoft YaHei",
+              "color": "#C9CBCB",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/87ahgju1",
+      "id": "6",
+      "name": "scene-title-6",
+      "bbox": [
+        64,
+        78,
+        1148,
+        78
+      ],
+      "geometry": "rect",
+      "text": "资金进入真实产能",
+      "textPreview": "资金进入真实产能",
+      "resolvedFontSize": 54,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 54,
+        "typeface": "Microsoft YaHei",
+        "color": "#F7F7F4",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "资金进入真实产能"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "资金进入真实产能",
+          "resolvedTextStyle": {
+            "fontSize": 54,
+            "typeface": "Microsoft YaHei",
+            "color": "#F7F7F4",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "资金进入真实产能",
+              "fontSize": 54,
+              "typeface": "Microsoft YaHei",
+              "color": "#F7F7F4",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/98ji9ovm",
+      "id": "7",
+      "name": "quote-role-6-0",
+      "bbox": [
+        64,
+        555,
+        150,
+        34
+      ],
+      "geometry": "rect",
+      "text": "商务",
+      "textPreview": "商务",
+      "resolvedFontSize": 23,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 23,
+        "typeface": "Microsoft YaHei",
+        "color": "#FF8A3D",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "商务"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "商务",
+          "resolvedTextStyle": {
+            "fontSize": 23,
+            "typeface": "Microsoft YaHei",
+            "color": "#FF8A3D",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "商务",
+              "fontSize": 23,
+              "typeface": "Microsoft YaHei",
+              "color": "#FF8A3D",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/29oz2pwr",
+      "id": "8",
+      "name": "quote-text-6-0",
+      "bbox": [
+        220,
+        554,
+        985,
+        38
+      ],
+      "geometry": "rect",
+      "text": "上游判断完整，正式起租。",
+      "textPreview": "上游判断完整，正式起租。",
+      "resolvedFontSize": 29,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 29,
+        "typeface": "Microsoft YaHei",
+        "color": "#F7F7F4",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "上游判断完整，正式起租。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "上游判断完整，正式起租。",
+          "resolvedTextStyle": {
+            "fontSize": 29,
+            "typeface": "Microsoft YaHei",
+            "color": "#F7F7F4",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "上游判断完整，正式起租。",
+              "fontSize": 29,
+              "typeface": "Microsoft YaHei",
+              "color": "#F7F7F4",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/3axgvudc",
+      "id": "9",
+      "name": "quote-role-6-1",
+      "bbox": [
+        64,
+        613,
+        150,
+        34
+      ],
+      "geometry": "rect",
+      "text": "业务",
+      "textPreview": "业务",
+      "resolvedFontSize": 23,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 23,
+        "typeface": "Microsoft YaHei",
+        "color": "#FF8A3D",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "业务"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "业务",
+          "resolvedTextStyle": {
+            "fontSize": 23,
+            "typeface": "Microsoft YaHei",
+            "color": "#FF8A3D",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "业务",
+              "fontSize": 23,
+              "typeface": "Microsoft YaHei",
+              "color": "#FF8A3D",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ze50r2xc",
+      "id": "10",
+      "name": "quote-text-6-1",
+      "bbox": [
+        220,
+        612,
+        985,
+        38
+      ],
+      "geometry": "rect",
+      "text": "不是模型拍板，是证据、专业和责任共同完成。",
+      "textPreview": "不是模型拍板，是证据、专业和责任共同完成。",
+      "resolvedFontSize": 29,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 29,
+        "typeface": "Microsoft YaHei",
+        "color": "#F7F7F4",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "不是模型拍板，是证据、专业和责任共同完成。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "不是模型拍板，是证据、专业和责任共同完成。",
+          "resolvedTextStyle": {
+            "fontSize": 29,
+            "typeface": "Microsoft YaHei",
+            "color": "#F7F7F4",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "不是模型拍板，是证据、专业和责任共同完成。",
+              "fontSize": 29,
+              "typeface": "Microsoft YaHei",
+              "color": "#F7F7F4",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

@@ -1,0 +1,45 @@
+{
+  "firstEight": [
+    "返回项目总览（状态与草稿保留）",
+    "input",
+    "放大画面",
+    "语音说明（未接入）",
+    "证据（3）与本地拍照",
+    "附着现场巡检（合成）",
+    "附着设备清单（合成）",
+    "现场巡检照片（合成）"
+  ],
+  "focusableCount": 26,
+  "positiveTabindex": 0,
+  "probe": [
+    {
+      "active": true,
+      "focusVisibleMatch": false,
+      "found": true,
+      "outline": "none 0px",
+      "sel": "a[aria-label*=\"返回\"]"
+    },
+    {
+      "active": false,
+      "focusVisibleMatch": false,
+      "found": true,
+      "outline": "none 0px",
+      "sel": "[class*=\"rivDomainToggle\"]"
+    },
+    {
+      "active": true,
+      "focusVisibleMatch": false,
+      "found": true,
+      "outline": "none 0px",
+      "sel": "textarea#riv-answer"
+    },
+    {
+      "active": false,
+      "disabled": true,
+      "focusVisibleMatch": false,
+      "found": true,
+      "outline": "none 0px",
+      "sel": "primary[提交访谈记录]"
+    }
+  ]
+}

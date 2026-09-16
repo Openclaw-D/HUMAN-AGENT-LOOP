@@ -1,0 +1,1324 @@
+/* B 候选 · 首页样式（CSS Module，A 采用时拷入 site/app/v5-preview/ 同名即可）。
+   视觉合同：无固定半屏（旧 calc((100dvh-22px)/2) 双块布局废除）、无合成控制大条、
+   无固定画布 transform 缩放；近方形四域格（6px 间隔）、状态圆标（绿对号/蓝扳手/白描边问号）、
+   菜单限高不遮输入框；灰度纪律：信号色仅用于真实状态标识。 */
+
+/* ---------- 根布局：内容自适应 + 沟通区弹性占底（不硬 50/50） ---------- */
+
+.root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  background: #f2f2f7;
+  color: #1d1d1f;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC',
+    'Segoe UI', system-ui, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+.root *,
+.root *::before,
+.root *::after {
+  box-sizing: border-box;
+}
+
+/* 顶部总览：高度由内容决定（展开详情时整页可滚，不再强制半屏断层）。 */
+.topArea {
+  flex: none;
+  min-height: 0;
+}
+
+/* 沟通区：占剩余空间；内容很高时保底高度，消息列表内部滚动（合理留白不算断层）。 */
+.chatArea {
+  flex: 1 1 0;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel {
+  background: #ffffff;
+  border: 1px solid #e6e6eb;
+  border-radius: 11px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 6px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+}
+
+.band {
+  height: 4px;
+  background: #eef0f3;
+  flex: none;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- 页面级横幅 ---------- */
+
+.banner {
+  flex: none;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 11px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.banner[data-kind='warn'] {
+  background: #fff8e1;
+  border: 1px solid #f0dfa4;
+  color: #86661a;
+}
+
+.banner[data-kind='soft'] {
+  background: #eef1f6;
+  border: 1px solid #dde2ea;
+  color: #4a5568;
+}
+
+.banner[data-kind='danger'] {
+  background: #fdeceb;
+  border: 1px solid #f3c4c0;
+  color: #b3261e;
+}
+
+/* ---------- 页头：项目名单行 + 演示标识 + 菜单/重开（无客户整行、无合成控制下拉） ---------- */
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 4px 10px;
+  position: relative;
+}
+
+.headerTitle {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.demoChip {
+  flex: none;
+  font-size: 9px;
+  line-height: 1.4;
+  color: #8e8e93;
+  background: #f4f4f6;
+  border: 1px solid #e3e3e7;
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+.headerActions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+.menuBtn,
+.restartBtn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-family: inherit;
+  font-size: 11px;
+  color: #3a3a3c;
+  background: #ffffff;
+  border: 1px solid #d9d9de;
+  border-radius: 8px;
+  padding: 5px 8px;
+  cursor: pointer;
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.menuBtnText {
+  white-space: nowrap;
+}
+
+.restartBtn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* 菜单面板：锚定顶部右缘；限高 + 内部滚动 → 不遮挡底部输入框。 */
+.menuPanel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 40;
+  width: min(264px, calc(100vw - 24px));
+  max-height: min(430px, 58dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: #ffffff;
+  border: 1px solid #e5e5ea;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 4px 0 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.menuSection {
+  padding: 8px 12px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.menuSection + .menuSection {
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.menuSectionTitle {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #8e8e93;
+}
+
+.menuDetailList {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menuDetailRow {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.menuDetailRow dt {
+  flex: none;
+  width: 58px;
+  color: #8e8e93;
+}
+
+.menuDetailRow dd {
+  margin: 0;
+  min-width: 0;
+  color: #1d1d1f;
+  overflow-wrap: anywhere;
+}
+
+.menuNote {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.5;
+  color: #8e8e93;
+}
+
+.menuVersion {
+  margin: 0;
+  font-size: 10px;
+  color: #aeaeb2;
+}
+
+.menuToggleRow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: #1d1d1f;
+  cursor: pointer;
+}
+
+.menuToggleRow input {
+  width: 16px;
+  height: 16px;
+  accent-color: #0a84ff;
+}
+
+/* 重开确认：轻量卡片（作用域文案写明），覆盖顶部区域、不压输入框。 */
+.confirmCard {
+  position: absolute;
+  top: 46px;
+  right: 8px;
+  z-index: 50;
+  width: min(320px, calc(100vw - 24px));
+  background: #ffffff;
+  border: 1px solid #e5e5ea;
+  border-radius: 12px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.16);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.confirmTitle {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.confirmDetail {
+  margin: 0;
+  font-size: 11.5px;
+  color: #4a4a4f;
+  line-height: 1.5;
+}
+
+.confirmActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.btnPrimary {
+  flex: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  background: #0a84ff;
+  border: 0;
+  border-radius: 9px;
+  padding: 0 14px;
+  height: 32px;
+  cursor: pointer;
+}
+
+.btnPrimary:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.btnSecondary {
+  flex: none;
+  font-family: inherit;
+  font-size: 11px;
+  color: #1d1d1f;
+  background: #e9e9ee;
+  border: 0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.btnSecondary:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* ---------- 生命周期五阶段：状态圆标（绿对号/蓝扳手/白描边问号）+ 阶段名 ---------- */
+
+.lifecycleRow {
+  display: grid;
+  /* 最小 52px：缩放 125%（390 视口≈312px 有效宽）时两字阶段名+圆标仍完整，不被省略号截断。 */
+  grid-template-columns: repeat(5, minmax(52px, 1fr));
+  gap: 4px;
+  align-items: stretch;
+  padding: 6px 10px;
+  min-height: 44px;
+}
+
+.lifecycleStage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  border-radius: 7px;
+  padding: 5px 2px;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  background: #f5f5f7;
+  color: #6e6e73;
+}
+
+.lifecycleStage[data-state='done'] {
+  background: #e7f4ea;
+  color: #1e8e3e;
+}
+
+.lifecycleStage[data-state='current'] {
+  background: #e8f0fe;
+  color: #1967d2;
+  font-weight: 600;
+}
+
+.stageBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+}
+
+/* 完成：绿圆白对号 */
+.stageBadge[data-state='done'] {
+  background: #2f9e55;
+  color: #ffffff;
+}
+
+/* 进行：蓝圆扳手 */
+.stageBadge[data-state='current'] {
+  background: #c9ddf9;
+  color: #174ea6;
+}
+
+/* 未开始：白底+清晰描边圆+灰问号（轮廓可见，不只靠颜色） */
+.stageBadge[data-state='pending'] {
+  background: #ffffff;
+  border: 1.5px solid #c7c7cc;
+  color: #8e8e93;
+}
+
+.stageLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- 四域矩阵：近方形格（间隔 6px）+ 状态圆标 ---------- */
+
+.matrixSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.matrixHead,
+.domainRowBtn {
+  display: grid;
+  grid-template-columns: minmax(52px, 64px) repeat(4, minmax(0, 1fr));
+  column-gap: 6px;
+  align-items: center;
+}
+
+.matrixHead {
+  padding: 6px 10px 4px;
+  border-bottom: 1px solid #e3e3e8;
+}
+
+.matrixCorner {
+  font-size: 9px;
+  color: #aeaeb2;
+  white-space: nowrap;
+}
+
+.colHead {
+  font-size: 12px;
+  color: #48484a;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.domainWrap + .domainWrap {
+  border-top: 1px solid #e3e3e8;
+}
+
+.domainRowBtn {
+  display: grid;
+  width: 100%;
+  min-height: 72px;
+  padding: 6px 10px;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.domainIdCell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+  align-self: stretch;
+}
+
+.domainNameLine {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+}
+
+.domainNameLine svg {
+  flex: none;
+  color: #4b4b4f;
+}
+
+.domainName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d1d1f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.judgmentText {
+  font-size: 10px;
+  line-height: 1.3;
+  color: #8e8e93;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.judgmentText[data-judgment='green'] { color: #1e8e3e; }
+.judgmentText[data-judgment='yellow'] { color: #9a6700; }
+.judgmentText[data-judgment='red'] { color: #d93025; }
+
+/* 状态格：接近正方形（宽随列、高随宽；上限 88px），间隔由 6px 列距保证。 */
+.cell {
+  justify-self: center;
+  width: 100%;
+  max-width: 88px;
+  aspect-ratio: 1 / 1;
+  max-height: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border-radius: 8px;
+  background: #fbfbfd;
+  box-shadow: inset 0 0 0 1px #ececf0;
+  font-size: 10.5px;
+  color: #8e8e93;
+  overflow: hidden;
+}
+
+.cell[data-state='done'] {
+  background: #e4f3e9;
+  box-shadow: inset 0 0 0 1px #cbe7d4;
+  color: #1b5e20;
+}
+
+.cell[data-state='current'] {
+  background: #e8f0fe;
+  box-shadow: inset 0 0 0 1px #d3e2fb;
+  color: #174ea6;
+}
+
+.cellWord {
+  white-space: nowrap;
+}
+
+.stateBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+}
+
+.stateBadge[data-state='done'] {
+  background: #2f9e55;
+  color: #ffffff;
+}
+
+.stateBadge[data-state='current'] {
+  background: #c9ddf9;
+  color: #174ea6;
+}
+
+.stateBadge[data-state='pending'] {
+  background: #ffffff;
+  border: 1.5px solid #c7c7cc;
+  color: #8e8e93;
+}
+
+.domainExpanded {
+  background: #fafafc;
+  border-top: 1px solid rgba(0, 0, 0, 0.055);
+  padding: 8px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.summaryText {
+  margin: 0;
+  font-size: 12px;
+  color: #3a3a3c;
+  line-height: 1.5;
+}
+
+.segChipList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.segChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: #4a4a4f;
+  background: #ffffff;
+  border: 1px solid #e5e5e9;
+  border-radius: 6px;
+  padding: 2px 7px;
+  white-space: nowrap;
+}
+
+.segChip .stateBadge {
+  width: 13px;
+  height: 13px;
+}
+
+.relatedHint {
+  margin: 0;
+  font-size: 10.5px;
+  color: #9a6700;
+  background: #fff8e1;
+  border: 1px solid #f0dfa4;
+  border-radius: 6px;
+  padding: 3px 8px;
+}
+
+.collapseBtn {
+  align-self: flex-end;
+  font-family: inherit;
+  font-size: 10.5px;
+  color: #6e6e73;
+  background: none;
+  border: 1px solid #e3e3e7;
+  border-radius: 999px;
+  padding: 2px 10px;
+  cursor: pointer;
+}
+
+/* ---------- 固定演示条 ---------- */
+
+.storyStrip {
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.storyStrip[data-mode='free'] {
+  background: #f6f7f9;
+}
+
+.storyRow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.storyChip {
+  flex: none;
+  font-size: 10px;
+  font-weight: 600;
+  color: #0a84ff;
+  background: #e8f1ff;
+  border: 1px solid #c9dffb;
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+.storyChip[data-mode='free'] {
+  color: #5a6572;
+  background: #eef0f3;
+  border-color: #d8dde4;
+}
+
+.storyMeta {
+  flex: none;
+  font-size: 10.5px;
+  color: #6b7686;
+  white-space: nowrap;
+}
+
+.storyTitle {
+  flex: 1 1 120px;
+  min-width: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #24313f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.storyWait {
+  flex: none;
+  font-size: 10.5px;
+  color: #9a6b00;
+  background: #fff6df;
+  border: 1px solid #eddfa9;
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+.storyBtn {
+  flex: none;
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffffff;
+  background: #0a84ff;
+  border: 1px solid #0a84ff;
+  border-radius: 6px;
+  padding: 4px 14px;
+  cursor: pointer;
+}
+
+.storyBtn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.storyDecide {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.storyPrompt {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #4a3a10;
+  background: #fff8e1;
+  border: 1px solid #eddfa9;
+  border-radius: 6px;
+  padding: 5px 8px;
+}
+
+.storyOptRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.storyOpt {
+  flex: 1 1 110px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.storyOpt[data-kind='confirm'] {
+  color: #1a7f37;
+  background: #eaf7ee;
+  border: 1px solid #bfe3c9;
+}
+
+.storyOpt[data-kind='correct'] {
+  color: #9a6b00;
+  background: #fff6df;
+  border: 1px solid #eddfa9;
+}
+
+.storyOpt[data-kind='return'] {
+  color: #b3261e;
+  background: #fdeeec;
+  border: 1px solid #f3c4c0;
+}
+
+.storyOpt:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.storyHint {
+  margin: 0;
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: #6b7686;
+}
+
+.storyError {
+  margin: 0;
+  font-size: 10.5px;
+  color: #b3261e;
+}
+
+.storyNotice {
+  margin: 0;
+  font-size: 10.5px;
+  color: #1a7f37;
+  background: #eaf7ee;
+  border: 1px solid #bfe3c9;
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+/* ---------- 当前待办 ---------- */
+
+.todoSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.todoRowBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 50px;
+  padding: 5px 10px;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.todoTitleWrap {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.todoTitle {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.todoBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  width: fit-content;
+}
+
+.todoBadge[data-status='待补充'] { color: #9a6700; }
+.todoBadge[data-status='待复核'] { color: #6e6e73; }
+.todoBadge[data-status='已完成（演示）'],
+.todoBadge[data-status='已结清（演示）'] { color: #1e8e3e; }
+
+.todoTimes {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.todoTimeLine {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9.5px;
+  color: #8e8e93;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex: none;
+  color: #aeaeb2;
+}
+
+.chevron svg {
+  transition: none;
+}
+
+.chevron[data-open='true'] {
+  transform: rotate(180deg);
+}
+
+.todoEmpty {
+  margin: 0;
+  padding: 10px 10px;
+  font-size: 11px;
+  color: #6e6e73;
+}
+
+.todoExpanded {
+  background: #fafafc;
+  border-top: 1px solid rgba(0, 0, 0, 0.055);
+  padding: 8px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.todoDetailText {
+  margin: 0;
+  font-size: 11.5px;
+  color: #4a4a4f;
+  line-height: 1.5;
+}
+
+.todoForm {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reviewNote {
+  margin: 0;
+  font-size: 10.5px;
+  color: #1e8e3e;
+}
+
+.judgmentDot {
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ---------- 表单基元 ---------- */
+
+.textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #1d1d1f;
+  background: #ffffff;
+  border: 1px solid #d6d6db;
+  border-radius: 9px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.formRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.fieldHint {
+  font-size: 10px;
+  color: #aeaeb2;
+}
+
+.formError {
+  margin: 0;
+  font-size: 10.5px;
+  color: #b3261e;
+}
+
+.formConflict {
+  margin: 0;
+  font-size: 10.5px;
+  color: #86661a;
+}
+
+.pendingRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  background: #fffaf0;
+  border-top: 1px solid rgba(0, 0, 0, 0.055);
+  padding: 6px 10px;
+  font-size: 10.5px;
+  color: #6b563a;
+}
+
+.pendingRowHint {
+  font-size: 10px;
+  color: #b3261e;
+}
+
+/* ---------- 项目沟通（弹性占底；仅消息列表内部滚动） ---------- */
+
+.chatSection {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #e6e6eb;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 6px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+}
+
+.chatToolbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 2px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.055);
+}
+
+.chatToggle {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  padding: 4px 2px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.chatToggleTitle {
+  font-size: 12px;
+  font-weight: 650;
+  color: #1d1d1f;
+  white-space: nowrap;
+}
+
+.chatToggleCount {
+  font-size: 10px;
+  color: #8e8e93;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chatToggleHint {
+  margin-left: auto;
+  flex: none;
+  font-size: 10.5px;
+  color: #0a84ff;
+  white-space: nowrap;
+}
+
+.remoteLink {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  color: #0a84ff;
+  background: #f0f6ff;
+  border: 1px solid #d5e5ff;
+  border-radius: 999px;
+  padding: 3px 9px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.chatBody {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.msgList {
+  flex: 1 1 0;
+  min-height: 120px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  margin: 0;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.msgItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: #f6f6f8;
+  border-radius: 9px;
+  padding: 5px 9px;
+}
+
+.msgHead {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.msgWho {
+  font-size: 11px;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+/* 来源标注：人工=蓝 / 模型（演示）=紫 / 预设=灰——精确区分，不把预设标成真实模型。 */
+.originBadge {
+  flex: none;
+  font-size: 9px;
+  line-height: 1.4;
+  padding: 0 5px;
+  border-radius: 4px;
+  border: 1px solid #dcdce0;
+  color: #6e6e73;
+  background: #ffffff;
+}
+
+.originBadge[data-origin='human'] {
+  color: #0a6edb;
+  border-color: #cfe3fb;
+  background: #f0f6ff;
+}
+
+.originBadge[data-origin='model'] {
+  color: #6941c6;
+  border-color: #ddd2f7;
+  background: #f6f2ff;
+}
+
+.mark {
+  font-style: normal;
+  font-size: 9px;
+  color: #8e8e93;
+  background: #ffffff;
+  border: 1px solid #e5e5e9;
+  border-radius: 4px;
+  padding: 0 5px;
+  line-height: 1.4;
+}
+
+.msgTime {
+  margin-left: auto;
+  flex: none;
+  font-size: 9.5px;
+  color: #aeaeb2;
+}
+
+.msgText {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #1d1d1f;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* 无摘要时视觉压成至多两行（DOM 全文保留，"原文"展开可见，不改变风险含义）。 */
+.msgClamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.msgOriginal {
+  margin: 2px 0 0;
+  padding: 5px 8px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #4a4a4f;
+  background: #ffffff;
+  border: 1px solid #ececf0;
+  border-radius: 7px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.msgToggle {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-family: inherit;
+  font-size: 10px;
+  color: #0a84ff;
+  background: none;
+  border: 0;
+  padding: 1px 2px;
+  cursor: pointer;
+}
+
+.msgToggleChevron {
+  display: inline-flex;
+}
+
+.msgToggleChevron[data-open='true'] {
+  transform: rotate(180deg);
+}
+
+.chatForm {
+  flex: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.055);
+  padding: 7px 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chatFormRow {
+  display: flex;
+  gap: 6px;
+}
+
+.chatInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 34px;
+  font-family: inherit;
+  font-size: 12.5px;
+  color: #1d1d1f;
+  background: #ffffff;
+  border: 1px solid #d6d6db;
+  border-radius: 9px;
+  padding: 0 10px;
+}
+
+/* ---------- 焦点可见（键盘可达） ---------- */
+
+.menuBtn:focus-visible,
+.restartBtn:focus-visible,
+.domainRowBtn:focus-visible,
+.todoRowBtn:focus-visible,
+.chatToggle:focus-visible,
+.remoteLink:focus-visible,
+.msgList:focus-visible,
+.chatInput:focus-visible,
+.textarea:focus-visible,
+.btnPrimary:focus-visible,
+.btnSecondary:focus-visible,
+.storyBtn:focus-visible,
+.storyOpt:focus-visible,
+.collapseBtn:focus-visible,
+.msgToggle:focus-visible,
+.menuToggleRow input:focus-visible {
+  outline: 2px solid #0a84ff;
+  outline-offset: -1px;
+}
+
+/* ---------- 适配：手机构图优先；桌面非对称两栏（非 50/50）；缩放=几何响应不断层 ---------- */
+
+@media (max-width: 359px) {
+  .root {
+    padding: 6px;
+    gap: 4px;
+  }
+
+  .menuBtnText {
+    display: none; /* 极窄屏：菜单按钮只留图标（可访问名称保留） */
+  }
+
+  .lifecycleRow {
+    padding: 5px 8px;
+  }
+
+  .lifecycleStage {
+    font-size: 11px;
+    gap: 3px;
+  }
+
+  .matrixHead,
+  .domainRowBtn {
+    column-gap: 4px;
+  }
+
+  .todoTimes {
+    display: none; /* 极窄屏收起时间示意行（如实字段在 aria-label 保留） */
+  }
+}
+
+/* 桌面 ≥1024：非对称两栏 11fr/9fr（非 50/50）；整页不滚，各栏内部滚动。 */
+@media (min-width: 1024px) {
+  .root {
+    position: relative;
+    height: 100vh;
+    height: 100dvh;
+    display: grid;
+    grid-template-columns: minmax(0, 11fr) minmax(340px, 9fr);
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .banner {
+    grid-column: 1 / -1;
+  }
+
+  .topArea {
+    flex: none;
+    min-height: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .chatArea {
+    flex: none;
+    min-height: 0;
+    min-width: 0;
+  }
+}
+
+/* 中间宽度 700–1023：单栏加宽居中（构图与手机一致，非两栏）。 */
+@media (min-width: 700px) and (max-width: 1023.98px) {
+  .root {
+    max-width: 860px;
+    margin-inline: auto;
+    width: 100%;
+  }
+}
+
+/* 短视口（含缩放 125% 的小屏）：沟通区保底高度，顶部面板随内容自然伸展。 */
+@media (max-height: 620px) {
+  .chatArea {
+    min-height: 220px;
+  }
+}

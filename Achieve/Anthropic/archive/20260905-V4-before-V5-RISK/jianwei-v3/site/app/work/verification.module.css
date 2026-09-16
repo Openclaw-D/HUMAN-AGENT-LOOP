@@ -1,0 +1,285 @@
+/* 材料核验面板（Lane FE，2026-09-04）
+   灰阶线框：仅中性灰（achromatic），不引入任何彩色值；
+   状态语义一律由文字标签承载（已核验/未核验/已矛盾/已过期/已声明）。
+   窄区域：置于 /work 主工作区事项区块之后，desktop 与 mobile「事项」入口共用；
+   命名与结构先例参照 business.module.css（分区卡片 + field/select/textarea + live banner）。 */
+
+.panel {
+  --ver-canvas: #f7f7f7;
+  --ver-surface: #ffffff;
+  --ver-soft: #f1f1f1;
+  --ver-ink: #262626;
+  --ver-muted: #6b6b6b;
+  --ver-line: #d4d4d4;
+  --ver-line-strong: #a3a3a3;
+  --ver-radius: 10px;
+  --ver-control: 44px;
+
+  box-sizing: border-box;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  width: 100%;
+  max-width: 560px;
+  padding: 12px;
+  border: 1px solid var(--ver-line);
+  border-radius: var(--ver-radius);
+  background: var(--ver-canvas);
+  color: var(--ver-ink);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.panel *,
+.panel *::before,
+.panel *::after {
+  box-sizing: inherit;
+  min-width: 0;
+}
+
+.panel :is(button, input, select, textarea) {
+  font: inherit;
+  color: inherit;
+}
+
+.panel :focus-visible {
+  outline: 2px solid var(--ver-ink);
+  outline-offset: 2px;
+}
+
+/* ---- 头部与说明 ---------------------------------------------------------- */
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.title {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.demoBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 2px 9px;
+  border: 1px dashed var(--ver-line-strong);
+  border-radius: 999px;
+  background: var(--ver-surface);
+  color: var(--ver-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.note {
+  margin: 0;
+  color: var(--ver-muted);
+  font-size: 12px;
+}
+
+.emptyNote {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px dashed var(--ver-line-strong);
+  border-radius: 8px;
+  background: var(--ver-soft);
+  color: var(--ver-muted);
+  font-size: 12px;
+}
+
+/* ---- 表单 ---------------------------------------------------------------- */
+
+.form {
+  display: grid;
+  gap: 10px;
+}
+
+.field {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.fieldLabel {
+  color: var(--ver-muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.select,
+.textarea {
+  width: 100%;
+  min-height: var(--ver-control);
+  padding: 8px 10px;
+  border: 1px solid var(--ver-line-strong);
+  border-radius: 8px;
+  background: var(--ver-surface);
+}
+
+.textarea {
+  min-height: 72px;
+  resize: vertical;
+}
+
+.select:disabled,
+.textarea:disabled {
+  background: var(--ver-soft);
+  color: var(--ver-muted);
+}
+
+.currentLine {
+  margin: 0;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.currentMeta {
+  color: var(--ver-muted);
+}
+
+.actionRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.submitBtn {
+  min-height: var(--ver-control);
+  padding: 0 18px;
+  border: 1px solid var(--ver-ink);
+  border-radius: 8px;
+  background: var(--ver-ink);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: #3d3d3d;
+}
+
+.submitBtn:disabled {
+  border-color: var(--ver-line-strong);
+  background: var(--ver-soft);
+  color: var(--ver-muted);
+  cursor: default;
+}
+
+.retryBtn {
+  min-height: var(--ver-control);
+  padding: 0 14px;
+  border: 1px solid var(--ver-line-strong);
+  border-radius: 8px;
+  background: var(--ver-surface);
+  color: var(--ver-ink);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.retryBtn:hover {
+  background: var(--ver-soft);
+}
+
+.roleHint,
+.hint {
+  color: var(--ver-muted);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+/* ---- 命令反馈横幅（常驻 live region） ------------------------------------ */
+
+.liveArea {
+  min-height: 1px;
+}
+
+.banner {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 9px 11px;
+  border: 1px solid var(--ver-line-strong);
+  border-left-width: 4px;
+  border-radius: 8px;
+  background: var(--ver-surface);
+  font-size: 12px;
+}
+
+.banner strong {
+  font-size: 12px;
+}
+
+.banner span {
+  color: var(--ver-muted);
+  overflow-wrap: anywhere;
+}
+
+/* 灰阶线框：tone 只改边框深浅/线型/底色深浅，不引入彩色；语义由文字与符号承担。 */
+.banner[data-tone='accepted'] {
+  border-color: var(--ver-ink);
+}
+
+.banner[data-tone='replayed'] {
+  border-style: dashed;
+}
+
+.banner[data-tone='notice'] {
+  border-style: dashed;
+  background: var(--ver-soft);
+}
+
+.banner[data-tone='error'] {
+  background: var(--ver-soft);
+}
+
+.banner[data-tone='unknown'] {
+  border-color: var(--ver-ink);
+  background: var(--ver-soft);
+}
+
+/* ---- 未决命令（结果未知）待确认块 ---------------------------------------- */
+
+.pendingBlock {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px dashed var(--ver-line-strong);
+  border-radius: 8px;
+  background: var(--ver-soft);
+  font-size: 12px;
+}
+
+.pendingTitle {
+  margin: 0;
+  font-weight: 700;
+}
+
+.pendingSummary {
+  margin: 0;
+  color: var(--ver-muted);
+  overflow-wrap: anywhere;
+}
+
+.pendingNote {
+  margin: 0;
+  color: var(--ver-muted);
+}
+
+/* ---- 动效 ---------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .panel *,
+  .panel *::before,
+  .panel *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}

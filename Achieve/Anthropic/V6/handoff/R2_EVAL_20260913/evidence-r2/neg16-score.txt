@@ -1,0 +1,11 @@
+== 评分卡 control-neg16-version-absent @ CASE-C（工具 v2.0.0，候选 jw-eval-candidate@2）
+资料包：14 个来源 / 31 条事实
+[EXACT] 空答案=否  零引用=否  critical=[无]
+  引用：共4（findings 2 / questions 1 / conclusions 1）｜存在4｜捏造0｜版本正确1｜以当前口径引用过期版本0｜版本不存在0｜缺版本号3｜historical0
+  未受支持 findings=0｜单侧矛盾=0
+  未授权批准结构位：decisions=0｜非法 conclusion.kind=0
+  重复问题：共1｜归一化唯一1｜精确重复0｜近似重复(≥0.8)=0
+[PROXY·下界] 缺口 0/5 ｜ 矛盾 0/3 ｜ 建议追问 0/4
+[ADVISORY] 禁用表述线索 0 条（仅供人工复核，不是准确率）
+[人工复核] 11 项待人工确认
+声明：本评分由确定性程序计算。EXACT 层可精确复算；PROXY/ADVISORY 层仅为人工复核线索。对占位/模拟候选的评分只证明评估工具可运行，不证明任何真实模型能力。golden 仅存于评估端，未随输入发给被评对象。

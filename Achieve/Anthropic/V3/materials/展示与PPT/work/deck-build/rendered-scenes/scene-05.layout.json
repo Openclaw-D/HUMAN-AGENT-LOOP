@@ -1,0 +1,745 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/sot7v4",
+    "id": "sot7v4",
+    "slide": 5,
+    "layoutId": "29118af3-f3c7-41f2-a30c-96bc9bef505a",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "7c1393ca-39ef-454e-93dd-5fc2bc213d10",
+    "masterLayoutName": "Master",
+    "backgroundColor": "#050608",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Microsoft YaHei"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "29118af3-f3c7-41f2-a30c-96bc9bef505a",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "7c1393ca-39ef-454e-93dd-5fc2bc213d10",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "7c1393ca-39ef-454e-93dd-5fc2bc213d10",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/kja9sbyt",
+      "id": "1",
+      "bbox": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "alt": "见微 V3 六人舞台场景 5",
+      "contentType": "image/png",
+      "imageFit": "cover",
+      "asset": {
+        "assetId": "bf4f13cc-4f12-44e7-9ce0-12b16d8d5506",
+        "contentType": "image/png",
+        "byteLength": 1688013
+      }
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/epsf218r",
+      "id": "2",
+      "name": "upper-gradient-5",
+      "bbox": [
+        0,
+        0,
+        1280,
+        235
+      ],
+      "geometry": "rect",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/fq1wbmpc",
+      "id": "3",
+      "name": "lower-gradient-5",
+      "bbox": [
+        0,
+        488,
+        1280,
+        232
+      ],
+      "geometry": "rect",
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ofux8bq9",
+      "id": "4",
+      "name": "scene-index-5",
+      "bbox": [
+        64,
+        38,
+        130,
+        28
+      ],
+      "geometry": "rect",
+      "text": "05 / 08",
+      "textPreview": "05 / 08",
+      "resolvedFontSize": 20,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 20,
+        "typeface": "Microsoft YaHei",
+        "color": "#FF8A3D",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "05 / 08"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "05 / 08",
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Microsoft YaHei",
+            "color": "#FF8A3D",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "05 / 08",
+              "fontSize": 20,
+              "typeface": "Microsoft YaHei",
+              "color": "#FF8A3D",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/pg3yhg7e",
+      "id": "5",
+      "name": "scene-time-5",
+      "bbox": [
+        200,
+        38,
+        210,
+        28
+      ],
+      "geometry": "rect",
+      "text": "04:00—05:00",
+      "textPreview": "04:00—05:00",
+      "resolvedFontSize": 20,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 20,
+        "typeface": "Microsoft YaHei",
+        "color": "#C9CBCB",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "04:00—05:00"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "04:00—05:00",
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Microsoft YaHei",
+            "color": "#C9CBCB",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "04:00—05:00",
+              "fontSize": 20,
+              "typeface": "Microsoft YaHei",
+              "color": "#C9CBCB",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/2dcf6183",
+      "id": "6",
+      "name": "scene-title-5",
+      "bbox": [
+        64,
+        78,
+        1148,
+        78
+      ],
+      "geometry": "rect",
+      "text": "协调，让分散能力形成共同判断",
+      "textPreview": "协调，让分散能力形成共同判断",
+      "resolvedFontSize": 54,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 54,
+        "typeface": "Microsoft YaHei",
+        "color": "#F7F7F4",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "协调，让分散能力形成共同判断"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "协调，让分散能力形成共同判断",
+          "resolvedTextStyle": {
+            "fontSize": 54,
+            "typeface": "Microsoft YaHei",
+            "color": "#F7F7F4",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "协调，让分散能力形成共同判断",
+              "fontSize": 54,
+              "typeface": "Microsoft YaHei",
+              "color": "#F7F7F4",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/3elgf6po",
+      "id": "7",
+      "name": "quote-role-5-0",
+      "bbox": [
+        64,
+        535,
+        150,
+        34
+      ],
+      "geometry": "rect",
+      "text": "政策",
+      "textPreview": "政策",
+      "resolvedFontSize": 23,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 23,
+        "typeface": "Microsoft YaHei",
+        "color": "#FF8A3D",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "政策"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "政策",
+          "resolvedTextStyle": {
+            "fontSize": 23,
+            "typeface": "Microsoft YaHei",
+            "color": "#FF8A3D",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "政策",
+              "fontSize": 23,
+              "typeface": "Microsoft YaHei",
+              "color": "#FF8A3D",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/cjexcbq5",
+      "id": "8",
+      "name": "quote-text-5-0",
+      "bbox": [
+        220,
+        534,
+        985,
+        38
+      ],
+      "geometry": "rect",
+      "text": "例外边界，我负责。",
+      "textPreview": "例外边界，我负责。",
+      "resolvedFontSize": 25,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 25,
+        "typeface": "Microsoft YaHei",
+        "color": "#F7F7F4",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "例外边界，我负责。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "例外边界，我负责。",
+          "resolvedTextStyle": {
+            "fontSize": 25,
+            "typeface": "Microsoft YaHei",
+            "color": "#F7F7F4",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "例外边界，我负责。",
+              "fontSize": 25,
+              "typeface": "Microsoft YaHei",
+              "color": "#F7F7F4",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/dknylg7q",
+      "id": "9",
+      "name": "quote-role-5-1",
+      "bbox": [
+        64,
+        587,
+        150,
+        34
+      ],
+      "geometry": "rect",
+      "text": "商务",
+      "textPreview": "商务",
+      "resolvedFontSize": 23,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 23,
+        "typeface": "Microsoft YaHei",
+        "color": "#FF8A3D",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "商务"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "商务",
+          "resolvedTextStyle": {
+            "fontSize": 23,
+            "typeface": "Microsoft YaHei",
+            "color": "#FF8A3D",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "商务",
+              "fontSize": 23,
+              "typeface": "Microsoft YaHei",
+              "color": "#FF8A3D",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/x07ul43a",
+      "id": "10",
+      "name": "quote-text-5-1",
+      "bbox": [
+        220,
+        586,
+        985,
+        38
+      ],
+      "geometry": "rect",
+      "text": "交易条件，我负责。",
+      "textPreview": "交易条件，我负责。",
+      "resolvedFontSize": 25,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 25,
+        "typeface": "Microsoft YaHei",
+        "color": "#F7F7F4",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "交易条件，我负责。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "交易条件，我负责。",
+          "resolvedTextStyle": {
+            "fontSize": 25,
+            "typeface": "Microsoft YaHei",
+            "color": "#F7F7F4",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "交易条件，我负责。",
+              "fontSize": 25,
+              "typeface": "Microsoft YaHei",
+              "color": "#F7F7F4",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/wzydcz25",
+      "id": "11",
+      "name": "quote-role-5-2",
+      "bbox": [
+        64,
+        639,
+        150,
+        34
+      ],
+      "geometry": "rect",
+      "text": "资产",
+      "textPreview": "资产",
+      "resolvedFontSize": 23,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 23,
+        "typeface": "Microsoft YaHei",
+        "color": "#FF8A3D",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "资产"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "资产",
+          "resolvedTextStyle": {
+            "fontSize": 23,
+            "typeface": "Microsoft YaHei",
+            "color": "#FF8A3D",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "资产",
+              "fontSize": 23,
+              "typeface": "Microsoft YaHei",
+              "color": "#FF8A3D",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/vypcjulk",
+      "id": "12",
+      "name": "quote-text-5-2",
+      "bbox": [
+        220,
+        638,
+        985,
+        38
+      ],
+      "geometry": "rect",
+      "text": "设备和履约，我负责。",
+      "textPreview": "设备和履约，我负责。",
+      "resolvedFontSize": 25,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 25,
+        "typeface": "Microsoft YaHei",
+        "color": "#F7F7F4",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "设备和履约，我负责。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "设备和履约，我负责。",
+          "resolvedTextStyle": {
+            "fontSize": 25,
+            "typeface": "Microsoft YaHei",
+            "color": "#F7F7F4",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "设备和履约，我负责。",
+              "fontSize": 25,
+              "typeface": "Microsoft YaHei",
+              "color": "#F7F7F4",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

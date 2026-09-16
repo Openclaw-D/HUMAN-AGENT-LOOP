@@ -1,0 +1,55 @@
+{
+  "suite": "g4_recovery",
+  "results": [
+    {
+      "id": "D-13",
+      "title": "杀API重启：目标/待办/证据/回执全量持久，版本不变",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 35,
+      "failures": [],
+      "ms": 2087,
+      "note": ""
+    },
+    {
+      "id": "D-14",
+      "title": "重启DB容器：数据完整、API自动恢复、新写正常",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 30,
+      "failures": [],
+      "ms": 8763,
+      "note": ""
+    },
+    {
+      "id": "D-12",
+      "title": "运行中杀worker→恢复续跑：已回执步不重执行、unknown零盲重发（B侧）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "blocked",
+      "assertions": 15,
+      "failures": [],
+      "ms": 2685,
+      "note": "BLOCKED: B入口src/worker/worker.mjs非常驻进程（exit=0，worker.mjs为库模块无CLI守护循环）——等待B发布worker运行入口；kill/恢复链路保持已实现，B就绪后即测"
+    },
+    {
+      "id": "D-15",
+      "title": "checkpoint与worker存储凭据零泄漏（B侧；A侧审计/事件面已由D-23覆盖）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "blocked",
+      "assertions": 0,
+      "failures": [],
+      "ms": 1,
+      "note": "BLOCKED: B checkpoint存储未发布；留门：B就绪后以注入凭据跑恢复链再扫描"
+    }
+  ],
+  "pass": 2,
+  "fail": 0,
+  "skip": 0,
+  "blocked": 2,
+  "totalAssertions": 80,
+  "runnerError": null
+}

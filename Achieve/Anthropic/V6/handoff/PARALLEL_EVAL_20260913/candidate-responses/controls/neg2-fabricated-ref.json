@@ -1,0 +1,36 @@
+{
+  "schema": "jw-eval-candidate@1",
+  "candidateId": "control-neg2-fabricated-ref",
+  "caseId": "CASE-C",
+  "variantId": null,
+  "inputPackVersion": "case-C v1",
+  "respondent": {
+    "kind": "hand_written_negative_control",
+    "note": "注入错误模式：捏造引用（引用资料包中不存在的sourceId）。工具应在EXACT层精确识别 missing citation 与 fabricated_citation 违规。"
+  },
+  "findings": [
+    {
+      "findingId": "F-N2-01",
+      "type": "gap",
+      "statement": "设备购置链条缺少厂家出货记录与报关单。",
+      "evidenceRefs": [
+        { "sourceId": "C-DOC-99", "version": 1 },
+        { "sourceId": "C-VIS-02", "version": 1 }
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "questionId": "Q-N2-01",
+      "text": "请提供2216R换牌维修的厂家凭证？",
+      "evidenceRefs": [{ "sourceId": "X-FAKE-01", "version": 2 }]
+    }
+  ],
+  "conclusions": [
+    {
+      "conclusionId": "C-N2-01",
+      "kind": "summary",
+      "statement": "存在设备编号与年份疑点，需补充厂家记录。"
+    }
+  ]
+}

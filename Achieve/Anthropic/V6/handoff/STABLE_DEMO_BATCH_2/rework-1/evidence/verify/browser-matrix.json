@@ -1,0 +1,112 @@
+{
+  "matrix": "V6 BATCH_2 rework-1 · 真实浏览器验收矩阵（ZCode IAB，真实页面 + 页内 window.fetch 包装注入；未伪造服务端成功、未改 React 内部状态；全部在 3321 隔离合成实例）",
+  "injectionNote": "故障注入位置如实标注：fail-before-send=请求发出前；drop-response=服务端已落账并返回后丢弃回执；delay=服务端立即落账、回执延迟 3s 交付。验证结束注入全部撤除。",
+  "results": [
+    {
+      "id": "M1",
+      "path": "notes 请求未达服务端 → 刷新 → 确认",
+      "verdict": "PASS",
+      "evidence": {
+        "injection": "fail-before-send",
+        "send": "POST /notes 未达服务端（status=null），恢复记录在发送前写入 sessionStorage（完整载荷 requestId=8ecaf56b…、expectedVersion=8、todoId、原文本、scenario=approval）",
+        "reload": "记录逐字恢复、恢复行可见（待办仍为待补充也可见——入口不依赖待办状态）",
+        "confirm": "确认说明结果 → POST 一次（同 requestId 8ecaf56b、同 expectedVersion=8，原载荷未被当前版本重建）→ 200 → 恢复行消失、sessionStorage 清空、服务端 v9、待复核、补充说明消息恰好 1 条"
+      }
+    },
+    {
+      "id": "M2",
+      "path": "notes 已落账但回执丢失 → 轮询/刷新 → 确认",
+      "verdict": "PASS",
+      "evidence": {
+        "injection": "drop-response（服务端已落账 v11、4 条消息，页面视为网络失败）",
+        "reload": "恢复行可见（v11）",
+        "confirm": "确认说明结果 → POST 一次（同 requestId 19369267、同 expectedVersion=10）→ 200 幂等重放 → 消息数保持 4（不重复）、版本保持 v11（不回退）、恢复行与存储残留清零"
+      }
+    },
+    {
+      "id": "M3+M4",
+      "path": "messages 未达 / 已落账丢回执 → 刷新 → 确认",
+      "verdict": "PASS",
+      "evidence": {
+        "M3": "M1 的消息等价路径在 M5 中覆盖（fail-before-send 未达）",
+        "M4": "drop-response：恢复行文案为【项目沟通消息】（类型准确，不再借说明名义）；确认消息结果 → POST 一次（同 requestId cc5cd8de、expectedVersion=12）→ 幂等重放，消息数保持 3，行与存储清零；待办保持待补充（消息不改变待办）"
+      }
+    },
+    {
+      "id": "M5",
+      "path": "消息和说明同时未知 → 各自可达、类型准确、确认一个不误清另一个",
+      "verdict": "PASS",
+      "evidence": {
+        "setup": "notes+messages 同时 fail-before-send，两行同时可见且文案各自准确（补充说明 / 项目沟通消息），两个独立存储键",
+        "confirmNote": "确认说明结果 → notes POST 一次成功 → 说明行消失，【消息行保留】（不误清），messages 无 POST",
+        "confirmMessage": "确认消息结果 → messages POST → 409 VERSION_CONFLICT（原版本已被说明推进，且该消息从未落账）→ 确定性失败：记录清理 + 页面顶部如实提示（recoveryConflictNotice：未能在原版本落账，不宣称已落账）+ 自动刷新；行消失",
+        "server": "服务端最终 v15：仅说明落账，消息未落账（正确——它未到达且版本已推进）"
+      }
+    },
+    {
+      "id": "M6",
+      "path": "恢复记录损坏 / 旧布尔标记 / 存储不可用",
+      "verdict": "PASS",
+      "evidence": {
+        "corrupt": "存储注入 '{corrupted json' → 恢复行显示受限提示（损坏，无法自动确认，当前状态以服务端为准），【无确认按钮】，仅『清除该提示』；损坏键已被迁移清理；点击清除后提示消失，无崩溃",
+        "legacy": "存储注入旧版哨兵 jw:v5-preview:pending-note='1' → 恢复受限（来自旧版本标记，缺少完整请求信息），不当作完整请求恢复成功；旧键迁移清理",
+        "storageUnavailable": "sessionStorage.setItem 注入 QuotaExceededError → 提交说明（未达）→ 恢复行仍可见并附『浏览器存储不可用：本页刷新后可能无法恢复该请求信息』；点击确认（内存记录）→ POST 一次成功、行消失、服务端 v19 待复核"
+      }
+    },
+    {
+      "id": "M7",
+      "path": "A 在途 → 编辑 B → 释放 A；A→B→A 修订（消息与说明两通道）",
+      "verdict": "PASS",
+      "evidence": {
+        "M7a_message": "delay 注入：发送 A 后 1s 编辑 B；回执释放后输入仍为 B（页内 trace t=1004ms→6000ms 全程 B），并显示『消息已发送；输入框保留的是发送之后的新内容，未随本次发送』",
+        "M7b_ABA_message": "发送 A → 编辑 B → 编辑回与 A 相同字符串（不同修订）→ 回执释放后输入保留该文本（未被清空，修订判定而非字符串比较），提示显示",
+        "M7c_note": "delay 注入：提交说明 A 后在途编辑 B（React onChange 确认提交：domValueAfterEdit=reactValueViaQuery=B）；回执晚到时表单随待办转待复核卸载（既定产品语义：待复核不开放表单；轮询揭示服务端真相所致，非回执清空）——草稿 B 在组件状态中保留：跨『表单卸载+情景切换（approval→post-rental）』后重新打开表单，DOM 中草稿 B 完整（M7c2 实测 draftAfterSwitch=原文）。成功分支走 setEditKept 而非 clearDraft（修订判定，单元真值表覆盖）"
+      }
+    },
+    {
+      "id": "M8",
+      "path": "恢复确认与新输入/连续点击交错",
+      "verdict": "PASS",
+      "evidence": {
+        "blockedSecondSubmit": "存在未知说明记录时提交新内容 → 明确阻断（『已有一条补充说明尚未确认结果，请先点击确认说明结果核实后再提交新内容（本次未发送；草稿已保留）』），新草稿保留在表单，零 POST（不静默覆盖旧恢复记录）",
+        "sameContentReplay": "文本改回原内容再提交 → 重放完整原请求（同 requestId）→ 成功、行清理",
+        "doubleClickConfirm": "双击确认消息结果：两击同帧发出（React 禁用态未及渲染），两个请求同 requestId 同载荷 → 服务端幂等（消息数 3，不重复记账）；按钮进入确认中禁用态（confirmDisabledNow=true）；行清理、无残留"
+      }
+    },
+    {
+      "id": "M9",
+      "path": "有草稿/未知请求/在途回执时切换情景",
+      "verdict": "PASS（含一次返修）",
+      "evidence": {
+        "cancel": "切换确认卡取消：不发写入，恢复行×2、草稿、版本全部不变",
+        "confirmSwitch": "确认切换 → 恢复记录全部作废（两行消失、sessionStorage 清空）、草稿保留（提示『保留的草稿不会自动提交』）、版本全局单调推进",
+        "lateReceipt": "首验发现真缺陷：旧情景在途回执与新情景 seed 版本碰撞（同为 v37），仅版本门挡不住，DOM 短暂翻回旧情景。已修复：写入回执增加情景上下文检查（shouldApplyWriteResponse，rows-logic + page 三条写入路径接线 + 单元真值表 + 接线断言）。修复后复验：回执到达窗口内 25 个采样（dt≈1s~5s）DOM 情景全程 post-rental、抬头不变、恢复行不复活、存储清零——scenarioNeverFlipped=true"
+      }
+    },
+    {
+      "id": "M10",
+      "path": "延迟 GET vN，写入 vN+1 先到，最后释放 GET",
+      "verdict": "PASS",
+      "evidence": {
+        "timeline": "扣住轮询 GET（v38 回执已到未交付）→ 消息写入先到（v39、3 条）→ 释放旧 GET → DOM 版本保持 v39、消息数保持 3（不回退）"
+      }
+    },
+    {
+      "id": "M12",
+      "path": "390×844 / 360宽 / 1920×1080 布局",
+      "verdict": "PASS",
+      "evidence": {
+        "mobile390": "实际 innerWidth 396~429（IAB 1.1 视口映射，如实记录非真机）：scrollWidth 379~412 ≤ innerWidth，无横向溢出；两恢复行各 44px 触控高度；段名展开可达；说明表单可用",
+        "mobile360": "innerWidth 396：scrollWidth 379，无横向溢出，待办与入口可见，截图 layout-mobile-360.png",
+        "desktop1920": "innerWidth 2112（1920×1.1 映射）：scrollWidth 2112=innerWidth，无溢出，桌面四域摘要常驻，截图 layout-desktop-1920.png",
+        "toolingLimit": "setViewportSize 每标签页仅首次生效、截图管道间歇 30s 超时（IAB 既有工具限制，与上一批一致）；全部尺寸用独立新标签页测量；软键盘无真机未测（沿用上一批结论）"
+      }
+    },
+    {
+      "id": "M11",
+      "path": "非法存储 / 幂等冲突 / 旧版本 / 服务重启（HTTP 层）",
+      "verdict": "PASS",
+      "evidence": "见 http-verify-phase1.txt（6/6）与 http-verify-phase2.txt（重启恢复 1/1）；单元层 B 组损坏真值表 12 项 + D 组切换语义持续通过"
+      }
+  ]
+}

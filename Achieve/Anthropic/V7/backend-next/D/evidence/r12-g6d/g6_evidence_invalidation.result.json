@@ -1,0 +1,31 @@
+{
+  "suite": "g6_evidence_invalidation",
+  "results": [
+    {
+      "id": "D-19d",
+      "title": "【原需求反例·待用户裁决】证据取代跨accepted中间节点后，下游无提示继续消费旧依据（v1.0原文要求的\"必要下游\"传播未实现）",
+      "severity": "P0",
+      "owner": "用户/A",
+      "state": "fail",
+      "assertions": 45,
+      "failures": [
+        {
+          "msg": "原需求缺口实锤：下游leaf在根输入被取代后无任何标记即可claim+complete，产出建立在stale依据链上的候选——语义待用户裁决（不自动撤销历史决定的前提下如何标记/阻断/提示人工复核），实现当前与v1.2一致，但v1.0原需求未满足",
+          "detail": "{\"leaf\":\"ready\",\"claimable\":true,\"completeStatus\":200}"
+        },
+        {
+          "msg": "exception",
+          "detail": "Error: assert.fail: 原需求缺口实锤：下游leaf在根输入被取代后无任何标记即可claim+complete，产出建立在stale依据链上的候选——语义待用户裁决（不自动撤销历史决定的前提下如何标记/阻断/提示人工复核），实现当前与v1.2一致，但v1.0原需求未满足\n    at a.fail (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/assert.mjs:13:55)\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g6_evidence_invalidation.test.mjs:241:11)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ],
+      "ms": 1404,
+      "note": "exception"
+    }
+  ],
+  "pass": 0,
+  "fail": 1,
+  "skip": 0,
+  "blocked": 0,
+  "totalAssertions": 45,
+  "runnerError": null
+}

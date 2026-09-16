@@ -1,0 +1,28 @@
+{
+  "schema": "jw-eval-candidate@2",
+  "candidateId": "ADV-08-VARIANT-CASE-MISMATCH",
+  "caseId": "CASE-B",
+  "variantId": "var-1",
+  "respondent": {
+    "kind": "adversarial_probe_handwritten",
+    "note": "SA-9 人工构造探针，不构成任何真实模型质量证据。意图：漏报探测——variantId 大小写错位（var-1 而非 VAR-1）。期望失败关闭（exit 2，未找到变体或未找到 golden），绝不静默回落到基础案例 CASE-B 的 golden 评分。"
+  },
+  "findings": [
+    {
+      "findingId": "F-ADV8-01",
+      "type": "gap",
+      "statement": "缺少设备采购发票，权属凭证不全。",
+      "evidenceRefs": [{ "sourceId": "B-FC-01", "version": 1 }]
+    }
+  ],
+  "questions": [
+    {
+      "questionId": "Q-ADV8-01",
+      "text": "发票能否补齐？",
+      "evidenceRefs": [{ "sourceId": "B-FC-01", "version": 1 }]
+    }
+  ],
+  "conclusions": [],
+  "decisions": [],
+  "unresolved": []
+}

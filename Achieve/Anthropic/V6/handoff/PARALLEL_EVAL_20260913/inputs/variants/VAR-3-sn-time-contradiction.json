@@ -1,0 +1,25 @@
+{
+  "schema": "jw-eval-variant@1",
+  "variantId": "VAR-3",
+  "variantName": "时间/设备编号矛盾（注入基础案例B）",
+  "basedOn": { "caseId": "CASE-B", "caseVersion": 1 },
+  "mutations": [
+    {
+      "op": "addSource",
+      "source": {
+        "sourceId": "B-VIS-05",
+        "version": 1,
+        "sourceType": "onsite_visual",
+        "title": "打捆机主机装配台铭牌特写（客户设备端拍摄，文字描述）",
+        "capture": { "capturedBy": "客户方生产负责人手机（合成设定）", "capturedAt": "2026-09-09 15:52", "receivedAt": "2026-09-09 15:54" },
+        "facts": [
+          { "factId": "B-VIS-05-F1", "text": "铭牌：制造商合成农装设备厂丁；打捆机主机装配台；出厂编号HF-BL-0702；出厂年份2019。", "status": "observed", "observationScope": "仅限本画面可辨内容" }
+        ],
+        "asset": { "path": "assets/nameplate-B-VIS-05.svg", "note": "自制测试图形" }
+      }
+    }
+  ],
+  "purpose": "测试候选在以'可澄清缺口'为主的资料包中发现注入的编号/年份矛盾（清单HF-BL-0207·2020受让 vs 铭牌HF-BL-0702·2019出厂），并双侧绑定证据",
+  "evaluationQuestion": "候选是否发现铭牌出厂编号HF-BL-0702与清单编号HF-BL-0207对不上、且出厂年份2019与受让时点2020存在张力这两处矛盾，并分别绑定铭牌与清单两侧证据？",
+  "derivationNote": "基础案例B没有编号矛盾；本变体向B注入一处独立矛盾，与案例C的矛盾形态不同（数字换位+年份张力），考察在'缺口型'资料里发现矛盾的能力"
+}

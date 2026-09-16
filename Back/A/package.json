@@ -1,0 +1,23 @@
+{
+  "name": "v7-next-a-goal-kernel",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "V7 backend-next Lane A: goal collaboration kernel (PostgreSQL transactional store + HTTP API + outbox)",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "migrate": "node src/db/migrate-cli.ts",
+    "start": "node src/index.ts",
+    "start:dispatch": "node src/index.ts --dispatch",
+    "test": "node --test test/run-all.mjs"
+  },
+  "dependencies": {
+    "pg": "^8.14.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/pg": "^8.11.0",
+    "typescript": "^5.9.0"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 2,
+  "id": "cp2-handler-03a-r1",
+  "taskType": "repair",
+  "objective": "Repair the rejected named Human credit decision candidate and prove canonical Evidence, Candidate, assignment, Decision Receipt, projection and idempotency lineage.",
+  "workingDirectory": "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site",
+  "model": "glm-5.3-flash",
+  "effort": "high",
+  "sandboxMode": "workspace-write",
+  "allowedReads": [
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-command-types.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-aggregate.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-store.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-command-handler.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\test\\v4-work-command-handler-03a.test.mjs",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\test\\v4-work-aggregate.test.mjs",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\test\\v4-work-command-handler.test.mjs"
+  ],
+  "allowedWrites": [
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-command-types.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-aggregate.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-store.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-command-handler.ts",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\test\\v4-work-command-handler-03a.test.mjs",
+    "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\test\\v4-work-aggregate.test.mjs"
+  ],
+  "excluded": ["cp2-handler-03a-r1-task-pack.md", "v4-work-command-handler-03a-r1-controller.test.mjs", "directory enumeration", "search", "Git", "docs", "old JSONL", "runner", "credentials", "npm wrapper", "typecheck", "lint", "build", "full suite", "network", "localhost", "V3", "frontend", "HTTP", "SQLite", "Routing", "authorized_rule"],
+  "baseline": {"solutionInitiallyMissing": false, "checks": ["R0 scope rejection recorded", "handler syntax candidate inspected", "R1 hidden controller fixture syntax/loadability"]},
+  "acceptance": {"command": "node --experimental-strip-types --test --experimental-test-isolation=none .\\test\\v4-work-command-handler.test.mjs .\\test\\v4-work-command-handler-03a.test.mjs .\\test\\v4-work-aggregate.test.mjs", "maxRuns": 1},
+  "stopConditions": ["provider_error", "rate_limit", "quota", "authentication", "network", "timeout", "permission_denial", "scope_violation", "acceptance_failure"],
+  "jsonlPath": "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\.glm53-evidence\\cp2-handler-03a-r1-20260902-01.jsonl",
+  "contract": {
+    "taskPackPath": "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\.glm53-control\\cp2-handler-03a-r1-task-pack.md",
+    "controllerTestPath": "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\test\\v4-work-command-handler-03a-r1-controller.test.mjs",
+    "controllerCommand": "node --experimental-strip-types --test --experimental-test-isolation=none .\\test\\v4-work-command-handler-03a-r1-controller.test.mjs .\\test\\v4-work-command-handler-03a-controller.test.mjs",
+    "profiles": ["exact-shape", "clone", "state"],
+    "requiredTerms": ["submit_credit_decision", "V4CreditDecisionReceipt", "DECISION_LINEAGE_INVALID", "HUMAN_GATE_ACTOR_MISMATCH", "candidateReceipts", "evidenceReceipts", "creditReviewAssignments", "authority=none"]
+  },
+  "commandPolicy": {"maxCommandEvents": 10, "maxReadsPerAllowedFile": 1, "forbidDirectoryEnumeration": true, "rejectUnclassifiedCommands": true},
+  "runner": {"timeoutSeconds": 900, "queueTimeoutSeconds": 900, "skipGitRepoCheck": false, "authorizedNonGitRoot": null},
+  "roi": {"directCodexMinutesLow": 85, "parallelBenefitMinutesLow": 0, "reuseBenefitMinutesLow": 20, "taskPackMinutesHigh": 12, "monitoringMinutesHigh": 6, "reviewMinutesHigh": 20, "handoffMinutesHigh": 5, "expectedRepairMinutesHigh": 10, "contextSwitchMinutesHigh": 5, "providerRiskMinutesHigh": 8, "minimumNetMinutes": 20, "minimumBenefitCostRatio": 1.5}
+}

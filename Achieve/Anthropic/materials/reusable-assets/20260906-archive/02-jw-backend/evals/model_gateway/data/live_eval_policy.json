@@ -1,0 +1,7 @@
+{
+  "enabled": false,
+  "maxCalls": 0,
+  "budgetCeilingUnits": 0,
+  "acknowledgement": null,
+  "note": "Real-provider eval is intentionally disabled. Enabling requires an explicit bounded task and separate credentials/authorization Gate."
+}

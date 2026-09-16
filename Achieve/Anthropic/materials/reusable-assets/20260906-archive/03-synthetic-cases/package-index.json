@@ -1,0 +1,729 @@
+{
+  "schemaVersion": "compare-native-pack-index-v2",
+  "projectCount": 24,
+  "materialCount": 1344,
+  "uniqueSourceHashCount": 1344,
+  "isSimulated": true,
+  "packages": [
+    {
+      "folder": "project-01",
+      "projectId": "gen-metal_processing-e1d2b78d0b",
+      "projectNo": "SYN-01-001-E1D2",
+      "companyName": "系统生成·精工甲辰有限公司",
+      "industry": "金属精密加工",
+      "manifestRef": "project-01/manifest.json",
+      "archive": "archives/project-01.zip",
+      "archiveBytes": 24578647,
+      "directoryBytes": 24980244,
+      "archiveSha256": "154662e295763fe1d9c4c2f7bc06125ea5e08c28892fc2a5cc9d88e34b5a4f9a",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-02",
+      "projectId": "gen-metal_processing-67ad06cf87",
+      "projectNo": "SYN-01-002-67AD",
+      "companyName": "系统生成·精工乙巳有限公司",
+      "industry": "金属精密加工",
+      "manifestRef": "project-02/manifest.json",
+      "archive": "archives/project-02.zip",
+      "archiveBytes": 24587219,
+      "directoryBytes": 24992913,
+      "archiveSha256": "b548e78225ca61928c3bec2f04af83b76b72ef0183d8d0d8853eced9ed4fd70d",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-03",
+      "projectId": "gen-metal_processing-345398519a",
+      "projectNo": "SYN-01-003-3453",
+      "companyName": "系统生成·精工丙午有限公司",
+      "industry": "金属精密加工",
+      "manifestRef": "project-03/manifest.json",
+      "archive": "archives/project-03.zip",
+      "archiveBytes": 24554172,
+      "directoryBytes": 24960224,
+      "archiveSha256": "3bd158d220ea4f71a02bd14a7417e9ecc0dec82c440edb037733aec9a77d7ee1",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-04",
+      "projectId": "gen-metal_processing-0a4abb6a6e",
+      "projectNo": "SYN-01-004-0A4A",
+      "companyName": "系统生成·精工丁未有限公司",
+      "industry": "金属精密加工",
+      "manifestRef": "project-04/manifest.json",
+      "archive": "archives/project-04.zip",
+      "archiveBytes": 24561734,
+      "directoryBytes": 24967422,
+      "archiveSha256": "53b522b73911e63f486320e490f9f218497021e3429d47a0c77a78ddf624193b",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-05",
+      "projectId": "gen-plastic_processing-bf93fc6e21",
+      "projectNo": "SYN-02-005-BF93",
+      "companyName": "系统生成·塑成戊申有限公司",
+      "industry": "塑料制品加工",
+      "manifestRef": "project-05/manifest.json",
+      "archive": "archives/project-05.zip",
+      "archiveBytes": 23948361,
+      "directoryBytes": 24352053,
+      "archiveSha256": "8cd705dcb4d186e97bb2f11c265207cffb20eb67c90ebcf0bd09e44938907bbf",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-06",
+      "projectId": "gen-plastic_processing-89d6153269",
+      "projectNo": "SYN-02-006-89D6",
+      "companyName": "系统生成·塑成己酉有限公司",
+      "industry": "塑料制品加工",
+      "manifestRef": "project-06/manifest.json",
+      "archive": "archives/project-06.zip",
+      "archiveBytes": 23986894,
+      "directoryBytes": 24391611,
+      "archiveSha256": "519dceabaced3e429aec6e65b0d8c1871c7440768791affee4415599784a4a5f",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-07",
+      "projectId": "gen-plastic_processing-73888df815",
+      "projectNo": "SYN-02-007-7388",
+      "companyName": "系统生成·塑成庚戌有限公司",
+      "industry": "塑料制品加工",
+      "manifestRef": "project-07/manifest.json",
+      "archive": "archives/project-07.zip",
+      "archiveBytes": 23930767,
+      "directoryBytes": 24338061,
+      "archiveSha256": "de1fa3086c89c378ef2bf3fced4186f1a5e716e20d3573d7e4763e249905ed66",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-08",
+      "projectId": "gen-plastic_processing-e68aab6b3a",
+      "projectNo": "SYN-02-008-E68A",
+      "companyName": "系统生成·塑成辛亥有限公司",
+      "industry": "塑料制品加工",
+      "manifestRef": "project-08/manifest.json",
+      "archive": "archives/project-08.zip",
+      "archiveBytes": 23918586,
+      "directoryBytes": 24321933,
+      "archiveSha256": "5f8db054497f76a24e0493ef05f40ea5dfed2b7178c84d4e154753bdc011593e",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-09",
+      "projectId": "gen-textile-3d96d2c2e4",
+      "projectNo": "SYN-03-009-3D96",
+      "companyName": "系统生成·织造壬子有限公司",
+      "industry": "纺织制造",
+      "manifestRef": "project-09/manifest.json",
+      "archive": "archives/project-09.zip",
+      "archiveBytes": 27821901,
+      "directoryBytes": 28221116,
+      "archiveSha256": "c113e3b5ebce3c30a04bffb96a92192c6b25b78fb16c979cb60558d9caeb1cea",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-10",
+      "projectId": "gen-textile-b20812d831",
+      "projectNo": "SYN-03-010-B208",
+      "companyName": "系统生成·织造癸丑有限公司",
+      "industry": "纺织制造",
+      "manifestRef": "project-10/manifest.json",
+      "archive": "archives/project-10.zip",
+      "archiveBytes": 27865061,
+      "directoryBytes": 28267250,
+      "archiveSha256": "cbf3899ada8bd6ff6a55e5bff2f18b89c08cb4eb6080953d2aec10629e716da1",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-11",
+      "projectId": "gen-textile-f492eaf045",
+      "projectNo": "SYN-03-011-F492",
+      "companyName": "系统生成·织造甲寅有限公司",
+      "industry": "纺织制造",
+      "manifestRef": "project-11/manifest.json",
+      "archive": "archives/project-11.zip",
+      "archiveBytes": 27800433,
+      "directoryBytes": 28201953,
+      "archiveSha256": "2f0e0e74e6bbe9bd4117a75823d87de2fb34b0217b452bbdc76cf0cc3df2e1e1",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-12",
+      "projectId": "gen-textile-6f82ec2bb7",
+      "projectNo": "SYN-03-012-6F82",
+      "companyName": "系统生成·织造乙卯有限公司",
+      "industry": "纺织制造",
+      "manifestRef": "project-12/manifest.json",
+      "archive": "archives/project-12.zip",
+      "archiveBytes": 27768216,
+      "directoryBytes": 28164359,
+      "archiveSha256": "4bb63fd66d2318033d71aa6c77e8006820c961b83056a438b9cf9f76b6f6f7d2",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-13",
+      "projectId": "gen-printing_packaging-2ef411ab10",
+      "projectNo": "SYN-04-013-2EF4",
+      "companyName": "系统生成·印包丙辰有限公司",
+      "industry": "印刷包装",
+      "manifestRef": "project-13/manifest.json",
+      "archive": "archives/project-13.zip",
+      "archiveBytes": 23284429,
+      "directoryBytes": 23690720,
+      "archiveSha256": "fe6fd94669a3529bf4e863f48a1bfe9aba473e9e437f9931ff1c8cd30aa42bad",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-14",
+      "projectId": "gen-printing_packaging-4b2ab3f931",
+      "projectNo": "SYN-04-014-4B2A",
+      "companyName": "系统生成·印包丁巳有限公司",
+      "industry": "印刷包装",
+      "manifestRef": "project-14/manifest.json",
+      "archive": "archives/project-14.zip",
+      "archiveBytes": 23286947,
+      "directoryBytes": 23692262,
+      "archiveSha256": "1e6d0917ec3ef23f0bd42e5005d0318c8d5f289a71b38a4d49609cf97d7cbf15",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-15",
+      "projectId": "gen-printing_packaging-7061bef0ea",
+      "projectNo": "SYN-04-015-7061",
+      "companyName": "系统生成·印包戊午有限公司",
+      "industry": "印刷包装",
+      "manifestRef": "project-15/manifest.json",
+      "archive": "archives/project-15.zip",
+      "archiveBytes": 23252118,
+      "directoryBytes": 23655704,
+      "archiveSha256": "e80a41c42b35b865fd9565418dd450683c6d3ee666ddc96471694c8073801d2b",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-16",
+      "projectId": "gen-printing_packaging-603a8b5e3a",
+      "projectNo": "SYN-04-016-603A",
+      "companyName": "系统生成·印包己未有限公司",
+      "industry": "印刷包装",
+      "manifestRef": "project-16/manifest.json",
+      "archive": "archives/project-16.zip",
+      "archiveBytes": 23263374,
+      "directoryBytes": 23666993,
+      "archiveSha256": "e69ba195b8f3e35e05330062386a7d287549f4d0a822b656b9499736af47aaf9",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-17",
+      "projectId": "gen-electronics_manufacturing-006d71ee45",
+      "projectNo": "SYN-05-017-006D",
+      "companyName": "系统生成·电子庚申有限公司",
+      "industry": "电子制造",
+      "manifestRef": "project-17/manifest.json",
+      "archive": "archives/project-17.zip",
+      "archiveBytes": 23481756,
+      "directoryBytes": 23892022,
+      "archiveSha256": "9dd6fa0cbe6ffa1478ada0323451ec995b4e04daf42df669413a19c46d3ee7ca",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-18",
+      "projectId": "gen-electronics_manufacturing-1eb1d5c8c8",
+      "projectNo": "SYN-05-018-1EB1",
+      "companyName": "系统生成·电子辛酉有限公司",
+      "industry": "电子制造",
+      "manifestRef": "project-18/manifest.json",
+      "archive": "archives/project-18.zip",
+      "archiveBytes": 23571054,
+      "directoryBytes": 23979009,
+      "archiveSha256": "d6b959946b88aa908d7ed87109de7913a46b425679a09613ac8a121d06b8a5c0",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-19",
+      "projectId": "gen-electronics_manufacturing-fda64f21f9",
+      "projectNo": "SYN-05-019-FDA6",
+      "companyName": "系统生成·电子壬戌有限公司",
+      "industry": "电子制造",
+      "manifestRef": "project-19/manifest.json",
+      "archive": "archives/project-19.zip",
+      "archiveBytes": 23548156,
+      "directoryBytes": 23960141,
+      "archiveSha256": "b44283f3af9e34bd29174a530a56d59364e6a6393e2abd4c38e7c25759237d1b",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-20",
+      "projectId": "gen-electronics_manufacturing-9d6830d649",
+      "projectNo": "SYN-05-020-9D68",
+      "companyName": "系统生成·电子癸亥有限公司",
+      "industry": "电子制造",
+      "manifestRef": "project-20/manifest.json",
+      "archive": "archives/project-20.zip",
+      "archiveBytes": 23464831,
+      "directoryBytes": 23874671,
+      "archiveSha256": "0ece58a1d253a3f7fd4089552f538639367e0bf264e5d772d96f401f6e8ba9cb",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-21",
+      "projectId": "gen-glass_processing-146a411e5b",
+      "projectNo": "SYN-06-021-146A",
+      "companyName": "系统生成·玻璃甲子有限公司",
+      "industry": "玻璃深加工",
+      "manifestRef": "project-21/manifest.json",
+      "archive": "archives/project-21.zip",
+      "archiveBytes": 24497821,
+      "directoryBytes": 24893833,
+      "archiveSha256": "0fe124c1eb3667b635328ec13b6925b2f9cf16ea7ef0edb4242fef935d21453a",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-22",
+      "projectId": "gen-glass_processing-3665d97d49",
+      "projectNo": "SYN-06-022-3665",
+      "companyName": "系统生成·玻璃乙丑有限公司",
+      "industry": "玻璃深加工",
+      "manifestRef": "project-22/manifest.json",
+      "archive": "archives/project-22.zip",
+      "archiveBytes": 24507080,
+      "directoryBytes": 24905567,
+      "archiveSha256": "00f3af2c04f4c6932881b37d6f9b1a60125da04211dfbe9d71c946e9434b1d30",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-23",
+      "projectId": "gen-glass_processing-d285baccd7",
+      "projectNo": "SYN-06-023-D285",
+      "companyName": "系统生成·玻璃丙寅有限公司",
+      "industry": "玻璃深加工",
+      "manifestRef": "project-23/manifest.json",
+      "archive": "archives/project-23.zip",
+      "archiveBytes": 24467054,
+      "directoryBytes": 24867592,
+      "archiveSha256": "f49c24dd2b4f9f051d5c546ebb1460e511c2731c9dfa1c2194f33e607c659871",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    },
+    {
+      "folder": "project-24",
+      "projectId": "gen-glass_processing-14ad0c719e",
+      "projectNo": "SYN-06-024-14AD",
+      "companyName": "系统生成·玻璃丁卯有限公司",
+      "industry": "玻璃深加工",
+      "manifestRef": "project-24/manifest.json",
+      "archive": "archives/project-24.zip",
+      "archiveBytes": 24464784,
+      "directoryBytes": 24864038,
+      "archiveSha256": "b53a06ea21633a96e6612d0b2173bdd9d50d8c3082b862da80c860f14ee7e0a9",
+      "materialCount": 56,
+      "carrierCounts": {
+        "excel": 21,
+        "pdf": 14,
+        "image": 21
+      },
+      "businessRoots": [
+        "基本证照",
+        "经营证明",
+        "现场照片",
+        "增信",
+        "租赁标的"
+      ],
+      "companionAssets": {
+        "sceneSpec": "derived/scene-spec.json",
+        "factoryModel": "derived/factory-layout.glb",
+        "imageProvenance": "derived/image-provenance.json"
+      }
+    }
+  ]
+}

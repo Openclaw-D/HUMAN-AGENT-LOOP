@@ -1,0 +1,467 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/yo8bed",
+    "id": "yo8bed",
+    "slide": 8,
+    "layoutId": "29118af3-f3c7-41f2-a30c-96bc9bef505a",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "7c1393ca-39ef-454e-93dd-5fc2bc213d10",
+    "masterLayoutName": "Master",
+    "backgroundColor": "#050608",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Microsoft YaHei"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "29118af3-f3c7-41f2-a30c-96bc9bef505a",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "7c1393ca-39ef-454e-93dd-5fc2bc213d10",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "7c1393ca-39ef-454e-93dd-5fc2bc213d10",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/2hsvy90n",
+      "id": "1",
+      "bbox": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "alt": "见微 V3 六人舞台场景 8",
+      "contentType": "image/png",
+      "imageFit": "cover",
+      "asset": {
+        "assetId": "5e9b4bd5-3855-4264-ba74-008e5da022db",
+        "contentType": "image/png",
+        "byteLength": 1782876
+      }
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/c7ulk3y1",
+      "id": "2",
+      "name": "upper-gradient-8",
+      "bbox": [
+        0,
+        0,
+        1280,
+        235
+      ],
+      "geometry": "rect",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/d83mt8fm",
+      "id": "3",
+      "name": "lower-gradient-8",
+      "bbox": [
+        0,
+        488,
+        1280,
+        232
+      ],
+      "geometry": "rect",
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/21s3etgz",
+      "id": "4",
+      "name": "scene-index-8",
+      "bbox": [
+        64,
+        38,
+        130,
+        28
+      ],
+      "geometry": "rect",
+      "text": "08 / 08",
+      "textPreview": "08 / 08",
+      "resolvedFontSize": 20,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 20,
+        "typeface": "Microsoft YaHei",
+        "color": "#FF8A3D",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "08 / 08"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "08 / 08",
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Microsoft YaHei",
+            "color": "#FF8A3D",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "08 / 08",
+              "fontSize": 20,
+              "typeface": "Microsoft YaHei",
+              "color": "#FF8A3D",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/3214nexk",
+      "id": "5",
+      "name": "scene-time-8",
+      "bbox": [
+        200,
+        38,
+        210,
+        28
+      ],
+      "geometry": "rect",
+      "text": "07:00—08:00",
+      "textPreview": "07:00—08:00",
+      "resolvedFontSize": 20,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 20,
+        "typeface": "Microsoft YaHei",
+        "color": "#C9CBCB",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "07:00—08:00"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "07:00—08:00",
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Microsoft YaHei",
+            "color": "#C9CBCB",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "07:00—08:00",
+              "fontSize": 20,
+              "typeface": "Microsoft YaHei",
+              "color": "#C9CBCB",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/43algjy5",
+      "id": "6",
+      "name": "scene-title-8",
+      "bbox": [
+        64,
+        78,
+        1148,
+        116
+      ],
+      "geometry": "rect",
+      "text": "一笔融资终会结清，责任不应在放款后消失",
+      "textPreview": "一笔融资终会结清，责任不应在放款后消失",
+      "resolvedFontSize": 48,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 48,
+        "typeface": "Microsoft YaHei",
+        "color": "#F7F7F4",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "一笔融资终会结清，责任不应在放款后消失"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "一笔融资终会结清，责任不应在放款后消失",
+          "resolvedTextStyle": {
+            "fontSize": 48,
+            "typeface": "Microsoft YaHei",
+            "color": "#F7F7F4",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "一笔融资终会结清，责任不应在放款后消失",
+              "fontSize": 48,
+              "typeface": "Microsoft YaHei",
+              "color": "#F7F7F4",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/p43mpofq",
+      "id": "7",
+      "name": "quote-role-8-0",
+      "bbox": [
+        64,
+        555,
+        150,
+        34
+      ],
+      "geometry": "rect",
+      "text": "业务 / 旁白",
+      "textPreview": "业务 / 旁白",
+      "resolvedFontSize": 23,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 23,
+        "typeface": "Microsoft YaHei",
+        "color": "#FF8A3D",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "业务 / 旁白"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "业务 / 旁白",
+          "resolvedTextStyle": {
+            "fontSize": 23,
+            "typeface": "Microsoft YaHei",
+            "color": "#FF8A3D",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "业务 / 旁白",
+              "fontSize": 23,
+              "typeface": "Microsoft YaHei",
+              "color": "#FF8A3D",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/uds3a9gn",
+      "id": "8",
+      "name": "quote-text-8-0",
+      "bbox": [
+        220,
+        554,
+        985,
+        38
+      ],
+      "geometry": "rect",
+      "text": "让每一份真实需求被准确理解，让每一笔资金在可负责的判断中抵达。",
+      "textPreview": "让每一份真实需求被准确理解，让每一笔资金在可负责的判断中抵达。",
+      "resolvedFontSize": 29,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 29,
+        "typeface": "Microsoft YaHei",
+        "color": "#F7F7F4",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "wrap": "square",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "让每一份真实需求被准确理解，让每一笔资金在可负责的判断中抵达。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "让每一份真实需求被准确理解，让每一笔资金在可负责的判断中抵达。",
+          "resolvedTextStyle": {
+            "fontSize": 29,
+            "typeface": "Microsoft YaHei",
+            "color": "#F7F7F4",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "让每一份真实需求被准确理解，让每一笔资金在可负责的判断中抵达。",
+              "fontSize": 29,
+              "typeface": "Microsoft YaHei",
+              "color": "#F7F7F4",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

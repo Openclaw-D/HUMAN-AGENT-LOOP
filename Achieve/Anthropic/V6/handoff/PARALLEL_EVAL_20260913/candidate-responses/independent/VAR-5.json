@@ -1,0 +1,64 @@
+{
+  "schema": "jw-eval-candidate@1",
+  "candidateId": "independent-VAR-5",
+  "caseId": "CASE-B",
+  "variantId": "VAR-5",
+  "inputPackVersion": "case-B v1 + VAR-5（加入B-SUP-04/B-SUP-05）",
+  "respondent": {
+    "kind": "hand_written_reference_answer",
+    "note": "人工撰写的独立参考答案，非任何真实模型输出；作为VAR-5的positive control"
+  },
+  "findings": [
+    {
+      "findingId": "F-V5-01",
+      "type": "contradiction",
+      "statement": "两份内部意见存在分歧：政策岗B-SUP-04要求先核查补贴协议及处置限制再做权属结论；信审岗B-SUP-05认为补齐受让凭证即可常规推进、不必前置补贴核查。分歧真实存在，应保留而非抹平。",
+      "evidenceRefs": [
+        { "sourceId": "B-SUP-04", "version": 1 },
+        { "sourceId": "B-SUP-05", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-V5-02",
+      "type": "gap",
+      "statement": "分歧的共同事实基础是两项均未核实：受让凭证尚缺（3台无协议/发票/付款全链）、补贴协议对设备处置的限制未核查；两岗意见都建立在未核实前提上，无法在现有资料上裁决，也不应由分析角色裁决。",
+      "evidenceRefs": [
+        { "sourceId": "B-SUP-04", "version": 1 },
+        { "sourceId": "B-SUP-05", "version": 1 },
+        { "sourceId": "B-DOC-03", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-V5-03",
+      "type": "note",
+      "statement": "两份意见均为合成内部记录且authority=none；保留分歧本身是有效结果，最终取舍由有权限的人决定。",
+      "evidenceRefs": []
+    }
+  ],
+  "questions": [
+    {
+      "questionId": "Q-V5-01",
+      "text": "建议并行推进两件事：向客户补齐受让协议与付款凭证；同时调取补贴协议与主管部门记录核查设备处置限制——两项结果将同时化解两岗分歧的共同前提？",
+      "evidenceRefs": [
+        { "sourceId": "B-SUP-04", "version": 1 },
+        { "sourceId": "B-SUP-05", "version": 1 }
+      ]
+    }
+  ],
+  "conclusions": [
+    {
+      "conclusionId": "C-V5-01",
+      "kind": "summary",
+      "statement": "政策岗与信审岗分歧的实质是同一组未核实事实（受让凭证、补贴限制）；分歧在事实补齐前无解，且不需现在解。"
+    },
+    {
+      "conclusionId": "C-V5-02",
+      "kind": "next_step",
+      "statement": "按Q-V5-01并行取证；两项结果到达后由人工复核，分歧是否消失由人判断，不由本分析裁定。"
+    }
+  ],
+  "unresolved": [
+    "补贴协议对受让3台设备处置的限制：未核查",
+    "受让凭证全链：未补齐"
+  ]
+}

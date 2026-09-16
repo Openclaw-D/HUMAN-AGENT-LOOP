@@ -1,0 +1,55 @@
+{
+  "suite": "g1_surface",
+  "results": [
+    {
+      "id": "D-01",
+      "title": "四态区分：执行→candidate_ready≠accepted≠decided 全链走通",
+      "severity": "P0",
+      "owner": "A",
+      "state": "blocked",
+      "assertions": 0,
+      "failures": [],
+      "ms": 2539,
+      "note": "BLOCKED: A/dist/index.js 尚未产出（A路实现未到可运行版本）"
+    },
+    {
+      "id": "D-02",
+      "title": "敏感写失败关闭：不可信凭据403；载荷不得携带授权键；角色不可由输入提升",
+      "severity": "P0",
+      "owner": "A",
+      "state": "blocked",
+      "assertions": 0,
+      "failures": [],
+      "ms": 309,
+      "note": "BLOCKED: A/dist/index.js 尚未产出（A路实现未到可运行版本）"
+    },
+    {
+      "id": "D-03",
+      "title": "依赖环检测：模板环在实例化前被 400 DEPENDENCY_CYCLE 拒绝且无半状态",
+      "severity": "P1",
+      "owner": "A",
+      "state": "blocked",
+      "assertions": 0,
+      "failures": [],
+      "ms": 292,
+      "note": "BLOCKED: A/dist/index.js 尚未产出（A路实现未到可运行版本）"
+    },
+    {
+      "id": "D-05",
+      "title": "乐观版本：陈旧expectedVersion → 409 VERSION_CONFLICT{serverVersion} 非静默覆盖",
+      "severity": "P1",
+      "owner": "A",
+      "state": "blocked",
+      "assertions": 0,
+      "failures": [],
+      "ms": 303,
+      "note": "BLOCKED: A/dist/index.js 尚未产出（A路实现未到可运行版本）"
+    }
+  ],
+  "pass": 0,
+  "fail": 0,
+  "skip": 0,
+  "blocked": 4,
+  "totalAssertions": 0,
+  "runnerError": null
+}

@@ -1,0 +1,191 @@
+{
+  "run": "d25-r3",
+  "startedUtc": "d25-r3",
+  "endedUtc": "2026-09-15T21:16:06.437Z",
+  "suites": [
+    {
+      "file": "g8_gateway.test.mjs",
+      "exitCode": 1,
+      "crashed": false,
+      "res": {
+        "suite": "g8_gateway",
+        "results": [
+          {
+            "id": "D-25a",
+            "title": "跨进程并发预算门：预算1/1，3 worker同抢3目标→恰1次mock调用，其余诚实失败",
+            "severity": "P0",
+            "owner": "B",
+            "state": "fail",
+            "assertions": 0,
+            "failures": [
+              {
+                "msg": "exception",
+                "detail": "Error: d-g8-api exited early code=1; log=C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\evidence\\d25-r3\\g8-api.log\n    at file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/proc.mjs:32:51"
+              }
+            ],
+            "ms": 821,
+            "note": "exception"
+          },
+          {
+            "id": "D-25b",
+            "title": "账本不可读失败关闭：costLogPath指向目录→0调用+目标诚实失败",
+            "severity": "P0",
+            "owner": "B",
+            "state": "fail",
+            "assertions": 14,
+            "failures": [
+              {
+                "msg": "目录账本→0模型调用（失败关闭，不静默放行）",
+                "detail": "{\"actual\":4,\"expected\":0}"
+              }
+            ],
+            "ms": 17266,
+            "note": ""
+          },
+          {
+            "id": "D-25c",
+            "title": "坏账本失败关闭：损坏行+超限有效行→0调用（不静默跳过放行）",
+            "severity": "P0",
+            "owner": "B",
+            "state": "fail",
+            "assertions": 13,
+            "failures": [
+              {
+                "msg": "坏账本（损坏行+超限有效行）→0调用（不静默放行）",
+                "detail": "{\"actual\":1,\"expected\":0}"
+              }
+            ],
+            "ms": 16681,
+            "note": ""
+          },
+          {
+            "id": "D-25d",
+            "title": "非法预算失败关闭：maxTotalCost为字符串→worker构造即拒绝（exit≠0）且0调用",
+            "severity": "P0",
+            "owner": "B",
+            "state": "fail",
+            "assertions": 11,
+            "failures": [
+              {
+                "msg": "非法预算→0模型调用（绝不静默无限额）",
+                "detail": "{\"actual\":1,\"expected\":0}"
+              }
+            ],
+            "ms": 13085,
+            "note": ""
+          },
+          {
+            "id": "D-25e",
+            "title": "预算重启持久：第一笔消耗后重启worker，第二目标BUDGET_EXCEEDED（账本持久不绕过）",
+            "severity": "P0",
+            "owner": "B",
+            "state": "fail",
+            "assertions": 24,
+            "failures": [
+              {
+                "msg": "第二目标BUDGET_EXCEEDED诚实失败",
+                "detail": "{\"actual\":\"candidate_ready\",\"expected\":\"failed\"}"
+              }
+            ],
+            "ms": 19222,
+            "note": ""
+          }
+        ],
+        "pass": 0,
+        "fail": 5,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 62,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    }
+  ],
+  "totals": {
+    "suites": 1,
+    "crashed": 0,
+    "pass": 0,
+    "fail": 5,
+    "skip": 0,
+    "blocked": 0,
+    "totalAssertions": 62
+  },
+  "flat": [
+    {
+      "id": "D-25a",
+      "title": "跨进程并发预算门：预算1/1，3 worker同抢3目标→恰1次mock调用，其余诚实失败",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 0,
+      "ms": 821,
+      "note": "exception",
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "Error: d-g8-api exited early code=1; log=C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\evidence\\d25-r3\\g8-api.log\n    at file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/proc.mjs:32:51"
+        }
+      ]
+    },
+    {
+      "id": "D-25b",
+      "title": "账本不可读失败关闭：costLogPath指向目录→0调用+目标诚实失败",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 14,
+      "ms": 17266,
+      "failures": [
+        {
+          "msg": "目录账本→0模型调用（失败关闭，不静默放行）",
+          "detail": "{\"actual\":4,\"expected\":0}"
+        }
+      ]
+    },
+    {
+      "id": "D-25c",
+      "title": "坏账本失败关闭：损坏行+超限有效行→0调用（不静默跳过放行）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 13,
+      "ms": 16681,
+      "failures": [
+        {
+          "msg": "坏账本（损坏行+超限有效行）→0调用（不静默放行）",
+          "detail": "{\"actual\":1,\"expected\":0}"
+        }
+      ]
+    },
+    {
+      "id": "D-25d",
+      "title": "非法预算失败关闭：maxTotalCost为字符串→worker构造即拒绝（exit≠0）且0调用",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 11,
+      "ms": 13085,
+      "failures": [
+        {
+          "msg": "非法预算→0模型调用（绝不静默无限额）",
+          "detail": "{\"actual\":1,\"expected\":0}"
+        }
+      ]
+    },
+    {
+      "id": "D-25e",
+      "title": "预算重启持久：第一笔消耗后重启worker，第二目标BUDGET_EXCEEDED（账本持久不绕过）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 24,
+      "ms": 19222,
+      "failures": [
+        {
+          "msg": "第二目标BUDGET_EXCEEDED诚实失败",
+          "detail": "{\"actual\":\"candidate_ready\",\"expected\":\"failed\"}"
+        }
+      ]
+    }
+  ]
+}

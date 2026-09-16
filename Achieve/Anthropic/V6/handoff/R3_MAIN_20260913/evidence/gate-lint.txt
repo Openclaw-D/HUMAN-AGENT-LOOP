@@ -1,0 +1,36 @@
+
+> sites-project@4.0.0-dev.0 lint
+> eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .v6-runtime/
+
+
+C:\Users\22673\Desktop\Anthropic\jianwei-v3\site\app\v5-preview\remote-session\page.tsx
+   11:27  warning  'sameBusinessPayload' is defined but never used      @typescript-eslint/no-unused-vars
+   90:10  warning  'sameBusinessBody' is defined but never used         @typescript-eslint/no-unused-vars
+   92:24  warning  '_r' is assigned a value but never used              @typescript-eslint/no-unused-vars
+  153:9   warning  'activeEvidence' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\22673\Desktop\Anthropic\jianwei-v3\site\lib\v5-preview\model-adapter\simulated.mjs
+  4:52  warning  'notice' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\22673\Desktop\Anthropic\jianwei-v3\site\lib\v5-preview\model-adapter\validate-response.mjs
+  41:10  warning  'normalizeRefs' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\22673\Desktop\Anthropic\jianwei-v3\site\lib\v5-preview\remote-request-registry.ts
+  42:24  warning  '_r' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\22673\Desktop\Anthropic\jianwei-v3\site\lib\v5-preview\remote-service.ts
+  133:7  warning  'REVIEW_ACTIONS' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\22673\Desktop\Anthropic\jianwei-v3\site\lib\v5-preview\remote-store.ts
+  325:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  355:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\22673\Desktop\Anthropic\jianwei-v3\site\test\v4life-verification-recovery.test.mjs
+  175:17  warning  'name' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\22673\Desktop\Anthropic\jianwei-v3\site\test\v5-preview-remote-repair.test.mjs
+   89:3  warning  'V' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  131:9  warning  'after' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 13 problems (0 errors, 13 warnings)
+

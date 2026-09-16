@@ -1,0 +1,55 @@
+{
+  "suite": "g4_recovery",
+  "results": [
+    {
+      "id": "D-13",
+      "title": "杀API重启：目标/待办/证据/回执全量持久，版本不变",
+      "severity": "P0",
+      "owner": "A",
+      "state": "blocked",
+      "assertions": 0,
+      "failures": [],
+      "ms": 1784,
+      "note": "BLOCKED: A/dist/index.js 尚未产出（A路实现未到可运行版本）"
+    },
+    {
+      "id": "D-14",
+      "title": "重启DB容器：数据完整、API自动恢复、新写正常",
+      "severity": "P0",
+      "owner": "A",
+      "state": "blocked",
+      "assertions": 0,
+      "failures": [],
+      "ms": 278,
+      "note": "BLOCKED: A/dist/index.js 尚未产出（A路实现未到可运行版本）"
+    },
+    {
+      "id": "D-12",
+      "title": "运行中杀worker→恢复续跑：已回执步不重执行、unknown零盲重发（B侧）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "blocked",
+      "assertions": 0,
+      "failures": [],
+      "ms": 291,
+      "note": "BLOCKED: A/dist/index.js 尚未产出（A路实现未到可运行版本）"
+    },
+    {
+      "id": "D-15",
+      "title": "checkpoint与worker存储凭据零泄漏（B侧；A侧审计/事件面已由D-23覆盖）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "blocked",
+      "assertions": 0,
+      "failures": [],
+      "ms": 280,
+      "note": "BLOCKED: A/dist/index.js 尚未产出（A路实现未到可运行版本）"
+    }
+  ],
+  "pass": 0,
+  "fail": 0,
+  "skip": 0,
+  "blocked": 4,
+  "totalAssertions": 0,
+  "runnerError": null
+}

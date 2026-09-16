@@ -1,0 +1,16 @@
+[1] 项目已创建 p-mu1khtn5-h4lmvzml
+[2] 规则版本 v1 已发布（indicators=产能口径一致性/电费与产值匹配）
+[3] 证据已挂接 ev-mu1khtnw-5nd19s7g（项目 factVersion → 2）
+[4] 运行已创建 run-mu1khtoe-fuh7b5d0（factVersion 快照=2，state=pending）
+  ok: 计算记录可附（占位，待 C 交付替换）
+  ok: 模型候选意见已落库（authority=none）
+  ok: 状态迁移 pending→candidate_ready
+  ok: 禁用键（approval）被结构拒绝 400
+  ok: 证据更正生成新版本
+  ok: 旧意见标记 stale（历史保留）
+  ok: run 顶层 stale（项目事实前进）
+  ok: 人工正式动作落库 → resolved
+  ok: 重复提交重放原回执（replayed=true）
+  FAIL: 另一端读到相同 factVersion 
+
+DEMO FAIL：1 处失败

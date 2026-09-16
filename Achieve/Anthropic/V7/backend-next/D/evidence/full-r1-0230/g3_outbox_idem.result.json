@@ -1,0 +1,54 @@
+{
+  "suite": "g3_outbox_idem",
+  "results": [
+    {
+      "id": "D-09",
+      "title": "outbox与业务写同事务：成功写出事件；失败写零孤儿事件（DB行级核验）",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 26,
+      "failures": [],
+      "ms": 2270,
+      "note": ""
+    },
+    {
+      "id": "D-10",
+      "title": "至少一次投递+重复投递：订阅端500→重投同eventId；业务效果不因重投重复",
+      "severity": "P1",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 21,
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "ReferenceError: cl is not defined\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g3_outbox_idem.test.mjs:78:160)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ],
+      "ms": 227,
+      "note": "exception"
+    },
+    {
+      "id": "D-11",
+      "title": "requestId幂等：同载荷重放replayed；异载荷409 REQUEST_MISMATCH且第二效果不生效",
+      "severity": "P1",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 25,
+      "failures": [
+        {
+          "msg": "DB仅一条证据（重放/mismatch均未新建）",
+          "detail": "{\"actual\":\"4\",\"expected\":\"1\"}"
+        }
+      ],
+      "ms": 484,
+      "note": ""
+    }
+  ],
+  "pass": 1,
+  "fail": 2,
+  "skip": 0,
+  "blocked": 0,
+  "totalAssertions": 72,
+  "runnerError": null
+}

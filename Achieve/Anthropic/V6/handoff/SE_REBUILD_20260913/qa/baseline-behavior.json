@@ -1,0 +1,637 @@
+{
+  "script": "behavior-regression.mjs",
+  "target": "http://127.0.0.1:3467",
+  "requestPrefix": "qa-20260913T110333-ad4585",
+  "startedAt": "2026-09-13T11:03:33.912Z",
+  "finishedAt": "2026-09-13T11:03:34.419Z",
+  "steps": [
+    {
+      "name": "setup: POST demo/seed approval 复位演示状态",
+      "status": "pass",
+      "durationMs": 105,
+      "assertions": [
+        {
+          "label": "HTTP 200（期望 200）",
+          "pass": true
+        },
+        {
+          "label": "响应 ok:true",
+          "pass": true
+        },
+        {
+          "label": "复位后 scenario=approval（期望 approval）",
+          "pass": true
+        },
+        {
+          "label": "复位后待办 id=todo-device-list（期望 todo-device-list）",
+          "pass": true
+        },
+        {
+          "label": "复位后待办状态=待补充（期望 待补充）",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "versionAfterSeed": 8
+      },
+      "error": null
+    },
+    {
+      "name": "A. GET /api/v5-preview/project 结构与关键字段",
+      "status": "pass",
+      "durationMs": 7,
+      "assertions": [
+        {
+          "label": "HTTP 200（期望 200）",
+          "pass": true
+        },
+        {
+          "label": "响应头 Cache-Control 含 no-store",
+          "pass": true
+        },
+        {
+          "label": "响应为 JSON 对象",
+          "pass": true
+        },
+        {
+          "label": "projectId=JW-2026-018（合成种子契约）（期望 JW-2026-018）",
+          "pass": true
+        },
+        {
+          "label": "customerName 非空字符串",
+          "pass": true
+        },
+        {
+          "label": "projectCode 非空字符串",
+          "pass": true
+        },
+        {
+          "label": "scenario 属于三种演示情景",
+          "pass": true
+        },
+        {
+          "label": "version 为正整数",
+          "pass": true
+        },
+        {
+          "label": "updatedAt 为 ISO 时间",
+          "pass": true
+        },
+        {
+          "label": "overall 存在",
+          "pass": true
+        },
+        {
+          "label": "overall.progressLabel 非空",
+          "pass": true
+        },
+        {
+          "label": "overall.description 非空",
+          "pass": true
+        },
+        {
+          "label": "domains 恰好 4 条",
+          "pass": true
+        },
+        {
+          "label": "domains 顺序=政策/信审/商务/资产（期望 policy,credit,commerce,asset）",
+          "pass": true
+        },
+        {
+          "label": "domains[0](policy).name 非空",
+          "pass": true
+        },
+        {
+          "label": "domains[0](policy).segmentLabels 为 4 个非空字符串",
+          "pass": true
+        },
+        {
+          "label": "domains[0](policy).segments 为 4 个合法段状态",
+          "pass": true
+        },
+        {
+          "label": "domains[0](policy).judgmentStatus 合法",
+          "pass": true
+        },
+        {
+          "label": "domains[0](policy).judgmentText 非空",
+          "pass": true
+        },
+        {
+          "label": "domains[0](policy).summary 非空",
+          "pass": true
+        },
+        {
+          "label": "domains[1](credit).name 非空",
+          "pass": true
+        },
+        {
+          "label": "domains[1](credit).segmentLabels 为 4 个非空字符串",
+          "pass": true
+        },
+        {
+          "label": "domains[1](credit).segments 为 4 个合法段状态",
+          "pass": true
+        },
+        {
+          "label": "domains[1](credit).judgmentStatus 合法",
+          "pass": true
+        },
+        {
+          "label": "domains[1](credit).judgmentText 非空",
+          "pass": true
+        },
+        {
+          "label": "domains[1](credit).summary 非空",
+          "pass": true
+        },
+        {
+          "label": "domains[2](commerce).name 非空",
+          "pass": true
+        },
+        {
+          "label": "domains[2](commerce).segmentLabels 为 4 个非空字符串",
+          "pass": true
+        },
+        {
+          "label": "domains[2](commerce).segments 为 4 个合法段状态",
+          "pass": true
+        },
+        {
+          "label": "domains[2](commerce).judgmentStatus 合法",
+          "pass": true
+        },
+        {
+          "label": "domains[2](commerce).judgmentText 非空",
+          "pass": true
+        },
+        {
+          "label": "domains[2](commerce).summary 非空",
+          "pass": true
+        },
+        {
+          "label": "domains[3](asset).name 非空",
+          "pass": true
+        },
+        {
+          "label": "domains[3](asset).segmentLabels 为 4 个非空字符串",
+          "pass": true
+        },
+        {
+          "label": "domains[3](asset).segments 为 4 个合法段状态",
+          "pass": true
+        },
+        {
+          "label": "domains[3](asset).judgmentStatus 合法",
+          "pass": true
+        },
+        {
+          "label": "domains[3](asset).judgmentText 非空",
+          "pass": true
+        },
+        {
+          "label": "domains[3](asset).summary 非空",
+          "pass": true
+        },
+        {
+          "label": "todo 为 null 或含 id/title/status",
+          "pass": true
+        },
+        {
+          "label": "messages 为非空数组",
+          "pass": true
+        },
+        {
+          "label": "messages[0].id 非空",
+          "pass": true
+        },
+        {
+          "label": "messages[0].fromKind 合法",
+          "pass": true
+        },
+        {
+          "label": "messages[0].text 非空",
+          "pass": true
+        },
+        {
+          "label": "messages[0].at 为 ISO 时间",
+          "pass": true
+        },
+        {
+          "label": "messages[0].marks 为字符串数组",
+          "pass": true
+        },
+        {
+          "label": "messages[1].id 非空",
+          "pass": true
+        },
+        {
+          "label": "messages[1].fromKind 合法",
+          "pass": true
+        },
+        {
+          "label": "messages[1].text 非空",
+          "pass": true
+        },
+        {
+          "label": "messages[1].at 为 ISO 时间",
+          "pass": true
+        },
+        {
+          "label": "messages[1].marks 为字符串数组",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "http": {
+          "status": 200,
+          "ms": 7
+        },
+        "snapshot": {
+          "scenario": "approval",
+          "version": 8,
+          "todoId": "todo-device-list",
+          "todoStatus": "待补充",
+          "messageCount": 2
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "B. POST /api/v5-preview/messages 幂等（同 requestId 两次 + 换载荷 409）",
+      "status": "pass",
+      "durationMs": 159,
+      "assertions": [
+        {
+          "label": "前置 GET 200（期望 200）",
+          "pass": true
+        },
+        {
+          "label": "前置 GET 拿到 version",
+          "pass": true
+        },
+        {
+          "label": "第一次发送 HTTP 200（期望 200）",
+          "pass": true
+        },
+        {
+          "label": "第一次发送 ok:true",
+          "pass": true
+        },
+        {
+          "label": "第一次发送非重放（replayed 不为 true）",
+          "pass": true
+        },
+        {
+          "label": "第一次发送后 version=base+1（期望 9）",
+          "pass": true
+        },
+        {
+          "label": "消息数 +1（期望 3）",
+          "pass": true
+        },
+        {
+          "label": "新消息 id=msg-biz-qa-20260913T110333-ad4585-msg-1 恰好出现 1 次（期望 1）",
+          "pass": true
+        },
+        {
+          "label": "同 requestId 重复发送 HTTP 200（幂等重放不报错）（期望 200）",
+          "pass": true
+        },
+        {
+          "label": "重放响应 ok:true",
+          "pass": true
+        },
+        {
+          "label": "重放响应 replayed:true（期望 true）",
+          "pass": true
+        },
+        {
+          "label": "重放不重复记账：version 仍=base+1（期望 9）",
+          "pass": true
+        },
+        {
+          "label": "重放后消息数不增（期望 3）",
+          "pass": true
+        },
+        {
+          "label": "同 requestId 换载荷 HTTP 409（期望 409）",
+          "pass": true
+        },
+        {
+          "label": "换载荷响应 ok:false（期望 false）",
+          "pass": true
+        },
+        {
+          "label": "错误码=REQUEST_MISMATCH（期望 REQUEST_MISMATCH）",
+          "pass": true
+        },
+        {
+          "label": "终态 GET：version=base+1（B 步无额外写入）（期望 9）",
+          "pass": true
+        },
+        {
+          "label": "终态 GET：该 requestId 的消息仍只有 1 条（期望 1）",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "base": {
+          "version": 8,
+          "messageCount": 2
+        },
+        "first": {
+          "status": 200,
+          "version": 9,
+          "replayed": null
+        },
+        "second": {
+          "status": 200,
+          "version": 9,
+          "replayed": true
+        },
+        "mismatch": {
+          "status": 409,
+          "error": "REQUEST_MISMATCH"
+        },
+        "final": {
+          "version": 9,
+          "messageCount": 3
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "C. POST /api/v5-preview/messages 错 expectedVersion → 409 VERSION_CONFLICT",
+      "status": "pass",
+      "durationMs": 40,
+      "assertions": [
+        {
+          "label": "前置 GET 200（期望 200）",
+          "pass": true
+        },
+        {
+          "label": "前置 GET 拿到 version",
+          "pass": true
+        },
+        {
+          "label": "HTTP 409（期望 409）",
+          "pass": true
+        },
+        {
+          "label": "ok:false（期望 false）",
+          "pass": true
+        },
+        {
+          "label": "错误码=VERSION_CONFLICT（期望 VERSION_CONFLICT）",
+          "pass": true
+        },
+        {
+          "label": "serverVersion=服务端当前版本(9)（期望 9）",
+          "pass": true
+        },
+        {
+          "label": "message 为非空中文提示",
+          "pass": true
+        },
+        {
+          "label": "冲突失败不写入：version 不变（期望 9）",
+          "pass": true
+        },
+        {
+          "label": "冲突失败不写入：消息数不变（期望 3）",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "base": {
+          "version": 9,
+          "messageCount": 3
+        },
+        "conflict": {
+          "status": 409,
+          "error": "VERSION_CONFLICT",
+          "serverVersion": 9,
+          "message": "版本已更新：客户端持有 v18，服务端为 v9；请重新 GET 后再试（内容已保留）"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "D1. POST /api/v5-preview/notes 成功路径（approval，todo-device-list）",
+      "status": "pass",
+      "durationMs": 94,
+      "assertions": [
+        {
+          "label": "前置 GET 200（期望 200）",
+          "pass": true
+        },
+        {
+          "label": "前置：scenario=approval（期望 approval）",
+          "pass": true
+        },
+        {
+          "label": "前置：待办 id=todo-device-list（期望 todo-device-list）",
+          "pass": true
+        },
+        {
+          "label": "前置：待办状态=待补充（期望 待补充）",
+          "pass": true
+        },
+        {
+          "label": "HTTP 200（期望 200）",
+          "pass": true
+        },
+        {
+          "label": "ok:true",
+          "pass": true
+        },
+        {
+          "label": "非重放",
+          "pass": true
+        },
+        {
+          "label": "version=v+1（期望 10）",
+          "pass": true
+        },
+        {
+          "label": "todo.status=待复核（期望 待复核）",
+          "pass": true
+        },
+        {
+          "label": "相关域（信审）judgmentText=待复核（期望 待复核）",
+          "pass": true
+        },
+        {
+          "label": "信审判断灯仍为 yellow（不自动变绿）（期望 yellow）",
+          "pass": true
+        },
+        {
+          "label": "消息 +2（业务补充说明 + 系统记录）（期望 5）",
+          "pass": true
+        },
+        {
+          "label": "存在 msg-note-qa-20260913T110333-ad4585-note-3",
+          "pass": true
+        },
+        {
+          "label": "存在 msg-note-sys-qa-20260913T110333-ad4585-note-3",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "base": {
+          "version": 9,
+          "messageCount": 3,
+          "creditJudgmentText": "待补充"
+        },
+        "write": {
+          "status": 200,
+          "version": 10,
+          "replayed": null
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "D2. POST /api/v5-preview/notes 待办已待复核（新 requestId）→ 404 NOT_FOUND",
+      "status": "pass",
+      "durationMs": 48,
+      "assertions": [
+        {
+          "label": "前置 GET 200（期望 200）",
+          "pass": true
+        },
+        {
+          "label": "前置：待办状态=待复核（承接 D1）（期望 待复核）",
+          "pass": true
+        },
+        {
+          "label": "HTTP 404（期望 404）",
+          "pass": true
+        },
+        {
+          "label": "ok:false（期望 false）",
+          "pass": true
+        },
+        {
+          "label": "错误码=NOT_FOUND（期望 NOT_FOUND）",
+          "pass": true
+        },
+        {
+          "label": "提示语不含内部 todoId",
+          "pass": true
+        },
+        {
+          "label": "失败不写入：version 不变（期望 10）",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "base": {
+          "version": 10,
+          "todoStatus": "待复核"
+        },
+        "write": {
+          "status": 404,
+          "error": "NOT_FOUND",
+          "message": "该待办已不在可提交状态，请刷新后查看最新状态"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "D3. POST /api/v5-preview/notes settled 无开放待办 → 409 NO_OPEN_TODO",
+      "status": "pass",
+      "durationMs": 33,
+      "assertions": [
+        {
+          "label": "demo/seed settled HTTP 200（期望 200）",
+          "pass": true
+        },
+        {
+          "label": "前置 GET 200（期望 200）",
+          "pass": true
+        },
+        {
+          "label": "前置：scenario=settled（期望 settled）",
+          "pass": true
+        },
+        {
+          "label": "前置：todo=null（无开放待办）（期望 null）",
+          "pass": true
+        },
+        {
+          "label": "HTTP 409（期望 409）",
+          "pass": true
+        },
+        {
+          "label": "ok:false（期望 false）",
+          "pass": true
+        },
+        {
+          "label": "错误码=NO_OPEN_TODO（期望 NO_OPEN_TODO）",
+          "pass": true
+        },
+        {
+          "label": "message 为非空中文提示",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "base": {
+          "version": 11,
+          "scenario": "settled",
+          "todo": null
+        },
+        "write": {
+          "status": 409,
+          "error": "NO_OPEN_TODO",
+          "message": "当前情景没有开放待办（如已结清），不能提交补充说明"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "cleanup: POST demo/seed approval 复位 + 终态校验",
+      "status": "pass",
+      "durationMs": 15,
+      "assertions": [
+        {
+          "label": "复位 seed HTTP 200（期望 200）",
+          "pass": true
+        },
+        {
+          "label": "终态 scenario=approval（期望 approval）",
+          "pass": true
+        },
+        {
+          "label": "终态待办状态=待补充（期望 待补充）",
+          "pass": true
+        },
+        {
+          "label": "终态 GET 200（期望 200）",
+          "pass": true
+        },
+        {
+          "label": "终态 GET scenario=approval（期望 approval）",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "final": {
+          "version": 12,
+          "todoStatus": "待补充",
+          "messageCount": 2
+        }
+      },
+      "error": null
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0,
+    "requestPrefix": "qa-20260913T110333-ad4585"
+  }
+}

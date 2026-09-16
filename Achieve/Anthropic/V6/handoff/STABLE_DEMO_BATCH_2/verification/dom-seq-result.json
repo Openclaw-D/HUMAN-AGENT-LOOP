@@ -1,0 +1,11 @@
+[
+  {
+    "name": "行1 服务端侧：写入推进后旧版本必 409（页面轮询只可能取到新版本）",
+    "pass": true,
+    "evidence": {
+      "oldVersion": 11,
+      "newVersion": 12,
+      "staleStatus": 409
+    }
+  }
+]

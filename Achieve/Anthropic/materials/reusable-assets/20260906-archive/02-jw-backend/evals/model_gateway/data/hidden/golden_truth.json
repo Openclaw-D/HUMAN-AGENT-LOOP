@@ -1,0 +1,33 @@
+{
+  "datasetVersion": "1.0",
+  "isSimulated": true,
+  "dataStatus": "synthetic_demo",
+  "source": "human_curated_hidden_synthetic_golden_truth",
+  "disclaimer": "Hidden golden truth 仅在 provider 回包后计分，禁止进入任何模型输入。",
+  "cases": [
+    {"caseId":"mg-eval-01","expectedFields":{"registration_valid":true,"equipment_count":16,"capacity_utilization_pct":62.5}},
+    {"caseId":"mg-eval-02","expectedFields":{"registration_valid":true,"equipment_count":17,"capacity_utilization_pct":63.5}},
+    {"caseId":"mg-eval-03","expectedFields":{"registration_valid":true,"equipment_count":18,"capacity_utilization_pct":64.5}},
+    {"caseId":"mg-eval-04","expectedFields":{"registration_valid":true,"equipment_count":19,"capacity_utilization_pct":65.5}},
+    {"caseId":"mg-eval-05","expectedFields":{"registration_valid":true,"equipment_count":20,"capacity_utilization_pct":66.5}},
+    {"caseId":"mg-eval-06","expectedFields":{"registration_valid":true,"equipment_count":21,"capacity_utilization_pct":67.5}},
+    {"caseId":"mg-eval-07","expectedFields":{"registration_valid":true,"equipment_count":22,"capacity_utilization_pct":68.5}},
+    {"caseId":"mg-eval-08","expectedFields":{"registration_valid":false,"equipment_count":23,"capacity_utilization_pct":69.5}},
+    {"caseId":"mg-eval-09","expectedFields":{"registration_valid":true,"equipment_count":24,"capacity_utilization_pct":70.5}},
+    {"caseId":"mg-eval-10","expectedFields":{"registration_valid":true,"equipment_count":25,"capacity_utilization_pct":71.5}},
+    {"caseId":"mg-eval-11","expectedFields":{"registration_valid":true,"equipment_count":26,"capacity_utilization_pct":72.5}},
+    {"caseId":"mg-eval-12","expectedFields":{"registration_valid":true,"equipment_count":27,"capacity_utilization_pct":73.5}},
+    {"caseId":"mg-eval-13","expectedFields":{"registration_valid":true,"equipment_count":28,"capacity_utilization_pct":74.5}},
+    {"caseId":"mg-eval-14","expectedFields":{"registration_valid":true,"equipment_count":29,"capacity_utilization_pct":75.5}},
+    {"caseId":"mg-eval-15","expectedFields":{"registration_valid":true,"equipment_count":30,"capacity_utilization_pct":76.5}},
+    {"caseId":"mg-eval-16","expectedFields":{"registration_valid":false,"equipment_count":31,"capacity_utilization_pct":77.5}},
+    {"caseId":"mg-eval-17","expectedFields":{"registration_valid":true,"equipment_count":32,"capacity_utilization_pct":78.5}},
+    {"caseId":"mg-eval-18","expectedFields":{"registration_valid":true,"equipment_count":33,"capacity_utilization_pct":79.5}},
+    {"caseId":"mg-eval-19","expectedFields":{"registration_valid":true,"equipment_count":34,"capacity_utilization_pct":80.5}},
+    {"caseId":"mg-eval-20","expectedFields":{"registration_valid":true,"equipment_count":35,"capacity_utilization_pct":81.5}},
+    {"caseId":"mg-eval-21","expectedFields":{"registration_valid":true,"equipment_count":36,"capacity_utilization_pct":82.5}},
+    {"caseId":"mg-eval-22","expectedFields":{"registration_valid":true,"equipment_count":37,"capacity_utilization_pct":83.5}},
+    {"caseId":"mg-eval-23","expectedFields":{"registration_valid":true,"equipment_count":38,"capacity_utilization_pct":84.5}},
+    {"caseId":"mg-eval-24","expectedFields":{"registration_valid":false,"equipment_count":39,"capacity_utilization_pct":85.5}}
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "jw-eval-variant@1",
+  "variantId": "VAR-5",
+  "variantName": "不同专业意见（政策岗与信审岗分歧）",
+  "basedOn": { "caseId": "CASE-B", "caseVersion": 1 },
+  "mutations": [
+    {
+      "op": "addSource",
+      "source": {
+        "sourceId": "B-SUP-04",
+        "version": 1,
+        "sourceType": "supplement",
+        "title": "我方政策岗内部评估意见（合成记录，未审批）",
+        "facts": [
+          { "factId": "B-SUP-04-F1", "text": "政策岗意见：拟租赁设备中补贴机型占比高，若设备曾用农机补贴购置，补贴协议通常限制转让与抵押；受让3台的处置限制必须先核查补贴协议及主管部门记录，在此之前不宜对设备权属下任何结论。", "status": "recorded", "note": "合成内部意见记录；authority=none，仅供专业讨论" }
+        ]
+      }
+    },
+    {
+      "op": "addSource",
+      "source": {
+        "sourceId": "B-SUP-05",
+        "version": 1,
+        "sourceType": "supplement",
+        "title": "我方信审岗内部评估意见（合成记录，未审批）",
+        "facts": [
+          { "factId": "B-SUP-05-F1", "text": "信审岗意见：补贴限制属于合规细节，只要受让协议和付款凭证补齐、证明权属链条完整，本单即可按常规资料清单继续推进；不必把补贴协议核查作为前置。", "status": "recorded", "note": "合成内部意见记录；authority=none，仅供专业讨论" }
+        ]
+      }
+    }
+  ],
+  "purpose": "测试候选面对两份互相冲突的专业意见时，是否保留分歧并给出双方都依赖的共同前置事实（受让凭证+补贴协议核查），而不是替某一方裁决或假装没有分歧",
+  "evaluationQuestion": "候选是否保留政策岗与信审岗的意见分歧、指出分歧的共同事实基础（受让凭证与补贴协议均未核查），并给出双方都可接受的下一步，而不是强行合并结论或替任一岗位裁决？",
+  "derivationNote": "基础案例B只有单一视角；本变体加入两份立场不同的合成内部意见。两份意见均为合成材料，authority=none，不代表公司真实岗位已作任何决定"
+}

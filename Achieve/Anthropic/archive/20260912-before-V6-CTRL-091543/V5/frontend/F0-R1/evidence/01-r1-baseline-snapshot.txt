@@ -1,0 +1,4 @@
+# F0-R1 开工快照（2026-09-08，只读）
+HEAD: 63c41c3db138215d40470098d80c405f2a6fd679
+branch: main
+porcelain_count: 81

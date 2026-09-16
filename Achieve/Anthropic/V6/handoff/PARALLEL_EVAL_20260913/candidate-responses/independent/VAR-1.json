@@ -1,0 +1,51 @@
+{
+  "schema": "jw-eval-candidate@1",
+  "candidateId": "independent-VAR-1",
+  "caseId": "CASE-B",
+  "variantId": "VAR-1",
+  "inputPackVersion": "case-B v1 + VAR-1（移除B-DOC-04）",
+  "respondent": {
+    "kind": "hand_written_reference_answer",
+    "note": "人工撰写的独立参考答案，非任何真实模型输出；作为VAR-1的positive control"
+  },
+  "findings": [
+    {
+      "findingId": "F-V1-01",
+      "type": "gap",
+      "statement": "核心缺口：拟租赁5台设备的权属凭证整体缺失——受让3台本无发票与受让协议，购入2台的采购发票摘录亦不在本资料包中；设备清单之外无任何权属证明材料。",
+      "evidenceRefs": [
+        { "sourceId": "B-DOC-03", "version": 1 },
+        { "sourceId": "B-FC-01", "version": 1 },
+        { "sourceId": "B-SUP-01", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-V1-02",
+      "type": "note",
+      "statement": "受让付款凭证仅一张80万元回单，与设备价值体量不匹配，不能作为权属链条的充分佐证。",
+      "evidenceRefs": [{ "sourceId": "B-SUP-01", "version": 1 }]
+    }
+  ],
+  "questions": [
+    {
+      "questionId": "Q-V1-01",
+      "text": "请一次性补齐5台设备的购置发票、受让协议、付款凭证与交付记录，再继续核对权属？",
+      "evidenceRefs": [{ "sourceId": "B-DOC-03", "version": 1 }]
+    }
+  ],
+  "conclusions": [
+    {
+      "conclusionId": "C-V1-01",
+      "kind": "summary",
+      "statement": "本资料包缺少全部拟租赁设备的权属凭证，属核心文件缺失，当前材料不足以支撑设备层面的任何判断。"
+    },
+    {
+      "conclusionId": "C-V1-02",
+      "kind": "next_step",
+      "statement": "在权属凭证补齐并经人工核实前，本轮停留在资料澄清阶段，不作倾向性推进；是否继续由人工决定。"
+    }
+  ],
+  "unresolved": [
+    "5台设备的权属状态：核心凭证缺失，暂停推进"
+  ]
+}

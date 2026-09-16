@@ -1,0 +1,1172 @@
+TAP version 13
+# Subtest: 正常结构:succeeded、字段完整、usage 按 provider 报告结算、输出为中文
+ok 1 - 正常结构:succeeded、字段完整、usage 按 provider 报告结算、输出为中文
+  ---
+  duration_ms: 7.4823
+  type: 'test'
+  ...
+# Subtest: simulated 通道:状态为 simulated(非 succeeded),并显著携带模拟声明
+ok 2 - simulated 通道:状态为 simulated(非 succeeded),并显著携带模拟声明
+  ---
+  duration_ms: 1.0714
+  type: 'test'
+  ...
+# Subtest: 未配置 transport:显式 not_configured,零外部调用,不预留预算
+ok 3 - 未配置 transport:显式 not_configured,零外部调用,不预留预算
+  ---
+  duration_ms: 0.4817
+  type: 'test'
+  ...
+# Subtest: 模拟输出同样必须通过输出守门:引用悬空时 simulated 也判 failed
+ok 4 - 模拟输出同样必须通过输出守门:引用悬空时 simulated 也判 failed
+  ---
+  duration_ms: 0.8936
+  type: 'test'
+  ...
+# Subtest: 请求校验拒绝:缺 requestId
+ok 5 - 请求校验拒绝:缺 requestId
+  ---
+  duration_ms: 3.1579
+  type: 'test'
+  ...
+# Subtest: 请求校验拒绝:空 requestId
+ok 6 - 请求校验拒绝:空 requestId
+  ---
+  duration_ms: 0.4149
+  type: 'test'
+  ...
+# Subtest: 请求校验拒绝:缺 projectId
+ok 7 - 请求校验拒绝:缺 projectId
+  ---
+  duration_ms: 0.2518
+  type: 'test'
+  ...
+# Subtest: 请求校验拒绝:缺 sessionId
+ok 8 - 请求校验拒绝:缺 sessionId
+  ---
+  duration_ms: 0.2011
+  type: 'test'
+  ...
+# Subtest: 请求校验拒绝:缺 purpose
+ok 9 - 请求校验拒绝:缺 purpose
+  ---
+  duration_ms: 0.3341
+  type: 'test'
+  ...
+# Subtest: 请求校验拒绝:generation 非整数
+ok 10 - 请求校验拒绝:generation 非整数
+  ---
+  duration_ms: 0.1675
+  type: 'test'
+  ...
+# Subtest: 请求校验拒绝:generation 为 0
+ok 11 - 请求校验拒绝:generation 为 0
+  ---
+  duration_ms: 0.2617
+  type: 'test'
+  ...
+# Subtest: 请求校验拒绝:generation 为负
+ok 12 - 请求校验拒绝:generation 为负
+  ---
+  duration_ms: 0.1429
+  type: 'test'
+  ...
+# Subtest: 请求校验拒绝:contextVersion 缺失
+ok 13 - 请求校验拒绝:contextVersion 缺失
+  ---
+  duration_ms: 0.5016
+  type: 'test'
+  ...
+# Subtest: 请求校验拒绝:contextVersion 空串
+ok 14 - 请求校验拒绝:contextVersion 空串
+  ---
+  duration_ms: 0.5569
+  type: 'test'
+  ...
+# Subtest: 请求校验拒绝:text 不是字符串
+ok 15 - 请求校验拒绝:text 不是字符串
+  ---
+  duration_ms: 0.2758
+  type: 'test'
+  ...
+# Subtest: 请求校验拒绝:evidenceRefs 不是数组
+ok 16 - 请求校验拒绝:evidenceRefs 不是数组
+  ---
+  duration_ms: 0.1702
+  type: 'test'
+  ...
+# Subtest: 请求校验拒绝:evidenceRefs 项缺 hash
+ok 17 - 请求校验拒绝:evidenceRefs 项缺 hash
+  ---
+  duration_ms: 0.1672
+  type: 'test'
+  ...
+# Subtest: 请求校验拒绝:evidenceRefs 项空 id
+ok 18 - 请求校验拒绝:evidenceRefs 项空 id
+  ---
+  duration_ms: 0.1511
+  type: 'test'
+  ...
+# Subtest: 请求校验拒绝:缺少 role
+ok 19 - 请求校验拒绝:缺少 role
+  ---
+  duration_ms: 0.1534
+  type: 'test'
+  ...
+# Subtest: 非法角色:UNKNOWN_ROLE,未配置角色不得调用
+ok 20 - 非法角色:UNKNOWN_ROLE,未配置角色不得调用
+  ---
+  duration_ms: 0.2505
+  type: 'test'
+  ...
+# Subtest: 角色名大小写敏感:Credit ≠ credit(协议标识英文小写)
+ok 21 - 角色名大小写敏感:Credit ≠ credit(协议标识英文小写)
+  ---
+  duration_ms: 0.9005
+  type: 'test'
+  ...
+# Subtest: 用途越权:角色配置不允许该 purpose 时拒绝
+ok 22 - 用途越权:角色配置不允许该 purpose 时拒绝
+  ---
+  duration_ms: 0.2521
+  type: 'test'
+  ...
+# Subtest: 自定义 roles 配置生效:可配置角色集合与允许用途
+ok 23 - 自定义 roles 配置生效:可配置角色集合与允许用途
+  ---
+  duration_ms: 2.8507
+  type: 'test'
+  ...
+# Subtest: 未知字段被忽略并记入 warnings(前向兼容)
+ok 24 - 未知字段被忽略并记入 warnings(前向兼容)
+  ---
+  duration_ms: 1.7968
+  type: 'test'
+  ...
+# Subtest: 空输出:findings 与 questions 全空 → failed/EMPTY_OUTPUT,不伪装成功
+ok 25 - 空输出:findings 与 questions 全空 → failed/EMPTY_OUTPUT,不伪装成功
+  ---
+  duration_ms: 5.8708
+  type: 'test'
+  ...
+# Subtest: 缺字段:输出缺 findings 数组 → failed/MALFORMED_OUTPUT
+ok 26 - 缺字段:输出缺 findings 数组 → failed/MALFORMED_OUTPUT
+  ---
+  duration_ms: 0.6261
+  type: 'test'
+  ...
+# Subtest: transport 返回非对象 → failed(外部调用已发生,预留保留不释放)
+ok 27 - transport 返回非对象 → failed(外部调用已发生,预留保留不释放)
+  ---
+  duration_ms: 0.666
+  type: 'test'
+  ...
+# Subtest: 悬空引用:finding 引用输入中不存在的证据 → failed/EVIDENCE_DANGLING,details 指明具体 id
+ok 28 - 悬空引用:finding 引用输入中不存在的证据 → failed/EVIDENCE_DANGLING,details 指明具体 id
+  ---
+  duration_ms: 1.3527
+  type: 'test'
+  ...
+# Subtest: 版本不匹配:同 id 同 version 但 hash 不同 → 拒绝(三元组必须精确匹配)
+ok 29 - 版本不匹配:同 id 同 version 但 hash 不同 → 拒绝(三元组必须精确匹配)
+  ---
+  duration_ms: 0.811
+  type: 'test'
+  ...
+# Subtest: 无来源事实:输入证据清单为空而 findings 非空 → 全部拒为 UNSOURCED/EVIDENCE_DANGLING
+ok 30 - 无来源事实:输入证据清单为空而 findings 非空 → 全部拒为 UNSOURCED/EVIDENCE_DANGLING
+  ---
+  duration_ms: 0.6487
+  type: 'test'
+  ...
+# Subtest: question 可以不带引用(问句不是事实断言),但带引用时必须合法
+ok 31 - question 可以不带引用(问句不是事实断言),但带引用时必须合法
+  ---
+  duration_ms: 2.1407
+  type: 'test'
+  ...
+# Subtest: 越权批准:决定性表述「审批通过,同意放款」→ failed/UNAUTHORIZED_OUTPUT
+ok 32 - 越权批准:决定性表述「审批通过,同意放款」→ failed/UNAUTHORIZED_OUTPUT
+  ---
+  duration_ms: 2.4835
+  type: 'test'
+  ...
+# Subtest: 越权批准:顶层保留字段 decision → 拒绝
+ok 33 - 越权批准:顶层保留字段 decision → 拒绝
+  ---
+  duration_ms: 1.4568
+  type: 'test'
+  ...
+# Subtest: 部分失败:一条 finding 合法、一条悬空 → 整体 failed,不得输出部分成功
+ok 34 - 部分失败:一条 finding 合法、一条悬空 → 整体 failed,不得输出部分成功
+  ---
+  duration_ms: 1.6255
+  type: 'test'
+  ...
+# Subtest: 部分失败:输出校验失败但 provider 报告了 usage → 按实际用量结算(调用已发生)
+ok 35 - 部分失败:输出校验失败但 provider 报告了 usage → 按实际用量结算(调用已发生)
+  ---
+  duration_ms: 0.7276
+  type: 'test'
+  ...
+# Subtest: 合法 dissent:存在异议不影响 succeeded 判定(异议是协作输入,不是错误)
+ok 36 - 合法 dissent:存在异议不影响 succeeded 判定(异议是协作输入,不是错误)
+  ---
+  duration_ms: 0.7277
+  type: 'test'
+  ...
+# Subtest: 合法 dissent:normalization 保留异议(id 缺省 D+序号、position、text、核查过的引用、conflictsWith)
+ok 37 - 合法 dissent:normalization 保留异议(id 缺省 D+序号、position、text、核查过的引用、conflictsWith)
+  ---
+  duration_ms: 0.3203
+  type: 'test'
+  ...
+# Subtest: dissent position 非法 → failed/MALFORMED_OUTPUT(只允许 original/dissenting)
+ok 38 - dissent position 非法 → failed/MALFORMED_OUTPUT(只允许 original/dissenting)
+  ---
+  duration_ms: 0.5621
+  type: 'test'
+  ...
+# Subtest: dissent 引用悬空 → failed/EVIDENCE_DANGLING(与 findings 同码复用,detail 指明具体 id)
+ok 39 - dissent 引用悬空 → failed/EVIDENCE_DANGLING(与 findings 同码复用,detail 指明具体 id)
+  ---
+  duration_ms: 0.4432
+  type: 'test'
+  ...
+# Subtest: 无 dissent 字段:normalization.dissent 为空数组(前向兼容,旧输出形状不变)
+ok 40 - 无 dissent 字段:normalization.dissent 为空数组(前向兼容,旧输出形状不变)
+  ---
+  duration_ms: 0.3387
+  type: 'test'
+  ...
+# Subtest: dissent 自身违规按对应码拒绝:文本空/无引用/越权表述/conflictsWith 非法/dissent 非数组
+ok 41 - dissent 自身违规按对应码拒绝:文本空/无引用/越权表述/conflictsWith 非法/dissent 非数组
+  ---
+  duration_ms: 0.6572
+  type: 'test'
+  ...
+# Subtest: 重复请求:同ID同载荷第二次调用命中缓存,transport 只调用一次,结果标 deduped
+ok 42 - 重复请求:同ID同载荷第二次调用命中缓存,transport 只调用一次,结果标 deduped
+  ---
+  duration_ms: 6.9599
+  type: 'test'
+  ...
+# Subtest: 并发去重:第二个同ID同载荷调用共享在飞 promise,transport 只调用一次
+ok 43 - 并发去重:第二个同ID同载荷调用共享在飞 promise,transport 只调用一次
+  ---
+  duration_ms: 1.182
+  type: 'test'
+  ...
+# Subtest: 确定性失败同样缓存:空输出 failed 后同载荷重放不重复调用
+ok 44 - 确定性失败同样缓存:空输出 failed 后同载荷重放不重复调用
+  ---
+  duration_ms: 0.9542
+  type: 'test'
+  ...
+# Subtest: 非确定性结果不缓存:unknown 后业务层人工重试同ID同载荷会完整重跑(仍一次/次)
+ok 45 - 非确定性结果不缓存:unknown 后业务层人工重试同ID同载荷会完整重跑(仍一次/次)
+  ---
+  duration_ms: 1.0104
+  type: 'test'
+  ...
+# Subtest: 送出后失败(TRANSPORT_ERROR)不缓存:人工核实后同ID同载荷重试可成功(审计裁决的新语义)
+ok 46 - 送出后失败(TRANSPORT_ERROR)不缓存:人工核实后同ID同载荷重试可成功(审计裁决的新语义)
+  ---
+  duration_ms: 1.1162
+  type: 'test'
+  ...
+# Subtest: 同ID变载荷:改 text → REQUEST_MISMATCH,不调用
+ok 47 - 同ID变载荷:改 text → REQUEST_MISMATCH,不调用
+  ---
+  duration_ms: 1.5399
+  type: 'test'
+  ...
+# Subtest: 同ID变载荷:改 evidenceRefs(hash 不同)→ REQUEST_MISMATCH
+ok 48 - 同ID变载荷:改 evidenceRefs(hash 不同)→ REQUEST_MISMATCH
+  ---
+  duration_ms: 1.3182
+  type: 'test'
+  ...
+# Subtest: 同ID变载荷:改 generation → REQUEST_MISMATCH(旧回执不得清新代次)
+ok 49 - 同ID变载荷:改 generation → REQUEST_MISMATCH(旧回执不得清新代次)
+  ---
+  duration_ms: 0.9727
+  type: 'test'
+  ...
+# Subtest: 不同 requestId 携带相同载荷:不去重(请求身份由 requestId 决定)
+ok 50 - 不同 requestId 携带相同载荷:不去重(请求身份由 requestId 决定)
+  ---
+  duration_ms: 1.1998
+  type: 'test'
+  ...
+# Subtest: registry 直测:lookup 返回枚举形状齐备;uncached 同ID同载荷仍 register 且复用既有条目
+ok 51 - registry 直测:lookup 返回枚举形状齐备;uncached 同ID同载荷仍 register 且复用既有条目
+  ---
+  duration_ms: 10.6187
+  type: 'test'
+  ...
+# Subtest: canonicalJson/payloadHash:undefined 输入稳定不崩,哈希永不抛(含嵌套 undefined/函数/symbol)
+ok 52 - canonicalJson/payloadHash:undefined 输入稳定不崩,哈希永不抛(含嵌套 undefined/函数/symbol)
+  ---
+  duration_ms: 0.7013
+  type: 'test'
+  ...
+# Subtest: cloneResult:深拷贝副本,导出保持不变
+ok 53 - cloneResult:深拷贝副本,导出保持不变
+  ---
+  duration_ms: 0.2081
+  type: 'test'
+  ...
+# Subtest: 送出前已取消:signal 预先 aborted → cancelled,零调用、零占用
+ok 54 - 送出前已取消:signal 预先 aborted → cancelled,零调用、零占用
+  ---
+  duration_ms: 5.0505
+  type: 'test'
+  ...
+# Subtest: transport 证明未发送(sent:false)→ cancelled,预留释放
+ok 55 - transport 证明未发送(sent:false)→ cancelled,预留释放
+  ---
+  duration_ms: 3.4634
+  type: 'test'
+  ...
+# Subtest: 请求送出后取消:transport 未声明未发送 → unknown(不得标 cancelled),预留保留
+ok 56 - 请求送出后取消:transport 未声明未发送 → unknown(不得标 cancelled),预留保留
+  ---
+  duration_ms: 1.3142
+  type: 'test'
+  ...
+# Subtest: 注入时钟超时:clock.advance 越过 deadline → unknown/TIMEOUT,迟到结果不被采信
+ok 57 - 注入时钟超时:clock.advance 越过 deadline → unknown/TIMEOUT,迟到结果不被采信
+  ---
+  duration_ms: 7.7287
+  type: 'test'
+  ...
+# Subtest: 超时前完成:正常 succeeded(计时器被清理,不误伤)
+ok 58 - 超时前完成:正常 succeeded(计时器被清理,不误伤)
+  ---
+  duration_ms: 2.2103
+  type: 'test'
+  ...
+# Subtest: transport 报 indeterminate → unknown/TRANSPORT_INDETERMINATE
+ok 59 - transport 报 indeterminate → unknown/TRANSPORT_INDETERMINATE
+  ---
+  duration_ms: 0.5335
+  type: 'test'
+  ...
+# Subtest: transport 抛异常:默认视为可能已送出 → failed/TRANSPORT_THROWN + 预留保留
+ok 60 - transport 抛异常:默认视为可能已送出 → failed/TRANSPORT_THROWN + 预留保留
+  ---
+  duration_ms: 0.8002
+  type: 'test'
+  ...
+# Subtest: transport 异常但声明 notSent → cancelled(确定未发生)
+ok 61 - transport 异常但声明 notSent → cancelled(确定未发生)
+  ---
+  duration_ms: 0.7588
+  type: 'test'
+  ...
+# Subtest: transport 报错(已应答)→ failed/TRANSPORT_ERROR;错误体带 usage 时按报告结算
+ok 62 - transport 报错(已应答)→ failed/TRANSPORT_ERROR;错误体带 usage 时按报告结算
+  ---
+  duration_ms: 1.0157
+  type: 'test'
+  ...
+# Subtest: 未知状态禁止自动无限重试:indeterminate 连续多次调用,transport 每次恰好一次
+ok 63 - 未知状态禁止自动无限重试:indeterminate 连续多次调用,transport 每次恰好一次
+  ---
+  duration_ms: 2.1951
+  type: 'test'
+  ...
+# Subtest: 暂停后返回:实例登记 pauseSession,在途结果返回时标 stale,不得越过暂停代次
+ok 64 - 暂停后返回:实例登记 pauseSession,在途结果返回时标 stale,不得越过暂停代次
+  ---
+  duration_ms: 7.0658
+  type: 'test'
+  ...
+# Subtest: 发起时已暂停:拒绝发起新调用(cancelled/SESSION_PAUSED),零调用、零占用
+ok 65 - 发起时已暂停:拒绝发起新调用(cancelled/SESSION_PAUSED),零调用、零占用
+  ---
+  duration_ms: 0.5523
+  type: 'test'
+  ...
+# Subtest: context.snapshot 优先于实例登记:业务层权威快照生效
+ok 66 - context.snapshot 优先于实例登记:业务层权威快照生效
+  ---
+  duration_ms: 1.1227
+  type: 'test'
+  ...
+# Subtest: generation 推进(暂停恢复后):旧代次在途结果 stale,不得冒充新代次结论
+ok 67 - generation 推进(暂停恢复后):旧代次在途结果 stale,不得冒充新代次结论
+  ---
+  duration_ms: 1.0249
+  type: 'test'
+  ...
+# Subtest: contextVersion 变化:证据集更新后,旧上下文的在途结果 stale/CONTEXT_VERSION_CHANGED
+ok 68 - contextVersion 变化:证据集更新后,旧上下文的在途结果 stale/CONTEXT_VERSION_CHANGED
+  ---
+  duration_ms: 0.7112
+  type: 'test'
+  ...
+# Subtest: 快照未变化:结果保持 succeeded(stale 只在真实变化时触发)
+ok 69 - 快照未变化:结果保持 succeeded(stale 只在真实变化时触发)
+  ---
+  duration_ms: 0.7381
+  type: 'test'
+  ...
+# Subtest: 恢复后同会话可再次调用:resumeSession 清除暂停并登记新代次
+ok 70 - 恢复后同会话可再次调用:resumeSession 清除暂停并登记新代次
+  ---
+  duration_ms: 0.9817
+  type: 'test'
+  ...
+# Subtest: 暂停拒绝与送出前取消在 stale 判定之前:失败结果不受暂停影响(错误更具体)
+ok 71 - 暂停拒绝与送出前取消在 stale 判定之前:失败结果不受暂停影响(错误更具体)
+  ---
+  duration_ms: 0.7699
+  type: 'test'
+  ...
+# Subtest: R2 并发同ID join:在飞期间会话暂停,共享者返回前同样复核 → 均为 stale,不得共享 succeeded
+ok 72 - R2 并发同ID join:在飞期间会话暂停,共享者返回前同样复核 → 均为 stale,不得共享 succeeded
+  ---
+  duration_ms: 3.1174
+  type: 'test'
+  ...
+# Subtest: R2 gate 未通过且发起时已暂停:仍 cancelled/SESSION_PAUSED,非成功结果不附加 scope(行为不变)
+ok 73 - R2 gate 未通过且发起时已暂停:仍 cancelled/SESSION_PAUSED,非成功结果不附加 scope(行为不变)
+  ---
+  duration_ms: 0.8428
+  type: 'test'
+  ...
+# Subtest: R2 gate 未通过的成功结果:scope=preprocessing_only + 中文 scopeNotice;缓存命中同样保留 scope
+ok 74 - R2 gate 未通过的成功结果:scope=preprocessing_only + 中文 scopeNotice;缓存命中同样保留 scope
+  ---
+  duration_ms: 1.395
+  type: 'test'
+  ...
+# Subtest: R2 gate 状态不同视为不同载荷:同ID先缺省后 gate=false → REQUEST_MISMATCH(载荷指纹含预处理声明)
+ok 75 - R2 gate 状态不同视为不同载荷:同ID先缺省后 gate=false → REQUEST_MISMATCH(载荷指纹含预处理声明)
+  ---
+  duration_ms: 0.7418
+  type: 'test'
+  ...
+# Subtest: 预算不足:预留失败 → failed/BUDGET_EXCEEDED,零调用
+ok 76 - 预算不足:预留失败 → failed/BUDGET_EXCEEDED,零调用
+  ---
+  duration_ms: 4.7252
+  type: 'test'
+  ...
+# Subtest: 并发预留受预算约束:10k 预算下三个 4k 并发请求,只有两个能送出
+ok 77 - 并发预留受预算约束:10k 预算下三个 4k 并发请求,只有两个能送出
+  ---
+  duration_ms: 4.0082
+  type: 'test'
+  ...
+# Subtest: usage 缺失:succeeded 但预留转 unknown_hold——不记 0、不释放、标 usageUnknown
+ok 78 - usage 缺失:succeeded 但预留转 unknown_hold——不记 0、不释放、标 usageUnknown
+  ---
+  duration_ms: 1.1453
+  type: 'test'
+  ...
+# Subtest: usage 缺失不得释放所有预留:后续请求被占用额度约束(unknown_hold 占预算)
+ok 79 - usage 缺失不得释放所有预留:后续请求被占用额度约束(unknown_hold 占预算)
+  ---
+  duration_ms: 0.9362
+  type: 'test'
+  ...
+# Subtest: prompt+completion 之和可作计费依据;仅部分字段不可折算
+ok 80 - prompt+completion 之和可作计费依据;仅部分字段不可折算
+  ---
+  duration_ms: 2.6047
+  type: 'test'
+  ...
+# Subtest: 账本非法迁移:committed/unknown_hold 不得 release;未知不得当未发生
+ok 81 - 账本非法迁移:committed/unknown_hold 不得 release;未知不得当未发生
+  ---
+  duration_ms: 0.4758
+  type: 'test'
+  ...
+# Subtest: released 释放预算:确定未发生的调用不占预算
+ok 82 - released 释放预算:确定未发生的调用不占预算
+  ---
+  duration_ms: 0.2657
+  type: 'test'
+  ...
+# Subtest: 预算不足时账本记录 rejected 条目(可审计)
+ok 83 - 预算不足时账本记录 rejected 条目(可审计)
+  ---
+  duration_ms: 0.2755
+  type: 'test'
+  ...
+# Subtest: HTTP build:POST /chat/completions,body 含 model/messages/response_format,凭据不落入载荷
+ok 84 - HTTP build:POST /chat/completions,body 含 model/messages/response_format,凭据不落入载荷
+  ---
+  duration_ms: 2.9425
+  type: 'test'
+  ...
+# Subtest: HTTP parse:合法 fixture → output 结构 + usage 数字映射(prompt_tokens→promptTokens)
+ok 85 - HTTP parse:合法 fixture → output 结构 + usage 数字映射(prompt_tokens→promptTokens)
+  ---
+  duration_ms: 0.3664
+  type: 'test'
+  ...
+# Subtest: HTTP parse:错误体({error:{...}})→ error(适配器将判 failed),usage 仍带出
+ok 86 - HTTP parse:错误体({error:{...}})→ error(适配器将判 failed),usage 仍带出
+  ---
+  duration_ms: 0.3193
+  type: 'test'
+  ...
+# Subtest: HTTP parse:空 choices → PROVIDER_EMPTY_CONTENT(不得当成功)
+ok 87 - HTTP parse:空 choices → PROVIDER_EMPTY_CONTENT(不得当成功)
+  ---
+  duration_ms: 0.5092
+  type: 'test'
+  ...
+# Subtest: HTTP parse:content 非 JSON → PROVIDER_CONTENT_NOT_JSON
+ok 88 - HTTP parse:content 非 JSON → PROVIDER_CONTENT_NOT_JSON
+  ---
+  duration_ms: 0.3648
+  type: 'test'
+  ...
+# Subtest: Dify build:POST /workflows/run,inputs + response_mode=blocking + user
+ok 89 - Dify build:POST /workflows/run,inputs + response_mode=blocking + user
+  ---
+  duration_ms: 1.5504
+  type: 'test'
+  ...
+# Subtest: Dify parse:succeeded fixture → output + total_tokens→totalTokens
+ok 90 - Dify parse:succeeded fixture → output + total_tokens→totalTokens
+  ---
+  duration_ms: 0.6825
+  type: 'test'
+  ...
+# Subtest: Dify parse:failed → error(DIFY_STATUS_FAILED)且 usage 带出(调用已发生)
+ok 91 - Dify parse:failed → error(DIFY_STATUS_FAILED)且 usage 带出(调用已发生)
+  ---
+  duration_ms: 0.2275
+  type: 'test'
+  ...
+# Subtest: Dify parse:partial-succeeded → 明确失败,不得当成功
+ok 92 - Dify parse:partial-succeeded → 明确失败,不得当成功
+  ---
+  duration_ms: 0.6157
+  type: 'test'
+  ...
+# Subtest: Dify parse:错误体 {code,message,status} → error
+ok 93 - Dify parse:错误体 {code,message,status} → error
+  ---
+  duration_ms: 0.6462
+  type: 'test'
+  ...
+# Subtest: Dify parse:data.status=running 出现在 blocking 应答 → indeterminate
+ok 94 - Dify parse:data.status=running 出现在 blocking 应答 → indeterminate
+  ---
+  duration_ms: 0.2611
+  type: 'test'
+  ...
+# Subtest: HTTP provider 端到端:transport 组装请求、fixture 响应解析为标准结果(零真实网络)
+ok 95 - HTTP provider 端到端:transport 组装请求、fixture 响应解析为标准结果(零真实网络)
+  ---
+  duration_ms: 5.7542
+  type: 'test'
+  ...
+# Subtest: Dify provider 端到端:partial-succeeded fixture → 整体 failed(部分失败不当成功)
+ok 96 - Dify provider 端到端:partial-succeeded fixture → 整体 failed(部分失败不当成功)
+  ---
+  duration_ms: 0.4931
+  type: 'test'
+  ...
+# Subtest: 缺 fetchImpl:transport 抛 notSent → cancelled(部署配置缺失,不是模型失败,不计成本)
+ok 97 - 缺 fetchImpl:transport 抛 notSent → cancelled(部署配置缺失,不是模型失败,不计成本)
+  ---
+  duration_ms: 0.4087
+  type: 'test'
+  ...
+# Subtest: 全路径·HTTP 悬空引用:parse 成功 → validate EVIDENCE_DANGLING → adapter failed/EVIDENCE_DANGLING
+ok 98 - 全路径·HTTP 悬空引用:parse 成功 → validate EVIDENCE_DANGLING → adapter failed/EVIDENCE_DANGLING
+  ---
+  duration_ms: 0.8441
+  type: 'test'
+  ...
+# Subtest: 全路径·Dify 悬空引用:parse 成功 → validate EVIDENCE_DANGLING → adapter failed/EVIDENCE_DANGLING
+ok 99 - 全路径·Dify 悬空引用:parse 成功 → validate EVIDENCE_DANGLING → adapter failed/EVIDENCE_DANGLING
+  ---
+  duration_ms: 0.5169
+  type: 'test'
+  ...
+# Subtest: 全路径·HTTP 无 usage:输出合法但 provider 未报 usage → succeeded 且 usageUnknown、unknown_hold(不记0不释放)
+ok 100 - 全路径·HTTP 无 usage:输出合法但 provider 未报 usage → succeeded 且 usageUnknown、unknown_hold(不记0不释放)
+  ---
+  duration_ms: 0.5876
+  type: 'test'
+  ...
+# Subtest: 全路径·Dify 缺 total_tokens:输出合法但 usage 数字缺失 → usageUnknown、unknown_hold(不记0不释放)
+ok 101 - 全路径·Dify 缺 total_tokens:输出合法但 usage 数字缺失 → usageUnknown、unknown_hold(不记0不释放)
+  ---
+  duration_ms: 0.6659
+  type: 'test'
+  ...
+# Subtest: 全路径·HTTP 部分失败:一条 finding 合法一条悬空 → 整体 failed 且 result.findings===[]
+ok 102 - 全路径·HTTP 部分失败:一条 finding 合法一条悬空 → 整体 failed 且 result.findings===[]
+  ---
+  duration_ms: 0.5174
+  type: 'test'
+  ...
+# Subtest: 全路径·HTTP 错误体带 usage:transport 层 parse 保留 usage → failed/TRANSPORT_ERROR 且按 usage committed
+ok 103 - 全路径·HTTP 错误体带 usage:transport 层 parse 保留 usage → failed/TRANSPORT_ERROR 且按 usage committed
+  ---
+  duration_ms: 0.802
+  type: 'test'
+  ...
+# Subtest: 全路径·Dify failed 带 total_tokens:usage 随失败带出 → failed/TRANSPORT_ERROR/DIFY_STATUS_FAILED 且 committed
+ok 104 - 全路径·Dify failed 带 total_tokens:usage 随失败带出 → failed/TRANSPORT_ERROR/DIFY_STATUS_FAILED 且 committed
+  ---
+  duration_ms: 0.6015
+  type: 'test'
+  ...
+# Subtest: 全路径·HTTP 合法 dissent:succeeded 且 dissent 透传(position/evidenceRefs/conflictsWith 经校验归一)
+ok 105 - 全路径·HTTP 合法 dissent:succeeded 且 dissent 透传(position/evidenceRefs/conflictsWith 经校验归一)
+  ---
+  duration_ms: 0.404
+  type: 'test'
+  ...
+# Subtest: 全路径·HTTP dissent.position 非法 → failed/MALFORMED_OUTPUT(验证失败不伪装成功)
+ok 106 - 全路径·HTTP dissent.position 非法 → failed/MALFORMED_OUTPUT(验证失败不伪装成功)
+  ---
+  duration_ms: 0.3863
+  type: 'test'
+  ...
+# Subtest: 元断言·成功形状 fixture 结构复验:content/outputs 均为合法 JSON 且 findings/questions 字段齐全(防漂移)
+ok 107 - 元断言·成功形状 fixture 结构复验:content/outputs 均为合法 JSON 且 findings/questions 字段齐全(防漂移)
+  ---
+  duration_ms: 0.8522
+  type: 'test'
+  ...
+# [09] 运行时输出目录(可变输出只写这里,不碰 evidence/):C:\\Users\\22673\\Desktop\\Anthropic\\V6\\handoff\\R2_MODEL_20260913\\runtime\\2026-09-12T21-54-22-697Z-pid21756
+# [09] 对抗结果报告:C:\\Users\\22673\\Desktop\\Anthropic\\V6\\handoff\\R2_MODEL_20260913\\runtime\\2026-09-12T21-54-22-697Z-pid21756\\adversarial-results.json
+# Subtest: 好实现:协议套件 S1–S14 全部场景零违规(套件不得误伤正确行为)
+ok 108 - 好实现:协议套件 S1–S14 全部场景零违规(套件不得误伤正确行为)
+  ---
+  duration_ms: 15.682
+  type: 'test'
+  ...
+# Subtest: mutant-A 删除悬空引用检查 → 协议套件在 S3 抓住
+ok 109 - mutant-A 删除悬空引用检查 → 协议套件在 S3 抓住
+  ---
+  duration_ms: 14.0571
+  type: 'test'
+  ...
+# Subtest: mutant-B 删除越权批准拦截(四处)→ 协议套件在 S4 抓住
+ok 110 - mutant-B 删除越权批准拦截(四处)→ 协议套件在 S4 抓住
+  ---
+  duration_ms: 12.774
+  type: 'test'
+  ...
+# Subtest: mutant-C 淘汰候选判定恒真(可命中在途)→ 协议套件在 S11 抓住
+ok 111 - mutant-C 淘汰候选判定恒真(可命中在途)→ 协议套件在 S11 抓住
+  ---
+  duration_ms: 14.1887
+  type: 'test'
+  ...
+# Subtest: mutant-D 短路缓存复核 → 协议套件在 S12 抓住
+ok 112 - mutant-D 短路缓存复核 → 协议套件在 S12 抓住
+  ---
+  duration_ms: 10.9609
+  type: 'test'
+  ...
+# Subtest: wrapper-E unknown 自动重试(至多5次)→ 在 S9 抓住(transport 调用被放大)
+ok 113 - wrapper-E unknown 自动重试(至多5次)→ 在 S9 抓住(transport 调用被放大)
+  ---
+  duration_ms: 5.4733
+  type: 'test'
+  ...
+# Subtest: wrapper-F 缺 usage 记 0 并释放预留 → 在 S10 抓住
+ok 114 - wrapper-F 缺 usage 记 0 并释放预留 → 在 S10 抓住
+  ---
+  duration_ms: 3.7102
+  type: 'test'
+  ...
+# Subtest: wrapper-G 缓存命中(deduped)的 stale 改标 succeeded → 在 S12 抓住
+ok 115 - wrapper-G 缓存命中(deduped)的 stale 改标 succeeded → 在 S12 抓住
+  ---
+  duration_ms: 3.9964
+  type: 'test'
+  ...
+# Subtest: 变异机制烟测:对运行时目录中的假目标文件验证 锚点查找→变异→动态导入→行为改变
+ok 116 - 变异机制烟测:对运行时目录中的假目标文件验证 锚点查找→变异→动态导入→行为改变
+  ---
+  duration_ms: 5.556
+  type: 'test'
+  ...
+# Subtest: 对抗汇总:分母=7 全部在预期场景被抓且好实现零违规;报告写入 <运行时输出目录>/adversarial-results.json
+ok 117 - 对抗汇总:分母=7 全部在预期场景被抓且好实现零违规;报告写入 <运行时输出目录>/adversarial-results.json
+  ---
+  duration_ms: 1.4199
+  type: 'test'
+  ...
+# Subtest: 容量2:两个 in-flight 时新ID → capacity 背压;任一 settle 为 cached 后可注册,被淘汰的是 cached 而非 in-flight
+ok 118 - 容量2:两个 in-flight 时新ID → capacity 背压;任一 settle 为 cached 后可注册,被淘汰的是 cached 而非 in-flight
+  ---
+  duration_ms: 10.1951
+  type: 'test'
+  ...
+# Subtest: 容量2(Codex probe 修复证明):a 在途期间注册 b(cached)与 c 成功 → 被淘汰的是 b、a 保留:a 同ID同载荷仍 join、变载荷仍 mismatch
+ok 119 - 容量2(Codex probe 修复证明):a 在途期间注册 b(cached)与 c 成功 → 被淘汰的是 b、a 保留:a 同ID同载荷仍 join、变载荷仍 mismatch
+  ---
+  duration_ms: 1.2509
+  type: 'test'
+  ...
+# Subtest: 600 步混合调度(seed=42,48 个ID,容量512):在途去重恰一、变载荷拒绝100%、零 capacity 误报
+ok 120 - 600 步混合调度(seed=42,48 个ID,容量512):在途去重恰一、变载荷拒绝100%、零 capacity 误报
+  ---
+  duration_ms: 8.8929
+  type: 'test'
+  ...
+# Subtest: 小容量确定性模型:容量2 全 9 种两两组合,淘汰/背压决策与参考模型一致、决策确定且在途零淘汰
+ok 121 - 小容量确定性模型:容量2 全 9 种两两组合,淘汰/背压决策与参考模型一致、决策确定且在途零淘汰
+  ---
+  duration_ms: 3.6889
+  type: 'test'
+  ...
+# Subtest: 容量3 关键组合:cached 优先于 uncached、同类最老优先、全在途背压、有空位零淘汰
+ok 122 - 容量3 关键组合:cached 优先于 uncached、同类最老优先、全在途背压、有空位零淘汰
+  ---
+  duration_ms: 1.6899
+  type: 'test'
+  ...
+# Subtest: entry 形状兼容:{ payloadHash, result, inFlight, cached, seq };registrySnapshot 消费字段(e.payloadHash / Boolean(e.result))不破坏
+ok 123 - entry 形状兼容:{ payloadHash, result, inFlight, cached, seq };registrySnapshot 消费字段(e.payloadHash / Boolean(e.result))不破坏
+  ---
+  duration_ms: 1.3609
+  type: 'test'
+  ...
+# Subtest: track 防御:指纹不一致失败关闭不覆写;条目被同ID重注册接管后,旧 promise 迟到 settle 不得改写条目
+ok 124 - track 防御:指纹不一致失败关闭不覆写;条目被同ID重注册接管后,旧 promise 迟到 settle 不得改写条目
+  ---
+  duration_ms: 0.7985
+  type: 'test'
+  ...
+# Subtest: a) 缓存命中复核:generation 推进后同ID同载荷 → stale/GENERATION_CHANGED + deduped,数据保留,transport 不重调
+ok 125 - a) 缓存命中复核:generation 推进后同ID同载荷 → stale/GENERATION_CHANGED + deduped,数据保留,transport 不重调
+  ---
+  duration_ms: 5.7846
+  type: 'test'
+  ...
+# Subtest: b) 缓存命中复核:contextVersion 变化(证据修订)后 → stale/CONTEXT_VERSION_CHANGED
+ok 126 - b) 缓存命中复核:contextVersion 变化(证据修订)后 → stale/CONTEXT_VERSION_CHANGED
+  ---
+  duration_ms: 1.1633
+  type: 'test'
+  ...
+# Subtest: c) 缓存命中复核:暂停后同ID再调用 → stale/SESSION_PAUSED(缓存不得越过暂停)
+ok 127 - c) 缓存命中复核:暂停后同ID再调用 → stale/SESSION_PAUSED(缓存不得越过暂停)
+  ---
+  duration_ms: 0.9366
+  type: 'test'
+  ...
+# Subtest: d) 快照未变化:再次调用保持 succeeded + deduped:true,transport 计数与账本均不变
+ok 128 - d) 快照未变化:再次调用保持 succeeded + deduped:true,transport 计数与账本均不变
+  ---
+  duration_ms: 0.683
+  type: 'test'
+  ...
+# Subtest: e) 暂停→恢复推进代次→旧响应:首次返回即 stale;旧载荷缓存再调用仍 stale,绝不翻回 succeeded
+ok 129 - e) 暂停→恢复推进代次→旧响应:首次返回即 stale;旧载荷缓存再调用仍 stale,绝不翻回 succeeded
+  ---
+  duration_ms: 0.9596
+  type: 'test'
+  ...
+# Subtest: f) unknown 不缓存:快照推进后重试产生完整新调用(计数 +1),且新结果按当前快照判定不得当现行
+ok 130 - f) unknown 不缓存:快照推进后重试产生完整新调用(计数 +1),且新结果按当前快照判定不得当现行
+  ---
+  duration_ms: 0.8097
+  type: 'test'
+  ...
+# Subtest: g) 容量背压:登记满且全在途 → failed/REGISTRY_AT_CAPACITY,不调 transport、不预留;在飞完成后新请求成功
+ok 131 - g) 容量背压:登记满且全在途 → failed/REGISTRY_AT_CAPACITY,不调 transport、不预留;在飞完成后新请求成功
+  ---
+  duration_ms: 3.1257
+  type: 'test'
+  ...
+# Subtest: h) 项目隔离:相同文本不同项目各自独立调用;同 requestId 携带不同 projectId → REQUEST_MISMATCH(载荷含 projectId)
+ok 132 - h) 项目隔离:相同文本不同项目各自独立调用;同 requestId 携带不同 projectId → REQUEST_MISMATCH(载荷含 projectId)
+  ---
+  duration_ms: 1.0185
+  type: 'test'
+  ...
+# Subtest: i) gate 人控边界:gate=false 成功仍 succeeded 但带 scope=preprocessing_only 与中文 scopeNotice;缺省/true 无 scope
+ok 133 - i) gate 人控边界:gate=false 成功仍 succeeded 但带 scope=preprocessing_only 与中文 scopeNotice;缺省/true 无 scope
+  ---
+  duration_ms: 1.1848
+  type: 'test'
+  ...
+# Subtest: j) 迟到结果回归:resolve 前快照推进 → 首次返回即 stale/GENERATION_CHANGED(非 deduped),成本照实结算
+ok 134 - j) 迟到结果回归:resolve 前快照推进 → 首次返回即 stale/GENERATION_CHANGED(非 deduped),成本照实结算
+  ---
+  duration_ms: 0.9592
+  type: 'test'
+  ...
+# Subtest: k) 冻结与副本隔离:首次结果 deepFreeze;篡改 deduped 副本不得污染缓存,再次消费数据完好
+ok 135 - k) 冻结与副本隔离:首次结果 deepFreeze;篡改 deduped 副本不得污染缓存,再次消费数据完好
+  ---
+  duration_ms: 1.0847
+  type: 'test'
+  ...
+# [12-ledger-invariants] 压力分母(seed=1337, 500 步, maxReservedTokens=6000):
+#   reserve : 尝试 184 = 成功 120 + BUDGET_EXCEEDED 拒绝 64
+#   commit  : 尝试 83;成功/尝试 按来源状态 reserved=33/33 unknown_hold(对账补录)=12/12;须拒 committed=10 released=7 rejected=7 不存在=14
+#   holdUnknown: 尝试 72;成功/尝试 reserved=35/35;须拒 committed=5 unknown_hold=7 released=7 rejected=8 不存在=10
+#   release : 尝试 103;成功 reserved=45/45;unknown_hold+committed 上尝试 21 次、成功 0(未知费用释放 0);另须拒 released=14 rejected=8 不存在=15
+#   totals 显式调用 58;逐步全量核对 500 次;RESERVATION_NOT_FOUND 39;INVALID_TRANSITION 94
+# [12-ledger-invariants] 终态 totals = {"reservedTokens":390,"committedTokens":3625,"unknownHoldTokens":1730,"releasedTokens":4000,"rejectedCount":64,"occupiedTokens":5745,"maxReservedTokens":6000}
+# Subtest: 固定 seed 并发混合压力:500 步随机操作序列,逐步校验账本不变量
+ok 136 - 固定 seed 并发混合压力:500 步随机操作序列,逐步校验账本不变量
+  ---
+  duration_ms: 52.5557
+  type: 'test'
+  ...
+# Subtest: 确定性:同 seed 重跑逐位一致;不同 seed 序列不同
+ok 137 - 确定性:同 seed 重跑逐位一致;不同 seed 序列不同
+  ---
+  duration_ms: 56.6671
+  type: 'test'
+  ...
+# Subtest: 交错语义:满足因果约束的全部交错序列下,预算上限与状态机均不破
+ok 138 - 交错语义:满足因果约束的全部交错序列下,预算上限与状态机均不破
+  ---
+  duration_ms: 0.9293
+  type: 'test'
+  ...
+# Subtest: 对账补录:unknown_hold → commit 以实际值替换 estimate,totals 随之一致
+ok 139 - 对账补录:unknown_hold → commit 以实际值替换 estimate,totals 随之一致
+  ---
+  duration_ms: 0.2038
+  type: 'test'
+  ...
+# Subtest: 极限:maxReservedTokens=0 时正 estimate 全拒;estimate=0 合法且占 0
+ok 140 - 极限:maxReservedTokens=0 时正 estimate 全拒;estimate=0 合法且占 0
+  ---
+  duration_ms: 0.4422
+  type: 'test'
+  ...
+# Subtest: 负控制:故意错误断言必须被抓——证明测试自身有抓错能力
+ok 141 - 负控制:故意错误断言必须被抓——证明测试自身有抓错能力
+  ---
+  duration_ms: 0.9541
+  type: 'test'
+  ...
+# Subtest: evidenceToRefs 合法路径:产品字段名映射为协议三元组,version 转字符串
+ok 142 - evidenceToRefs 合法路径:产品字段名映射为协议三元组,version 转字符串
+  ---
+  duration_ms: 1.7761
+  type: 'test'
+  ...
+# Subtest: evidenceToRefs 空数组与多条记录:逐条映射、保序
+ok 143 - evidenceToRefs 空数组与多条记录:逐条映射、保序
+  ---
+  duration_ms: 0.239
+  type: 'test'
+  ...
+# Subtest: evidenceToRefs 失败关闭:缺 evidenceId → missing 含 id,ok:false
+ok 144 - evidenceToRefs 失败关闭:缺 evidenceId → missing 含 id,ok:false
+  ---
+  duration_ms: 0.3768
+  type: 'test'
+  ...
+# Subtest: evidenceToRefs 失败关闭:缺 version(缺失/NaN/负数各一例)
+ok 145 - evidenceToRefs 失败关闭:缺 version(缺失/NaN/负数各一例)
+  ---
+  duration_ms: 0.2643
+  type: 'test'
+  ...
+# Subtest: evidenceToRefs 失败关闭:缺 sha256 → missing 含 hash
+ok 146 - evidenceToRefs 失败关闭:缺 sha256 → missing 含 hash
+  ---
+  duration_ms: 0.1657
+  type: 'test'
+  ...
+# Subtest: evidenceToRefs 失败关闭:fixtureId-only 记录被整体拒绝(缺三元组)
+ok 147 - evidenceToRefs 失败关闭:fixtureId-only 记录被整体拒绝(缺三元组)
+  ---
+  duration_ms: 0.2107
+  type: 'test'
+  ...
+# Subtest: evidenceToRefs 失败关闭:有 fixtureId 但缺 version/hash 不构成完整引用
+ok 148 - evidenceToRefs 失败关闭:有 fixtureId 但缺 version/hash 不构成完整引用
+  ---
+  duration_ms: 0.1897
+  type: 'test'
+  ...
+# Subtest: evidenceToRefs 失败关闭:第二条缺 hash → 整体失败、报 index=1,不输出部分成功
+ok 149 - evidenceToRefs 失败关闭:第二条缺 hash → 整体失败、报 index=1,不输出部分成功
+  ---
+  duration_ms: 0.1352
+  type: 'test'
+  ...
+# Subtest: evidenceToRefs 失败关闭:非数组/非对象项
+ok 150 - evidenceToRefs 失败关闭:非数组/非对象项
+  ---
+  duration_ms: 0.365
+  type: 'test'
+  ...
+# Subtest: sessionToSnapshot 合法路径:generation/contextVersion/paused 映射正确
+ok 151 - sessionToSnapshot 合法路径:generation/contextVersion/paused 映射正确
+  ---
+  duration_ms: 1.1769
+  type: 'test'
+  ...
+# Subtest: sessionToSnapshot:status=paused → paused true(产品 pause_round 形状)
+ok 152 - sessionToSnapshot:status=paused → paused true(产品 pause_round 形状)
+  ---
+  duration_ms: 0.1953
+  type: 'test'
+  ...
+# Subtest: sessionToSnapshot 失败关闭:缺 generation(旧会话/legacy 记录)→ ok:false
+ok 153 - sessionToSnapshot 失败关闭:缺 generation(旧会话/legacy 记录)→ ok:false
+  ---
+  duration_ms: 0.1775
+  type: 'test'
+  ...
+# Subtest: sessionToSnapshot 失败关闭:generation=0(产品初始/legacy 补 0)不满足协议正整数
+ok 154 - sessionToSnapshot 失败关闭:generation=0(产品初始/legacy 补 0)不满足协议正整数
+  ---
+  duration_ms: 0.2022
+  type: 'test'
+  ...
+# Subtest: sessionToSnapshot 失败关闭:generation 非整数 → ok:false
+ok 155 - sessionToSnapshot 失败关闭:generation 非整数 → ok:false
+  ---
+  duration_ms: 0.1414
+  type: 'test'
+  ...
+# Subtest: sessionToSnapshot 失败关闭:无任何 contextVersion 来源 → ok:false(不猜默认值)
+ok 156 - sessionToSnapshot 失败关闭:无任何 contextVersion 来源 → ok:false(不猜默认值)
+  ---
+  duration_ms: 0.1828
+  type: 'test'
+  ...
+# Subtest: sessionToSnapshot:options.remoteVersion 别名与 remoteSession.contextVersion 前向兼容均可用,优先级 contextVersion 最高
+ok 157 - sessionToSnapshot:options.remoteVersion 别名与 remoteSession.contextVersion 前向兼容均可用,优先级 contextVersion 最高
+  ---
+  duration_ms: 0.1815
+  type: 'test'
+  ...
+# Subtest: sessionToSnapshot:contextVersion 非法值(空串/0/1.5)失败关闭
+ok 158 - sessionToSnapshot:contextVersion 非法值(空串/0/1.5)失败关闭
+  ---
+  duration_ms: 0.2607
+  type: 'test'
+  ...
+# Subtest: sessionToSnapshot 安全缺省:status 缺失 → paused:false 仍可映射(文档化缺省)
+ok 159 - sessionToSnapshot 安全缺省:status 缺失 → paused:false 仍可映射(文档化缺省)
+  ---
+  duration_ms: 0.1361
+  type: 'test'
+  ...
+# Subtest: sessionToSnapshot 失败关闭:status 存在但非产品枚举 → ok:false
+ok 160 - sessionToSnapshot 失败关闭:status 存在但非产品枚举 → ok:false
+  ---
+  duration_ms: 0.1179
+  type: 'test'
+  ...
+# Subtest: sessionToSnapshot:非对象输入失败关闭
+ok 161 - sessionToSnapshot:非对象输入失败关闭
+  ---
+  duration_ms: 0.1171
+  type: 'test'
+  ...
+# Subtest: statusToProductAction:七状态全覆盖且字段完整
+ok 162 - statusToProductAction:七状态全覆盖且字段完整
+  ---
+  duration_ms: 0.1989
+  type: 'test'
+  ...
+# Subtest: statusToProductAction 状态语义:unknown 仅人工核实后重试;stale 不得当现行;simulated 显著标记;cancelled 确定未发生
+ok 163 - statusToProductAction 状态语义:unknown 仅人工核实后重试;stale 不得当现行;simulated 显著标记;cancelled 确定未发生
+  ---
+  duration_ms: 0.1279
+  type: 'test'
+  ...
+# Subtest: statusToProductAction:未知状态抛 TypeError
+ok 164 - statusToProductAction:未知状态抛 TypeError
+  ---
+  duration_ms: 0.4247
+  type: 'test'
+  ...
+# Subtest: canonicalRequestId:格式精确且确定性(同参数恒同串)
+ok 165 - canonicalRequestId:格式精确且确定性(同参数恒同串)
+  ---
+  duration_ms: 0.1769
+  type: 'test'
+  ...
+# Subtest: canonicalRequestId:非法输入抛 TypeError(逐参数)
+ok 166 - canonicalRequestId:非法输入抛 TypeError(逐参数)
+  ---
+  duration_ms: 0.3643
+  type: 'test'
+  ...
+# Subtest: 两个同证据不同结论的结果聚合:findings 与 dissent 全保留(异议丢失 0),findings 附来源
+ok 167 - 两个同证据不同结论的结果聚合:findings 与 dissent 全保留(异议丢失 0),findings 附来源
+  ---
+  duration_ms: 3.2758
+  type: 'test'
+  ...
+# Subtest: 相同 text 问题去重:合并为一条并保留 sources:[requestId...]
+ok 168 - 相同 text 问题去重:合并为一条并保留 sources:[requestId...]
+  ---
+  duration_ms: 0.3814
+  type: 'test'
+  ...
+# Subtest: 不同 text 的关键追问全部保留:去重不吞掉任何一条
+ok 169 - 不同 text 的关键追问全部保留:去重不吞掉任何一条
+  ---
+  duration_ms: 0.3768
+  type: 'test'
+  ...
+# Subtest: mustResolve 标记的无引用追问也进入 unresolvedQuestions;去重合并后标记保留
+ok 170 - mustResolve 标记的无引用追问也进入 unresolvedQuestions;去重合并后标记保留
+  ---
+  duration_ms: 0.4077
+  type: 'test'
+  ...
+# Subtest: conflictsWith 非空 → pendingDecisions 列出冲突双方,且绝不含决定性字段(越权决定 0)
+ok 171 - conflictsWith 非空 → pendingDecisions 列出冲突双方,且绝不含决定性字段(越权决定 0)
+  ---
+  duration_ms: 0.5816
+  type: 'test'
+  ...
+# Subtest: position=dissenting 且无 conflictsWith:与其来源结果 findings 构成隐式冲突对,同样只列不裁
+ok 172 - position=dissenting 且无 conflictsWith:与其来源结果 findings 构成隐式冲突对,同样只列不裁
+  ---
+  duration_ms: 0.3058
+  type: 'test'
+  ...
+# Subtest: original 意见且无 conflictsWith:不产生待人决定条目
+ok 173 - original 意见且无 conflictsWith:不产生待人决定条目
+  ---
+  duration_ms: 0.2028
+  type: 'test'
+  ...
+# Subtest: dedupeQuestions=false:问题全部保留;该参数绝不作用于 dissent(异议仍全保留)
+ok 174 - dedupeQuestions=false:问题全部保留;该参数绝不作用于 dissent(异议仍全保留)
+  ---
+  duration_ms: 0.3281
+  type: 'test'
+  ...
+# Subtest: 空数组输入 → 空结构(不抛错)
+ok 175 - 空数组输入 → 空结构(不抛错)
+  ---
+  duration_ms: 0.333
+  type: 'test'
+  ...
+# Subtest: 非法输入 → TypeError:非数组 / 元素缺 requestId / requestId 非字符串
+ok 176 - 非法输入 → TypeError:非数组 / 元素缺 requestId / requestId 非字符串
+  ---
+  duration_ms: 0.7666
+  type: 'test'
+  ...
+# Subtest: 确定性:相同输入两次聚合,JSON 逐字节相等
+ok 177 - 确定性:相同输入两次聚合,JSON 逐字节相等
+  ---
+  duration_ms: 0.301
+  type: 'test'
+  ...
+# Subtest: R1 仅授权上下文才提醒:authorizedContext 为 null/false 返回空计划
+ok 178 - R1 仅授权上下文才提醒:authorizedContext 为 null/false 返回空计划
+  ---
+  duration_ms: 1.5696
+  type: 'test'
+  ...
+# Subtest: R2 普通事件不打断:白名单 kind 且 importance=normal 不进计划
+ok 179 - R2 普通事件不打断:白名单 kind 且 importance=normal 不进计划
+  ---
+  duration_ms: 0.1701
+  type: 'test'
+  ...
+# Subtest: R3 白名单外 kind 一律视为普通事件:即使声明 important 也不进计划(事件源不能自升重要度)
+ok 180 - R3 白名单外 kind 一律视为普通事件:即使声明 important 也不进计划(事件源不能自升重要度)
+  ---
+  duration_ms: 0.1785
+  type: 'test'
+  ...
+# Subtest: R4 点名例外:human_mention 即使 normal 也进计划(点名是人的主动行为)
+ok 181 - R4 点名例外:human_mention 即使 normal 也进计划(点名是人的主动行为)
+  ---
+  duration_ms: 0.2248
+  type: 'test'
+  ...
+# Subtest: R5 重复合并:同 key 合并为一条,occurrences 计数,重要度取最高,kind 取最高重要度者
+ok 182 - R5 重复合并:同 key 合并为一条,occurrences 计数,重要度取最高,kind 取最高重要度者
+  ---
+  duration_ms: 0.2803
+  type: 'test'
+  ...
+# Subtest: R7 动作白名单:条目 action 只能是 notify_human,不存在 approve/decision/retry 类自动动作
+ok 183 - R7 动作白名单:条目 action 只能是 notify_human,不存在 approve/decision/retry 类自动动作
+  ---
+  duration_ms: 0.439
+  type: 'test'
+  ...
+# Subtest: R6 跨批合并:previousPlan 同 key 未处理继承首次出现时间并累计 occurrences;已确认(acknowledged)不继承
+ok 184 - R6 跨批合并:previousPlan 同 key 未处理继承首次出现时间并累计 occurrences;已确认(acknowledged)不继承
+  ---
+  duration_ms: 0.221
+  type: 'test'
+  ...
+# Subtest: R9 非法输入:TypeError 且消息为中文(失败关闭,授权上下文必须显式声明)
+ok 185 - R9 非法输入:TypeError 且消息为中文(失败关闭,授权上下文必须显式声明)
+  ---
+  duration_ms: 0.6108
+  type: 'test'
+  ...
+# Subtest: C1 decidedBy 仅允许 human:传 model/ai 一律 TypeError(模型不自升权限的结构化表达)
+ok 186 - C1 decidedBy 仅允许 human:传 model/ai 一律 TypeError(模型不自升权限的结构化表达)
+  ---
+  duration_ms: 0.6359
+  type: 'test'
+  ...
+# Subtest: C2 缺必填字段/空串/非法 scope:TypeError
+ok 187 - C2 缺必填字段/空串/非法 scope:TypeError
+  ---
+  duration_ms: 0.7541
+  type: 'test'
+  ...
+# Subtest: C3 记录冻结:篡改任意字段抛 TypeError;样本/反例深冻结;decidedBy 恒为 human
+ok 188 - C3 记录冻结:篡改任意字段抛 TypeError;样本/反例深冻结;decidedBy 恒为 human
+  ---
+  duration_ms: 0.5162
+  type: 'test'
+  ...
+# Subtest: C4 canPromoteToGlobalRule 四个 false 条件各一例(单例不能触发规则替换)
+ok 189 - C4 canPromoteToGlobalRule 四个 false 条件各一例(单例不能触发规则替换)
+  ---
+  duration_ms: 0.3522
+  type: 'test'
+  ...
+# Subtest: C5 canPromoteToGlobalRule 合法输入 allowed=true,且 reason 说明生效仍需人工决策记录
+ok 190 - C5 canPromoteToGlobalRule 合法输入 allowed=true,且 reason 说明生效仍需人工决策记录
+  ---
+  duration_ms: 0.1421
+  type: 'test'
+  ...
+# Subtest: C6/C7 buildImprovementPlan:四要素齐全,status 恒 awaiting_human_decision,planId 确定性派生且不可篡改
+ok 191 - C6/C7 buildImprovementPlan:四要素齐全,status 恒 awaiting_human_decision,planId 确定性派生且不可篡改
+  ---
+  duration_ms: 0.35
+  type: 'test'
+  ...
+# Subtest: C8/R8 确定性:三个纯函数同输入两次调用 JSON 相等(无时间戳、无随机数)
+ok 192 - C8/R8 确定性:三个纯函数同输入两次调用 JSON 相等(无时间戳、无随机数)
+  ---
+  duration_ms: 0.3645
+  type: 'test'
+  ...
+1..192
+# tests 192
+# suites 0
+# pass 192
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 338.5071
+[run-all] 运行汇总已写入:C:\Users\22673\Desktop\Anthropic\V6\handoff\R2_MODEL_20260913\runtime\2026-09-12T21-54-22-894Z-pid29032\last-run-summary.txt

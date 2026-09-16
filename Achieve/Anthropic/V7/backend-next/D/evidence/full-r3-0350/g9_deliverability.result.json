@@ -1,0 +1,38 @@
+{
+  "suite": "g9_deliverability",
+  "results": [
+    {
+      "id": "D-28",
+      "title": "依赖manifest：assembly/manifest.json覆盖入口传递源图+package.json+lockfile",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 7,
+      "failures": [],
+      "ms": 12,
+      "note": ""
+    },
+    {
+      "id": "D-29",
+      "title": "干净目录启动：manifest文件复制到D自有干净目录→安装→迁移→启动→健康",
+      "severity": "P0",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 0,
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "Error: EBUSY: resource busy or locked, rmdir 'C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\.run\\clean-a'\n    at rmdirSync (node:fs:1193:11)\n    at _rmdirSync (node:internal/fs/rimraf:236:5)\n    at rimrafSync (node:internal/fs/rimraf:194:7)\n    at rmSync (node:fs:1239:10)\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g9_deliverability.test.mjs:99:7)\n    at file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:47:40\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ],
+      "ms": 1,
+      "note": "exception"
+    }
+  ],
+  "pass": 1,
+  "fail": 1,
+  "skip": 0,
+  "blocked": 0,
+  "totalAssertions": 7,
+  "runnerError": null
+}

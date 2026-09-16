@@ -1,0 +1,7 @@
+Deck: 见微 V3 展示——逆转黄金五分钟
+Created: 2026-08-30
+Audience: competition judges and leaders
+Visual sources: eight OpenAI ImageGen scenes generated specifically for this deck in the current Codex task. No external stock imagery used.
+Product claims: derived only from the user-approved V3 showcase narrative in the current conversation. The deck does not claim production deployment, real customer data, live external adapters, or ten-minute approval/disbursement.
+Data class shown: synthetic and de-identified demo scenario.
+

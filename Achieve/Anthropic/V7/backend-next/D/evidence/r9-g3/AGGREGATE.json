@@ -1,0 +1,115 @@
+{
+  "run": "r9-g3",
+  "startedUtc": "r9-g3",
+  "endedUtc": "2026-09-15T19:03:10.403Z",
+  "suites": [
+    {
+      "file": "g3_outbox_idem.test.mjs",
+      "exitCode": 0,
+      "crashed": false,
+      "res": {
+        "suite": "g3_outbox_idem",
+        "results": [
+          {
+            "id": "D-09",
+            "title": "outbox与业务写同事务：成功写出事件；失败写零孤儿事件（DB行级核验）",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 26,
+            "failures": [],
+            "ms": 1770,
+            "note": ""
+          },
+          {
+            "id": "D-10",
+            "title": "至少一次投递+重复投递：订阅端500→重投同eventId；业务效果不因重投重复",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 27,
+            "failures": [],
+            "ms": 1250,
+            "note": ""
+          },
+          {
+            "id": "D-11",
+            "title": "requestId幂等：同载荷重放replayed；异载荷409 REQUEST_MISMATCH且第二效果不生效",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 25,
+            "failures": [],
+            "ms": 1012,
+            "note": ""
+          },
+          {
+            "id": "D-10b",
+            "title": "v1.0#5订阅边界与死信：常败投递指数退避至dead",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 21,
+            "failures": [],
+            "ms": 5614,
+            "note": ""
+          }
+        ],
+        "pass": 4,
+        "fail": 0,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 99,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    }
+  ],
+  "totals": {
+    "suites": 1,
+    "crashed": 0,
+    "pass": 4,
+    "fail": 0,
+    "skip": 0,
+    "blocked": 0,
+    "totalAssertions": 99
+  },
+  "flat": [
+    {
+      "id": "D-09",
+      "title": "outbox与业务写同事务：成功写出事件；失败写零孤儿事件（DB行级核验）",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 26,
+      "ms": 1770
+    },
+    {
+      "id": "D-10",
+      "title": "至少一次投递+重复投递：订阅端500→重投同eventId；业务效果不因重投重复",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 27,
+      "ms": 1250
+    },
+    {
+      "id": "D-11",
+      "title": "requestId幂等：同载荷重放replayed；异载荷409 REQUEST_MISMATCH且第二效果不生效",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 25,
+      "ms": 1012
+    },
+    {
+      "id": "D-10b",
+      "title": "v1.0#5订阅边界与死信：常败投递指数退避至dead",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 21,
+      "ms": 5614
+    }
+  ]
+}

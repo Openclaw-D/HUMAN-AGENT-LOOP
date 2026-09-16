@@ -1,0 +1,122 @@
+{
+  "rid": "dqa-ss-6a55e3d6",
+  "base": "http://127.0.0.1:3469",
+  "at": "2026-09-14T16:25:12.886Z",
+  "pass": [
+    "SS-R0 服务可达(project 200)",
+    "SS-R1 reset 清场",
+    "SS-01 shared-state 形状(ok/facts/pendingReview/rs-*会话)",
+    "SS-02a 推进停在决定门",
+    "SS-02b 专属演示会话存在(懒建或已有)",
+    "SS-02c 演示证据确定性ID(ev-demo-*)",
+    "SS-02d 证据版本与sha256在位",
+    "SS-03 facts: fixture-inspection→asset, chainVersion≥1, unverified",
+    "SS-04 无contested则首页无待复核标记",
+    "SS-05 决定点直发advance被拒(409 人工门)",
+    "SS-06a decide correct 被接受",
+    "SS-06b pendingReview: fixture-inspection(reason=correct)",
+    "SS-06c fact 状态=contested",
+    "SS-06d 演示复核确定性ID(rev-demo-*)",
+    "SS-06e 非asset域+场景零变化(仅相关域变更)",
+    "SS-06g 首页出现「证据纠正待复核」标记",
+    "SS-06h 场景未变",
+    "SS-07 证据链记录在库(evidenceId/version, 可追溯)",
+    "SS-08 纯读(含shared-state)不递增 version",
+    "SS-09a 到达下一决定门",
+    "SS-09b 同requestId重放幂等(replayed+版本不变)",
+    "SS-09c 同requestId换载荷→409 REQUEST_MISMATCH",
+    "SS-10a 共享消息确定性ID无重复",
+    "SS-10b 共享消息不冒充真实模型",
+    "SS-11a 独立对照会话创建",
+    "SS-11b reset 被接受",
+    "SS-11d 独立对照会话仍在(重开不触及他人)",
+    "SS-11e overview.version 单调递增",
+    "SS-11f reset后回起点或诚实free",
+    "SS-11g 旧专属演示会话证据/标注/复核已清除"
+  ],
+  "fail": [
+    "SS-01b 接口符合性：响应含 projectId(INTERFACE §3)",
+    "SS-06f asset域或相关待办变化",
+    "SS-11c reset后专属演示指针清除或更换"
+  ],
+  "notes": [
+    {
+      "at": "SS-01",
+      "shared": {
+        "ok": true,
+        "demoSessionId": "rs-demo-run",
+        "sessionStatus": "live",
+        "facts": [],
+        "pendingReview": [],
+        "evidenceCount": 0,
+        "reviewCount": 0
+      }
+    },
+    {
+      "at": "SS-02",
+      "demoSid": "rs-demo-run",
+      "evidence": [
+        {
+          "id": "ev-demo-s03dd01-rs-demo-run",
+          "v": 1,
+          "by": "ev-demo-s05dd03-rs-demo-run"
+        },
+        {
+          "id": "ev-demo-s05dd03-rs-demo-run",
+          "v": 1,
+          "sup": "ev-demo-s03dd01-rs-demo-run",
+          "by": null
+        }
+      ]
+    },
+    {
+      "at": "SS-06",
+      "reviews": [
+        {
+          "id": "rev-demo-s09correct-rs-demo-run",
+          "reviewer": "业务（演示身份）"
+        }
+      ]
+    },
+    {
+      "at": "SS-06",
+      "assetChanged": false,
+      "todoTouched": false
+    },
+    {
+      "at": "SS-10",
+      "sample": [
+        {
+          "id": "msg-shared-ev-ev-demo-s05dd03-rs-demo-run",
+          "fromKind": "system",
+          "fromName": "系统",
+          "text": "共享尽调 · 资产域：现场证据「生产现场巡检照片（合成测试图形）（现场补充，取代 ev-demo-s03dd01-rs-demo-run）」已挂接（第 2 次采集），待人工复核。",
+          "at": "2026-09-14T16:25:12.217Z",
+          "marks": [
+            "共享尽调"
+          ]
+        },
+        {
+          "id": "msg-shared-rev-rev-demo-s09correct-rs-demo-run",
+          "fromKind": "system",
+          "fromName": "系统",
+          "text": "共享尽调 · 人工复核：证据「生产现场巡检照片（合成测试图形）（现场补充，取代 ev-demo-s03dd01-rs-demo-run）」被人工「纠正」，旧结论转入待复核（人工动作，合成演示）。",
+          "at": "2026-09-14T16:25:12.438Z",
+          "marks": [
+            "共享尽调"
+          ]
+        },
+        {
+          "id": "msg-shared-ev-ev-demo-s14sg01-rs-demo-run",
+          "fromKind": "system",
+          "fromName": "系统",
+          "text": "共享尽调 · 商务域：现场证据「合同要素页（合成测试图形）」已挂接（第 1 次采集），待人工复核。",
+          "at": "2026-09-14T16:25:12.624Z",
+          "marks": [
+            "共享尽调"
+          ]
+        }
+      ]
+    }
+  ]
+}

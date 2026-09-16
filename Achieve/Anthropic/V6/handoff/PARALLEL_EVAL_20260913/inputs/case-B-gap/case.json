@@ -1,0 +1,201 @@
+{
+  "schema": "jw-eval-case@1",
+  "caseId": "CASE-B",
+  "caseVersion": 1,
+  "caseName": "合成案例B｜禾丰农装（资料有可澄清缺口）",
+  "fictitious": true,
+  "meta": {
+    "industry": "农业机械制造（合成设定）",
+    "location": "华中某县城郊工业园（合成地名）",
+    "requestedStructure": {
+      "kind": "设备融资租赁（拟议中，未审批）",
+      "targetAssets": "秸秆打捆机产线关键设备5台（合成设备）",
+      "amountCny": 4200000,
+      "termMonths": 36,
+      "note": "金额与期限仅用于资料一致性测试，不是公司政策阈值，不预设任何审批结果"
+    },
+    "session": {
+      "mode": "远程视频尽调（合成设定）",
+      "onSiteRequirement": "实控人须在经营现场，财务负责人、生产负责人在现场或实时入会",
+      "actualConnection": "本案例仅为文字与自制测试图形，未接入任何真实会议"
+    },
+    "disclaimers": [
+      "全部企业、人物、设备、编号、金额均为匿名合成，不影射任何真实公司或个人",
+      "本案例是未来真实授权资料的替代测试材料，不声称用户已提供三套资料",
+      "案例不预设正式审批结果"
+    ],
+    "observationRule": "未观察到不等于不存在：画面与材料范围之外的情况一律记为未知；缺口可澄清，澄清前不推定为已解决"
+  },
+  "participants": [
+    { "role": "实控人", "alias": "丁先生（合成人物）", "presence": "on_site_declared", "note": "自报在经营现场；本轮依据尚不足以升级为 on_site_confirmed" },
+    { "role": "财务负责人", "alias": "戊女士（合成人物）", "presence": "live_only", "note": "会议开始20分钟后才入会（会议系统记录）" },
+    { "role": "生产负责人", "alias": "己先生（合成人物）", "presence": "on_site_declared", "note": "自报在产线现场" },
+    { "role": "我方业务岗等六个逻辑角色", "alias": "见微/业务/政策/信审/商务/资产", "presence": "host/observer", "note": "逻辑角色，不等于六位参会人" }
+  ],
+  "stages": [
+    {
+      "stageId": "S1",
+      "name": "首次沟通纪要",
+      "date": "2026-08-26",
+      "sources": [
+        {
+          "sourceId": "B-FC-01",
+          "version": 1,
+          "sourceType": "meeting_minutes",
+          "title": "首次沟通纪要（业务岗记录）",
+          "facts": [
+            { "factId": "B-FC-01-F1", "text": "实控人自述企业成立于2015年，主营秸秆打捆机及配套机具，员工约120人。", "status": "claimed" },
+            { "factId": "B-FC-01-F2", "text": "实控人自述2025年营业收入约1.6亿元，其中农机补贴机型占销量约六成。", "status": "claimed" },
+            { "factId": "B-FC-01-F3", "text": "拟租赁标的为产线关键设备5台；其中3台（打捆机主机装配台、液压站、喷涂线）自述系2020年从原合作厂整体受让取得。", "status": "claimed" },
+            { "factId": "B-FC-01-F4", "text": "实控人自述受让当时'一起付了款'，具体协议'应该能找到'。", "status": "claimed", "note": "自述，无书面材料对应" }
+          ]
+        }
+      ]
+    },
+    {
+      "stageId": "S2",
+      "name": "书面材料摘录",
+      "date": "2026-09-03",
+      "sources": [
+        {
+          "sourceId": "B-DOC-01",
+          "version": 1,
+          "sourceType": "written_document",
+          "title": "营业执照摘录（合成）",
+          "facts": [
+            { "factId": "B-DOC-01-F1", "text": "企业名称：禾丰农装有限公司（合成名称）；成立日期2015-03-09；注册资本5,000万元；统一社会信用代码为合成号码91xx0000MAxxxxxxXB。", "status": "verified", "verifiedBy": "合成环境中已对照公开登记公示记录核对，仅在本合成案例内成立" }
+          ]
+        },
+        {
+          "sourceId": "B-DOC-02",
+          "version": 1,
+          "sourceType": "written_document",
+          "title": "近三年财务摘要（企业自编，未审计）",
+          "facts": [
+            { "factId": "B-DOC-02-F1", "text": "营业收入：2023年1.38亿元；2024年1.52亿元；2025年1.61亿元。", "status": "recorded", "note": "企业自编未审计数据" },
+            { "factId": "B-DOC-02-F2", "text": "2025年末预收账款余额2,860万元；企业表示'预收主要是补贴机型订单定金'，但未提供预收账款分客户明细。", "status": "recorded", "note": "明细缺失，可要求补充" },
+            { "factId": "B-DOC-02-F3", "text": "资产负债率2025年末58.7%。", "status": "recorded" }
+          ]
+        },
+        {
+          "sourceId": "B-DOC-03",
+          "version": 1,
+          "sourceType": "written_document",
+          "title": "设备清单（企业盖章版摘录）",
+          "facts": [
+            { "factId": "B-DOC-03-F1", "text": "打捆机主机装配台，企业设备编号HF-BL-0207，自述2020年受让取得，账面原值96万元。", "status": "recorded" },
+            { "factId": "B-DOC-03-F2", "text": "液压站，企业设备编号HF-BL-0208，自述2020年受让取得，账面原值58万元。", "status": "recorded" },
+            { "factId": "B-DOC-03-F3", "text": "喷涂线，企业设备编号HF-BL-0209，自述2020年受让取得，账面原值112万元。", "status": "recorded" },
+            { "factId": "B-DOC-03-F4", "text": "数控折弯机，企业设备编号HF-PR-0311，2022-04购入，原值85万元。", "status": "recorded" },
+            { "factId": "B-DOC-03-F5", "text": "焊接机器人工作站，企业设备编号HF-PR-0312，2022-04购入，原值120万元。", "status": "recorded" }
+          ]
+        },
+        {
+          "sourceId": "B-DOC-04",
+          "version": 1,
+          "sourceType": "written_document",
+          "title": "设备采购发票摘录（2张，仅覆盖2022年购入设备）",
+          "facts": [
+            { "factId": "B-DOC-04-F1", "text": "增值税发票（合成）：数控折弯机一台85万元，2022-04-12，对应企业设备编号HF-PR-0311。", "status": "recorded" },
+            { "factId": "B-DOC-04-F2", "text": "增值税发票（合成）：焊接机器人工作站一套120万元，2022-04-12，对应企业设备编号HF-PR-0312。", "status": "recorded" },
+            { "factId": "B-DOC-04-F3", "text": "HF-BL-0207/0208/0209三台受让设备均无发票、无受让协议、无过户或交付记录附卷。", "status": "recorded", "note": "权属凭证缺失，属可澄清缺口" }
+          ]
+        },
+        {
+          "sourceId": "B-DOC-05",
+          "version": 1,
+          "sourceType": "written_document",
+          "title": "银行流水摘要（合成银行B支行，仅2026-06至2026-08共3个月）",
+          "facts": [
+            { "factId": "B-DOC-05-F1", "text": "该账户3个月贷方累计约3,100万元；仅覆盖近3个月，其余9个月流水未提供。", "status": "recorded", "note": "期间不完整" },
+            { "factId": "B-DOC-05-F2", "text": "财务负责人表示另有一般户用于部分回款，未提供该账户流水。", "status": "claimed" }
+          ]
+        }
+      ]
+    },
+    {
+      "stageId": "S3",
+      "name": "现场画面（远程会议中客户设备端照片的文字描述与自制测试图形）",
+      "date": "2026-09-09",
+      "sources": [
+        {
+          "sourceId": "B-VIS-01",
+          "version": 1,
+          "sourceType": "onsite_visual",
+          "title": "产线全景（客户设备端拍摄，文字描述）",
+          "capture": { "capturedBy": "客户方生产负责人手机（合成设定）", "capturedAt": "2026-09-09 15:40", "receivedAt": "2026-09-09 15:43" },
+          "facts": [
+            { "factId": "B-VIS-01-F1", "text": "画面范围内可见清单所列5台设备均在产线对应工位，其中打捆机主机装配台（HF-BL-0207）与液压站（HF-BL-0208）有作业痕迹。", "status": "observed", "observationScope": "仅限本画面取景范围" },
+            { "factId": "B-VIS-01-F2", "text": "车间角落另有一台带'调试机'标牌的折弯设备，未出现在企业设备清单中。", "status": "observed", "observationScope": "仅限本画面取景范围；其权属与停留原因未知" },
+            { "factId": "B-VIS-01-F3", "text": "实控人丁先生在产线入口处出镜；画面范围内未观察到消防验收公示牌，消防验收情况未知。", "status": "observed", "observationScope": "未观察到不等于不存在：不能据此认定无消防验收" }
+          ],
+          "asset": { "path": "assets/site-panorama-B.svg", "note": "自制测试图形，示意构图，非真实照片" }
+        },
+        {
+          "sourceId": "B-VIS-02",
+          "version": 1,
+          "sourceType": "onsite_visual",
+          "title": "设备铭牌特写（客户设备端拍摄，文字描述）",
+          "capture": { "capturedBy": "客户方生产负责人手机（合成设定）", "capturedAt": "2026-09-09 15:47", "receivedAt": "2026-09-09 15:49" },
+          "facts": [
+            { "factId": "B-VIS-02-F1", "text": "数控折弯机铭牌：制造商合成锻压装备厂乙；出厂编号DY-2022-0183；出厂年份2022；铭牌旁企业编号牌HF-PR-0311，与发票记载一致。", "status": "observed" }
+          ],
+          "asset": { "path": "assets/nameplate-B-VIS-02.svg", "note": "自制测试图形" }
+        }
+      ]
+    },
+    {
+      "stageId": "S4",
+      "name": "现场问答（远程会议内记录）",
+      "date": "2026-09-09",
+      "sources": [
+        {
+          "sourceId": "B-QA-01",
+          "version": 1,
+          "sourceType": "onsite_qa",
+          "title": "现场问答纪要",
+          "facts": [
+            { "factId": "B-QA-01-F1", "text": "会议系统记录：财务负责人戊女士于会议开始20分钟后入会，此前环节仅有实控人与生产负责人在场。", "status": "recorded", "note": "系统记录与'财务全程在场'的口头说法需分开对待" },
+            { "factId": "B-QA-01-F2", "text": "问：受让3台设备的协议和付款记录？答（实控人）：当年一起付了款，协议'找找应该有'，找到了发过来。", "status": "claimed", "note": "未提供，待补充" },
+            { "factId": "B-QA-01-F3", "text": "问：角落里带'调试机'标牌的设备是谁的？答（生产负责人）：厂家放的样机，帮我们试料用的。", "status": "claimed", "note": "厂家单方说明，权属未知" },
+            { "factId": "B-QA-01-F4", "text": "问：为什么流水只有3个月？答（财务负责人，迟到入会后）：部分回款走一般户，可以补一般户流水和更早月份。", "status": "claimed", "note": "承诺补充，未兑现" }
+          ]
+        }
+      ]
+    },
+    {
+      "stageId": "S5",
+      "name": "补充材料",
+      "date": "2026-09-11",
+      "sources": [
+        {
+          "sourceId": "B-SUP-01",
+          "version": 1,
+          "sourceType": "supplement",
+          "title": "客户补充：受让付款凭证（部分）",
+          "facts": [
+            { "factId": "B-SUP-01-F1", "text": "客户后期补来一张2020-11的银行转账回单（合成），金额80万元，收款方为原合作厂，附言'设备款'；无受让协议、无逐台作价明细，与清单三台合计账面原值266万元对不上。", "status": "recorded", "note": "金额与作价口径待澄清" }
+          ]
+        },
+        {
+          "sourceId": "B-SUP-02",
+          "version": 1,
+          "sourceType": "supplement",
+          "title": "客户补充：调试机情况说明（企业单方出具）",
+          "facts": [
+            { "factId": "B-SUP-02-F1", "text": "企业出具说明函：角落设备为合成锻压装备厂乙放置的样机，试料结束后将由厂家拉回；未附厂家确认文件。", "status": "claimed", "note": "厂家确认缺位，权属与移机风险待核实" }
+          ]
+        },
+        {
+          "sourceId": "B-SUP-03",
+          "version": 1,
+          "sourceType": "supplement",
+          "title": "商务条款备忘（我方商务岗内部记录，未审批）",
+          "facts": [
+            { "factId": "B-SUP-03-F1", "text": "商务岗与客户口头讨论过金额420万元、期限36个月的框架，尚未出具书面报价；租金口径与经济性核算输入均未确认。", "status": "recorded", "note": "内部备忘，不构成任何审批或承诺" }
+          ]
+        }
+      ]
+    }
+  ]
+}

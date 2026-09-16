@@ -1,0 +1,49 @@
+{
+  "_comment": "V7 backend-next B 常驻 worker 配置样例(http 契约模式,对接 A 48080 + C mock 3730)。复制为 config/b-config.json 后使用: cp config/b-config.http-sample.json config/b-config.json。前置:A 内核 48080 运行(A/README);C mock 3730 运行(C/scripts/start-mock.mjs)。worker.taskTimeoutMs(60s)必须 < A 租约(90s)。identity.mode='synthetic' 是 B 本地合成身份源(凭据形如 cred:<id>),仅测试/组合环境;生产身份源由组合方注入,不经此。",
+  "transport": {
+    "mode": "mock",
+    "mock": { "baseUrl": "http://127.0.0.1:3730", "timeoutMs": 8000, "model": "mock-glm-5.2" }
+  },
+  "routes": {
+    "roles": ["policy", "credit", "risk", "asset", "commerce", "seekeeper", "business"],
+    "rules": [
+      {
+        "ruleId": "R-BUSINESS-REVIEW",
+        "when": { "taskKind": "b_review" },
+        "plan": [
+          { "stepId": "model:business:b_review", "kind": "model", "role": "business", "purpose": "b_review" }
+        ]
+      },
+      {
+        "ruleId": "R-CREDIT-REVIEW",
+        "when": { "taskKind": "model_review", "role": "credit" },
+        "plan": [
+          { "stepId": "model:credit:risk_review", "kind": "model", "role": "credit", "purpose": "risk_review" }
+        ]
+      },
+      {
+        "ruleId": "R-CALC-ONLY",
+        "when": { "taskKind": "cash_flow_coverage" },
+        "plan": [
+          { "stepId": "tool:calc:cash-flow-coverage", "kind": "tool", "toolName": "calc:cash-flow-coverage" }
+        ]
+      }
+    ]
+  },
+  "budget": { "maxTotalCost": 0.5, "perCallEstimate": 0.01, "currency": "CNY" },
+  "_budget_comment": "D-25 预算上限(可选):mock/real 同一记账面,cost-ledger.jsonl 持久累计,重启/并发不绕过;超限=确定未发送失败关闭。删除本段=不启用。",
+  "contract": {
+    "mode": "http",
+    "baseUrl": "http://127.0.0.1:48080",
+    "principalCredential": "tok-agent",
+    "projectFilter": []
+  },
+  "identity": { "mode": "synthetic" },
+  "worker": {
+    "workerId": "b-worker-1",
+    "concurrency": 2,
+    "pollIntervalMs": 500,
+    "taskTimeoutMs": 60000,
+    "maxReclaims": 1
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "run": "d29-clean-r2",
+  "startedUtc": "d29-clean-r2",
+  "endedUtc": "2026-09-15T20:28:18.105Z",
+  "suites": [
+    {
+      "file": "g9_deliverability.test.mjs",
+      "exitCode": 0,
+      "crashed": false,
+      "res": {
+        "suite": "g9_deliverability",
+        "results": [
+          {
+            "id": "D-29",
+            "title": "干净目录启动：manifest文件复制到D自有干净目录→安装→迁移→启动→健康",
+            "severity": "P0",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 13,
+            "failures": [],
+            "ms": 19527,
+            "note": ""
+          }
+        ],
+        "pass": 1,
+        "fail": 0,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 13,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    }
+  ],
+  "totals": {
+    "suites": 1,
+    "crashed": 0,
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "blocked": 0,
+    "totalAssertions": 13
+  },
+  "flat": [
+    {
+      "id": "D-29",
+      "title": "干净目录启动：manifest文件复制到D自有干净目录→安装→迁移→启动→健康",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 13,
+      "ms": 19527
+    }
+  ]
+}

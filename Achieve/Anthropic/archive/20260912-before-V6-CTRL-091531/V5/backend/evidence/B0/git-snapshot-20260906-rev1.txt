@@ -1,0 +1,84 @@
+# B0 Rev1 复核快照（2026-09-06，B0 候选修订轮新增，只读抽查）
+# 用途：B0_BASELINE_MANIFEST §4 'site 零写入'自报的时点佐证；与 gate-time 快照 evidence/B0/git-snapshot-20260906.txt 同构比对
+HEAD: 63c41c3db138215d40470098d80c405f2a6fd679
+branch: main
+--- porcelain ---
+ M AGENTS.md
+ M CHANGELOG.md
+ D DECISIONS.md
+ M README.md
+ D ROADMAP.md
+ D SITE_CONTRACT.md
+ M STACK.md
+ M app/jw-front.css
+ M app/jw-front.tsx
+ M app/page.tsx
+ D docs/v3-archive/V3_ARCHIVE_MANIFEST.md
+ D docs/v3-archive/contracts/V3_ACCEPTANCE_MATRIX.md
+ D docs/v3-archive/contracts/V3_API_AND_EVENT_CONTRACT.md
+ D docs/v3-archive/contracts/V3_DEMO_NARRATIVE_CONTRACT.md
+ D docs/v3-archive/contracts/V3_DIRECTION_FREEZE.md
+ D docs/v3-archive/contracts/V3_FRONT_JW_HANDOFF.md
+ D docs/v3-archive/contracts/V3_GOLDEN_CASE_SCENARIO_CONTRACT.md
+ D docs/v3-archive/contracts/V3_ROLE_PROJECTION_CONTRACT.md
+ M package-lock.json
+ M package.json
+ M scripts/run-localhost.ps1
+ D standalone/jianwei-v2.html
+ M test/backend-authority-integration.test.mjs
+ M test/jw-front.test.mjs
+ M test/v3-p2-integration-contract.test.mjs
+?? app/api/v4/
+?? app/api/v4life/
+?? app/evolve/
+?? app/v4-surface-nav.module.css
+?? app/v4-surface-nav.tsx
+?? app/work/
+?? docs/archive/
+?? docs/v4/
+?? lib/v4/
+?? lib/v4life/
+?? scripts/v4life-gate.mjs
+?? scripts/v4life-http-quality.mjs
+?? test/v4-authority-policy-controller.test.mjs
+?? test/v4-authority-policy.test.mjs
+?? test/v4-capability-admission-controller.test.mjs
+?? test/v4-capability-admission.test.mjs
+?? test/v4-capability-governance-reducer-controller.test.mjs
+?? test/v4-capability-governance-reducer.test.mjs
+?? test/v4-capability-registry-controller.test.mjs
+?? test/v4-capability-registry.test.mjs
+?? test/v4-domain.test.mjs
+?? test/v4-evolve-surface.test.mjs
+?? test/v4-read-api-controller.test.mjs
+?? test/v4-read-api.test.mjs
+?? test/v4-read-service-controller.test.mjs
+?? test/v4-read-service.test.mjs
+?? test/v4-sandbox-acceptance.test.mjs
+?? test/v4-work-aggregate-controller.test.mjs
+?? test/v4-work-aggregate.test.mjs
+?? test/v4-work-command-handler-02b-r1-controller.test.mjs
+?? test/v4-work-command-handler-03a-controller.test.mjs
+?? test/v4-work-command-handler-03a-r1-controller.test.mjs
+?? test/v4-work-command-handler-03a.test.mjs
+?? test/v4-work-command-handler-controller.test.mjs
+?? test/v4-work-command-handler.test.mjs
+?? test/v4-work-screen.test.mjs
+?? test/v4-work-surface.test.mjs
+?? test/v4life-command-journal.test.mjs
+?? test/v4life-events-stream.test.mjs
+?? test/v4life-extension.test.mjs
+?? test/v4life-file-event-log.test.mjs
+?? test/v4life-journal-hardening.test.mjs
+?? test/v4life-kernel.test.mjs
+?? test/v4life-lane-b-store.test.mjs
+?? test/v4life-lane-c-http.test.mjs
+?? test/v4life-lane-d-adversarial.test.mjs
+?? test/v4life-p1-isolation.test.mjs
+?? test/v4life-p1-semantics.test.mjs
+?? test/v4life-persist-runtime.test.mjs
+?? test/v4life-reset.test.mjs
+?? test/v4life-verification-http.test.mjs
+?? test/v4life-verification-recovery.test.mjs
+?? test/v4life-verification-ui.test.mjs
+?? test/v4life-work-model.test.mjs

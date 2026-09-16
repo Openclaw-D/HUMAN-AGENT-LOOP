@@ -1,0 +1,22 @@
+{
+  "step": "07-unsupported",
+  "state": "unsupported",
+  "proof": {
+    "caps": {
+      "getUserMedia": "missing",
+      "imageCapture": "available",
+      "liveCameraSupported": false,
+      "secureContext": true,
+      "takePhotoSupported": false
+    },
+    "notice": "开启未执行：UNSUPPORTED",
+    "pickEnabled": true,
+    "usage": {
+      "captureMode": "single",
+      "liveTracks": 0,
+      "state": "unsupported",
+      "urlsHeld": 0
+    }
+  },
+  "note": "无video provider时选图入口不受影响"
+}

@@ -1,0 +1,154 @@
+{
+  "suite": "g6_evidence_invalidation",
+  "results": [
+    {
+      "id": "D-19",
+      "title": "证据取代定向失效：命中链路失效/decided跳过/无关目标逐字节不变/历史保留",
+      "severity": "P1",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 50,
+      "failures": [
+        {
+          "msg": "create template 返回2xx",
+          "detail": "{\"status\":400,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"INVALID_INPUT\\\",\\\"message\\\":\\\"goals[2].acceptanceRole 不在模板 roles 中\\\"}\"}"
+        },
+        {
+          "msg": "create template ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"INVALID_INPUT\\\",\\\"message\\\":\\\"goals[2].acceptanceRole 不在模板 roles 中\\\"}\"}"
+        },
+        {
+          "msg": "create project 返回2xx",
+          "detail": "{\"status\":400,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"INVALID_INPUT\\\",\\\"message\\\":\\\"templateId 必须是 1..64 长度的 string\\\"}\"}"
+        },
+        {
+          "msg": "create project ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"INVALID_INPUT\\\",\\\"message\\\":\\\"templateId 必须是 1..64 长度的 string\\\"}\"}"
+        },
+        {
+          "msg": "instantiate collect 返回2xx",
+          "detail": "{\"status\":404,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"项目不存在\\\"}\"}"
+        },
+        {
+          "msg": "instantiate collect ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"项目不存在\\\"}\"}"
+        },
+        {
+          "msg": "instantiate review 返回2xx",
+          "detail": "{\"status\":404,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"项目不存在\\\"}\"}"
+        },
+        {
+          "msg": "instantiate review ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"项目不存在\\\"}\"}"
+        },
+        {
+          "msg": "instantiate notify 返回2xx",
+          "detail": "{\"status\":404,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"项目不存在\\\"}\"}"
+        },
+        {
+          "msg": "instantiate notify ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"项目不存在\\\"}\"}"
+        },
+        {
+          "msg": "证据v1 返回2xx",
+          "detail": "{\"status\":400,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"INVALID_INPUT\\\",\\\"message\\\":\\\"expectedVersion 必须是非负整数\\\"}\"}"
+        },
+        {
+          "msg": "证据v1 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"INVALID_INPUT\\\",\\\"message\\\":\\\"expectedVersion 必须是非负整数\\\"}\"}"
+        },
+        {
+          "msg": "c1 claim 返回2xx",
+          "detail": "{\"status\":404,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"目标不存在\\\"}\"}"
+        },
+        {
+          "msg": "c1 claim ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"目标不存在\\\"}\"}"
+        },
+        {
+          "msg": "c1 complete 返回2xx",
+          "detail": "{\"status\":404,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"目标不存在\\\"}\"}"
+        },
+        {
+          "msg": "c1 complete ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"目标不存在\\\"}\"}"
+        },
+        {
+          "msg": "c1 accept 返回2xx",
+          "detail": "{\"status\":404,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"目标不存在\\\"}\"}"
+        },
+        {
+          "msg": "c1 accept ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"目标不存在\\\"}\"}"
+        },
+        {
+          "msg": "上游accepted→下游ready",
+          "detail": "{\"expected\":\"ready\"}"
+        },
+        {
+          "msg": "n1 claim 返回2xx",
+          "detail": "{\"status\":404,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"目标不存在\\\"}\"}"
+        },
+        {
+          "msg": "n1 claim ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"目标不存在\\\"}\"}"
+        },
+        {
+          "msg": "n1 complete 返回2xx",
+          "detail": "{\"status\":404,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"目标不存在\\\"}\"}"
+        },
+        {
+          "msg": "n1 complete ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"目标不存在\\\"}\"}"
+        },
+        {
+          "msg": "n1 accept 返回2xx",
+          "detail": "{\"status\":404,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"目标不存在\\\"}\"}"
+        },
+        {
+          "msg": "n1 accept ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"目标不存在\\\"}\"}"
+        },
+        {
+          "msg": "notify到accepted（尚未decide）",
+          "detail": "{\"expected\":\"accepted\"}"
+        },
+        {
+          "msg": "取代证据 返回2xx",
+          "detail": "{\"status\":404,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"证据不存在（跨项目不可访问）\\\"}\"}"
+        },
+        {
+          "msg": "取代证据 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"证据不存在（跨项目不可访问）\\\"}\"}"
+        },
+        {
+          "msg": "下游ready目标被级联失效",
+          "detail": "{\"expected\":\"invalidated\"}"
+        },
+        {
+          "msg": "失效后证据重新齐备 → invalidated恢复ready",
+          "detail": "{\"expected\":\"ready\"}"
+        }
+      ],
+      "ms": 2320,
+      "note": ""
+    },
+    {
+      "id": "D-20",
+      "title": "非法操作边界：取代不存在证据404；重复取代409 EVIDENCE_SUPERSEDED；未知goalKey拒绝",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 27,
+      "failures": [],
+      "ms": 306,
+      "note": ""
+    }
+  ],
+  "pass": 1,
+  "fail": 1,
+  "skip": 0,
+  "blocked": 0,
+  "totalAssertions": 77,
+  "runnerError": null
+}

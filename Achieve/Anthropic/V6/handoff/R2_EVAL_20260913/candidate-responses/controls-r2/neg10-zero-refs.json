@@ -1,0 +1,41 @@
+{
+  "schema": "jw-eval-candidate@2",
+  "candidateId": "NEG-CTRL-10",
+  "caseId": "CASE-C",
+  "variantId": null,
+  "respondent": {
+    "kind": "hand_written_negative_control",
+    "note": "注入错误：结构完全合法，但所有条目的 evidenceRefs 均为空数组，整份候选零引用。评估工具必须精确暴露，不作为任何真实模型输出。"
+  },
+  "findings": [
+    {
+      "findingId": "F-1",
+      "type": "gap",
+      "statement": "设备购置链条缺少厂家记录支持，采购背景与验收口径无法交叉核对。",
+      "evidenceRefs": []
+    },
+    {
+      "findingId": "F-2",
+      "type": "note",
+      "statement": "现场说明与书面材料之间存在口径差异，差异来源尚待确认。",
+      "evidenceRefs": []
+    }
+  ],
+  "questions": [
+    {
+      "questionId": "Q-1",
+      "text": "设备购置的厂家原始记录由哪一方留存，能否补充提供？",
+      "evidenceRefs": []
+    }
+  ],
+  "conclusions": [
+    {
+      "conclusionId": "C-1",
+      "kind": "summary",
+      "statement": "本轮反馈整体围绕设备购置链条的记录完整性展开。",
+      "evidenceRefs": []
+    }
+  ],
+  "decisions": [],
+  "unresolved": []
+}

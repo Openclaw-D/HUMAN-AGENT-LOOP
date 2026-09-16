@@ -1,0 +1,68 @@
+{
+  "startedAt": "2026-09-15T17:52:55.752Z",
+  "templates": {
+    "goal-template-commercial-leasing-v1": {
+      "serverTemplateId": "tpl-mu2yzhzl-ba063a6dc7a3",
+      "goals": 9,
+      "roles": 6
+    },
+    "goal-template-non-leasing-counterexample-v1": {
+      "serverTemplateId": "tpl-mu2yzi0d-d849df623541",
+      "goals": 6,
+      "roles": 5
+    }
+  },
+  "plans": {
+    "L1-metal-direct-mature": {
+      "projectId": "p-mu2yzi0u-67e7f0516d44",
+      "steps": 5,
+      "status": "ok"
+    },
+    "L2-print-leaseback-old-customer": {
+      "projectId": "p-mu2yzi2z-0efd980ce8ef",
+      "steps": 7,
+      "status": "ok"
+    },
+    "L3-injection-new-rough-statements": {
+      "projectId": "p-mu2yzi5y-92f20f24f539",
+      "steps": 10,
+      "status": "ok"
+    },
+    "L4-casting-hidden-debt": {
+      "projectId": "p-mu2yzia7-67141cf929cf",
+      "steps": 12,
+      "status": "ok"
+    },
+    "L5-glass-ownership-dispute": {
+      "projectId": "p-mu2yzifa-29bfdccf36b2",
+      "steps": 7,
+      "status": "ok"
+    },
+    "L6-textile-low-liquidity-disposal": {
+      "projectId": "p-mu2yziif-85d5883ef3b8",
+      "steps": 8,
+      "status": "ok"
+    },
+    "L7-pack-order-concentration": {
+      "projectId": "p-mu2yzilo-5441dd6bccfd",
+      "steps": 8,
+      "status": "ok"
+    },
+    "L8-electronics-high-price-unknown-cost": {
+      "projectId": "p-mu2yzip3-753b8f757ebd",
+      "steps": 6,
+      "status": "ok"
+    }
+  },
+  "failures": [],
+  "serverLeasingTemplateId": "tpl-mu2yzhzl-ba063a6dc7a3",
+  "serverNonLeasingTemplateId": "tpl-mu2yzi0d-d849df623541",
+  "l1ClosedLoop": {
+    "goal": "fact_intake",
+    "claimed": true,
+    "completed": true,
+    "accepted": true
+  },
+  "finishedAt": "2026-09-15T17:52:57.110Z",
+  "ok": true
+}

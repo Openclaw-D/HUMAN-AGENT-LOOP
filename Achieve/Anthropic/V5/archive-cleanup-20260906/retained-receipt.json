@@ -1,0 +1,2702 @@
+[
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/package-index.json",
+    "destination": "03-synthetic-cases/package-index.json",
+    "sha256": "f2c309825b1bd625b7bb86e8e3f8d0ea6d08fefd7e074d566b13ce70256bfd5d",
+    "size": 23686
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/manifest.json",
+    "destination": "03-synthetic-cases/project-01/manifest.json",
+    "sha256": "1fc66fb7660e13f9af0a4405d4b18699dfba3f491ca941217df8a79e1b3a95d6",
+    "size": 322587
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/package-summary.json",
+    "destination": "03-synthetic-cases/project-01/package-summary.json",
+    "sha256": "82f2d2ee62cb9b35415200b15d8478e120b7f1f4211c0331460ece275327d532",
+    "size": 3301
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/derived/factory-layout.glb",
+    "destination": "03-synthetic-cases/project-01/derived/factory-layout.glb",
+    "sha256": "10645a534e0f279a6375de8d19050367bffc5ba7f73bfc12e9ad6d4cb9f478fa",
+    "size": 2912
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/derived/image-provenance.json",
+    "destination": "03-synthetic-cases/project-01/derived/image-provenance.json",
+    "sha256": "423326a4d78048747d92cb2f807a94f44c63a5e8fbdc57fd111a67df3b3b5e61",
+    "size": 6036
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/derived/scene-spec.json",
+    "destination": "03-synthetic-cases/project-01/derived/scene-spec.json",
+    "sha256": "40399b6ce733e9f36e477ed12dcb7478f1e11bd7d54ae6fd9fc0e34dce415158",
+    "size": 1993
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/基本证照/营业执照.png",
+    "destination": "03-synthetic-cases/project-01/originals/基本证照/营业执照.png",
+    "sha256": "ac8ce6786ad6093bc2e834e14e2073ba5e5a1477612a9fd21f44a5758017a8c9",
+    "size": 92576
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/基本证照/工商核验/主体与登记核验.pdf",
+    "destination": "03-synthetic-cases/project-01/originals/基本证照/工商核验/主体与登记核验.pdf",
+    "sha256": "60b578fb19368e2b4706867adb17b1c4d5195cdd43606f45c360a6b97ab40034",
+    "size": 7413
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/基本证照/工商核验/工商及涉诉核验.pdf",
+    "destination": "03-synthetic-cases/project-01/originals/基本证照/工商核验/工商及涉诉核验.pdf",
+    "sha256": "2ed853990700b2d70c3a7a60b43745075a0ca2e8072391e9c6da1d65ca8b1353",
+    "size": 3932
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/基本证照/股权资料/公司章程及股权结构.pdf",
+    "destination": "03-synthetic-cases/project-01/originals/基本证照/股权资料/公司章程及股权结构.pdf",
+    "sha256": "00832c6f0b0c2796e8b35fd03564a9fc556f35538b99ffaff059c6d5e9d50c9c",
+    "size": 3972
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/基本证照/身份证明/持证授权确认.png",
+    "destination": "03-synthetic-cases/project-01/originals/基本证照/身份证明/持证授权确认.png",
+    "sha256": "088904f6670ce1f3aa3fd1a41dd863d82537183a1c46106be4476947a7665426",
+    "size": 93098
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/基本证照/身份证明/法定代表人身份证正面.png",
+    "destination": "03-synthetic-cases/project-01/originals/基本证照/身份证明/法定代表人身份证正面.png",
+    "sha256": "8895d290f6e83c6891df4b66347383d1e51cee41cc55e1bca497066427f6a5da",
+    "size": 87531
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/基本证照/身份证明/法定代表人身份证背面.png",
+    "destination": "03-synthetic-cases/project-01/originals/基本证照/身份证明/法定代表人身份证背面.png",
+    "sha256": "e467b76da81fbcb032a4b083033c80e7c33b78a51c437a347ae7f675b954aaca",
+    "size": 87770
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/增信/个人征信/个人征信报告.pdf",
+    "destination": "03-synthetic-cases/project-01/originals/增信/个人征信/个人征信报告.pdf",
+    "sha256": "ef1a0938b22f292134c2eee156b8782c149ed641c1198662cd548d6156c84c7d",
+    "size": 4007
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/增信/企业征信/企业征信报告.pdf",
+    "destination": "03-synthetic-cases/project-01/originals/增信/企业征信/企业征信报告.pdf",
+    "sha256": "32ce8ffc3b9c1b6f43880f3d2e256ada288454d6ce4183884e1b462f0e34cd08",
+    "size": 4030
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/增信/征信明细/负债到期计划.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/增信/征信明细/负债到期计划.xlsx",
+    "sha256": "3cec5234ac94c92133f6034a2085043fc3f783588fdaff9c1dd4d920de4263b7",
+    "size": 8572
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/增信/担保资料/担保清单.pdf",
+    "destination": "03-synthetic-cases/project-01/originals/增信/担保资料/担保清单.pdf",
+    "sha256": "a6bb85306677cc61296a7b398c04cb862e461ea2ee72470807af95ba513a9da5",
+    "size": 3937
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/增信/权利负担/权利负担核验.pdf",
+    "destination": "03-synthetic-cases/project-01/originals/增信/权利负担/权利负担核验.pdf",
+    "sha256": "a2dc752d60c830e528d9f216c159b3789efdc12860c8f04ef489f594bc474c2b",
+    "size": 4039
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/增信/流水信息/流水主要对手方.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/增信/流水信息/流水主要对手方.xlsx",
+    "sha256": "2225b2d6d80966c2ff42db2643650d2d4cdf7a77af8b25017f975946e5aaee17",
+    "size": 5620
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/增信/流水信息/经营流水匹配.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/增信/流水信息/经营流水匹配.xlsx",
+    "sha256": "d13b4473f5914cf9755de80093aa0bcffe23b445638ec7e2d9873920d0fe93df",
+    "size": 5616
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/增信/流水信息/账户信息.pdf",
+    "destination": "03-synthetic-cases/project-01/originals/增信/流水信息/账户信息.pdf",
+    "sha256": "f820d66f71264a7fb4ae953b033173e48b164080e2e15ebda163d31cc8952f3d",
+    "size": 4027
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/增信/流水信息/银行流水.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/增信/流水信息/银行流水.xlsx",
+    "sha256": "59fb9a675ee9656501867a2b72f8eef6ad65fcdccd29dcf9d643e2bb7a9596de",
+    "size": 9423
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/增信/资产证明/增信资产清单.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/增信/资产证明/增信资产清单.xlsx",
+    "sha256": "22ec45af2d62429c28f41349d1ce87342eeb50b37a56698cf1b8ada801ec5d19",
+    "size": 5562
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/增信/资产证明/房产信息截图.png",
+    "destination": "03-synthetic-cases/project-01/originals/增信/资产证明/房产信息截图.png",
+    "sha256": "cf8bc86aaf8300a7d72b5eeb89d1812fbb9252cd09c539160bfcdef8a0ba2267",
+    "size": 88230
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/增信/资产证明/房产明细截图.png",
+    "destination": "03-synthetic-cases/project-01/originals/增信/资产证明/房产明细截图.png",
+    "sha256": "a452648ff4f93b93d771b9f6f460b281318d2921b111a435e6b86748d139dfe3",
+    "size": 87629
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/现场照片/厂区照片/厂区俯视图.png",
+    "destination": "03-synthetic-cases/project-01/originals/现场照片/厂区照片/厂区俯视图.png",
+    "sha256": "c9ff496e16e78d767ea95109e19df77b63af896ab1ae1aba84c11fe518308bec",
+    "size": 2241553
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/现场照片/厂区照片/厂区右侧平视图.png",
+    "destination": "03-synthetic-cases/project-01/originals/现场照片/厂区照片/厂区右侧平视图.png",
+    "sha256": "f4f921750df4c63de491133fd39e7098425c206791861a6def14d0873783ccfc",
+    "size": 1846639
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/现场照片/厂区照片/厂区左侧平视图.png",
+    "destination": "03-synthetic-cases/project-01/originals/现场照片/厂区照片/厂区左侧平视图.png",
+    "sha256": "dba2bd17bf0525075cb48224fd961cf5bdb46dc93a7376ec1916f072e6bd9cf0",
+    "size": 1851382
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/现场照片/厂区照片/厂区总览.png",
+    "destination": "03-synthetic-cases/project-01/originals/现场照片/厂区照片/厂区总览.png",
+    "sha256": "36deb51a592885be18f827dee9a458718811ffff832190046b56d8d17397d66f",
+    "size": 1630631
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/现场照片/厂区照片/厂区正面平视图.png",
+    "destination": "03-synthetic-cases/project-01/originals/现场照片/厂区照片/厂区正面平视图.png",
+    "sha256": "24afaaad0178747bcfd3e7de50df93886180b247b66d6cf4b33fa126590e1540",
+    "size": 1496529
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/现场照片/厂区照片/厂区背面平视图.png",
+    "destination": "03-synthetic-cases/project-01/originals/现场照片/厂区照片/厂区背面平视图.png",
+    "sha256": "a6f205f2e252e4c2ea661865d264450ae8ecb6aabd3247f17403169949a50965",
+    "size": 1901216
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/现场照片/工艺照片/原材料.png",
+    "destination": "03-synthetic-cases/project-01/originals/现场照片/工艺照片/原材料.png",
+    "sha256": "89b48c2f21fc55ac9a0186d4198e6011a8ddbb56c84be19b5aa3fabcf302d4d5",
+    "size": 1294634
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/现场照片/工艺照片/工艺过程.png",
+    "destination": "03-synthetic-cases/project-01/originals/现场照片/工艺照片/工艺过程.png",
+    "sha256": "9a2936bc3ae9c5cf3777c53a67e725f15f9cc93e5acb5f1cdaf4d9861bb229e8",
+    "size": 1864052
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/现场照片/工艺照片/成品.png",
+    "destination": "03-synthetic-cases/project-01/originals/现场照片/工艺照片/成品.png",
+    "sha256": "bc5a79d6877a758a076eee37cffefb73a50643bc8566cb572afc8d62cfec065b",
+    "size": 2056564
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/现场照片/设备照片/产线总览.png",
+    "destination": "03-synthetic-cases/project-01/originals/现场照片/设备照片/产线总览.png",
+    "sha256": "9cb217c3c283608b4e967cfbd3ac48c189da9deac5698ac6441b337829cb0453",
+    "size": 1858924
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/现场照片/设备照片/设备侧视图.png",
+    "destination": "03-synthetic-cases/project-01/originals/现场照片/设备照片/设备侧视图.png",
+    "sha256": "1397f051af9ed3b44048b05b8fc0b6693a7999129e7ac849f83f2b54d4d1fd25",
+    "size": 1173503
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/现场照片/设备照片/设备总览.png",
+    "destination": "03-synthetic-cases/project-01/originals/现场照片/设备照片/设备总览.png",
+    "sha256": "2315bdded1ac4c5af1cb0a613e71052867b7c694e98cd491306b4ef57fc33851",
+    "size": 1225896
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/现场照片/设备照片/设备正视图.png",
+    "destination": "03-synthetic-cases/project-01/originals/现场照片/设备照片/设备正视图.png",
+    "sha256": "cc7f7564cb717d2b5ef5b3bfec26b070e397b547fdad1ab7186459ed70ac538d",
+    "size": 1035634
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/现场照片/设备照片/设备背视图.png",
+    "destination": "03-synthetic-cases/project-01/originals/现场照片/设备照片/设备背视图.png",
+    "sha256": "69dbb5f6c7857cc4a8822233ef9ef0eddb734e9e217f77d222ea9afc10f05440",
+    "size": 792850
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/租赁标的/交付验收/设备交付验收单.pdf",
+    "destination": "03-synthetic-cases/project-01/originals/租赁标的/交付验收/设备交付验收单.pdf",
+    "sha256": "90e2865c929bc3b37eecd28f3b161928040f16d93c2bc4fff09754be4af0e76d",
+    "size": 4075
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/租赁标的/付款凭证/设备付款凭证.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/租赁标的/付款凭证/设备付款凭证.xlsx",
+    "sha256": "870d55f9cd4d0c5b252f82a77b1f7563d91da295d12bde6ddc6d34323af039b4",
+    "size": 5675
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/租赁标的/融资租赁/融资租赁合同.pdf",
+    "destination": "03-synthetic-cases/project-01/originals/租赁标的/融资租赁/融资租赁合同.pdf",
+    "sha256": "dd3a289026ca1c0d4bc9719602802b5307fcb2d40049c049bfd17611664bf493",
+    "size": 11999
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/租赁标的/设备发票/设备采购发票.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/租赁标的/设备发票/设备采购发票.xlsx",
+    "sha256": "f15b52a0af5e4a5c634ddf331a8e5928131e49bc9c8377f07910ace62ebc3a80",
+    "size": 5653
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/租赁标的/设备合同/设备买卖合同.pdf",
+    "destination": "03-synthetic-cases/project-01/originals/租赁标的/设备合同/设备买卖合同.pdf",
+    "sha256": "4b29c155a5cce5306fdf054c2964a6188d0411a8a78467b4ded85e3e124ccdf2",
+    "size": 4099
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/租赁标的/设备报价/设备报价单.pdf",
+    "destination": "03-synthetic-cases/project-01/originals/租赁标的/设备报价/设备报价单.pdf",
+    "sha256": "4e926576645efd78698d120bc195998205df477a0dbea9b3de88565592e17df3",
+    "size": 4102
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/租赁标的/设备清单/设备清单.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/租赁标的/设备清单/设备清单.xlsx",
+    "sha256": "bed90742af14472cfc8b905a57b65833281cf9991083210af66bbc3f8b393f37",
+    "size": 5661
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/租赁标的/设备铭牌/设备铭牌.png",
+    "destination": "03-synthetic-cases/project-01/originals/租赁标的/设备铭牌/设备铭牌.png",
+    "sha256": "8ec3744c3871eba0ac75fba133b657178f4e87e5704701e756e6d6fe52d8a03d",
+    "size": 1605704
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/经营证明/厂房租赁合同/厂房租赁合同.pdf",
+    "destination": "03-synthetic-cases/project-01/originals/经营证明/厂房租赁合同/厂房租赁合同.pdf",
+    "sha256": "a22aec8c58cf2a345abb7fb8e4c8d2f683943e69600c1285217bbb12b8844a15",
+    "size": 4058
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/经营证明/回款资料/回款台账.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/经营证明/回款资料/回款台账.xlsx",
+    "sha256": "8ea71bd8877a70cceac2334c18ac939a4aaeba3d1e533a4aa6c8d4732ac92afe",
+    "size": 8433
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/经营证明/工资/工资发放明细.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/经营证明/工资/工资发放明细.xlsx",
+    "sha256": "3edbb0c9e4ddf2f8f3f8044ff71174c82868b24556c42a2424fd29c3b6fc28c2",
+    "size": 7561
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/经营证明/开票资料/主要上下游.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/经营证明/开票资料/主要上下游.xlsx",
+    "sha256": "b962fc24ea2400f8ef32c47fbf2d309a4823562228b66144aef7592caed21adc",
+    "size": 5882
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/经营证明/开票资料/进项发票.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/经营证明/开票资料/进项发票.xlsx",
+    "sha256": "a9faa21ebcc871d268b1a8e910b2212c7588de6f243da1f246f94324e68c2b0e",
+    "size": 8420
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/经营证明/开票资料/销项发票.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/经营证明/开票资料/销项发票.xlsx",
+    "sha256": "b757e401a77460a4d9ed358a9f5b444d98c6ff80523e6c4d0d56c56b0c9939d7",
+    "size": 7561
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/经营证明/生产经营/工单记录.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/经营证明/生产经营/工单记录.xlsx",
+    "sha256": "4d8c05f7160f4e3cbb2fc0f4910eed07c31a65f0be50a5077d5df109d74d50c9",
+    "size": 8115
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/经营证明/生产经营/生产记录.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/经营证明/生产经营/生产记录.xlsx",
+    "sha256": "cbd93a0827de6ec79e4dc0ed96be5c12f84982d232a5cc38bde43d6d97501d2f",
+    "size": 8482
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/经营证明/电费/电费及用电明细.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/经营证明/电费/电费及用电明细.xlsx",
+    "sha256": "ba1fde59266af6c9a3a2161f755800a3b5a222434ccdb2c8aea613270ff9d137",
+    "size": 8349
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/经营证明/系统导出/项目全量字段.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/经营证明/系统导出/项目全量字段.xlsx",
+    "sha256": "17dee9a7fefe1725b6943967c5d1a385d86eee3b59d3d365b169d05e24d83a3d",
+    "size": 22826
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/经营证明/纳税申报表/纳税申报表.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/经营证明/纳税申报表/纳税申报表.xlsx",
+    "sha256": "447b7265e0b6b89a99af73dbcf95f88ff7ef27345f38e98002bc3d862110ac81",
+    "size": 5567
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/经营证明/财务报表/利润表.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/经营证明/财务报表/利润表.xlsx",
+    "sha256": "c11aa217e5bff6bf4ddadf706da5963cce79dfd4f6256a7031d089808e1031f9",
+    "size": 5596
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/经营证明/财务报表/收入台账.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/经营证明/财务报表/收入台账.xlsx",
+    "sha256": "dccd4b7c92ff3eeebc423a06b2a9c460f46561627ef8e42136ce6df134abee2d",
+    "size": 8953
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/经营证明/财务报表/资产负债表.xlsx",
+    "destination": "03-synthetic-cases/project-01/originals/经营证明/财务报表/资产负债表.xlsx",
+    "sha256": "a857c1b63637084f9f32e432fe6b767e055553fa42df102dfc00f929cd1f4d3f",
+    "size": 5605
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-01/originals/经营证明/销售合同/销售合同.pdf",
+    "destination": "03-synthetic-cases/project-01/originals/经营证明/销售合同/销售合同.pdf",
+    "sha256": "5303d3f02f45b3f0a00cdc203cb99516f2deb698c7e8a6af95d16012ae7fe45d",
+    "size": 4048
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/manifest.json",
+    "destination": "03-synthetic-cases/project-02/manifest.json",
+    "sha256": "394694c2bf222b8a9e8b977658537893325a56d85de35bb919ff0b89ab87551f",
+    "size": 323428
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/package-summary.json",
+    "destination": "03-synthetic-cases/project-02/package-summary.json",
+    "sha256": "b9be052efc8354764e655658b8bde736340bac7841ab7cb328cdd241fcc26663",
+    "size": 3301
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/derived/factory-layout.glb",
+    "destination": "03-synthetic-cases/project-02/derived/factory-layout.glb",
+    "sha256": "b6d53262b90a020f1cc0f3a1a98ed336dd393e607c59dcb854f8ef993d3d3bdb",
+    "size": 2896
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/derived/image-provenance.json",
+    "destination": "03-synthetic-cases/project-02/derived/image-provenance.json",
+    "sha256": "a846792e5030ec7b31f9b24d5b8b8f98cac67cb2425339ff76facde6b02cc5d2",
+    "size": 6036
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/derived/scene-spec.json",
+    "destination": "03-synthetic-cases/project-02/derived/scene-spec.json",
+    "sha256": "f0930f45b340c949185636de40ab30378db27df98831bf1ac3566936de7d7a73",
+    "size": 1993
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/基本证照/营业执照.png",
+    "destination": "03-synthetic-cases/project-02/originals/基本证照/营业执照.png",
+    "sha256": "0830e287aeeb388ca451ad7c3de684fa22be766dde0f021ab3c0e096d2d21904",
+    "size": 93579
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/基本证照/工商核验/主体与登记核验.pdf",
+    "destination": "03-synthetic-cases/project-02/originals/基本证照/工商核验/主体与登记核验.pdf",
+    "sha256": "42c8e606cf6a6176e1cca99985eaab4b019f86c9dd998469c7bea996fb187058",
+    "size": 7414
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/基本证照/工商核验/工商及涉诉核验.pdf",
+    "destination": "03-synthetic-cases/project-02/originals/基本证照/工商核验/工商及涉诉核验.pdf",
+    "sha256": "ec8876eb8306133490694c5aae0a3cdfb5522370085b359eed71e1110091def7",
+    "size": 3932
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/基本证照/股权资料/公司章程及股权结构.pdf",
+    "destination": "03-synthetic-cases/project-02/originals/基本证照/股权资料/公司章程及股权结构.pdf",
+    "sha256": "a499ef63c42bc27ac5b620c1c933699a301b9716a073531e30c4a9fcc32ba642",
+    "size": 3973
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/基本证照/身份证明/持证授权确认.png",
+    "destination": "03-synthetic-cases/project-02/originals/基本证照/身份证明/持证授权确认.png",
+    "sha256": "cd21507aa97bf58d1b4e4a38689581b244d6480fad06fb191cdf9a876a762f61",
+    "size": 94862
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/基本证照/身份证明/法定代表人身份证正面.png",
+    "destination": "03-synthetic-cases/project-02/originals/基本证照/身份证明/法定代表人身份证正面.png",
+    "sha256": "8f316f05605125d7e84c29d9026207d3c6e736956dc0587d2b6dfffe388cfa13",
+    "size": 88519
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/基本证照/身份证明/法定代表人身份证背面.png",
+    "destination": "03-synthetic-cases/project-02/originals/基本证照/身份证明/法定代表人身份证背面.png",
+    "sha256": "3638398ed5cbc190d3858242a874fe480dea2c7d02a5e843847bd1f156322e96",
+    "size": 89933
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/增信/个人征信/个人征信报告.pdf",
+    "destination": "03-synthetic-cases/project-02/originals/增信/个人征信/个人征信报告.pdf",
+    "sha256": "1e43ef24c376ec8f35996f21c495c132a75a664815230ffa0a8c6cf0e6f414d0",
+    "size": 4012
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/增信/企业征信/企业征信报告.pdf",
+    "destination": "03-synthetic-cases/project-02/originals/增信/企业征信/企业征信报告.pdf",
+    "sha256": "3f6a642decd8b65fe041827b2d35d9f940aea9ac17d3ac7c05244c65e2831271",
+    "size": 4032
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/增信/征信明细/负债到期计划.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/增信/征信明细/负债到期计划.xlsx",
+    "sha256": "275c1bdaaba49ada950ae80f8a90c6cf240058d32dd0ddd98c86110416aa9812",
+    "size": 8598
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/增信/担保资料/担保清单.pdf",
+    "destination": "03-synthetic-cases/project-02/originals/增信/担保资料/担保清单.pdf",
+    "sha256": "9b2119e7ad6328704079c9d7863a31774eb4b952f5bb7bf39c6f7942f5592202",
+    "size": 3938
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/增信/权利负担/权利负担核验.pdf",
+    "destination": "03-synthetic-cases/project-02/originals/增信/权利负担/权利负担核验.pdf",
+    "sha256": "f8d6f004b04f9142295bdeb53ac09c26e939a915fcc40f1b9eef44933ac1bd91",
+    "size": 4038
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/增信/流水信息/流水主要对手方.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/增信/流水信息/流水主要对手方.xlsx",
+    "sha256": "59661eaa707ab2a5a1f180024b895b028f71bbbce27a34078dd1898228cacd54",
+    "size": 5623
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/增信/流水信息/经营流水匹配.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/增信/流水信息/经营流水匹配.xlsx",
+    "sha256": "885ff0d8a63abf2e8fd85ca9ff635ddbef1b0ae583fdbebc82f31ba16b4a21ab",
+    "size": 5621
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/增信/流水信息/账户信息.pdf",
+    "destination": "03-synthetic-cases/project-02/originals/增信/流水信息/账户信息.pdf",
+    "sha256": "bc08945c6c9c547119ef584dcc64c3cf71b089741f2c80af9f94844c998a381f",
+    "size": 4025
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/增信/流水信息/银行流水.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/增信/流水信息/银行流水.xlsx",
+    "sha256": "61fac5a5214f25b70923f22e24a3901aef869f293c151b2eff4f945790948f96",
+    "size": 9229
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/增信/资产证明/增信资产清单.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/增信/资产证明/增信资产清单.xlsx",
+    "sha256": "0e46d44267f396f727f50ddb5801a02c0c7ac8e91f71772982e8d6dcdf661189",
+    "size": 5560
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/增信/资产证明/房产信息截图.png",
+    "destination": "03-synthetic-cases/project-02/originals/增信/资产证明/房产信息截图.png",
+    "sha256": "d04394753aa8d9bac5de14f93ed422a5b777f697882f7bc53b0d9bb511f29b81",
+    "size": 88624
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/增信/资产证明/房产明细截图.png",
+    "destination": "03-synthetic-cases/project-02/originals/增信/资产证明/房产明细截图.png",
+    "sha256": "8a15fcbb25426993e636100c5800bca4c759194255c86714c8f619945902792f",
+    "size": 88012
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/现场照片/厂区照片/厂区俯视图.png",
+    "destination": "03-synthetic-cases/project-02/originals/现场照片/厂区照片/厂区俯视图.png",
+    "sha256": "949d683630170fa88c674318c1e3cdbfed8d561df3d8332ec428944ad78c1273",
+    "size": 2238106
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/现场照片/厂区照片/厂区右侧平视图.png",
+    "destination": "03-synthetic-cases/project-02/originals/现场照片/厂区照片/厂区右侧平视图.png",
+    "sha256": "ae13d35939047137f30b574edb1a8546dd1fb5c6a2fe853afed3b44758e05304",
+    "size": 1835387
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/现场照片/厂区照片/厂区左侧平视图.png",
+    "destination": "03-synthetic-cases/project-02/originals/现场照片/厂区照片/厂区左侧平视图.png",
+    "sha256": "a4122df19b93dafdca10cdf13b5f4626424c69e70dbdbc74771d3965bd5f51cc",
+    "size": 1845534
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/现场照片/厂区照片/厂区总览.png",
+    "destination": "03-synthetic-cases/project-02/originals/现场照片/厂区照片/厂区总览.png",
+    "sha256": "b62be293507cdfba1dbea99c6e619ee94e8cfc8e28bbfa012a6849388a366055",
+    "size": 1642246
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/现场照片/厂区照片/厂区正面平视图.png",
+    "destination": "03-synthetic-cases/project-02/originals/现场照片/厂区照片/厂区正面平视图.png",
+    "sha256": "ddfc95f586207769588afad9db62c3a42059656898e3e9db1fa4b3f091c4c6d1",
+    "size": 1517169
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/现场照片/厂区照片/厂区背面平视图.png",
+    "destination": "03-synthetic-cases/project-02/originals/现场照片/厂区照片/厂区背面平视图.png",
+    "sha256": "bde32bea52beadbc783fda2b825058ca07e27ed8aeaa48034b11ec98c41de392",
+    "size": 1894691
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/现场照片/工艺照片/原材料.png",
+    "destination": "03-synthetic-cases/project-02/originals/现场照片/工艺照片/原材料.png",
+    "sha256": "92b60ecaddfa2360282ccc606ad092b9059225ad26ff0774e3580e4b2941a912",
+    "size": 1293354
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/现场照片/工艺照片/工艺过程.png",
+    "destination": "03-synthetic-cases/project-02/originals/现场照片/工艺照片/工艺过程.png",
+    "sha256": "22b1e5c69479654ff6a6b2d1c5fd28a6421d41f0e8a78dab2d3fccf597af5147",
+    "size": 1860551
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/现场照片/工艺照片/成品.png",
+    "destination": "03-synthetic-cases/project-02/originals/现场照片/工艺照片/成品.png",
+    "sha256": "4e3b359466d161398a3ac5638047c93e79d7eb710e2debded7276ad57321a961",
+    "size": 2051031
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/现场照片/设备照片/产线总览.png",
+    "destination": "03-synthetic-cases/project-02/originals/现场照片/设备照片/产线总览.png",
+    "sha256": "d2d92b353109ac9d569e8d494e5040444589753133f9fac810323923dac408a5",
+    "size": 1849234
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/现场照片/设备照片/设备侧视图.png",
+    "destination": "03-synthetic-cases/project-02/originals/现场照片/设备照片/设备侧视图.png",
+    "sha256": "0f4689b00752646e23322d03ec3f9bf133c5f1b06eb67f58a7683edc9c8660e5",
+    "size": 1174563
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/现场照片/设备照片/设备总览.png",
+    "destination": "03-synthetic-cases/project-02/originals/现场照片/设备照片/设备总览.png",
+    "sha256": "851eaa45bc9436c136dbcbb87c94b70347163e08e6062c61cbe0229b561a0c77",
+    "size": 1223992
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/现场照片/设备照片/设备正视图.png",
+    "destination": "03-synthetic-cases/project-02/originals/现场照片/设备照片/设备正视图.png",
+    "sha256": "673ad4e88a4621467f993b44c5f65d3eb16660449567cb1d1b4e2dd24bcb4b8b",
+    "size": 1035509
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/现场照片/设备照片/设备背视图.png",
+    "destination": "03-synthetic-cases/project-02/originals/现场照片/设备照片/设备背视图.png",
+    "sha256": "2d96d6c72fd7e59bef3bbe2947cc5e640b66c7317b25df2959183936d59d82fd",
+    "size": 809945
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/租赁标的/交付验收/设备交付验收单.pdf",
+    "destination": "03-synthetic-cases/project-02/originals/租赁标的/交付验收/设备交付验收单.pdf",
+    "sha256": "2c3203ec31b5313f30b0bed5e1a80f4c1c0429af9c37d541738419bc516348da",
+    "size": 4073
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/租赁标的/付款凭证/设备付款凭证.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/租赁标的/付款凭证/设备付款凭证.xlsx",
+    "sha256": "f85eda26ebceb077c050dbdaedfa68fbbec33bde8042e52063cc9b7abab6a998",
+    "size": 5674
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/租赁标的/融资租赁/融资租赁合同.pdf",
+    "destination": "03-synthetic-cases/project-02/originals/租赁标的/融资租赁/融资租赁合同.pdf",
+    "sha256": "3ed5f6a75df3aee62ac82b1e9590f553d70dc797e418f7736a9a1c6fd2c80319",
+    "size": 14075
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/租赁标的/设备发票/设备采购发票.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/租赁标的/设备发票/设备采购发票.xlsx",
+    "sha256": "eacf5fbec506278134cc95317e89785936b320ed80e36ae9cc17992e43ac8567",
+    "size": 5653
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/租赁标的/设备合同/设备买卖合同.pdf",
+    "destination": "03-synthetic-cases/project-02/originals/租赁标的/设备合同/设备买卖合同.pdf",
+    "sha256": "e09bd2877e394aa14599d9e877b4739f599a0f2341d3362af9eef858dde5b4e2",
+    "size": 4096
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/租赁标的/设备报价/设备报价单.pdf",
+    "destination": "03-synthetic-cases/project-02/originals/租赁标的/设备报价/设备报价单.pdf",
+    "sha256": "7e443f51e3e77842e2d382c27d630d3d91646181ac732adddf98e04a4fb88b48",
+    "size": 4098
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/租赁标的/设备清单/设备清单.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/租赁标的/设备清单/设备清单.xlsx",
+    "sha256": "894cc5957c67959c6c47c2a6511f24d002444a7d3d601367251a7493e9d0b9e6",
+    "size": 5666
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/租赁标的/设备铭牌/设备铭牌.png",
+    "destination": "03-synthetic-cases/project-02/originals/租赁标的/设备铭牌/设备铭牌.png",
+    "sha256": "e03ff944197298ceb9a8a8fff20b417cad48df631bf73c8454ae16f34429de63",
+    "size": 1607798
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/经营证明/厂房租赁合同/厂房租赁合同.pdf",
+    "destination": "03-synthetic-cases/project-02/originals/经营证明/厂房租赁合同/厂房租赁合同.pdf",
+    "sha256": "7748367f8ac14e2db07013c112eec426dc1c8b5877d9415440bc279383cd841e",
+    "size": 4058
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/经营证明/回款资料/回款台账.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/经营证明/回款资料/回款台账.xlsx",
+    "sha256": "baa7dd0c63fc25ce37dcbdc4f94ca38a4c6a15593461951c47ec86337cf7e144",
+    "size": 8392
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/经营证明/工资/工资发放明细.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/经营证明/工资/工资发放明细.xlsx",
+    "sha256": "e2934dcca7674f044951d8015f37652b6d4f3680f84389d041b2812b22251519",
+    "size": 7563
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/经营证明/开票资料/主要上下游.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/经营证明/开票资料/主要上下游.xlsx",
+    "sha256": "394954e5437a7cac6f9e52d177f5b93d0ad3386bb2b6e1ae40cbde927c644ecb",
+    "size": 5878
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/经营证明/开票资料/进项发票.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/经营证明/开票资料/进项发票.xlsx",
+    "sha256": "47e3378f163ad78939e5d56d88a2b6c4cc313e0249203a1b56aade579f52b0f2",
+    "size": 8359
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/经营证明/开票资料/销项发票.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/经营证明/开票资料/销项发票.xlsx",
+    "sha256": "d771b3de3785ccf2a42d2d1706e1fb8b56aa2d1b75ffb41f3f9037c7c42b5064",
+    "size": 7613
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/经营证明/生产经营/工单记录.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/经营证明/生产经营/工单记录.xlsx",
+    "sha256": "f30900713d53a21a961e1cfff86ca5d00b9fee4b2c34b35ace15a94b5595be92",
+    "size": 8128
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/经营证明/生产经营/生产记录.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/经营证明/生产经营/生产记录.xlsx",
+    "sha256": "881b7ad76cb39b0e27f623b34ea17dcb1cb287fe0ff1f71a940f9b002e0c5c9b",
+    "size": 8512
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/经营证明/电费/电费及用电明细.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/经营证明/电费/电费及用电明细.xlsx",
+    "sha256": "c16bf6d0556a01343c6a3012ed8e51f8e74f265008b523ab0dc2d66767e85515",
+    "size": 8371
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/经营证明/系统导出/项目全量字段.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/经营证明/系统导出/项目全量字段.xlsx",
+    "sha256": "c7ffcedd2af9b2f7f557f8970babfd2a004c68b36dbeab632f0b87575e1f6d9d",
+    "size": 22634
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/经营证明/纳税申报表/纳税申报表.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/经营证明/纳税申报表/纳税申报表.xlsx",
+    "sha256": "d842e741663b41ea4d438a45e45e0c627e7e80a29636602b77b14d212877b64b",
+    "size": 5569
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/经营证明/财务报表/利润表.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/经营证明/财务报表/利润表.xlsx",
+    "sha256": "76f5a88582e5b799231a5126b872adba155629088bf66213b2680dc039d7b20d",
+    "size": 5593
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/经营证明/财务报表/收入台账.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/经营证明/财务报表/收入台账.xlsx",
+    "sha256": "a3547b7fd000253e0d0ad1ee943b43c77b884a7fbea0b225f8a06fddf53663ea",
+    "size": 8969
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/经营证明/财务报表/资产负债表.xlsx",
+    "destination": "03-synthetic-cases/project-02/originals/经营证明/财务报表/资产负债表.xlsx",
+    "sha256": "0cb2c0a4098c80006337a1f19511382005c0c9f91f713929e680b1db5c19d35f",
+    "size": 5605
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-02/originals/经营证明/销售合同/销售合同.pdf",
+    "destination": "03-synthetic-cases/project-02/originals/经营证明/销售合同/销售合同.pdf",
+    "sha256": "5fbaa43966300f5a98fbd0af037f06de39439d7a31fc146eb3e6d9885c2cdcba",
+    "size": 4046
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/manifest.json",
+    "destination": "03-synthetic-cases/project-03/manifest.json",
+    "sha256": "8e55d1ff8537ddc021a9fab8a74fcccea2d832d45e4e82ae0497eb8dedea6ed3",
+    "size": 323305
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/package-summary.json",
+    "destination": "03-synthetic-cases/project-03/package-summary.json",
+    "sha256": "04c0bd17af44a48020c6be52cad05d16d378c368b9fa67dd37e6555faee1797a",
+    "size": 3299
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/derived/factory-layout.glb",
+    "destination": "03-synthetic-cases/project-03/derived/factory-layout.glb",
+    "sha256": "9e4d1b4879102b4b9cc18d9726cbe76440f95311749e22b3b12554d346f1db8c",
+    "size": 2912
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/derived/image-provenance.json",
+    "destination": "03-synthetic-cases/project-03/derived/image-provenance.json",
+    "sha256": "d25905826e1d60b18b68bc6de86f9cb7407d66c0cd27b5f00f6e619d3efba009",
+    "size": 6036
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/derived/scene-spec.json",
+    "destination": "03-synthetic-cases/project-03/derived/scene-spec.json",
+    "sha256": "30c5cedf4801d4257b5f94bf7c63aca5a8d178204c59734577ac9b7ba60e635f",
+    "size": 1993
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/基本证照/营业执照.png",
+    "destination": "03-synthetic-cases/project-03/originals/基本证照/营业执照.png",
+    "sha256": "4642acd011edf63824257fa1e2c715e2994abb6184d40b6c05d025970f4af8c3",
+    "size": 93695
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/基本证照/工商核验/主体与登记核验.pdf",
+    "destination": "03-synthetic-cases/project-03/originals/基本证照/工商核验/主体与登记核验.pdf",
+    "sha256": "36e715fe09b0bccb4ad0d240d8689b4557495252b8182fa7ee27acab5c3658a4",
+    "size": 7415
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/基本证照/工商核验/工商及涉诉核验.pdf",
+    "destination": "03-synthetic-cases/project-03/originals/基本证照/工商核验/工商及涉诉核验.pdf",
+    "sha256": "d3e730a038c0a42cccd762354da099e4be03af8e93ad4fa2255fde7d0428540c",
+    "size": 3936
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/基本证照/股权资料/公司章程及股权结构.pdf",
+    "destination": "03-synthetic-cases/project-03/originals/基本证照/股权资料/公司章程及股权结构.pdf",
+    "sha256": "53949879e8bee99d80fb342d53c55e6135a1564984819b406ddbd096a3be5126",
+    "size": 3976
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/基本证照/身份证明/持证授权确认.png",
+    "destination": "03-synthetic-cases/project-03/originals/基本证照/身份证明/持证授权确认.png",
+    "sha256": "ca6680ea3734b73146732c5a46b78818e0b90dce8ec59c939eb0bf57c1d6821d",
+    "size": 93716
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/基本证照/身份证明/法定代表人身份证正面.png",
+    "destination": "03-synthetic-cases/project-03/originals/基本证照/身份证明/法定代表人身份证正面.png",
+    "sha256": "c23f782f4f009f606fdea0c050dfc18d62bdf29008f290950bf256410586b78b",
+    "size": 87943
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/基本证照/身份证明/法定代表人身份证背面.png",
+    "destination": "03-synthetic-cases/project-03/originals/基本证照/身份证明/法定代表人身份证背面.png",
+    "sha256": "6f51c699c1d2adc953cdf2256a9e7bb6027c1a63d62bd938c0d89b0d4fbd43e8",
+    "size": 88995
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/增信/个人征信/个人征信报告.pdf",
+    "destination": "03-synthetic-cases/project-03/originals/增信/个人征信/个人征信报告.pdf",
+    "sha256": "959194cca85104a620190a855e48e34defeb43dbb52c814045f6b7da12f0d104",
+    "size": 4012
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/增信/企业征信/企业征信报告.pdf",
+    "destination": "03-synthetic-cases/project-03/originals/增信/企业征信/企业征信报告.pdf",
+    "sha256": "0970ac953ed16ebdde0935bfa7e72c3c789c2c71a8ccce3c09192c59940e15fd",
+    "size": 4032
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/增信/征信明细/负债到期计划.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/增信/征信明细/负债到期计划.xlsx",
+    "sha256": "4bc0133fea94e7c7963ed95e4cbe8065e3eeb62dd121c67ce1bb7fea5e687b2a",
+    "size": 8604
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/增信/担保资料/担保清单.pdf",
+    "destination": "03-synthetic-cases/project-03/originals/增信/担保资料/担保清单.pdf",
+    "sha256": "4fe06673876c42bc7f9ec308819bbf176cfb6edc5ad0f03f2cd3e6211beb0d24",
+    "size": 3939
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/增信/权利负担/权利负担核验.pdf",
+    "destination": "03-synthetic-cases/project-03/originals/增信/权利负担/权利负担核验.pdf",
+    "sha256": "830636c9c8a174a510b5eaee41df2047c0580e900d42b67bd4343a110ef5b4d9",
+    "size": 4039
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/增信/流水信息/流水主要对手方.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/增信/流水信息/流水主要对手方.xlsx",
+    "sha256": "d449e478f959a5d1295cf43c7f90a467d29ba338065e9dbc8679a629706faac1",
+    "size": 5621
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/增信/流水信息/经营流水匹配.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/增信/流水信息/经营流水匹配.xlsx",
+    "sha256": "a79d5f44ed2b0d240491a8b114ad3afd8e8bc3a9eecac419e5eb99d89d7fe88a",
+    "size": 5618
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/增信/流水信息/账户信息.pdf",
+    "destination": "03-synthetic-cases/project-03/originals/增信/流水信息/账户信息.pdf",
+    "sha256": "616eba0f3cc0b03a7b5c15c4b68e2c54b7445ef2ba21b75dc60d89da8c20916e",
+    "size": 4032
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/增信/流水信息/银行流水.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/增信/流水信息/银行流水.xlsx",
+    "sha256": "b9fd59dc8748660e3a112ae56cca996f688477be142988d38b1028a78ec65753",
+    "size": 9324
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/增信/资产证明/增信资产清单.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/增信/资产证明/增信资产清单.xlsx",
+    "sha256": "c4a66e3dc2564d55cf71a187f7cea584e29ff12a723d5d7e912433412873ffdc",
+    "size": 5562
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/增信/资产证明/房产信息截图.png",
+    "destination": "03-synthetic-cases/project-03/originals/增信/资产证明/房产信息截图.png",
+    "sha256": "efc8251450cdc9936a9a786e2a21a40cac9a0bd8805e4eb83be66f160b40e31b",
+    "size": 88381
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/增信/资产证明/房产明细截图.png",
+    "destination": "03-synthetic-cases/project-03/originals/增信/资产证明/房产明细截图.png",
+    "sha256": "567bbe3479eb26620e4ae4cd63fd144747c432b080b83e4524cb65084af2955e",
+    "size": 87744
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/现场照片/厂区照片/厂区俯视图.png",
+    "destination": "03-synthetic-cases/project-03/originals/现场照片/厂区照片/厂区俯视图.png",
+    "sha256": "2fa7c832b32b880df61e0403c9b9f45defffab5156f93c6534f599865821985c",
+    "size": 2241821
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/现场照片/厂区照片/厂区右侧平视图.png",
+    "destination": "03-synthetic-cases/project-03/originals/现场照片/厂区照片/厂区右侧平视图.png",
+    "sha256": "b930c1327f673910d2e308555a6b5ba0c8c4854ebb6301f9697cd8ba23a91daf",
+    "size": 1851348
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/现场照片/厂区照片/厂区左侧平视图.png",
+    "destination": "03-synthetic-cases/project-03/originals/现场照片/厂区照片/厂区左侧平视图.png",
+    "sha256": "e65e85aadfcbe3fe0a5268e810af0d061b5f78ffcc9f633954f193d015e3754d",
+    "size": 1854952
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/现场照片/厂区照片/厂区总览.png",
+    "destination": "03-synthetic-cases/project-03/originals/现场照片/厂区照片/厂区总览.png",
+    "sha256": "f0140cb889c9c0e2bbf31125e8fde1fcbc653f22b4cb3e49c01c9d16aae226c5",
+    "size": 1624760
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/现场照片/厂区照片/厂区正面平视图.png",
+    "destination": "03-synthetic-cases/project-03/originals/现场照片/厂区照片/厂区正面平视图.png",
+    "sha256": "b23e2d94dc31c4b7ab785bb3de464402e8833573247636ffa9cf50f0a584c8d2",
+    "size": 1485517
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/现场照片/厂区照片/厂区背面平视图.png",
+    "destination": "03-synthetic-cases/project-03/originals/现场照片/厂区照片/厂区背面平视图.png",
+    "sha256": "6bd599918f02832074dfcd074b6ceb904a0b8a640e64a6e8c33d528c0c9e1600",
+    "size": 1900620
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/现场照片/工艺照片/原材料.png",
+    "destination": "03-synthetic-cases/project-03/originals/现场照片/工艺照片/原材料.png",
+    "sha256": "2856af5a0efa2523f4a072fe2de9e116c4f5d00acad4bb7440d1bffdc2c93bff",
+    "size": 1290592
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/现场照片/工艺照片/工艺过程.png",
+    "destination": "03-synthetic-cases/project-03/originals/现场照片/工艺照片/工艺过程.png",
+    "sha256": "0ff91021a71bb1d11f97848968951dcbb99473e050f7533fed19500b27b5ad6f",
+    "size": 1857671
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/现场照片/工艺照片/成品.png",
+    "destination": "03-synthetic-cases/project-03/originals/现场照片/工艺照片/成品.png",
+    "sha256": "db6b8c507e1725a1f0f29e5c24a9ada09f58a3a416bc8fc9ebd469f9ffe05152",
+    "size": 2042884
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/现场照片/设备照片/产线总览.png",
+    "destination": "03-synthetic-cases/project-03/originals/现场照片/设备照片/产线总览.png",
+    "sha256": "ff793802c4c25acf83a57d80a59d755d8a490cb4eba68762f3ca1b18e5b3bac7",
+    "size": 1866031
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/现场照片/设备照片/设备侧视图.png",
+    "destination": "03-synthetic-cases/project-03/originals/现场照片/设备照片/设备侧视图.png",
+    "sha256": "dde9467f49e698e930f813df8a4eca94f7ff4799033096873bd09041c0f61d01",
+    "size": 1173405
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/现场照片/设备照片/设备总览.png",
+    "destination": "03-synthetic-cases/project-03/originals/现场照片/设备照片/设备总览.png",
+    "sha256": "2eb84667656457b9857ee83d5933297f8f2c7f141070d6a376c0338161466742",
+    "size": 1228707
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/现场照片/设备照片/设备正视图.png",
+    "destination": "03-synthetic-cases/project-03/originals/现场照片/设备照片/设备正视图.png",
+    "sha256": "f7d19d017c010eb0450d477d262f164613659ad41cc16e68db33481e24d3bbf4",
+    "size": 1034226
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/现场照片/设备照片/设备背视图.png",
+    "destination": "03-synthetic-cases/project-03/originals/现场照片/设备照片/设备背视图.png",
+    "sha256": "a350512f51c891893acc968dbfe06d25e232f0a14c181a4301b42a42127dda9a",
+    "size": 788009
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/租赁标的/交付验收/设备交付验收单.pdf",
+    "destination": "03-synthetic-cases/project-03/originals/租赁标的/交付验收/设备交付验收单.pdf",
+    "sha256": "6f6572f74d60e2df0b5acd6ee01ae957b0f3fe4d3a5cb5abac4867f996ba467c",
+    "size": 4078
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/租赁标的/付款凭证/设备付款凭证.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/租赁标的/付款凭证/设备付款凭证.xlsx",
+    "sha256": "9516d5a93aa3a2aa079fe208e7661dda561e43a4b0373e7e0a19170c1d6061f3",
+    "size": 5675
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/租赁标的/融资租赁/融资租赁合同.pdf",
+    "destination": "03-synthetic-cases/project-03/originals/租赁标的/融资租赁/融资租赁合同.pdf",
+    "sha256": "f3bb33dc64ea10b70d1859edff6fbd500d853c6a702452f3dabaf9d6f016d3ef",
+    "size": 14074
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/租赁标的/设备发票/设备采购发票.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/租赁标的/设备发票/设备采购发票.xlsx",
+    "sha256": "46029cc62df3f62fb023aec858a1df5fcc6a6bd18a9feaa3b572fa27cd9b616a",
+    "size": 5652
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/租赁标的/设备合同/设备买卖合同.pdf",
+    "destination": "03-synthetic-cases/project-03/originals/租赁标的/设备合同/设备买卖合同.pdf",
+    "sha256": "85d5cf3bf6802be639b7b0ca6db793ad5e1afdf1f523ac77545d3a46de80693c",
+    "size": 4099
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/租赁标的/设备报价/设备报价单.pdf",
+    "destination": "03-synthetic-cases/project-03/originals/租赁标的/设备报价/设备报价单.pdf",
+    "sha256": "082097d2f1c40b784c3dee58e3f829bb3062d70ff0c1fadedb2ae55956b551a3",
+    "size": 4099
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/租赁标的/设备清单/设备清单.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/租赁标的/设备清单/设备清单.xlsx",
+    "sha256": "f650299fa35a4fd2f4dfcf4e9a633cc661840087864985c151fbf53e0f5bc63d",
+    "size": 5669
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/租赁标的/设备铭牌/设备铭牌.png",
+    "destination": "03-synthetic-cases/project-03/originals/租赁标的/设备铭牌/设备铭牌.png",
+    "sha256": "30340588dced69c02888c275bd4dd1b581217412ca209cb14d054ebfd2148216",
+    "size": 1609003
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/经营证明/厂房租赁合同/厂房租赁合同.pdf",
+    "destination": "03-synthetic-cases/project-03/originals/经营证明/厂房租赁合同/厂房租赁合同.pdf",
+    "sha256": "a198a3fcf79285eb85ca7f7fe1c478485e234732e46919a9bb31709f9820d611",
+    "size": 4060
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/经营证明/回款资料/回款台账.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/经营证明/回款资料/回款台账.xlsx",
+    "sha256": "5a137835bcb063160a516bde18f23acc1db8872b06fc1c726083e1981c41d2f7",
+    "size": 8385
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/经营证明/工资/工资发放明细.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/经营证明/工资/工资发放明细.xlsx",
+    "sha256": "a41dd9bd61d3d6ba2b82c21248060904f714461459971f109ecd6c85ba3f648b",
+    "size": 7554
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/经营证明/开票资料/主要上下游.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/经营证明/开票资料/主要上下游.xlsx",
+    "sha256": "2e372c4ef06cbb99b61ba8193194c620bb54aa3d79daef878c6489a35a8cba51",
+    "size": 5880
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/经营证明/开票资料/进项发票.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/经营证明/开票资料/进项发票.xlsx",
+    "sha256": "2c796ec3cdb0b8183890ab2a381b893a816575713f11939edcec116bf66ca8b0",
+    "size": 8372
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/经营证明/开票资料/销项发票.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/经营证明/开票资料/销项发票.xlsx",
+    "sha256": "30c3f9b4a19f8208d1f67050b9abea5b499656fefe8586e462a2480d57fe1e93",
+    "size": 7554
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/经营证明/生产经营/工单记录.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/经营证明/生产经营/工单记录.xlsx",
+    "sha256": "8c7b17cacfe8cd9bd4572b5092816e0f518fad4241eb3ae76692987efbdb9fe3",
+    "size": 8128
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/经营证明/生产经营/生产记录.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/经营证明/生产经营/生产记录.xlsx",
+    "sha256": "7aab9ae45b64df2516f214203df9ab1d6f894331152c6cfd276950d632349430",
+    "size": 8488
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/经营证明/电费/电费及用电明细.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/经营证明/电费/电费及用电明细.xlsx",
+    "sha256": "60ada00b2bdc9bd019067aa5f87fcf1c50caac1c8be104d50e937e9f53dab250",
+    "size": 8363
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/经营证明/系统导出/项目全量字段.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/经营证明/系统导出/项目全量字段.xlsx",
+    "sha256": "40d4435767951dd64d8fd37313001e3b9f15597eaac0adadf816d14f9b4a98c2",
+    "size": 22734
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/经营证明/纳税申报表/纳税申报表.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/经营证明/纳税申报表/纳税申报表.xlsx",
+    "sha256": "38b3e776fa59ea14a8d9f076245398ed8161896d84e1c0fb1c30fc227adf15d5",
+    "size": 5562
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/经营证明/财务报表/利润表.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/经营证明/财务报表/利润表.xlsx",
+    "sha256": "776299f5f3b449ea7419a74fe738f2a746c874a04ee239668bace307b67ca99b",
+    "size": 5595
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/经营证明/财务报表/收入台账.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/经营证明/财务报表/收入台账.xlsx",
+    "sha256": "218ef8584f519ac0cef47f6293d642b3deae3c7cf967adac7276cf63439c1d2d",
+    "size": 8881
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/经营证明/财务报表/资产负债表.xlsx",
+    "destination": "03-synthetic-cases/project-03/originals/经营证明/财务报表/资产负债表.xlsx",
+    "sha256": "dc903b12c83662f214eccd635134812ad37efee72b8a2438f7cf8b87b201b348",
+    "size": 5607
+  },
+  {
+    "source": "Compare-Material-Archive-20260814/native-material-packs/project-03/originals/经营证明/销售合同/销售合同.pdf",
+    "destination": "03-synthetic-cases/project-03/originals/经营证明/销售合同/销售合同.pdf",
+    "sha256": "33e7d1412ef4d6e05f868c3f7976de0e063c15292da5e49b18b4b4237fa7cbd7",
+    "size": 4040
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/.env.example",
+    "destination": "02-jw-backend/.env.example",
+    "sha256": "ae1c74d545a423cf6fbcdde7f0031cdcb9240c703057071fc2bb4139fbb698de",
+    "size": 2367
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/.gitignore",
+    "destination": "02-jw-backend/.gitignore",
+    "sha256": "36dbf7797cf6eed479c20c7d4a27c6c12ecaf215083a150a627d35d6ad706fb4",
+    "size": 324
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/README.md",
+    "destination": "02-jw-backend/README.md",
+    "sha256": "8d8063b229e0e5b238a8a6bbe389b313ac12becc6ec92649f7fa929e6bf65ec0",
+    "size": 10286
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/requirements-dev.txt",
+    "destination": "02-jw-backend/requirements-dev.txt",
+    "sha256": "b3dd00f5820189a8e581bf2b17714c645450d80653a1b89f817809c0480ae0ca",
+    "size": 51
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/requirements.txt",
+    "destination": "02-jw-backend/requirements.txt",
+    "sha256": "09f2c83435b56757eb511610d30212bf9b4d8dd6aaf4d11d08a8380b1ac4b126",
+    "size": 45
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/main.py",
+    "destination": "02-jw-backend/app/main.py",
+    "sha256": "5d7386dd5b3979248c481091da1ad2d2a59de6a61f4a749650b72aa7f8e4a13a",
+    "size": 7803
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/__init__.py",
+    "destination": "02-jw-backend/app/__init__.py",
+    "sha256": "459c00e7a749affddacfa13849dfb0b1b3a046bac46e091599492baab7d9ff48",
+    "size": 72
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/api/agent_routes.py",
+    "destination": "02-jw-backend/app/api/agent_routes.py",
+    "sha256": "cfe9eb8bf5e32351577f5b39605534181ad37505b76f7450999c3c103a482659",
+    "size": 8579
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/api/auth_routes.py",
+    "destination": "02-jw-backend/app/api/auth_routes.py",
+    "sha256": "e2ece6fcf3a74215d75d52dc93a006a60b64667791636fbf5b1e0a88078de1bc",
+    "size": 1912
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/api/dependencies.py",
+    "destination": "02-jw-backend/app/api/dependencies.py",
+    "sha256": "b796c6ad77b4f58a639f08c6a0bc50d4472cb76eb9b3aa08b460cab4e547c067",
+    "size": 4514
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/api/error_handlers.py",
+    "destination": "02-jw-backend/app/api/error_handlers.py",
+    "sha256": "7da7193a864a1126cde91f651332f3e9982aa17931254586a4a38736647565fc",
+    "size": 4101
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/api/model_gateway_routes.py",
+    "destination": "02-jw-backend/app/api/model_gateway_routes.py",
+    "sha256": "06fc609b5a4b22211c22cc4c11b3b747d71066e07ea18d3c32385f04283c26af",
+    "size": 2985
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/api/reconstruction_routes.py",
+    "destination": "02-jw-backend/app/api/reconstruction_routes.py",
+    "sha256": "db495099830304f42aa165664f10f20cf2e1633ad85aa0085a12fcabc34cfe75",
+    "size": 7643
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/api/responses.py",
+    "destination": "02-jw-backend/app/api/responses.py",
+    "sha256": "a79756cc047bbf13ebe79067cdffc8f648787532c65fe5da270e7941f40cc2c6",
+    "size": 719
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/api/routes.py",
+    "destination": "02-jw-backend/app/api/routes.py",
+    "sha256": "a35f875035cdc83a0b5d55506a5437d989a46fbef47e2544835c61a2a6157c45",
+    "size": 16574
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/api/__init__.py",
+    "destination": "02-jw-backend/app/api/__init__.py",
+    "sha256": "5297598fd67e7dae6cd60432e017c0ae5aef26dacab19361a374960d69146e12",
+    "size": 51
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/agent_communication.py",
+    "destination": "02-jw-backend/app/contracts/agent_communication.py",
+    "sha256": "9288d644c4c6c387ce02bacd07fae2d07ce550d553b2e61f3151ad392dba722b",
+    "size": 30535
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/ai_assist.py",
+    "destination": "02-jw-backend/app/contracts/ai_assist.py",
+    "sha256": "70a006334da046f577ec8a07e74ad2cbba5df4913ba9547433d928ea641644e6",
+    "size": 15024
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/authentication.py",
+    "destination": "02-jw-backend/app/contracts/authentication.py",
+    "sha256": "f781c9730514f67be748be82adb736b6152228f60cb297634df28ade75e6e791",
+    "size": 686
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/base.py",
+    "destination": "02-jw-backend/app/contracts/base.py",
+    "sha256": "a61f833144630736d6592743cfb3acc38e89e107525245997f2bff1ca3fcd7ff",
+    "size": 531
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/conclusion.py",
+    "destination": "02-jw-backend/app/contracts/conclusion.py",
+    "sha256": "09e533b1bd4ae85edbdb11c917e054253ec82c14a77fbdfb3ab9b9a5aac864c6",
+    "size": 5328
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/data_pack.py",
+    "destination": "02-jw-backend/app/contracts/data_pack.py",
+    "sha256": "47a3156e302bab98e5aa4504036f386a7c399f6466e588048d8c8bd47a8378c3",
+    "size": 5348
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/envelope.py",
+    "destination": "02-jw-backend/app/contracts/envelope.py",
+    "sha256": "1d21721793e7616ee9de2ddf0ebc8d1d8f9e84dded4e88cf12cffa809290b4f0",
+    "size": 1047
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/errors.py",
+    "destination": "02-jw-backend/app/contracts/errors.py",
+    "sha256": "3d110b7f5ce6a98b2dcccf0d8882961fd2cb3bf2c411e3bf327da8bc610b0cc0",
+    "size": 3129
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/material_intelligence.py",
+    "destination": "02-jw-backend/app/contracts/material_intelligence.py",
+    "sha256": "df7ea20df5d21d367bc360a9917875eb3650b06c7271b3121ee08518ed2ca236",
+    "size": 20932
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/material_schema.py",
+    "destination": "02-jw-backend/app/contracts/material_schema.py",
+    "sha256": "062540b1eb71b9256319ea01ffa7481add84671c1a61be45f43e590021e30a30",
+    "size": 8288
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/model_gateway.py",
+    "destination": "02-jw-backend/app/contracts/model_gateway.py",
+    "sha256": "0355cacf8c7f5c16833fa6b297e2b1d71e38b987bab7c04eff18772ba488c248",
+    "size": 13887
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/ports.py",
+    "destination": "02-jw-backend/app/contracts/ports.py",
+    "sha256": "dc76fa712d82a220c1e4c9f120d6c3a09d5795fd38a986ca82122e4465522663",
+    "size": 4329
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/pre_review.py",
+    "destination": "02-jw-backend/app/contracts/pre_review.py",
+    "sha256": "a9af9d4f8a7bb98e6de3157f99c1b734409cdc7b0dd607274796459b2c457aa6",
+    "size": 7579
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/pre_review_runtime.py",
+    "destination": "02-jw-backend/app/contracts/pre_review_runtime.py",
+    "sha256": "b7b44ae56dd802b6a62fb789682b719379d1a0d20ec3c782a0e2081725ca505a",
+    "size": 5732
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/project_selection.py",
+    "destination": "02-jw-backend/app/contracts/project_selection.py",
+    "sha256": "0ce843a6a7cb909e19bee66a703c677b63f97e85ed24ec5b4e1f39e2c81a80bd",
+    "size": 1436
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/reconstruction.py",
+    "destination": "02-jw-backend/app/contracts/reconstruction.py",
+    "sha256": "ccf3311c61f27731ff6625250efc22ed039c9ddc89d6b19853e1c1cd370439cb",
+    "size": 29443
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/workbench.py",
+    "destination": "02-jw-backend/app/contracts/workbench.py",
+    "sha256": "4acf408fa037472992a563983ce3ba04088305e0c03e7061e456787383ded62a",
+    "size": 37494
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/contracts/__init__.py",
+    "destination": "02-jw-backend/app/contracts/__init__.py",
+    "sha256": "bf6bd78b0db2c044dd7085f615d38fd670069dd9c016860cbc4c845c9b0b3f00",
+    "size": 236
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/core/bootstrap.py",
+    "destination": "02-jw-backend/app/core/bootstrap.py",
+    "sha256": "223a030cf3153aafe340cd3e546e0e34eb4fb6cb88b1828b5451bd8bbd54f77d",
+    "size": 5556
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/core/config.py",
+    "destination": "02-jw-backend/app/core/config.py",
+    "sha256": "191a9b8cca3a8a4bac5d15fa5aa9e9fb8e193d6cb4013d515b06aeada649dc5e",
+    "size": 8373
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/core/request_id.py",
+    "destination": "02-jw-backend/app/core/request_id.py",
+    "sha256": "cd8f29f00817058470027a142648ac6bede7fa3076aae4145cc17bf02b93342b",
+    "size": 829
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/core/__init__.py",
+    "destination": "02-jw-backend/app/core/__init__.py",
+    "sha256": "2d5b6566cf449c755233e83e88afc3ab11fa9fd6c29fb70a22d7094782a8546f",
+    "size": 57
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/domain/constants.py",
+    "destination": "02-jw-backend/app/domain/constants.py",
+    "sha256": "ee0796aadb8bbe17a746399044de146d99d75d364840d8dd84276969b1450367",
+    "size": 1547
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/domain/evidence.py",
+    "destination": "02-jw-backend/app/domain/evidence.py",
+    "sha256": "9bb921a3000c4b4d08d48fe9c17aced5fc041ab6852eafda5ecd3108502f6a0a",
+    "size": 5836
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/domain/grading.py",
+    "destination": "02-jw-backend/app/domain/grading.py",
+    "sha256": "0cbff79c52a2208e58a01505226ce16a38d9e50903914c2d0a124f7451cd48a3",
+    "size": 993
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/domain/pre_review.py",
+    "destination": "02-jw-backend/app/domain/pre_review.py",
+    "sha256": "1e9f3f37cc8f61568c74c4705290d5e7422964781c2333a70ccb149d7a46d09e",
+    "size": 17100
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/domain/repayment.py",
+    "destination": "02-jw-backend/app/domain/repayment.py",
+    "sha256": "3a70048ca0b3e9643b3532ac2cac28f92c9f4e59f4076963a8d7ca5d74193c8f",
+    "size": 3694
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/domain/scoring.py",
+    "destination": "02-jw-backend/app/domain/scoring.py",
+    "sha256": "64c3381dff58a25c58ae099b545e2c63e9492819f51d7fbf8e4ed57b8fa72fdb",
+    "size": 9027
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/domain/time_series.py",
+    "destination": "02-jw-backend/app/domain/time_series.py",
+    "sha256": "2e67fc45b9001c9d9cf65bb6f43f1f65cdc1eea244134cc4a4567a45cce3bc14",
+    "size": 15733
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/domain/__init__.py",
+    "destination": "02-jw-backend/app/domain/__init__.py",
+    "sha256": "b540ba3e7683fff77e0643f5e122822b0b0b162fa08cfcccb137eef594375410",
+    "size": 499
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/fixtures/customers.py",
+    "destination": "02-jw-backend/app/fixtures/customers.py",
+    "sha256": "8bc16e18572d1a9bb773ef142d70cbc6bb6af72ae1db2c5a83f8d7bc073956ad",
+    "size": 680
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/fixtures/equipment_configurations.py",
+    "destination": "02-jw-backend/app/fixtures/equipment_configurations.py",
+    "sha256": "d4e538df231dc952e99ea64edc190f251552726f9b211e5b91b5bf2f422aca00",
+    "size": 16600
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/fixtures/industries.py",
+    "destination": "02-jw-backend/app/fixtures/industries.py",
+    "sha256": "10600b6c6d1db041ec0775b2021dfcc1fc02dad76dc416444ffa41feda112098",
+    "size": 4156
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/fixtures/__init__.py",
+    "destination": "02-jw-backend/app/fixtures/__init__.py",
+    "sha256": "f39ff9a0db76df6d7316ffe16f1a1528dcb5010346c073d45eb6327d619dd02d",
+    "size": 185
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/models/state.py",
+    "destination": "02-jw-backend/app/models/state.py",
+    "sha256": "2ac80c5d9293cfc84fd5d95ea69df735c3489f5e41eac3bf622afa6b33712565",
+    "size": 17031
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/models/__init__.py",
+    "destination": "02-jw-backend/app/models/__init__.py",
+    "sha256": "16451d7c1037a9c7b9bcab50f9e24b6c663b055ea124c925ee0c2d0ad3272af8",
+    "size": 1244
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/ports/agent_communication.py",
+    "destination": "02-jw-backend/app/ports/agent_communication.py",
+    "sha256": "42f6bf426366fa33bc9670c4105dbcaeb8ce43b9ea9e9c661f47e185ce80e17b",
+    "size": 3699
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/ports/model_gateway.py",
+    "destination": "02-jw-backend/app/ports/model_gateway.py",
+    "sha256": "b55b88b6a0e27a6fd5a277a947832d65e22af8b38893c8cf1626cc9b03829511",
+    "size": 1527
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/ports/__init__.py",
+    "destination": "02-jw-backend/app/ports/__init__.py",
+    "sha256": "feae2f48b8e8a5a9804fa98b074295448f3b1a867b47304dd1f125bc846d9fe7",
+    "size": 398
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/providers/glm_cli_agent.py",
+    "destination": "02-jw-backend/app/providers/glm_cli_agent.py",
+    "sha256": "dc6f3be1c40c26cefa3b8bcdf946037a240d18ac3db116dcc266591d8b669a3c",
+    "size": 32291
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/providers/local_reconstruction.py",
+    "destination": "02-jw-backend/app/providers/local_reconstruction.py",
+    "sha256": "f457c7f16447532afb99dca1100aa73e3b4feb692f8aebfb503c637f99b0fe04",
+    "size": 3352
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/providers/openai_agent_responses.py",
+    "destination": "02-jw-backend/app/providers/openai_agent_responses.py",
+    "sha256": "d5b18ae8ab0c2e1e6a4d761a8f992e33e01b3473921929f3990f43cd72326b87",
+    "size": 16615
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/providers/openai_responses.py",
+    "destination": "02-jw-backend/app/providers/openai_responses.py",
+    "sha256": "c11d49632f5900581e296e38131c094cb899b76a218432c1c453c179751d8ad0",
+    "size": 23400
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/providers/__init__.py",
+    "destination": "02-jw-backend/app/providers/__init__.py",
+    "sha256": "dfc9893c2963b3d41f876743101e4bf62de2a0615cd50cd97d3ada8b2f2f128a",
+    "size": 187
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/repositories/errors.py",
+    "destination": "02-jw-backend/app/repositories/errors.py",
+    "sha256": "b61c3034146627f0dfb749f9c1f23751873462e6b62078003dfb41ddf1e5a198",
+    "size": 689
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/repositories/reconstruction.py",
+    "destination": "02-jw-backend/app/repositories/reconstruction.py",
+    "sha256": "d27c99f315435c5c7d89224a73d97b154cdb189aaa2f4003b444ea1bcc4087c1",
+    "size": 17424
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/repositories/schema.py",
+    "destination": "02-jw-backend/app/repositories/schema.py",
+    "sha256": "540319e067ffb6bdcffeb96d11d0979e8da16e6ab9699d2971975e5f22987fd6",
+    "size": 44232
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/repositories/sqlite_state.py",
+    "destination": "02-jw-backend/app/repositories/sqlite_state.py",
+    "sha256": "b8e0d64210ef5953f57fd23d50d8b5994ca90199ea7e26f39ca05fdb1c9cf8b9",
+    "size": 40589
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/repositories/__init__.py",
+    "destination": "02-jw-backend/app/repositories/__init__.py",
+    "sha256": "6cd098699a0f00b85bd5116647857704d1ea2515e63e8b9c414d4d055ba108e2",
+    "size": 324
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/ai_assist.py",
+    "destination": "02-jw-backend/app/services/ai_assist.py",
+    "sha256": "89a452a577668dd1d851980f9fae1b2fed94718e0c4be63b5cd6714370602318",
+    "size": 5518
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/authentication.py",
+    "destination": "02-jw-backend/app/services/authentication.py",
+    "sha256": "b1a64dc1d307f310b10c9c50912a9087241d6c232c167c5db3164b2d3873fda5",
+    "size": 8909
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/data_pack.py",
+    "destination": "02-jw-backend/app/services/data_pack.py",
+    "sha256": "7504db62db249aaad5ea06d575e9bfb5e8cb26f8b5cbb9b16a96fcd01754af45",
+    "size": 59722
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/errors.py",
+    "destination": "02-jw-backend/app/services/errors.py",
+    "sha256": "18301ea5a1e3fb6ecd862ac9d4e678e49e2a3eb549d2a37260ddffca2a4e184d",
+    "size": 2230
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/external_material_root.py",
+    "destination": "02-jw-backend/app/services/external_material_root.py",
+    "sha256": "e3bff82020e967d91132c1e952c2090ff525f049c87d37e48072a24bc16e29ea",
+    "size": 1614
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/generator_adapter.py",
+    "destination": "02-jw-backend/app/services/generator_adapter.py",
+    "sha256": "6c6687e99df013e101106e1c3abf792a3e9a79982821dfe38ef81c4560be54cc",
+    "size": 6548
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/locators.py",
+    "destination": "02-jw-backend/app/services/locators.py",
+    "sha256": "ec0640f27d242b811536bea123c8482e730146e65c303aa9b67debddb79d1dc3",
+    "size": 10894
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/material_intelligence.py",
+    "destination": "02-jw-backend/app/services/material_intelligence.py",
+    "sha256": "a6f5a6dec6a0a4023697c859036d94fbdc10df968bf6df4bb5e5638e912661f6",
+    "size": 8018
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/native_sources.py",
+    "destination": "02-jw-backend/app/services/native_sources.py",
+    "sha256": "d3b10ed3c19dc694531b2dee20b5f9ddcb434434f4fdbeeb34fbd831cda3f634",
+    "size": 3505
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/pre_review.py",
+    "destination": "02-jw-backend/app/services/pre_review.py",
+    "sha256": "17c89f38e55c44f4b6363a7744deedb209ac15cdc50b9bd21f8fe0b48c7f03ee",
+    "size": 39929
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/reconstruction.py",
+    "destination": "02-jw-backend/app/services/reconstruction.py",
+    "sha256": "f723245e0caf4c844136a3146eb80f09cf6c1d410c5894b6afa88c5c1f0f88b2",
+    "size": 37460
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/seeding.py",
+    "destination": "02-jw-backend/app/services/seeding.py",
+    "sha256": "1316917dbd5aa86e2df1bdcda3e4aad67ac6f8fec66d9f5c0eee7e2daaaf13a6",
+    "size": 16512
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/workbench.py",
+    "destination": "02-jw-backend/app/services/workbench.py",
+    "sha256": "22c6476a6fdb3b7a60fb0b057fe5f94d83e4d6bd298593e032310ba6a9849da6",
+    "size": 85610
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/__init__.py",
+    "destination": "02-jw-backend/app/services/__init__.py",
+    "sha256": "3b29ea5144829494d7f0fde1557941a722bf57b7c752cc6f428fb7b413414964",
+    "size": 126
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/agent_communication/context.py",
+    "destination": "02-jw-backend/app/services/agent_communication/context.py",
+    "sha256": "3b4813221a9818c043f7b8cabda6d0652ebf089848217d99512f5759ff432338",
+    "size": 10230
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/agent_communication/orchestrator.py",
+    "destination": "02-jw-backend/app/services/agent_communication/orchestrator.py",
+    "sha256": "c2b300922f986b4b04fcddb1af6278bd241052775c53403b74430321b8a1a1c3",
+    "size": 38687
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/agent_communication/repository.py",
+    "destination": "02-jw-backend/app/services/agent_communication/repository.py",
+    "sha256": "885a1409eb9f2a44c81ad635b38389cba78bc067130d6b2cac40b591c533c959",
+    "size": 54092
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/agent_communication/synthetic_provider.py",
+    "destination": "02-jw-backend/app/services/agent_communication/synthetic_provider.py",
+    "sha256": "020bd27495786c5a349e5879e7dc2addf01542b9c20355df36d9754b5518d9b6",
+    "size": 13542
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/agent_communication/__init__.py",
+    "destination": "02-jw-backend/app/services/agent_communication/__init__.py",
+    "sha256": "0d0f8c13e5f52f9c00e50b265bfb17b515bf6905b371bfb0aa75343703a7b0b5",
+    "size": 175
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/generation/generator.py",
+    "destination": "02-jw-backend/app/services/generation/generator.py",
+    "sha256": "5b866f54d4820ad8f402fa428c2483d8946af3c3a753975838b2bf2a03a6a707",
+    "size": 121407
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/generation/materials.py",
+    "destination": "02-jw-backend/app/services/generation/materials.py",
+    "sha256": "f1180779ebe96911616cb6bd0726939236ae7d8e4537377b2c374753e054bdfd",
+    "size": 6452
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/generation/__init__.py",
+    "destination": "02-jw-backend/app/services/generation/__init__.py",
+    "sha256": "98f427adaab728aaad74b279ce7fefcce6627ea478ecf392d5f7037b2f334d3d",
+    "size": 694
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/model_gateway/capability_registry.py",
+    "destination": "02-jw-backend/app/services/model_gateway/capability_registry.py",
+    "sha256": "d4aefedba075c25e74a6584b7b7b1e2d7a9a5f2ee7f5486d59d5f51933a58243",
+    "size": 1840
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/model_gateway/input_assembler.py",
+    "destination": "02-jw-backend/app/services/model_gateway/input_assembler.py",
+    "sha256": "0d4de5c09a8ef5ac8de21924fc797c5610384a8bb4e86c363ddc544af5d73976",
+    "size": 3318
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/model_gateway/orchestrator.py",
+    "destination": "02-jw-backend/app/services/model_gateway/orchestrator.py",
+    "sha256": "868b610cd27750c39a892b8874ba5fb61c4101a7385593d089dd97687c111df6",
+    "size": 17349
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/model_gateway/output_validator.py",
+    "destination": "02-jw-backend/app/services/model_gateway/output_validator.py",
+    "sha256": "8a5fbf2fc115f3c7483f9ad8942ac944b149d71a38fc45605b35b5426fea4dab",
+    "size": 2393
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/model_gateway/provider_router.py",
+    "destination": "02-jw-backend/app/services/model_gateway/provider_router.py",
+    "sha256": "87c2172f4652d60053d9514f6ad872126207e03dfe0281ccfcd24f1279c4797c",
+    "size": 13111
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/model_gateway/run_recorder.py",
+    "destination": "02-jw-backend/app/services/model_gateway/run_recorder.py",
+    "sha256": "f0dffbf1e90211ebd40580ebca3e85639dfaef1faea661ad243666856f7c701c",
+    "size": 11995
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/app/services/model_gateway/__init__.py",
+    "destination": "02-jw-backend/app/services/model_gateway/__init__.py",
+    "sha256": "72ec9d640ce44f96aa5c3a3e5fe8f8df36f92a7d6e4d89223dd92c4b8a64574e",
+    "size": 192
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/docs/AGENT-CONVERSATION-CONTRACT.md",
+    "destination": "02-jw-backend/docs/AGENT-CONVERSATION-CONTRACT.md",
+    "sha256": "207b2121af15c3fbebd165734a8e3d42eb539e6958e0e0c146afe2602b46f310",
+    "size": 6154
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/docs/AI-ASSIST-CONTRACT.md",
+    "destination": "02-jw-backend/docs/AI-ASSIST-CONTRACT.md",
+    "sha256": "2bd81ca3fdada4fc74dc8f90d63a8b9371e78b5d2c5543507da446b2f8cb613d",
+    "size": 3225
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/docs/API-ADAPTER-MAPPING.md",
+    "destination": "02-jw-backend/docs/API-ADAPTER-MAPPING.md",
+    "sha256": "69c7bbe64389e0bf5c582d5a32cb689a7923124f89db7bac1272450f3eca36c9",
+    "size": 2571
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/docs/AUTHORIZATION.md",
+    "destination": "02-jw-backend/docs/AUTHORIZATION.md",
+    "sha256": "8f9b13120819f8b73fd9da78bedcfac97a187b577c0c61c36f0c488ef483f1ce",
+    "size": 1573
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/docs/EXTERNAL-MATERIAL-ROOT-MIGRATION.md",
+    "destination": "02-jw-backend/docs/EXTERNAL-MATERIAL-ROOT-MIGRATION.md",
+    "sha256": "f83bc28f00c2742bfce79fa93d9708106dcf026f8a4b73ab6c92e89edab695b2",
+    "size": 2590
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/docs/MATERIAL-INTELLIGENCE-CONTRACT.md",
+    "destination": "02-jw-backend/docs/MATERIAL-INTELLIGENCE-CONTRACT.md",
+    "sha256": "8fa755f90bdb1579548c64d3ad45258d1167fcf57b81a447f7629fe59d73563f",
+    "size": 2569
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/docs/P5-DATAPACK-MAPPING.md",
+    "destination": "02-jw-backend/docs/P5-DATAPACK-MAPPING.md",
+    "sha256": "25e11712b8af06b7c7f3bb43ac01bde736726ddfb30f9f5197daf8e369f5d4aa",
+    "size": 1757
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/docs/P5-NATIVE-MATERIAL-PACKS.md",
+    "destination": "02-jw-backend/docs/P5-NATIVE-MATERIAL-PACKS.md",
+    "sha256": "ead0582968b35a23e63b66cabe2341b08a8040ede12eddf4416d11a451a79fd8",
+    "size": 1499
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/docs/P6-A2A-GLM-CLI-PROVIDER.md",
+    "destination": "02-jw-backend/docs/P6-A2A-GLM-CLI-PROVIDER.md",
+    "sha256": "dd15bb158d35f153902246b0c0b8a684e18a67220b257171d94d43b8d34e9414",
+    "size": 1406
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/docs/P6-IMAGE-TO-3D-RECONSTRUCTION.md",
+    "destination": "02-jw-backend/docs/P6-IMAGE-TO-3D-RECONSTRUCTION.md",
+    "sha256": "73b64231f756b23f8e5fae93f5c8d96f830c366885356e85c81c8b2ac269ee03",
+    "size": 1143
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/docs/domain/GENERATION-CONTRACT.md",
+    "destination": "02-jw-backend/docs/domain/GENERATION-CONTRACT.md",
+    "sha256": "f8d6ecf524ec6ca340f42587a15689dd646cc749a9ce63b612ae735c378aff8c",
+    "size": 936
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/docs/domain/INDICATOR-SOURCES.md",
+    "destination": "02-jw-backend/docs/domain/INDICATOR-SOURCES.md",
+    "sha256": "72659ce948b0efb14a96b868cf05791b62dd95dfafb292c631dbee5a27933c09",
+    "size": 2457
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/__init__.py",
+    "destination": "02-jw-backend/evals/__init__.py",
+    "sha256": "0a989b9a267adc02bf511cc3cd55b8ca881923ba9623a2b9992259361d1ac37a",
+    "size": 81
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/agent_communication/baseline.py",
+    "destination": "02-jw-backend/evals/agent_communication/baseline.py",
+    "sha256": "362ac19d315e1e71c57276e069c595b6ece801652f76f088d76ebf06fa8b5070",
+    "size": 11308
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/agent_communication/README.md",
+    "destination": "02-jw-backend/evals/agent_communication/README.md",
+    "sha256": "534151cbcddcd50b7bd742f12a4498cb75fea9cb9ed4472dd626185ab50642c1",
+    "size": 1816
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/agent_communication/__init__.py",
+    "destination": "02-jw-backend/evals/agent_communication/__init__.py",
+    "sha256": "bc9e90a69a8cdf666168b28fb37e00ca60c22fa8d9ad23bc7ea9f9cab3553535",
+    "size": 316
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/agent_communication/fixtures/baseline-v2.json",
+    "destination": "02-jw-backend/evals/agent_communication/fixtures/baseline-v2.json",
+    "sha256": "821e518d1680056585cccdcced02803d11de06aae2252569400cc3a22cc846dd",
+    "size": 6311
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/BLIND-EVAL-RUBRIC.md",
+    "destination": "02-jw-backend/evals/model_gateway/BLIND-EVAL-RUBRIC.md",
+    "sha256": "abe9cbc18266c93a7eff3bb90ad3ab70fe2ae7510b17708a264784b1a3d3d488",
+    "size": 3636
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/BLIND-EVAL-SCORING-REPORT.json",
+    "destination": "02-jw-backend/evals/model_gateway/BLIND-EVAL-SCORING-REPORT.json",
+    "sha256": "fef166adb6d4993cc51ba90b6b4660f979fc221b4c8d6525ebdb068e8b737e45",
+    "size": 32770
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/BLIND-EVAL-SCORING-REPORT.md",
+    "destination": "02-jw-backend/evals/model_gateway/BLIND-EVAL-SCORING-REPORT.md",
+    "sha256": "212f0e234c9ed1e71d0f91bd51b322287db75453824a00fed046ceaef9096abe",
+    "size": 3834
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/BLIND-EVAL-V2-SCORING-REPORT.json",
+    "destination": "02-jw-backend/evals/model_gateway/BLIND-EVAL-V2-SCORING-REPORT.json",
+    "sha256": "6ee600e540b5957a7b8bd52b6221e6da5ed737f60d5a64b7730bcdb5e36b4fcc",
+    "size": 12948
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/BLIND-EVAL-V2-SCORING-REPORT.md",
+    "destination": "02-jw-backend/evals/model_gateway/BLIND-EVAL-V2-SCORING-REPORT.md",
+    "sha256": "b5c0e8845ad5e5cb3f6fa4ea6e53f4f39953feea1b660e973461d0a6fd200724",
+    "size": 3533
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_eval_release.py",
+    "destination": "02-jw-backend/evals/model_gateway/blind_eval_release.py",
+    "sha256": "95c52a356f3b29bba208ce515f677edbf22920b4943fce24ab19bf676e52cb56",
+    "size": 33155
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_eval_release_v2.py",
+    "destination": "02-jw-backend/evals/model_gateway/blind_eval_release_v2.py",
+    "sha256": "0b79dacef6d543d1ce116ab4b2aac8f4e1e0aaad68b1b6e07c673d1a13ab96d6",
+    "size": 23350
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_eval_release_v3.py",
+    "destination": "02-jw-backend/evals/model_gateway/blind_eval_release_v3.py",
+    "sha256": "510ca487d1489b5c2c8276865317fc56a6d8350c246462ae061e65e1a63defe2",
+    "size": 26162
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_eval_rubric.py",
+    "destination": "02-jw-backend/evals/model_gateway/blind_eval_rubric.py",
+    "sha256": "06d318d22bad8285c36446297c3a4e918adc5a4dd8fd798b1fba6d21e1eb3707",
+    "size": 22766
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_eval_rubric_v2.py",
+    "destination": "02-jw-backend/evals/model_gateway/blind_eval_rubric_v2.py",
+    "sha256": "62c0c15268f7d01b8900283396fabfee17c1057a48c7e76d85ef41df08b23a5c",
+    "size": 38710
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/dataset.py",
+    "destination": "02-jw-backend/evals/model_gateway/dataset.py",
+    "sha256": "93d14f779b402d5fcaeef1011155579e9d8bea1aadd0edc8116668df58e3ee4e",
+    "size": 5673
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/failure_fixtures.py",
+    "destination": "02-jw-backend/evals/model_gateway/failure_fixtures.py",
+    "sha256": "c6444e0a5b64918c203fe3e26b947674475bbbadd52e6e1af9fd144159b9f7b4",
+    "size": 4363
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/fake_provider.py",
+    "destination": "02-jw-backend/evals/model_gateway/fake_provider.py",
+    "sha256": "a7a5fe958ba4279d4d8143f02840b6d044c52a4dade4eadb80134c5f84203a9a",
+    "size": 4321
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/live_policy.py",
+    "destination": "02-jw-backend/evals/model_gateway/live_policy.py",
+    "sha256": "89aa9afd855364ace893a404bfd89ead690dc4d02755e0805f9ba3604a371778",
+    "size": 1702
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/material_paths.py",
+    "destination": "02-jw-backend/evals/model_gateway/material_paths.py",
+    "sha256": "0c78ef2409202dd727b420d75e22aed67a3baa0760051fa367daad950a9a76f6",
+    "size": 804
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/metrics.py",
+    "destination": "02-jw-backend/evals/model_gateway/metrics.py",
+    "sha256": "dab4be4fd33dc52480589f67ce78f5bc3f26b9e1ff4f6f9ecea01ce10945540c",
+    "size": 6989
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/R3-SEMANTIC-SCORING-REPORT.json",
+    "destination": "02-jw-backend/evals/model_gateway/R3-SEMANTIC-SCORING-REPORT.json",
+    "sha256": "136ac351f7e0e0d199bb3c36db91c3493e86c3cbbaf6d56e7a1ccf25ca65e982",
+    "size": 15023
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/R3-SEMANTIC-SCORING-REPORT.md",
+    "destination": "02-jw-backend/evals/model_gateway/R3-SEMANTIC-SCORING-REPORT.md",
+    "sha256": "bcb4326769de5662f97ed4aa140aae4a36e0b7955212e4b2992ae6f02c0a97fc",
+    "size": 3295
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/README.md",
+    "destination": "02-jw-backend/evals/model_gateway/README.md",
+    "sha256": "27d21eec823b67ba9902ebf1ace61f88720d67097b5a19a11de8009737ca2aac",
+    "size": 2096
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/resilience.py",
+    "destination": "02-jw-backend/evals/model_gateway/resilience.py",
+    "sha256": "4489a51596b16ce3d24b7f76b586d1f496c37be162c64701bc5484730fbfad27",
+    "size": 6162
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/runner.py",
+    "destination": "02-jw-backend/evals/model_gateway/runner.py",
+    "sha256": "3f53678820212e155a746e6a90f1587c76cb5fa48d660320fab5bab4b6b2e235",
+    "size": 4887
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/__init__.py",
+    "destination": "02-jw-backend/evals/model_gateway/__init__.py",
+    "sha256": "a0142097850d7661b27ba54c4a8a99732415e075483e2372d9dfcfb525fdd419",
+    "size": 144
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/__main__.py",
+    "destination": "02-jw-backend/evals/model_gateway/__main__.py",
+    "sha256": "7e61c6e49416367abb05578aaab5d1626645126748e7399484bf7bae749fe5c7",
+    "size": 52
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_run/blind_output.json",
+    "destination": "02-jw-backend/evals/model_gateway/blind_run/blind_output.json",
+    "sha256": "c605b947ceb5af93aa3e71e23e07defee3eff123e220bb3ee7d0cde91a0d6dae",
+    "size": 36175
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_run/blind_request.json",
+    "destination": "02-jw-backend/evals/model_gateway/blind_run/blind_request.json",
+    "sha256": "fdaffe6e8cdf3d659d4d6dab1d575f0afb3ca35ed81d1790166711b07c771d71",
+    "size": 6717
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_run/README.md",
+    "destination": "02-jw-backend/evals/model_gateway/blind_run/README.md",
+    "sha256": "37b79c3cba918c1a67386927ebc6385da53e9fbcf2c12dc19bba0848374fd8b2",
+    "size": 2840
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_run/run_metrics.json",
+    "destination": "02-jw-backend/evals/model_gateway/blind_run/run_metrics.json",
+    "sha256": "2c06e6b9a43ab0f9a681948d36e7f2b31b061b7f95cec88f04ee04be4ba258c0",
+    "size": 3222
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_run/validate_blind_run.py",
+    "destination": "02-jw-backend/evals/model_gateway/blind_run/validate_blind_run.py",
+    "sha256": "77fabcee8e7bb4bfc06bff95789bbf3ca8bc5feda4024f7a9e805c3c0fb6a90d",
+    "size": 1914
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_run_v2/blind_output.json",
+    "destination": "02-jw-backend/evals/model_gateway/blind_run_v2/blind_output.json",
+    "sha256": "73720867d325364857f80f99caf23784b2989a335e50fe2b8fd6e4b137be5134",
+    "size": 21088
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_run_v2/blind_request.json",
+    "destination": "02-jw-backend/evals/model_gateway/blind_run_v2/blind_request.json",
+    "sha256": "f8ebaaac75c699b2761e48d044d836da524e9109c90eb262fae254c2db12d7d7",
+    "size": 5240
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_run_v2/README.md",
+    "destination": "02-jw-backend/evals/model_gateway/blind_run_v2/README.md",
+    "sha256": "08d7d38e97e732be00755179e65e5cc455defa91c31e1d1c2a2ae390c8766692",
+    "size": 1993
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_run_v2/run_metrics.json",
+    "destination": "02-jw-backend/evals/model_gateway/blind_run_v2/run_metrics.json",
+    "sha256": "2f77c47b0cf8087c2cd287b919b0a801571a8e721582c53ee137b227d51c834f",
+    "size": 2076
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_run_v2/validate_blind_run.py",
+    "destination": "02-jw-backend/evals/model_gateway/blind_run_v2/validate_blind_run.py",
+    "sha256": "e836195c9a01e3f86e96f1c529c91bbd1790bf7336b9d2899180ba8b984dac6b",
+    "size": 5593
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_run_v3/raw_provider_results.json",
+    "destination": "02-jw-backend/evals/model_gateway/blind_run_v3/raw_provider_results.json",
+    "sha256": "3974839b179e9a40303ab147dcf48bf615bfcf5636e5c4340fb7e801204580a3",
+    "size": 14871
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_run_v3/README.md",
+    "destination": "02-jw-backend/evals/model_gateway/blind_run_v3/README.md",
+    "sha256": "d636dd8b755919d95fcf6bb32e991914f4cfb701a407549135b4feae41a74010",
+    "size": 964
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/blind_run_v3/run_metrics.json",
+    "destination": "02-jw-backend/evals/model_gateway/blind_run_v3/run_metrics.json",
+    "sha256": "402719f778e91181284133c4f28f0d0b577cac86fdbd9688e5f643babf9882ea",
+    "size": 1972
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/codex_oracle/EVALUATOR_GUIDANCE_V2.md",
+    "destination": "02-jw-backend/evals/model_gateway/codex_oracle/EVALUATOR_GUIDANCE_V2.md",
+    "sha256": "a7c82befccc965b051f4616de1ee679601a4efa1f6fcb2aedc824804fa47259f",
+    "size": 6377
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/codex_oracle/fixture.py",
+    "destination": "02-jw-backend/evals/model_gateway/codex_oracle/fixture.py",
+    "sha256": "774740e8bf9b8e0f53a481b0580555f3d116bed1a4adc2cb5cc9c2815dd84ddd",
+    "size": 12579
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/codex_oracle/prompt_template.md",
+    "destination": "02-jw-backend/evals/model_gateway/codex_oracle/prompt_template.md",
+    "sha256": "106ed5171c7da6f87f4152a8cf3e7eae3550427042e4bd78f95ebd8cf8eb7a12",
+    "size": 4298
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/codex_oracle/prompt_template_v1.snapshot.md",
+    "destination": "02-jw-backend/evals/model_gateway/codex_oracle/prompt_template_v1.snapshot.md",
+    "sha256": "14659ba177ba35c2064d3bd6b4f5b3e47eaac8fd86f8217eabf79a7a5cb3e184",
+    "size": 1643
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/codex_oracle/README.md",
+    "destination": "02-jw-backend/evals/model_gateway/codex_oracle/README.md",
+    "sha256": "711cebb46b5ca0fecea5ca44e2fd8a12aec3fdbfe4f4374942d9ed4c8d6d6feb",
+    "size": 1219
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/codex_oracle/replay_fixture.json",
+    "destination": "02-jw-backend/evals/model_gateway/codex_oracle/replay_fixture.json",
+    "sha256": "783aa0ce834a0549b33ef3855ab371a2fc9c63e29945438d10e6101339fd188d",
+    "size": 34002
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/codex_oracle/__init__.py",
+    "destination": "02-jw-backend/evals/model_gateway/codex_oracle/__init__.py",
+    "sha256": "130367aca500abe2d8940e7eebdb23736ddc66a7362bc497541450f38a5f3f7c",
+    "size": 410
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/data/live_eval_policy.json",
+    "destination": "02-jw-backend/evals/model_gateway/data/live_eval_policy.json",
+    "sha256": "c9dd6abab9b1791f4aec0cc99f80761c1cd733ec791d10af36005956f790ee9b",
+    "size": 241
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/data/public_cases.json",
+    "destination": "02-jw-backend/evals/model_gateway/data/public_cases.json",
+    "sha256": "9a997a609dd8dc650b614bc93708b8754f7fa6e9aa3321b1d51831662a38fda4",
+    "size": 5728
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/data/hidden/golden_truth.json",
+    "destination": "02-jw-backend/evals/model_gateway/data/hidden/golden_truth.json",
+    "sha256": "dfda1ee3c43135277f5ed56a1c4696ae30a63f3ccb4b9e43505b4a198ef3ce24",
+    "size": 3321
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/provider_replay/harness.py",
+    "destination": "02-jw-backend/evals/model_gateway/provider_replay/harness.py",
+    "sha256": "91a3c0a0b23b93469c7ebb6ada4a9a512047463a2035d6be38af2658dc74451f",
+    "size": 4650
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/provider_replay/R3-PROVIDER-REPLAY-REPORT.json",
+    "destination": "02-jw-backend/evals/model_gateway/provider_replay/R3-PROVIDER-REPLAY-REPORT.json",
+    "sha256": "92bd3ed6d55a980a5fc1b36be3d15b1656b8d3c5a2f48195c14fd88287af1d03",
+    "size": 3673
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/provider_replay/R3-PROVIDER-REPLAY-REPORT.md",
+    "destination": "02-jw-backend/evals/model_gateway/provider_replay/R3-PROVIDER-REPLAY-REPORT.md",
+    "sha256": "a5297335e1fd08a76420ce1138f5312953225f91d8f81fe7673fabeaa983c4d4",
+    "size": 1392
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/provider_replay/r3_replay.py",
+    "destination": "02-jw-backend/evals/model_gateway/provider_replay/r3_replay.py",
+    "sha256": "336bb992d58cd149f71ff82ad8fa00b1880434ba11904f7875131388dcd94d4b",
+    "size": 25509
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/provider_replay/README.md",
+    "destination": "02-jw-backend/evals/model_gateway/provider_replay/README.md",
+    "sha256": "09b9aeeb0ce11f7d2c442868a5f969013cd669bd74e5e39a29ffd1bf047a55eb",
+    "size": 892
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/evals/model_gateway/provider_replay/__init__.py",
+    "destination": "02-jw-backend/evals/model_gateway/provider_replay/__init__.py",
+    "sha256": "c96c82df9119ce74dca609a9a2a1e9aac3047cd3e961a8efba7e8010ef5dbb20",
+    "size": 564
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/scripts/build_native_material_packs.py",
+    "destination": "02-jw-backend/scripts/build_native_material_packs.py",
+    "sha256": "2e7a352672fe95f211d9ef1f56084d748495851b52678af5868441e4a8367f5a",
+    "size": 32758
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/scripts/build_native_workbooks.mjs",
+    "destination": "02-jw-backend/scripts/build_native_workbooks.mjs",
+    "sha256": "2629810386666f8fddad67c10400f112953204fab04a652cfb4b0dfa5ee11620",
+    "size": 10545
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/scripts/generate_p5_assets.py",
+    "destination": "02-jw-backend/scripts/generate_p5_assets.py",
+    "sha256": "ab657944182a1008a1fb993b39417cf90997b28506caf22307d4511b2758bca9",
+    "size": 1929
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/scripts/verify_native_material_packs.py",
+    "destination": "02-jw-backend/scripts/verify_native_material_packs.py",
+    "sha256": "569843df63d0590aeff7e05ba0d3b24ce88d4b6b43de212be66b041ee3f942e0",
+    "size": 12758
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/conftest.py",
+    "destination": "02-jw-backend/tests/conftest.py",
+    "sha256": "9b1cd1c9718ab6576bc0b0fdc71328d9cd99710e1b361f79c76e44b7dbb5597f",
+    "size": 4128
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/agent_communication/test_conclusion_report.py",
+    "destination": "02-jw-backend/tests/agent_communication/test_conclusion_report.py",
+    "sha256": "ca23054986eb9f3634ed747334c5cff77baef391e4ea695164cd43a8cd05317c",
+    "size": 6995
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/agent_communication/test_contracts_and_providers.py",
+    "destination": "02-jw-backend/tests/agent_communication/test_contracts_and_providers.py",
+    "sha256": "eefd6444700928780c1a12c98b46bd0215ab839e712224cbd57befab09731a25",
+    "size": 13555
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/agent_communication/test_eval_baseline.py",
+    "destination": "02-jw-backend/tests/agent_communication/test_eval_baseline.py",
+    "sha256": "6a77b6e1fccf59dae5fdc89ee88b8d7c1ae7e0359af5a64d64b5f889e1a119de",
+    "size": 20090
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/agent_communication/test_glm_cli_provider.py",
+    "destination": "02-jw-backend/tests/agent_communication/test_glm_cli_provider.py",
+    "sha256": "e48118e5559c4848289bd149bd022928dcbcbda8e00c6443f5efae86605e64ec",
+    "size": 30141
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/agent_communication/test_group_chat_contract_matrix.py",
+    "destination": "02-jw-backend/tests/agent_communication/test_group_chat_contract_matrix.py",
+    "sha256": "cda9ffd70f683c3134d369689091211102446f91f793e11c232772fd62b942c5",
+    "size": 21574
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/agent_communication/test_orchestrator_and_api.py",
+    "destination": "02-jw-backend/tests/agent_communication/test_orchestrator_and_api.py",
+    "sha256": "7ce292cbf9436664423c017efb4127d2949ac9302abd83e1b21d9b0c5ed80226",
+    "size": 29399
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/agent_communication/test_repository.py",
+    "destination": "02-jw-backend/tests/agent_communication/test_repository.py",
+    "sha256": "3832e5caa09a451277098e7c0626fd6c52bf57a4f16a1193eba0d6a6a97e602d",
+    "size": 22455
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/api/test_authentication_and_acl.py",
+    "destination": "02-jw-backend/tests/api/test_authentication_and_acl.py",
+    "sha256": "792c676f4c7e6187ae0b9d481d64aee300e478ef8d4f4716c9cc314d239bd9c1",
+    "size": 10121
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/api/test_front_adapter_handoff.py",
+    "destination": "02-jw-backend/tests/api/test_front_adapter_handoff.py",
+    "sha256": "94d0a9da8fa4e991bad4557a6ccfc042fd49c4fe5476c7613e4097f00443bfda",
+    "size": 6369
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/api/test_http_contract.py",
+    "destination": "02-jw-backend/tests/api/test_http_contract.py",
+    "sha256": "12dc9305ca4766f80240bedcf9c27d8a94bfacfaf139dbe8a6796ec1e4572d8a",
+    "size": 14224
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/api/test_model_gateway_api.py",
+    "destination": "02-jw-backend/tests/api/test_model_gateway_api.py",
+    "sha256": "9302d7410741e4052e2dd9c40a6c0a793bc1245fdaa9f09f86934c7daccc7663",
+    "size": 15519
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/api/test_module_app_cold_start.py",
+    "destination": "02-jw-backend/tests/api/test_module_app_cold_start.py",
+    "sha256": "96b5750011a155804380cb5626409f409d1d4586539982b38d40a8dac877b76c",
+    "size": 1546
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/api/test_real_api_integration.py",
+    "destination": "02-jw-backend/tests/api/test_real_api_integration.py",
+    "sha256": "b73707343257b752ccb2cc343c38ecd0704fe97d6b3e27b192cc78bfe0c49f66",
+    "size": 12997
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/api/test_real_http_acceptance.py",
+    "destination": "02-jw-backend/tests/api/test_real_http_acceptance.py",
+    "sha256": "89059f3fef1a725b93e0a5c8d3c371c6b7ba1a2a6e983e3e18b46798c912fb9e",
+    "size": 6627
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/contracts/test_ai_assist_contract.py",
+    "destination": "02-jw-backend/tests/contracts/test_ai_assist_contract.py",
+    "sha256": "2402b69e83034c83f64fc3fdf6eea66e933d20dea522e9818f884da8a1492f30",
+    "size": 9945
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/contracts/test_contract_models.py",
+    "destination": "02-jw-backend/tests/contracts/test_contract_models.py",
+    "sha256": "1259648ca42626bc1d910ee8dea0eefcebc640db30a2bfd6a2ba5d7237a465b6",
+    "size": 7102
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/contracts/test_material_intelligence_contract.py",
+    "destination": "02-jw-backend/tests/contracts/test_material_intelligence_contract.py",
+    "sha256": "8230ea5c02c4abe4ad6341db85a24fb12ceb8ea1e30c07e17aac019d752d1ed6",
+    "size": 12461
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/contracts/test_model_gateway_contract.py",
+    "destination": "02-jw-backend/tests/contracts/test_model_gateway_contract.py",
+    "sha256": "7a58c612bfcc2587b4a24d7438ad5b803df881e5ce09ebce664b285c5ef8f71d",
+    "size": 8819
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/domain/test_business_rules.py",
+    "destination": "02-jw-backend/tests/domain/test_business_rules.py",
+    "sha256": "ec7e57a200082b6a03da6b8f2a109705ea209a3f7629bfd7cf3e78cae66e0eaa",
+    "size": 9130
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/domain/test_equipment_configurations.py",
+    "destination": "02-jw-backend/tests/domain/test_equipment_configurations.py",
+    "sha256": "520c9823bd653de38474ed69d299fd5e3aeec7903c957295fd249a0c34cf8b2b",
+    "size": 8199
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/domain/test_pre_review.py",
+    "destination": "02-jw-backend/tests/domain/test_pre_review.py",
+    "sha256": "dd4a169f915227fe77a4cad5985771eb09e89f3d619faacdcc79b330986efcee",
+    "size": 13066
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/domain/test_time_series.py",
+    "destination": "02-jw-backend/tests/domain/test_time_series.py",
+    "sha256": "4e380544621b25c769bb65afc9dc08c8317d5835135c750b1bebe3f1e7791f4e",
+    "size": 7690
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/evals/test_blind_eval_release.py",
+    "destination": "02-jw-backend/tests/evals/test_blind_eval_release.py",
+    "sha256": "8a26e3d1c064af0eebd28b6d4f10a33f778b4c519312eaa30ae18c01e9c367c2",
+    "size": 3648
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/evals/test_blind_eval_release_v3.py",
+    "destination": "02-jw-backend/tests/evals/test_blind_eval_release_v3.py",
+    "sha256": "73273bf47a8181d59e5ec32cfc088c6e4302b9c7e5e003c44f58ce5a77f497cb",
+    "size": 2292
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/evals/test_blind_eval_rubric.py",
+    "destination": "02-jw-backend/tests/evals/test_blind_eval_rubric.py",
+    "sha256": "a8c35e7e4730055def2ff73ab647ab3483023a0d357452ef44b6a152917d86fc",
+    "size": 9428
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/evals/test_blind_eval_rubric_v2.py",
+    "destination": "02-jw-backend/tests/evals/test_blind_eval_rubric_v2.py",
+    "sha256": "8da4911353fef974d80481226720c9aa4d2074f6996f26ac82646a8c550c1a84",
+    "size": 17650
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/evals/test_codex_oracle.py",
+    "destination": "02-jw-backend/tests/evals/test_codex_oracle.py",
+    "sha256": "f2153d40fc970b71f35ae95445c5f9b5833f7586bc785f38c7c4e15cd07de085",
+    "size": 15979
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/evals/test_model_gateway_dataset.py",
+    "destination": "02-jw-backend/tests/evals/test_model_gateway_dataset.py",
+    "sha256": "d8dadc38c0f0d9db9926c0802c8056e6865554815712a4a0d4a5ce9a7b0766c9",
+    "size": 2127
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/evals/test_model_gateway_metrics.py",
+    "destination": "02-jw-backend/tests/evals/test_model_gateway_metrics.py",
+    "sha256": "1e96823c4aadf6e19c93e7970cfd7f295d47bace2282910a0e20bd558d37c928",
+    "size": 2399
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/evals/test_model_gateway_resilience.py",
+    "destination": "02-jw-backend/tests/evals/test_model_gateway_resilience.py",
+    "sha256": "0b814cadf1575f0cb0b37710e3535c8f51bab8d4fb4c919f7c7c1bbef386aecc",
+    "size": 3621
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/evals/test_model_gateway_runner.py",
+    "destination": "02-jw-backend/tests/evals/test_model_gateway_runner.py",
+    "sha256": "f9109c06dbf75d47f261ed765715b28e8bf5016ae106b3ac47f64bb4c05e3bb3",
+    "size": 2444
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/evals/provider_replay/test_provider_replay.py",
+    "destination": "02-jw-backend/tests/evals/provider_replay/test_provider_replay.py",
+    "sha256": "ad3bfdc9a3fc7e2194b8b1080ac70aceb89edfa02b40951e4b882f24374aef92",
+    "size": 10215
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/evals/provider_replay/test_r3_provider_replay.py",
+    "destination": "02-jw-backend/tests/evals/provider_replay/test_r3_provider_replay.py",
+    "sha256": "125fb1f6c61d63c5c7572ea6b78fc4a13d3b410fd5813cf5fed144b326b0ed09",
+    "size": 4545
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/evals/provider_replay/__init__.py",
+    "destination": "02-jw-backend/tests/evals/provider_replay/__init__.py",
+    "sha256": "81ace8a5d30e37a3e73406f96443a3fdb30cbec2b47f93445d92e6f6b5aae0e2",
+    "size": 40
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/generation/test_workbench_generator.py",
+    "destination": "02-jw-backend/tests/generation/test_workbench_generator.py",
+    "sha256": "2c4b100d2197e5a540b9a70850794133113c476d8d657aa4d02aba46595f92d0",
+    "size": 25134
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/model_gateway/fixtures.py",
+    "destination": "02-jw-backend/tests/model_gateway/fixtures.py",
+    "sha256": "64593bb0625f79976dfadc3f4292fea468b1fca0c43987c7fbf214bdd4a3d652",
+    "size": 1504
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/model_gateway/test_orchestrator.py",
+    "destination": "02-jw-backend/tests/model_gateway/test_orchestrator.py",
+    "sha256": "6d67d2fbd18607b968a97c34729f7bd3bb7ce26cea8679632c8b10a94af018df",
+    "size": 6879
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/model_gateway/test_registry_assembler_validator.py",
+    "destination": "02-jw-backend/tests/model_gateway/test_registry_assembler_validator.py",
+    "sha256": "580f30b205a8c05f271343af2de695701fe8df47d7eb92b3543124e838590730",
+    "size": 4040
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/model_gateway/__init__.py",
+    "destination": "02-jw-backend/tests/model_gateway/__init__.py",
+    "sha256": "1ba9e6846c13a150df78056794eb2bc212ece2348e6c0eba4ccf9acba055cc02",
+    "size": 35
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/providers/test_openai_responses_provider.py",
+    "destination": "02-jw-backend/tests/providers/test_openai_responses_provider.py",
+    "sha256": "adb05f8832e69bd72c5d25381202c00f067d74f4406a9d5256a1ea9e0f6cea57",
+    "size": 15614
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/reconstruction/test_reconstruction.py",
+    "destination": "02-jw-backend/tests/reconstruction/test_reconstruction.py",
+    "sha256": "58906ee17e81f6265427841020bf5e4d425093dba362b59dfdd6953eda3b89a1",
+    "size": 16956
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/reconstruction/test_reconstruction_api.py",
+    "destination": "02-jw-backend/tests/reconstruction/test_reconstruction_api.py",
+    "sha256": "15c2cf8aadb421612793c2284a53ba8dc21c2add156662a8d4d9820f47fd389a",
+    "size": 9100
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/services/fixtures.py",
+    "destination": "02-jw-backend/tests/services/fixtures.py",
+    "sha256": "c894f74bc662c4b077b7161a2a21bf403c04f28c8f98e4ee29715be9164598b1",
+    "size": 19471
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/services/test_ai_assist_service.py",
+    "destination": "02-jw-backend/tests/services/test_ai_assist_service.py",
+    "sha256": "727fc33756774d017805f5cf722f90d8e7dce49ca585d5466cf974307a0fae7d",
+    "size": 8680
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/services/test_approval_and_series.py",
+    "destination": "02-jw-backend/tests/services/test_approval_and_series.py",
+    "sha256": "7df48245315200be3b3ddd8f27736c3a62e8858c40a0af39266bfcdc5d79bdb6",
+    "size": 7830
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/services/test_corrections_and_reviews.py",
+    "destination": "02-jw-backend/tests/services/test_corrections_and_reviews.py",
+    "sha256": "83db5ba411cb638a33cbc8ce6aeede059e58afb0460ae14d9cb0cfe179b0344b",
+    "size": 19069
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/services/test_external_material_root.py",
+    "destination": "02-jw-backend/tests/services/test_external_material_root.py",
+    "sha256": "67adc09b18d1441cb6144f192e4b06c192cb3055df5848c978434c57de7766d1",
+    "size": 7073
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/services/test_generation_integration.py",
+    "destination": "02-jw-backend/tests/services/test_generation_integration.py",
+    "sha256": "c79f0bf297065ab294ccfcbbc16bbc04186f04a98f64f4653f21ec61f34e5f31",
+    "size": 2492
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/services/test_locators_and_isolation.py",
+    "destination": "02-jw-backend/tests/services/test_locators_and_isolation.py",
+    "sha256": "92c2c3fe5e6aeb85e31e967086ff2432b94bf20bb130aa60216deef3321d9e6b",
+    "size": 7426
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/services/test_material_intelligence_service.py",
+    "destination": "02-jw-backend/tests/services/test_material_intelligence_service.py",
+    "sha256": "85d00c98080d32876cfa501c025c54b21c94475efcee5a63b21f581cab6a88f0",
+    "size": 2305
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/services/test_model_gateway_data_pack.py",
+    "destination": "02-jw-backend/tests/services/test_model_gateway_data_pack.py",
+    "sha256": "7c054a5bc0e1a5c1e43888e0dc02e44ab42fd6181b445dfbbc014b4f6ff94f66",
+    "size": 26550
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/services/test_p5_data_pack_pipeline.py",
+    "destination": "02-jw-backend/tests/services/test_p5_data_pack_pipeline.py",
+    "sha256": "9853993a620125651a43ce77f0379e28f694a2cafad05b483a4a866ab27cd2aa",
+    "size": 48747
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/services/test_policy_recalculation.py",
+    "destination": "02-jw-backend/tests/services/test_policy_recalculation.py",
+    "sha256": "41a45859d1b15e764d18bfbf97dfa8e78297b24f2a43128f5f2b6e271830300b",
+    "size": 12919
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/services/__init__.py",
+    "destination": "02-jw-backend/tests/services/__init__.py",
+    "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "size": 1
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/state/test_sqlite_state.py",
+    "destination": "02-jw-backend/tests/state/test_sqlite_state.py",
+    "sha256": "5221d6934d5d9dabdf293842310c44e4ac783ad058c53a9d8620b80fcea2f206",
+    "size": 15497
+  },
+  {
+    "source": "TAG-sources-20260821/JW/Compare/Back/tests/state/__init__.py",
+    "destination": "02-jw-backend/tests/state/__init__.py",
+    "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "size": 1
+  },
+  {
+    "source": "TAG-sources-20260821/Race/见微-比赛路演-5分钟提示卡-v3.txt",
+    "destination": "04-presentation/见微-比赛路演-5分钟提示卡-v3.txt",
+    "sha256": "76749a5c8c6c91abab0ce692676f06a02f0ba12f18c07e8a1ae23b81887f5481",
+    "size": 2947
+  },
+  {
+    "source": "TAG-sources-20260821/Race/见微-比赛路演-v4.pptx",
+    "destination": "04-presentation/见微-比赛路演-v4.pptx",
+    "sha256": "6f268e0c0f0735ff683f16222e42bb27f6dea95c380c0a071e820b419ad408a0",
+    "size": 15952662
+  },
+  {
+    "source": "TAG-sources-20260821/Race/见微-比赛路演-手稿版-v4.pptx",
+    "destination": "04-presentation/见微-比赛路演-手稿版-v4.pptx",
+    "sha256": "3f52d8bae20b256fcf5f9df11ea383e8c91be170e091d90c359044dfe7d3cfaf",
+    "size": 9999944
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/.gitignore",
+    "destination": "01-stars-a2a/.gitignore",
+    "sha256": "24fcc25eaa7d422c0e1557dc3e76a62a114284eb19d61969975cc19b23e82cf8",
+    "size": 215
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/.oxlintrc.json",
+    "destination": "01-stars-a2a/.oxlintrc.json",
+    "sha256": "3f46d4038fd69c0011da897b887d747e3d66f0bbda8b523a54891fbd473d67ef",
+    "size": 253
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/AGENTS.md",
+    "destination": "01-stars-a2a/AGENTS.md",
+    "sha256": "e5dfb4cdbc557f7d6d2bab67af77adc28eb2fc6042e6f59fd99fa1b1db44a2ad",
+    "size": 1566
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/HANDOFF.md",
+    "destination": "01-stars-a2a/HANDOFF.md",
+    "sha256": "f2b1c3a39b9462bb7a5d3d7343631ad775402569820e74940db1506ee7e04ef0",
+    "size": 1599
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/index.html",
+    "destination": "01-stars-a2a/index.html",
+    "sha256": "504496f41d716ecfb7892b3ebcf8eb353333e89e5d8910afd9e76cf8613009cd",
+    "size": 530
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/package-lock.json",
+    "destination": "01-stars-a2a/package-lock.json",
+    "sha256": "214270ab93345afd2bf5299f4818531134caf708b11cf5b361696575d3912e0f",
+    "size": 60648
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/package.json",
+    "destination": "01-stars-a2a/package.json",
+    "sha256": "b6d727763e4e4d2385a76304e6c62c07c26b54063e3306dc8863030cee42b5c7",
+    "size": 765
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/README.md",
+    "destination": "01-stars-a2a/README.md",
+    "sha256": "157b6542b09cecdbf3f94089833dcc625bdd4d543ea2ffc24cfa8a14a227bc5d",
+    "size": 2834
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/tsconfig.app.json",
+    "destination": "01-stars-a2a/tsconfig.app.json",
+    "sha256": "bbcd078c923aa26585b32222f966a047948210372f3adbf41617e7553ef73e13",
+    "size": 681
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/tsconfig.json",
+    "destination": "01-stars-a2a/tsconfig.json",
+    "sha256": "ad28d132ee48d6e23917cf5827cace785d0fc01a44ca68b0dda51cc8c3fd3f52",
+    "size": 126
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/tsconfig.node.json",
+    "destination": "01-stars-a2a/tsconfig.node.json",
+    "sha256": "a9e6c7f6fd3ec455a6fe1d4fbb83091e774b62fe116008ab6d8c5e1e88af4629",
+    "size": 581
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/vite.config.ts",
+    "destination": "01-stars-a2a/vite.config.ts",
+    "sha256": "9d4ecd095cf71182bb5729d64f5b59cabdde3faedbdb87e51422f9355aaf8986",
+    "size": 388
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/docs/A2A-ARCHITECTURE.md",
+    "destination": "01-stars-a2a/docs/A2A-ARCHITECTURE.md",
+    "sha256": "1a9647bda8303aab33ced3dc658560b3769a080dc291952a992ee8cd6c1aba04",
+    "size": 5220
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/public/favicon.svg",
+    "destination": "01-stars-a2a/public/favicon.svg",
+    "sha256": "61bc9a161de58248288e6905425d7180f0624c2865007b97d763fdac12043a66",
+    "size": 9522
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/public/icons.svg",
+    "destination": "01-stars-a2a/public/icons.svg",
+    "sha256": "7ca2d67c9c3aebf50cdc8709ee8aacf8cdb8cc7ea6325ea94939caef5da1c53d",
+    "size": 5055
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/scripts/build-standalone.mjs",
+    "destination": "01-stars-a2a/scripts/build-standalone.mjs",
+    "sha256": "1b298231bc52dce1c7cc97861a902546f8d79fd5f2f7a4b7859f9a9109de4971",
+    "size": 2069
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/scripts/dev.mjs",
+    "destination": "01-stars-a2a/scripts/dev.mjs",
+    "sha256": "919763214cd4eba2f939bea2db2cc92a800431dbcec7c104a9bc43aeee3540c9",
+    "size": 660
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/server/a2a-core.mjs",
+    "destination": "01-stars-a2a/server/a2a-core.mjs",
+    "sha256": "9ac1d0ef44eeb7dc55c946244dcddb064a6cad7f85d792067b6f674a87efca26",
+    "size": 21718
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/server/a2a-core.test.mjs",
+    "destination": "01-stars-a2a/server/a2a-core.test.mjs",
+    "sha256": "13b3fdf9a6985f238726056f126d57cac1e4c7d87a4d5c7b5c0db59ef581d3a4",
+    "size": 4538
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/server/http.test.mjs",
+    "destination": "01-stars-a2a/server/http.test.mjs",
+    "sha256": "f00a8ea904b661ba9ad71ecfb66921087672bb6771984149863fc5671c546d7d",
+    "size": 4776
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/server/index.mjs",
+    "destination": "01-stars-a2a/server/index.mjs",
+    "sha256": "d40da56249585105252afd168fa0fd6c88e007139398de954e454564fc617922",
+    "size": 7039
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/server/store.mjs",
+    "destination": "01-stars-a2a/server/store.mjs",
+    "sha256": "9b55faaa05028489c149da9e5259c95abc79f06c575ce52fea7c336837f9d1a8",
+    "size": 964
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/src/a2aClient.ts",
+    "destination": "01-stars-a2a/src/a2aClient.ts",
+    "sha256": "459d24205bba0e46dbe97d36beb3a60af9b2ba66005cb3b28aa03598cee8aea9",
+    "size": 3037
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/src/agentEngine.ts",
+    "destination": "01-stars-a2a/src/agentEngine.ts",
+    "sha256": "2c4ee5ce5613eae64551a7d3b3defe419cf2e050c52153f566c03a1cff6e488d",
+    "size": 10108
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/src/App.css",
+    "destination": "01-stars-a2a/src/App.css",
+    "sha256": "f3c6b4205dffef31c003cfa6ec324e6176e8c20f2fda20cd3975e759c8fe7019",
+    "size": 48163
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/src/App.tsx",
+    "destination": "01-stars-a2a/src/App.tsx",
+    "sha256": "2365b0e47c656d0df018eade5021199178916cd136e436e7a982c0c2b1ef0026",
+    "size": 41723
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/src/domain.ts",
+    "destination": "01-stars-a2a/src/domain.ts",
+    "sha256": "c0248ab78f8dc260f969129f457cddc7e88bb83b70fe2908e3d26bdf74576109",
+    "size": 3093
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/src/index.css",
+    "destination": "01-stars-a2a/src/index.css",
+    "sha256": "f41eff87915f8298d82fef0927b7bc71edbe2ba9a96045aefa9ecec9cc2bb354",
+    "size": 581
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/src/main.tsx",
+    "destination": "01-stars-a2a/src/main.tsx",
+    "sha256": "484f93f3048565a86a47e308f5a12ee27aa12f5291f3b52a4bb5dc03d887dbc7",
+    "size": 240
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/src/workspace.test.ts",
+    "destination": "01-stars-a2a/src/workspace.test.ts",
+    "sha256": "6c3670396c222c788f406dcc1da2a636df47498438c4c95e51a7ecda1ae422ca",
+    "size": 3098
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/src/workspace.ts",
+    "destination": "01-stars-a2a/src/workspace.ts",
+    "sha256": "1f8cbf32f6f0f265224a077462dd8e9a944ce52f989ce2259056d0e337567626",
+    "size": 5173
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/src/assets/hero.png",
+    "destination": "01-stars-a2a/src/assets/hero.png",
+    "sha256": "881ffbcaafc212e49addad08846a5b82761355fa20624253af3477ba33262c5c",
+    "size": 13057
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/src/assets/react.svg",
+    "destination": "01-stars-a2a/src/assets/react.svg",
+    "sha256": "35ef61ed53b323ae94a16a8ec659b3d0af3880698791133f23b084085ab1c2e5",
+    "size": 4126
+  },
+  {
+    "source": "TAG-sources-20260821/Stars/src/assets/vite.svg",
+    "destination": "01-stars-a2a/src/assets/vite.svg",
+    "sha256": "2f1f6c6f90a0ef7422cbb4cfafcd8ad329c507a18afdc34cc21fa72179b9c54a",
+    "size": 8710
+  },
+  {
+    "source": "TAG-sources-20260821/TQ/app.js",
+    "destination": "05-tq-demo/app.js",
+    "sha256": "126b28cbf83eb619307e1ab9742d9006021e62a75ddd319c341773a59113b47c",
+    "size": 15082
+  },
+  {
+    "source": "TAG-sources-20260821/TQ/index.html",
+    "destination": "05-tq-demo/index.html",
+    "sha256": "c747054b4f76cd723447374eaff97ee3a9be8a1df85107dd4eba60f7943b69a1",
+    "size": 9299
+  },
+  {
+    "source": "TAG-sources-20260821/TQ/mermaid-diagram.svg",
+    "destination": "05-tq-demo/mermaid-diagram.svg",
+    "sha256": "a682b1bfe1b2ea18360ccbce46b9e78b9fc15771fda08c6878e4fba73a53f981",
+    "size": 47931
+  },
+  {
+    "source": "TAG-sources-20260821/TQ/README.md",
+    "destination": "05-tq-demo/README.md",
+    "sha256": "c6d9780403fe2383d4fcea998e130d2631910fe5f1b23c846d5ec12a0b0df1eb",
+    "size": 1442
+  },
+  {
+    "source": "TAG-sources-20260821/TQ/styles.css",
+    "destination": "05-tq-demo/styles.css",
+    "sha256": "f7bdad7737a9dc7fe51dd23f2759853c19ed377a096a9c6848718953131c4e84",
+    "size": 20771
+  }
+]

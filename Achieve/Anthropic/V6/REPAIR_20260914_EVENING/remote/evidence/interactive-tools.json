@@ -1,0 +1,28 @@
+{
+  "clickEvidence": "clicked:证据（3）",
+  "evidencePanel": {
+    "btns": [
+      "附着现场巡检（合成）",
+      "附着设备清单（合成）",
+      "现场巡检照片（合成）v2",
+      "设备清单 v1（合成）v1"
+    ],
+    "cameraNote": true,
+    "evidenceAriaExpanded": "true",
+    "label": "证据与本地拍照"
+  },
+  "clickDomains": "clicked:四域",
+  "singleOpen": {
+    "domainTips": 4,
+    "panels": [
+      "四域提示（业务侧·合成演示）"
+    ]
+  },
+  "clickParticipants": "clicked:参会（3）",
+  "participants": {
+    "hasController": true,
+    "hasVerified": true,
+    "label": "参会信息",
+    "rows": 3
+  }
+}

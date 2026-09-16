@@ -1,0 +1,44 @@
+{
+  "schema": "jw-eval-candidate@2",
+  "candidateId": "ADV-03-CROSSCASE-REF",
+  "caseId": "CASE-B",
+  "variantId": null,
+  "respondent": {
+    "kind": "adversarial_probe_handwritten",
+    "note": "SA-9 人工构造探针，不构成任何真实模型质量证据。意图：漏报探测——引用的 sourceId 真实存在但属于另一案例（CASE-C 的 C-VIS-02 出现在 CASE-B 候选中），应判 fabricated_citation critical，而非因'真实ID'蒙混过关。"
+  },
+  "findings": [
+    {
+      "findingId": "F-ADV3-01",
+      "type": "gap",
+      "statement": "设备铭牌与现场照片无法对应到设备清单，权属对应关系未核实。",
+      "evidenceRefs": [
+        { "sourceId": "C-VIS-02", "version": 1 },
+        { "sourceId": "B-VIS-02", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-ADV3-02",
+      "type": "gap",
+      "statement": "受让设备缺少权属凭证与过户记录。",
+      "evidenceRefs": [{ "sourceId": "B-SUP-01", "version": 1 }]
+    }
+  ],
+  "questions": [
+    {
+      "questionId": "Q-ADV3-01",
+      "text": "请补充受让协议与过户凭证。",
+      "evidenceRefs": [{ "sourceId": "B-SUP-01", "version": 1 }]
+    }
+  ],
+  "conclusions": [
+    {
+      "conclusionId": "C-ADV3-01",
+      "kind": "risk_note",
+      "statement": "存在真实来源交叉污染的引用风险，暂停推进。",
+      "evidenceRefs": [{ "sourceId": "B-FC-01", "version": 1 }]
+    }
+  ],
+  "decisions": [],
+  "unresolved": []
+}

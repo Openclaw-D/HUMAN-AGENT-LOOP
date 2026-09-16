@@ -1,0 +1,195 @@
+{
+  "run": "d25-r2",
+  "startedUtc": "d25-r2",
+  "endedUtc": "2026-09-15T21:14:32.980Z",
+  "suites": [
+    {
+      "file": "g8_gateway.test.mjs",
+      "exitCode": 1,
+      "crashed": false,
+      "res": {
+        "suite": "g8_gateway",
+        "results": [
+          {
+            "id": "D-25a",
+            "title": "跨进程并发预算门：预算1/1，3 worker同抢3目标→恰1次mock调用，其余诚实失败",
+            "severity": "P0",
+            "owner": "B",
+            "state": "fail",
+            "assertions": 6,
+            "failures": [
+              {
+                "msg": "exception",
+                "detail": "ReferenceError: projectVersion is not defined\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:213:20)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+              }
+            ],
+            "ms": 1505,
+            "note": "exception"
+          },
+          {
+            "id": "D-25b",
+            "title": "账本不可读失败关闭：costLogPath指向目录→0调用+目标诚实失败",
+            "severity": "P0",
+            "owner": "B",
+            "state": "fail",
+            "assertions": 6,
+            "failures": [
+              {
+                "msg": "exception",
+                "detail": "ReferenceError: projectVersion is not defined\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:250:116)\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+              }
+            ],
+            "ms": 1554,
+            "note": "exception"
+          },
+          {
+            "id": "D-25c",
+            "title": "坏账本失败关闭：损坏行+超限有效行→0调用（不静默跳过放行）",
+            "severity": "P0",
+            "owner": "B",
+            "state": "fail",
+            "assertions": 6,
+            "failures": [
+              {
+                "msg": "exception",
+                "detail": "ReferenceError: projectVersion is not defined\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:280:116)\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+              }
+            ],
+            "ms": 1544,
+            "note": "exception"
+          },
+          {
+            "id": "D-25d",
+            "title": "非法预算失败关闭：maxTotalCost为字符串→worker构造即拒绝（exit≠0）且0调用",
+            "severity": "P0",
+            "owner": "B",
+            "state": "fail",
+            "assertions": 7,
+            "failures": [
+              {
+                "msg": "exception",
+                "detail": "ReferenceError: projectVersion is not defined\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:310:110)\n    at runNextTicks (node:internal/process/task_queues:64:5)\n    at listOnTimeout (node:internal/timers:547:9)\n    at process.processTimers (node:internal/timers:521:7)\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+              }
+            ],
+            "ms": 3038,
+            "note": "exception"
+          },
+          {
+            "id": "D-25e",
+            "title": "预算重启持久：第一笔消耗后重启worker，第二目标BUDGET_EXCEEDED（账本持久不绕过）",
+            "severity": "P0",
+            "owner": "B",
+            "state": "fail",
+            "assertions": 6,
+            "failures": [
+              {
+                "msg": "exception",
+                "detail": "ReferenceError: projectVersion is not defined\n    at mkGoal (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:336:125)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:340:18)\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+              }
+            ],
+            "ms": 33,
+            "note": "exception"
+          }
+        ],
+        "pass": 0,
+        "fail": 5,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 31,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    }
+  ],
+  "totals": {
+    "suites": 1,
+    "crashed": 0,
+    "pass": 0,
+    "fail": 5,
+    "skip": 0,
+    "blocked": 0,
+    "totalAssertions": 31
+  },
+  "flat": [
+    {
+      "id": "D-25a",
+      "title": "跨进程并发预算门：预算1/1，3 worker同抢3目标→恰1次mock调用，其余诚实失败",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 6,
+      "ms": 1505,
+      "note": "exception",
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "ReferenceError: projectVersion is not defined\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:213:20)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ]
+    },
+    {
+      "id": "D-25b",
+      "title": "账本不可读失败关闭：costLogPath指向目录→0调用+目标诚实失败",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 6,
+      "ms": 1554,
+      "note": "exception",
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "ReferenceError: projectVersion is not defined\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:250:116)\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ]
+    },
+    {
+      "id": "D-25c",
+      "title": "坏账本失败关闭：损坏行+超限有效行→0调用（不静默跳过放行）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 6,
+      "ms": 1544,
+      "note": "exception",
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "ReferenceError: projectVersion is not defined\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:280:116)\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ]
+    },
+    {
+      "id": "D-25d",
+      "title": "非法预算失败关闭：maxTotalCost为字符串→worker构造即拒绝（exit≠0）且0调用",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 7,
+      "ms": 3038,
+      "note": "exception",
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "ReferenceError: projectVersion is not defined\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:310:110)\n    at runNextTicks (node:internal/process/task_queues:64:5)\n    at listOnTimeout (node:internal/timers:547:9)\n    at process.processTimers (node:internal/timers:521:7)\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ]
+    },
+    {
+      "id": "D-25e",
+      "title": "预算重启持久：第一笔消耗后重启worker，第二目标BUDGET_EXCEEDED（账本持久不绕过）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 6,
+      "ms": 33,
+      "note": "exception",
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "ReferenceError: projectVersion is not defined\n    at mkGoal (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:336:125)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs:340:18)\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ]
+    }
+  ]
+}

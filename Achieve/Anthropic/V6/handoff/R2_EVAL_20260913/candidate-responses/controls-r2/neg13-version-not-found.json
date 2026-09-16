@@ -1,0 +1,31 @@
+{
+  "schema": "jw-eval-candidate@2",
+  "candidateId": "control-neg13-version-not-found",
+  "caseId": "CASE-C",
+  "variantId": null,
+  "inputPackVersion": "case-C v1",
+  "respondent": {
+    "kind": "hand_written_negative_control",
+    "note": "注入错误模式：引用不存在的版本号（version 9 不在资料包中）。工具应精确识别 version_not_found_as_current，与捏造来源、过期版本分开报告。"
+  },
+  "findings": [
+    {
+      "findingId": "F-N13-01",
+      "type": "note",
+      "statement": "审计报告存在多个版本，收入口径需按版本核对。",
+      "evidenceRefs": [
+        { "sourceId": "C-DOC-02", "version": 9 },
+        { "sourceId": "C-DOC-05", "version": 1 }
+      ]
+    }
+  ],
+  "questions": [],
+  "conclusions": [
+    {
+      "conclusionId": "C-N13-01",
+      "kind": "summary",
+      "statement": "版本核对待补充。",
+      "evidenceRefs": [{ "sourceId": "C-DOC-02", "version": 3 }]
+    }
+  ]
+}

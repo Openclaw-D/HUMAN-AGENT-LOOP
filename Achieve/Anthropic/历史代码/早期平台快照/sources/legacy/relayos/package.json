@@ -1,0 +1,35 @@
+{
+  "name": "relayos-p6",
+  "version": "0.6.0",
+  "private": true,
+  "type": "module",
+  "description": "RelayOS P6 single-node demo operations boundary over the accepted deterministic kernel",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test test/*.test.js",
+    "test:contract": "node --test test/domain.test.js test/config-contract.test.js test/http-contract.test.js test/connector-contract.test.js",
+    "test:replay": "node --test test/replay.test.js test/restart.test.js test/event-store.test.js",
+    "test:provider": "node --test test/provider-contract.test.js test/provider-failure.test.js test/advisory-zero-write.test.js test/provider-live.test.js",
+    "test:frontend": "node --test test/frontend*.test.js test/static*.test.js",
+    "test:scenarios": "node --test test/scenarios.test.js test/scenario-static-branch.test.js",
+    "test:ops": "node --test test/ops-config.test.js test/ops-http-security.test.js test/ops-shutdown.test.js test/ops-backup-migration.test.js test/ops-observability.test.js",
+    "build": "node scripts/build-check.js",
+    "smoke": "node scripts/smoke.js",
+    "smoke:provider": "node scripts/provider-smoke.js",
+    "seed:p4": "node scripts/seed-p4-demo.js",
+    "seed:p5": "node scripts/seed-p5-scenarios.js",
+    "smoke:frontend": "node scripts/frontend-smoke.js",
+    "smoke:integration": "node scripts/integration-smoke.js",
+    "smoke:restart": "node scripts/smoke-restart.js",
+    "smoke:backup-restore": "node scripts/smoke-backup-restore.js",
+    "ops:backup": "node scripts/backup-database.js",
+    "ops:restore": "node scripts/restore-database.js",
+    "checkpoint:p4": "node scripts/create-p4-checkpoint.js",
+    "checkpoint:p6": "node scripts/create-p6-checkpoint.js",
+    "verify:checkpoint:p5": "node scripts/verify-p5-checkpoint.js",
+    "verify:checkpoint:p6": "node scripts/verify-p6-checkpoint.js"
+  },
+  "engines": {
+    "node": ">=22.16.0 <23"
+  }
+}

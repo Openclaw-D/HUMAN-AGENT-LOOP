@@ -1,0 +1,152 @@
+{
+  "run": "r4-g3g9",
+  "startedUtc": "r4-g3g9",
+  "endedUtc": "2026-09-15T18:46:42.823Z",
+  "suites": [
+    {
+      "file": "g3_outbox_idem.test.mjs",
+      "exitCode": 0,
+      "crashed": false,
+      "res": {
+        "suite": "g3_outbox_idem",
+        "results": [
+          {
+            "id": "D-09",
+            "title": "outbox与业务写同事务：成功写出事件；失败写零孤儿事件（DB行级核验）",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 26,
+            "failures": [],
+            "ms": 1818,
+            "note": ""
+          },
+          {
+            "id": "D-10",
+            "title": "至少一次投递+重复投递：订阅端500→重投同eventId；业务效果不因重投重复",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 27,
+            "failures": [],
+            "ms": 1272,
+            "note": ""
+          },
+          {
+            "id": "D-11",
+            "title": "requestId幂等：同载荷重放replayed；异载荷409 REQUEST_MISMATCH且第二效果不生效",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 25,
+            "failures": [],
+            "ms": 609,
+            "note": ""
+          }
+        ],
+        "pass": 3,
+        "fail": 0,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 78,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    },
+    {
+      "file": "g9_deliverability.test.mjs",
+      "exitCode": 0,
+      "crashed": false,
+      "res": {
+        "suite": "g9_deliverability",
+        "results": [
+          {
+            "id": "D-28",
+            "title": "依赖manifest：assembly/manifest.json覆盖入口传递源图+package.json+lockfile",
+            "severity": "P0",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 7,
+            "failures": [],
+            "ms": 12,
+            "note": ""
+          },
+          {
+            "id": "D-29",
+            "title": "干净目录启动：manifest文件复制到D自有干净目录→安装→迁移→启动→健康",
+            "severity": "P0",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 13,
+            "failures": [],
+            "ms": 2233,
+            "note": ""
+          }
+        ],
+        "pass": 2,
+        "fail": 0,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 20,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    }
+  ],
+  "totals": {
+    "suites": 2,
+    "crashed": 0,
+    "pass": 5,
+    "fail": 0,
+    "skip": 0,
+    "blocked": 0,
+    "totalAssertions": 98
+  },
+  "flat": [
+    {
+      "id": "D-09",
+      "title": "outbox与业务写同事务：成功写出事件；失败写零孤儿事件（DB行级核验）",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 26,
+      "ms": 1818
+    },
+    {
+      "id": "D-10",
+      "title": "至少一次投递+重复投递：订阅端500→重投同eventId；业务效果不因重投重复",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 27,
+      "ms": 1272
+    },
+    {
+      "id": "D-11",
+      "title": "requestId幂等：同载荷重放replayed；异载荷409 REQUEST_MISMATCH且第二效果不生效",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 25,
+      "ms": 609
+    },
+    {
+      "id": "D-28",
+      "title": "依赖manifest：assembly/manifest.json覆盖入口传递源图+package.json+lockfile",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 7,
+      "ms": 12
+    },
+    {
+      "id": "D-29",
+      "title": "干净目录启动：manifest文件复制到D自有干净目录→安装→迁移→启动→健康",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 13,
+      "ms": 2233
+    }
+  ]
+}

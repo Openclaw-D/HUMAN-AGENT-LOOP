@@ -1,0 +1,72 @@
+{
+  "version": "b-contract-stub@0.1.0(2026-09-16,待A CONTRACT.md对账)",
+  "state": {
+    "goals": [
+      [
+        "g1",
+        {
+          "version": 2,
+          "state": "active",
+          "goalId": "g1",
+          "projectId": "p1",
+          "inputVersions": {
+            "factVersion": "1",
+            "ruleVersion": "1"
+          }
+        }
+      ]
+    ],
+    "tasks": [
+      [
+        "t1",
+        {
+          "taskId": "t1",
+          "goalId": "g1",
+          "projectId": "p1",
+          "taskKind": "model_review",
+          "role": "credit",
+          "assignment": {
+            "taskId": "t1",
+            "workerId": "w1",
+            "fencingToken": 1,
+            "leaseUntil": "2026-09-15T17:55:49.010Z",
+            "claimedAt": "2026-09-15T17:54:49.010Z"
+          },
+          "receipts": [
+            {
+              "requestId": "rqP",
+              "taskId": "t1",
+              "workerId": "w1",
+              "fencingToken": 1,
+              "state": "candidate_ready",
+              "candidate": null,
+              "error": null,
+              "receiptRefs": [],
+              "at": "2026-09-15T17:54:49.019Z"
+            }
+          ],
+          "invalidated": false,
+          "claimSeq": 1,
+          "released": true
+        }
+      ]
+    ],
+    "receipts": [
+      [
+        "rqP",
+        {
+          "requestId": "rqP",
+          "taskId": "t1",
+          "workerId": "w1",
+          "fencingToken": 1,
+          "state": "candidate_ready",
+          "candidate": null,
+          "error": null,
+          "receiptRefs": [],
+          "at": "2026-09-15T17:54:49.019Z"
+        }
+      ]
+    ],
+    "humanRequests": []
+  }
+}

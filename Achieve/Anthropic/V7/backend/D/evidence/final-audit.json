@@ -1,0 +1,84 @@
+{
+  "name": "final-audit",
+  "at": "2026-09-15T00:01:00.251Z",
+  "durationMs": 3898,
+  "suiteError": null,
+  "pass": [
+    {
+      "id": "M-1a manifest 23 项逐项核对（match=23）",
+      "cls": "工程",
+      "detail": {
+        "total": 23,
+        "match": 23,
+        "mismatch": [],
+        "missing": []
+      }
+    },
+    {
+      "id": "L-1a 验证器异常文本内嵌凭据 → 传播进 resume 错误消息",
+      "cls": "工程",
+      "detail": {
+        "leakInMessage": true,
+        "head": "principal 验证器异常:verifier backend unreachable while checking credential=dqa-synthetic-credential-MARKER-x7f3 project=p-mu1wox7i-vaz4x7rp(失败关闭)"
+      }
+    },
+    {
+      "id": "L-1b B journal/snapshot 落盘文件无凭据明文",
+      "cls": "工程",
+      "detail": []
+    },
+    {
+      "id": "L-1c A 存储无凭据明文",
+      "cls": "工程",
+      "detail": []
+    },
+    {
+      "id": "L-1d A 403 响应体不回显凭据",
+      "cls": "工程",
+      "detail": "{\"ok\":false,\"error\":\"PRINCIPAL_UNTRUSTED\",\"message\":\"principal 凭据验证失败：正式动作被拒绝\"}"
+    },
+    {
+      "id": "L-1e A 服务器日志无凭据明文",
+      "cls": "工程",
+      "detail": ""
+    },
+    {
+      "id": "Y-2D 干净目录（含 B 实际依赖）recovery-round 全链通过",
+      "cls": "工程",
+      "detail": {
+        "okN": 24,
+        "failN": 0,
+        "hasDeps": true,
+        "label": "复制已有 node_modules ≠ npm 干净安装 ≠ 第二机器证明（如实标注）"
+      }
+    }
+  ],
+  "fail": [
+    {
+      "id": "M-1b assembly 传递依赖闭包 vs manifest 覆盖",
+      "cls": "工程",
+      "detail": {
+        "gaps": [
+          "B/src/deps.mjs"
+        ],
+        "requiredCount": 17
+      }
+    },
+    {
+      "id": "M-1c 锁定依赖文件在 manifest（锁定版本可追溯）",
+      "cls": "工程",
+      "detail": {
+        "depGaps": [
+          "B/package.json",
+          "B/package-lock.json"
+        ]
+      }
+    }
+  ],
+  "notes": [
+    {
+      "at": "2026-09-15T00:00:56.371Z",
+      "msg": "M-1 汇总：registered=23 match=23 missing=0 mismatch=0 depGaps=[\"B/package.json\",\"B/package-lock.json\"] importGaps=[\"B/src/deps.mjs\"]"
+    }
+  ]
+}

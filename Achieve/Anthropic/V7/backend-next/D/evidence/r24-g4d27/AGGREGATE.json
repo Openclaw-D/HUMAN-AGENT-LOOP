@@ -1,0 +1,33 @@
+{
+  "run": "r24-g4d27",
+  "startedUtc": "r24-g4d27",
+  "endedUtc": "2026-09-15T19:41:34.768Z",
+  "suites": [
+    {
+      "file": "g4_recovery.test.mjs",
+      "exitCode": 0,
+      "crashed": false,
+      "res": {
+        "suite": "g4_recovery",
+        "results": [],
+        "pass": 0,
+        "fail": 0,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 0,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    }
+  ],
+  "totals": {
+    "suites": 1,
+    "crashed": 0,
+    "pass": 0,
+    "fail": 0,
+    "skip": 0,
+    "blocked": 0,
+    "totalAssertions": 0
+  },
+  "flat": []
+}

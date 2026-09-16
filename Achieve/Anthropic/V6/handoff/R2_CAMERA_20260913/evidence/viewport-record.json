@@ -1,0 +1,20 @@
+{
+  "requestedViewport": {
+    "width": 402,
+    "height": 874
+  },
+  "tabViewport": {
+    "width": 402,
+    "height": 874
+  },
+  "pageMetrics": {
+    "clientHeight": 1057,
+    "clientWidth": 486,
+    "devicePixelRatio": 0.8264463194145648,
+    "innerHeight": 1057,
+    "innerWidth": 486,
+    "state": "idle",
+    "version": "0.2.0-r2-candidate"
+  },
+  "note": "IAB setViewportSize为布局仿真；devicePixelRatio为窗格缩放系数(0.826)，DPR3物理像素仿真工具不支持，如实记为未仿真"
+}

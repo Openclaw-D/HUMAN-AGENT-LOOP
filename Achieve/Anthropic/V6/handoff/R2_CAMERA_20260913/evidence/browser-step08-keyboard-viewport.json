@@ -1,0 +1,20 @@
+{
+  "step": "08-keyboard-360",
+  "focusChainStart": "",
+  "tabFocusOrder": [
+    "BODY",
+    "BODY",
+    "BODY",
+    "BODY",
+    "BODY",
+    "BODY"
+  ],
+  "viewport360": {
+    "requested": "360x800",
+    "layout": {
+      "bodyWidth": 402,
+      "clientWidth": 436
+    }
+  },
+  "caveat": "IAB布局视口固定为窗格尺寸，setViewportSize仅缩放截图；360宽度真实布局回归本工具无法呈现，记NOT TESTED"
+}

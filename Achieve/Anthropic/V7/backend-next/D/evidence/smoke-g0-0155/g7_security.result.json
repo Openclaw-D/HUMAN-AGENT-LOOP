@@ -1,0 +1,59 @@
+{
+  "suite": "g7_security",
+  "results": [
+    {
+      "id": "D-21",
+      "title": "跨项目隔离：p1-principal读/写p2全拒；p1正向控制可通；投影无泄漏",
+      "severity": "P0",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 0,
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "Error: ENOENT: no such file or directory, mkdir 'C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\file:\\C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\.run\\pg-d\\pgdata'\n    at mkdirSync (node:fs:1370:26)\n    at Module.ensurePg (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/pgctl.mjs:37:3)\n    at Module.startSut (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/sutctl.mjs:28:26)\n    at sut (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g7_security.test.mjs:10:52)\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g7_security.test.mjs:19:23)\n    at file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:47:40\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ],
+      "ms": 1,
+      "note": "exception"
+    },
+    {
+      "id": "D-22",
+      "title": "提示注入不提权：注入文本仅惰性存储；结构化禁用键400；无任何状态/权限副作用",
+      "severity": "P0",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 0,
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "Error: ENOENT: no such file or directory, mkdir 'C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\file:\\C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\.run\\pg-d\\pgdata'\n    at mkdirSync (node:fs:1370:26)\n    at Module.ensurePg (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/pgctl.mjs:37:3)\n    at Module.startSut (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/sutctl.mjs:28:26)\n    at sut (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g7_security.test.mjs:10:52)\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g7_security.test.mjs:65:23)\n    at file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:47:40\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ],
+      "ms": 1,
+      "note": "exception"
+    },
+    {
+      "id": "D-23",
+      "title": "凭据异常零泄漏：403响应不回显凭据；SUT日志/DB不落原始凭据",
+      "severity": "P0",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 0,
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "Error: ENOENT: no such file or directory, mkdir 'C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\file:\\C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend-next\\D\\.run\\pg-d\\pgdata'\n    at mkdirSync (node:fs:1370:26)\n    at Module.ensurePg (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/pgctl.mjs:37:3)\n    at Module.startSut (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/sutctl.mjs:28:26)\n    at sut (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g7_security.test.mjs:10:52)\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g7_security.test.mjs:93:23)\n    at file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:47:40\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ],
+      "ms": 0,
+      "note": "exception"
+    }
+  ],
+  "pass": 0,
+  "fail": 3,
+  "skip": 0,
+  "blocked": 0,
+  "totalAssertions": 0,
+  "runnerError": null
+}

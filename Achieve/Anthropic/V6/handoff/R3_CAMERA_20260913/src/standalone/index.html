@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>设备拍照模块·R3手机测试壳（402×874基准）</title>
+<style>
+  /* R2模块测试壳：402×874 CSS px（iPhone 17标准版竖屏仿真基准）优先；非产品前端。 */
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    margin: 0 auto; padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+    padding-left: calc(12px + env(safe-area-inset-left));
+    padding-right: calc(12px + env(safe-area-inset-right));
+    max-width: 402px; background: #ffffff; color: #111111;
+    font-size: 15px; line-height: 1.5;
+  }
+  h1 { font-size: 18px; margin: 8px 0; }
+  h2 { font-size: 15px; margin: 14px 0 6px; }
+  .banner {
+    border: 2px solid #111; padding: 8px 10px; margin: 8px 0; font-size: 13px;
+  }
+  .live-indicator {
+    display: flex; align-items: center; gap: 6px;
+    border: 2px solid #111; background: #fff3cd; color: #111;
+    padding: 8px 10px; margin: 8px 0; font-weight: 700; font-size: 14px;
+  }
+  .status-row { margin: 8px 0; font-size: 14px; }
+  .status-row strong { font-size: 15px; }
+  .notice {
+    min-height: 1.5em; font-weight: 600; color: #b00020; margin: 6px 0;
+    overflow-wrap: anywhere; font-size: 14px;
+  }
+  video, img { display: block; width: 100%; border: 2px solid #111; background: #eee; }
+  video { aspect-ratio: 3 / 4; object-fit: cover; max-height: 45vh; }
+  .media-block { margin: 8px 0; }
+  .meta {
+    font-size: 13px; margin: 6px 0 0; padding: 8px; background: #f4f4f4;
+    overflow-wrap: anywhere; white-space: pre-wrap;
+  }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 4px; }
+  button {
+    min-height: 44px; min-width: 44px; padding: 10px 14px; font-size: 15px;
+    border: 2px solid #111; background: #fff; color: #111; border-radius: 4px;
+  }
+  button:active { background: #e8e8e8; }
+  button:disabled { color: #767676; border-color: #767676; }
+  button:focus-visible, input:focus-visible, a:focus-visible, summary:focus-visible {
+    outline: 3px solid #1a73e8; outline-offset: 2px;
+  }
+  .primary { border-width: 3px; font-weight: 700; }
+  .mode-row { display: flex; align-items: center; gap: 8px; margin: 10px 0; font-size: 14px; }
+  .mode-row input[type="checkbox"] { width: 22px; height: 22px; }
+  .mode-hint { color: #444; font-size: 13px; margin: 0 0 8px 30px; }
+  details { border: 1px solid #767676; padding: 6px 8px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; min-height: 44px; display: flex; align-items: center; }
+  .media-block > summary { font-size: 15px; }
+  pre { background: #f4f4f4; padding: 8px; overflow-x: auto; font-size: 12px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+  <h1>设备拍照模块·R3手机测试壳</h1>
+
+  <div class="banner">
+    仅本地预览：不上传、不持久保存、不发送给模型；刷新后预览会丢失。
+    文件可能来自相册或截图，“capture=environment”提示也不证明文件为现场拍摄。
+  </div>
+
+  <p class="live-indicator" id="live-indicator" hidden>
+    <span aria-hidden="true">●</span> 摄像头开启中（资源占用提示）
+  </p>
+
+  <p class="status-row">状态：<strong id="state" role="status" aria-live="polite">加载中…</strong><br>
+  活动预览：<span id="hint">无</span></p>
+
+  <p class="notice" id="notice" role="alert"></p>
+
+  <video id="vf" muted playsinline aria-label="摄像头取景画面" hidden></video>
+
+  <div class="btn-row" role="group" aria-label="主要操作">
+    <button id="open" type="button">开启摄像头</button>
+    <button id="shot" type="button" class="primary" disabled>拍照 takePhoto</button>
+    <button id="pick-btn" type="button">选择文件（系统拍照/相册）</button>
+    <input id="pick" type="file" accept="image/*" capture="environment" hidden>
+  </div>
+
+  <div class="btn-row" role="group" aria-label="次要操作">
+    <button id="discard" type="button" title="仅作废当前照片内容：撤销本地URL，不改变摄像头开关状态" disabled>作废照片（仅内容）</button>
+    <button id="close" type="button" title="停止本机摄像头占用，不上传任何画面" disabled>关闭摄像头</button>
+    <button id="dispose" type="button" title="挂断/离开：释放本机全部轨道与本地预览URL">释放全部（挂断）</button>
+  </div>
+  <p class="mode-hint">关闭/作废/释放仅作用于本机资源：不上传、不影响任何对端设备，本模块不提供对客户设备的远程控制。“作废照片”只删内容、不改变摄像头开关状态；视频未配置或被拒绝时，“选择文件”仍可用。</p>
+
+  <div class="mode-row">
+    <input id="continuous" type="checkbox">
+    <label for="continuous">连续模式（保持摄像头开启）</label>
+  </div>
+  <p class="mode-hint">默认拍完（成功或失败）立即关闭摄像头；勾选为显式连续模式，切换将重建控制器。</p>
+
+  <details class="media-block" id="orig-block" hidden>
+    <summary>原件预览（本地）</summary>
+    <img id="shot-img" alt="用户提供的原件预览（未上传）">
+    <pre class="meta" id="orig-meta"></pre>
+  </details>
+
+  <details class="media-block" id="thumb-block" hidden>
+    <summary>独立缩略图（另建副本）</summary>
+    <img id="thumb-img" alt="由原件另建的缩略图，不覆盖原件字节">
+    <pre class="meta" id="thumb-meta"></pre>
+  </details>
+
+  <details>
+    <summary>能力检测（只看API/安全上下文，不启动设备）</summary>
+    <pre id="cap"></pre>
+  </details>
+
+  <details>
+    <summary>自动化测试钩子（仅模块验证，非产品功能）</summary>
+    <div class="btn-row">
+      <button id="inject-png" type="button">注入合成PNG（测试）</button>
+      <button id="inject-bad" type="button">注入非图片文件（测试）</button>
+    </div>
+    <p class="mode-hint">URL参数：?fakeMedia=hang（请求挂起）| ?fakeMedia=deny（拒绝）| ?fakeMedia=none（未配置）；?autoInject=png|bad（自动注入）；?auto=click:id,wait:ms,receipt:reason（自动序列）；?measure=1（几何测量导出）；?longNotice=1（超长提示不挡按钮验证）。当前：<span id="hook-state"></span></p>
+  </details>
+
+  <pre id="receipt-dump" hidden></pre>
+  <script type="module" src="./standalone-main.mjs"></script>
+</body>
+</html>

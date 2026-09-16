@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 2,
+  "id": "v3-audit-acceptance",
+  "taskType": "read-only-review",
+  "objective": "Audit V3 acceptance scripts and scenario tests for evidence blind spots and false-positive success paths without changing files.",
+  "workingDirectory": "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site",
+  "model": "glm-5.3-flash",
+  "effort": "high",
+  "sandboxMode": "read-only",
+  "allowedReads": [
+    "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/scripts/v3-full-run.mjs",
+    "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/scripts/v3-http-acceptance.mjs",
+    "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/scripts/v3-acceptance.mjs",
+    "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/test/v3-demo-scenario.test.mjs",
+    "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/test/api-route-source-contract.test.mjs"
+  ],
+  "allowedWrites": [],
+  "excluded": [
+    "task-acceptance.md",
+    "controller-acceptance.ps1",
+    "all files not listed in allowedReads",
+    "Git, network, dependency installation, site and browser execution"
+  ],
+  "baseline": {
+    "solutionInitiallyMissing": false,
+    "checks": [
+      "Controller full test suite passed 127 of 127",
+      "Current source is newer than the existing acceptance evidence"
+    ]
+  },
+  "acceptance": {
+    "command": "node --check ./scripts/v3-full-run.mjs",
+    "maxRuns": 1
+  },
+  "stopConditions": [
+    "provider_error",
+    "rate_limit",
+    "timeout",
+    "scope_violation",
+    "permission_denial",
+    "quota_auth_or_network_failure",
+    "acceptance_test_failure"
+  ],
+  "jsonlPath": "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/.glm53-v3-audit-20260830/lane-acceptance.jsonl",
+  "contract": {
+    "taskPackPath": "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/.glm53-v3-audit-20260830/task-acceptance.md",
+    "controllerTestPath": "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/.glm53-v3-audit-20260830/controller-acceptance.ps1",
+    "controllerCommand": "pwsh -NoProfile -File ./.glm53-v3-audit-20260830/controller-acceptance.ps1",
+    "profiles": ["integration", "path", "exact-shape"],
+    "requiredTerms": ["acceptance blind spot", "claim-to-evidence", "fresh-process", "non-zero exit"]
+  },
+  "commandPolicy": {
+    "maxCommandEvents": 6,
+    "maxReadsPerAllowedFile": 1,
+    "forbidDirectoryEnumeration": true,
+    "rejectUnclassifiedCommands": true
+  },
+  "runner": {
+    "timeoutSeconds": 1200,
+    "queueTimeoutSeconds": 300,
+    "skipGitRepoCheck": false,
+    "authorizedNonGitRoot": null,
+    "billingLeasePath": "C:/Users/22673/Desktop/GLM/benchmarks/billing-attestation-v1/lease-v3-audit-20260830-1409.json"
+  },
+  "roi": {
+    "directCodexMinutesLow": 25,
+    "parallelBenefitMinutesLow": 12,
+    "reuseBenefitMinutesLow": 5,
+    "taskPackMinutesHigh": 5,
+    "monitoringMinutesHigh": 3,
+    "reviewMinutesHigh": 8,
+    "handoffMinutesHigh": 2,
+    "expectedRepairMinutesHigh": 4,
+    "contextSwitchMinutesHigh": 2,
+    "providerRiskMinutesHigh": 2,
+    "minimumNetMinutes": 10,
+    "minimumBenefitCostRatio": 1.25
+  }
+}

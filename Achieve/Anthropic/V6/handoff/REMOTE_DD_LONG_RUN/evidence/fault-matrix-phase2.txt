@@ -1,0 +1,2 @@
+PASS 重启后状态恢复（会话/证据/标注存活）: v21 evidence=1 annotations=1
+{"action":"phase2","total":1,"failed":0}

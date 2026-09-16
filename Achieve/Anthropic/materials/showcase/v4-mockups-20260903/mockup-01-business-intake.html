@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Mockup 01 · 业务协同接口（手机）</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:"Microsoft YaHei","PingFang SC",sans-serif; }
+  body { width:390px; height:844px; background:#f2f4f8; display:flex; flex-direction:column; overflow:hidden; }
+  .hdr { background:#123a6b; color:#fff; padding:18px 20px 14px; }
+  .hdr h1 { font-size:20px; font-weight:700; }
+  .hdr p { font-size:12px; opacity:.75; margin-top:3px; }
+  .main { flex:1; padding:14px; overflow:hidden; }
+  .card { background:#fff; border-radius:12px; padding:14px; margin-bottom:12px; box-shadow:0 1px 3px rgba(16,42,80,.08); }
+  .case-card { border-left:5px solid #123a6b; }
+  .tag { display:inline-block; font-size:11px; padding:2px 8px; border-radius:99px; margin-right:6px; }
+  .tag-ok { background:#e3f5e9; color:#177245; }
+  .tag-domain { background:#e8eefb; color:#123a6b; }
+  .case-card h2 { font-size:17px; margin:6px 0 4px; }
+  .case-card .amount { font-size:22px; font-weight:800; color:#123a6b; margin:2px 0 6px; }
+  .case-card .note { font-size:12px; color:#5a6b82; line-height:1.5; }
+  .sec-title { font-size:13px; font-weight:700; color:#31405a; margin:14px 2px 8px; }
+  .ev-item { display:flex; align-items:center; gap:10px; background:#fff; border-radius:10px; padding:12px; margin-bottom:8px; box-shadow:0 1px 2px rgba(16,42,80,.06); }
+  .ev-ico { width:34px; height:34px; border-radius:8px; background:#eef2f9; display:flex; align-items:center; justify-content:center; font-size:17px; }
+  .ev-item .t { font-size:14px; font-weight:600; color:#22304a; }
+  .ev-item .s { font-size:11px; color:#7a889e; margin-top:2px; }
+  .btn { display:block; width:100%; border:0; border-radius:10px; padding:13px; font-size:15px; font-weight:700; text-align:center; }
+  .btn-primary { background:#123a6b; color:#fff; }
+  .btn-ghost { background:#fff; color:#123a6b; border:1.5px dashed #9db2d2; margin-top:8px; }
+  .fb { border-left:5px solid #c96a1f; }
+  .fb .head { display:flex; align-items:center; gap:6px; font-size:13px; font-weight:700; color:#8a4a12; }
+  .fb .head .pill { font-size:10px; background:#f7e8d8; color:#8a4a12; border-radius:99px; padding:1px 7px; font-weight:600; }
+  .fb p { font-size:12.5px; color:#4a5568; line-height:1.55; margin-top:6px; }
+  .fb .next { font-size:12px; color:#177245; font-weight:600; margin-top:6px; }
+  .nav { background:#fff; border-top:1px solid #e3e8f0; display:flex; }
+  .nav div { flex:1; text-align:center; padding:10px 0 12px; font-size:11px; color:#8a97ab; }
+  .nav div.on { color:#123a6b; font-weight:700; }
+  .nav .ico { font-size:19px; display:block; margin-bottom:2px; }
+</style>
+</head>
+<body>
+  <div class="hdr">
+    <h1>见微 V4 · 业务协同</h1>
+    <p>你是大风控四域的协同接口 · 不改变现行报批制度</p>
+  </div>
+  <div class="main">
+    <div class="card case-card">
+      <span class="tag tag-ok">已受理 ✓</span><span class="tag tag-ok">必要尽调已核验 ✓</span>
+      <h2>某四足机器人科技企业</h2>
+      <div class="amount">¥ 500 万</div>
+      <div class="note">用途：流动资金 + 设备采购 · 期限 24 个月<br>项目 Context 已送入：政策 · 信审 · 商务 · 资产 四域协同</div>
+    </div>
+
+    <div class="sec-title">四域风险反馈（来自大风控）</div>
+    <div class="card fb">
+      <div class="head">政策域 <span class="pill">Candidate · 仅供参考</span></div>
+      <p>合同金额 500 万与财务报表"营收下滑"口径存在张力，建议补充经营现金流与回款说明。</p>
+      <div class="next">→ 下一步：上传近 6 个月回款流水，或在新材料中说明缺口原因</div>
+    </div>
+
+    <div class="sec-title">补充材料（Evidence，提交后进入四域）</div>
+    <div class="ev-item"><div class="ev-ico">📄</div><div><div class="t">2025 年度审计报告摘要</div><div class="s">已提交 14:02 · 版本 V1 · 已留痕</div></div></div>
+    <div class="ev-item"><div class="ev-ico">📑</div><div><div class="t">设备采购合同草案</div><div class="s">已提交 14:06 · 版本 V1 · 已留痕</div></div></div>
+    <button class="btn btn-primary">＋ 提交补充材料</button>
+    <button class="btn btn-ghost">查看全部反馈与留痕记录</button>
+  </div>
+  <div class="nav">
+    <div class="on"><span class="ico">📋</span>项目</div>
+    <div><span class="ico">📎</span>材料</div>
+    <div><span class="ico">💬</span>反馈</div>
+  </div>
+</body>
+</html>

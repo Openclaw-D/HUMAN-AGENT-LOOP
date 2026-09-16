@@ -1,0 +1,39 @@
+▲ Next.js 16.2.6 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1413ms
+  Running TypeScript ...
+  Finished TypeScript in 2.2s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/19) ...
+  Generating static pages using 11 workers (4/19) 
+  Generating static pages using 11 workers (9/19) 
+  Generating static pages using 11 workers (14/19) 
+✓ Generating static pages using 11 workers (19/19) in 228ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /_not-found
+├ ƒ /api/v5-preview/demo/seed
+├ ƒ /api/v5-preview/messages
+├ ƒ /api/v5-preview/notes
+├ ƒ /api/v5-preview/project
+├ ƒ /api/v5-preview/remote-session
+├ ƒ /api/v5-preview/remote-session/annotations
+├ ƒ /api/v5-preview/remote-session/annotations/replies
+├ ƒ /api/v5-preview/remote-session/annotations/simulate
+├ ƒ /api/v5-preview/remote-session/attendance
+├ ƒ /api/v5-preview/remote-session/calculation
+├ ƒ /api/v5-preview/remote-session/detail
+├ ƒ /api/v5-preview/remote-session/evidence
+├ ƒ /api/v5-preview/remote-session/evidence/supersede
+├ ƒ /api/v5-preview/remote-session/fixture/[fixtureId]
+├ ƒ /api/v5-preview/remote-session/reviews
+├ ƒ /api/v5-preview/remote-session/rule-config
+├ ○ /v5-preview
+└ ○ /v5-preview/remote-session
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

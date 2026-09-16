@@ -1,0 +1,220 @@
+TAP version 13
+# Subtest: 签名唯一；s00==approval 种子；终点==settled 种子（重启=既有 seed 的前提，与产品一致）
+ok 1 - 签名唯一；s00==approval 种子；终点==settled 种子（重启=既有 seed 的前提，与产品一致）
+  ---
+  duration_ms: 1.0757
+  type: 'test'
+  ...
+# Subtest: 链式推进走查：常规步一次推进，人工动作/决定步停下；确认路径走完到结清
+ok 2 - 链式推进走查：常规步一次推进，人工动作/决定步停下；确认路径走完到结清
+  ---
+  duration_ms: 0.5343
+  type: 'test'
+  ...
+# Subtest: 纠正判断更新可见：correct 落点=效果应用步，更正记录消息+证据引用 v2 入留档流（非仅 note）
+ok 3 - 纠正判断更新可见：correct 落点=效果应用步，更正记录消息+证据引用 v2 入留档流（非仅 note）
+  ---
+  duration_ms: 0.3258
+  type: 'test'
+  ...
+# Subtest: 退回仅一次（有限路径）：再判点无 return 选项；每圈必经补交材料(hold)+复核；确认/纠正退出
+ok 4 - 退回仅一次（有限路径）：再判点无 return 选项；每圈必经补交材料(hold)+复核；确认/纠正退出
+  ---
+  duration_ms: 0.8389
+  type: 'test'
+  ...
+# Subtest: 判断灯单调不回退：确认主线绿灯集不缩小；s06→s07→s08→s09 并行段无域状态倒退；红灯仅限补充分支步
+ok 5 - 判断灯单调不回退：确认主线绿灯集不缩小；s06→s07→s08→s09 并行段无域状态倒退；红灯仅限补充分支步
+  ---
+  duration_ms: 0.9599
+  type: 'test'
+  ...
+# Subtest: 四域全绿仅在终态；各步恰 4 域；诚实标注与无越权结论
+ok 6 - 四域全绿仅在终态；各步恰 4 域；诚实标注与无越权结论
+  ---
+  duration_ms: 0.4777
+  type: 'test'
+  ...
+# Subtest: 初始化与重置：resetDemo 与 createDemoState 深比较相等；初态视图=initialView、无可用人工动作
+ok 7 - 初始化与重置：resetDemo 与 createDemoState 深比较相等；初态视图=initialView、无可用人工动作
+  ---
+  duration_ms: 2.2932
+  type: 'test'
+  ...
+# Subtest: 确定性：相同动作序列产生深比较相等的状态（无时钟/随机）
+ok 8 - 确定性：相同动作序列产生深比较相等的状态（无时钟/随机）
+  ---
+  duration_ms: 2.9762
+  type: 'test'
+  ...
+# Subtest: 不可变性：deepFreeze 输入与状态，全部 API 调用不改变既有对象
+ok 9 - 不可变性：deepFreeze 输入与状态，全部 API 调用不改变既有对象
+  ---
+  duration_ms: 0.8454
+  type: 'test'
+  ...
+# Subtest: 自动推进语义：一键完成全部可用常规动作（DD-02/DD-04..06），停在人工动作 DD-03，不越过
+ok 10 - 自动推进语义：一键完成全部可用常规动作（DD-02/DD-04..06），停在人工动作 DD-03，不越过
+  ---
+  duration_ms: 0.3481
+  type: 'test'
+  ...
+# Subtest: 前序未满足不完成：跳步推进被明确拒绝（PREREQ_UNMET / UNKNOWN_STEP）
+ok 11 - 前序未满足不完成：跳步推进被明确拒绝（PREREQ_UNMET / UNKNOWN_STEP）
+  ---
+  duration_ms: 0.2325
+  type: 'test'
+  ...
+# Subtest: 人工节点不可被自动越过：advanceAuto 停在 DD-01/DD-03/DD-07；对决定节点 advance 报 MUST_DECIDE
+ok 12 - 人工节点不可被自动越过：advanceAuto 停在 DD-01/DD-03/DD-07；对决定节点 advance 报 MUST_DECIDE
+  ---
+  duration_ms: 0.321
+  type: 'test'
+  ...
+# Subtest: 重复动作：同 requestId 同载荷=幂等重放（状态不变）；不同载荷=REQUEST_MISMATCH；已完成步骤新请求=ALREADY_COMPLETED
+ok 13 - 重复动作：同 requestId 同载荷=幂等重放（状态不变）；不同载荷=REQUEST_MISMATCH；已完成步骤新请求=ALREADY_COMPLETED
+  ---
+  duration_ms: 0.3175
+  type: 'test'
+  ...
+# Subtest: 部分并行：DD-02 后 DD-03..06 同时可用；任意完成顺序产生相同视图（完成顺序无关）
+ok 14 - 部分并行：DD-02 后 DD-03..06 同时可用；任意完成顺序产生相同视图（完成顺序无关）
+  ---
+  duration_ms: 1.0868
+  type: 'test'
+  ...
+# Subtest: 确认路径：确认后疑点挂账、证据不变、DD-08 可用且汇总无审批结论
+ok 15 - 确认路径：确认后疑点挂账、证据不变、DD-08 可用且汇总无审批结论
+  ---
+  duration_ms: 0.6901
+  type: 'test'
+  ...
+# Subtest: 纠正路径：证据升版 v1→v2、旧版本引用被拒、旧口径意见作废、更正消息入流
+ok 16 - 纠正路径：证据升版 v1→v2、旧版本引用被拒、旧口径意见作废、更正消息入流
+  ---
+  duration_ms: 0.6552
+  type: 'test'
+  ...
+# Subtest: 退回路径：退回后 DD-08 不可达、视图红灯不全绿；补证后重新判断（仅确认/纠正）；闭环回归主线
+ok 17 - 退回路径：退回后 DD-08 不可达、视图红灯不全绿；补证后重新判断（仅确认/纠正）；闭环回归主线
+  ---
+  duration_ms: 1.0376
+  type: 'test'
+  ...
+# Subtest: 退回后纠正路径证据仍只升版一次（跨节点效果幂等）
+ok 18 - 退回后纠正路径证据仍只升版一次（跨节点效果幂等）
+  ---
+  duration_ms: 0.3053
+  type: 'test'
+  ...
+# Subtest: 签约退回路径：退回→补充→仅确认；自动推进全程不越过 SG-02/SG-02B
+ok 19 - 签约退回路径：退回→补充→仅确认；自动推进全程不越过 SG-02/SG-02B
+  ---
+  duration_ms: 0.3325
+  type: 'test'
+  ...
+# Subtest: 分支无死路：从初态出发每个可达状态要么可达终态、要么至少有一个可执行动作（全空间 BFS）
+ok 20 - 分支无死路：从初态出发每个可达状态要么可达终态、要么至少有一个可执行动作（全空间 BFS）
+  ---
+  duration_ms: 1.0977
+  type: 'test'
+  ...
+# Subtest: 快照恢复：任意合法中间态 roundtrip 深比较相等；恢复态可继续推进
+ok 21 - 快照恢复：任意合法中间态 roundtrip 深比较相等；恢复态可继续推进
+  ---
+  duration_ms: 0.7986
+  type: 'test'
+  ...
+# Subtest: 快照校验恢复：损坏/异story/非法决定/重复请求/顺序非法 均明确拒绝
+ok 22 - 快照校验恢复：损坏/异story/非法决定/重复请求/顺序非法 均明确拒绝
+  ---
+  duration_ms: 0.2581
+  type: 'test'
+  ...
+# Subtest: 主线全绿走查：确认路径一键推进与人工节点交替，直至结清；正文与状态一致
+ok 23 - 主线全绿走查：确认路径一键推进与人工节点交替，直至结清；正文与状态一致
+  ---
+  duration_ms: 0.3803
+  type: 'test'
+  ...
+# Subtest: story 通过 validateStory 全部静态契约（schema/ID唯一/引用存在/静态可达）
+ok 24 - story 通过 validateStory 全部静态契约（schema/ID唯一/引用存在/静态可达）
+  ---
+  duration_ms: 1.9644
+  type: 'test'
+  ...
+# Subtest: ID 唯一且引用存在（requires/requiresAny/evidenceRefs/stages）
+ok 25 - ID 唯一且引用存在（requires/requiresAny/evidenceRefs/stages）
+  ---
+  duration_ms: 0.446
+  type: 'test'
+  ...
+# Subtest: 五阶段与终态符合任务书：商机/预审/尽调/签约/租后，结清为终态；材料补充不是额外阶段
+ok 26 - 五阶段与终态符合任务书：商机/预审/尽调/签约/租后，结清为终态；材料补充不是额外阶段
+  ---
+  duration_ms: 0.8098
+  type: 'test'
+  ...
+# Subtest: 每个主线步骤具备任务书 CP1 要求的字段：触发/预设中文消息/阶段/前提/证据版本/auto人工类型
+ok 27 - 每个主线步骤具备任务书 CP1 要求的字段：触发/预设中文消息/阶段/前提/证据版本/auto人工类型
+  ---
+  duration_ms: 0.29
+  type: 'test'
+  ...
+# Subtest: 不为六方齐全而让所有人每步发言：并行组四步各只发言一次，其余步骤不堆砌角色
+ok 28 - 不为六方齐全而让所有人每步发言：并行组四步各只发言一次，其余步骤不堆砌角色
+  ---
+  duration_ms: 0.2645
+  type: 'test'
+  ...
+# Subtest: 部分并行结构：疑点标记后四项仅依赖 DD-02，可任意顺序；人工判断节点汇合
+ok 29 - 部分并行结构：疑点标记后四项仅依赖 DD-02，可任意顺序；人工判断节点汇合
+  ---
+  duration_ms: 0.2398
+  type: 'test'
+  ...
+# Subtest: 远程尽调矛盾场景存在且双侧来源绑定：满负荷 vs 一半产能 + 电费张力，并标合成
+ok 30 - 远程尽调矛盾场景存在且双侧来源绑定：满负荷 vs 一半产能 + 电费张力，并标合成
+  ---
+  duration_ms: 0.2223
+  type: 'test'
+  ...
+# Subtest: 人工决定节点齐备：确认/纠正/退回三选项在 DD-07；再入节点收窄为确认/纠正；签约复核含确认/退回
+ok 31 - 人工决定节点齐备：确认/纠正/退回三选项在 DD-07；再入节点收窄为确认/纠正；签约复核含确认/退回
+  ---
+  duration_ms: 0.2573
+  type: 'test'
+  ...
+# Subtest: 纠正选项声明证据升版与意见作废；退回选项 outcome=return 且指向补充路径
+ok 32 - 纠正选项声明证据升版与意见作废；退回选项 outcome=return 且指向补充路径
+  ---
+  duration_ms: 0.4031
+  type: 'test'
+  ...
+# Subtest: 退回后不得错误全绿：补充步骤带 viewPatch（信审红灯 + 整体注记），窗口在汇合里程碑前
+ok 33 - 退回后不得错误全绿：补充步骤带 viewPatch（信审红灯 + 整体注记），窗口在汇合里程碑前
+  ---
+  duration_ms: 0.3841
+  type: 'test'
+  ...
+# Subtest: 判断节点不可被自动越过：human-decision/human-action 步骤标记齐全
+ok 34 - 判断节点不可被自动越过：human-decision/human-action 步骤标记齐全
+  ---
+  duration_ms: 0.2376
+  type: 'test'
+  ...
+# Subtest: 合成声明与隔离：synthetic=true，演示数据不引用 expected/model-input 内容
+ok 35 - 合成声明与隔离：synthetic=true，演示数据不引用 expected/model-input 内容
+  ---
+  duration_ms: 0.2591
+  type: 'test'
+  ...
+1..35
+# tests 35
+# suites 0
+# pass 35
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 109.0799

@@ -1,0 +1,59 @@
+=== npm ls (锁版依赖树,2026-09-16) ===
+v7-backend-next-b-execution-routing@0.1.0 C:\Users\22673\Desktop\Anthropic\V7\backend-next\B
+├── @langchain/core@0.3.68
+├── @langchain/langgraph-checkpoint@0.0.18
+└── @langchain/langgraph@0.2.62
+
+
+=== node version ===
+v22.23.1
+
+=== B 源文件 sha256(不含 node_modules/runtime/evidence) ===
+70b95109bd44c88a config/b-config.example.json
+a8642cee7d366e5d scripts/celery-collector.mjs
+f0b73a6537ce0919 scripts/run-a-integration.mjs
+27f875ca2dcde183 spike/celery/celery_app.py
+80f01ad7b53e693c spike/celery/docker-compose.yml
+dadfdfbffdbaf721 spike/celery/producer.py
+52ee1cc06e7122d7 spike/celery/requirements.txt
+6424f10733d59353 spike/celery/tasks.py
+37e46dffb95c3105 src/cli.mjs
+b0d138903a4d510d src/codes.mjs
+8e50532786e0b4c5 src/contract/client.mjs
+04d59be9e067ddc6 src/contract/stub.mjs
+be1c1b82161630f3 src/deps.mjs
+b48f675b9b5f70d7 src/graph/decision.mjs
+4460a5fc7ddd5ad0 src/graph/task-run-orchestrator.mjs
+86b64ad4a2982287 src/langgraph/file-checkpointer.mjs
+272e72ca466e4c49 src/ports.mjs
+6186a2865af3d8ca src/redact.mjs
+73abe1f0a0a60d02 src/resume-core.mjs
+f5db170497c601d8 src/router.mjs
+c96872affb1742e6 src/runtime.mjs
+179b479d2a84f0e7 src/transport/bridge.mjs
+f9d8b1cc2148c2d1 src/transport/glm.mjs
+c4117fcbcc41da1c src/worker/worker.mjs
+48e9dba897aee276 test/.tmp/stub-1789492946021/stub-state.json
+a8a7d3580322943a test/.tmp/stub-1789492961637/stub-state.json
+4ff6ae31b8a62dc7 test/.tmp/stub-1789493001002/stub-state.json
+6b08af5f6518aee4 test/.tmp/stub-1789493125599/stub-state.json
+80bb778a30548d85 test/.tmp/stub-1789494888986/stub-state.json
+f429eb3ff09caa4c test/.tmp/stub-1789495164729/stub-state.json
+d08790faa2b7df26 test/.tmp/stub-1789496318370/stub-state.json
+f60dcb5d799efe68 test/.tmp/stub-1789496423084/stub-state.json
+ecc90a75d6a2feac test/.tmp/stub-1789496649526/stub-state.json
+d9a9a7783b222aa2 test/.tmp/stub-1789496690420/stub-state.json
+e2a59dd485cf4d87 test/.tmp/stub-1789496942280/stub-state.json
+054b546d8d3ba04a test/.tmp/stub-1789497507918/stub-state.json
+f46459620627163d test/.tmp/stub-1789498003091/stub-state.json
+93f64194a7107eb0 test/.tmp/stub-1789498007200/stub-state.json
+5a3b27a547a840c9 test/contract-stub.test.mjs
+44581f5575398885 test/crash-child.mjs
+ad7d45779198c82f test/crash-recovery.test.mjs
+a81fe45650508493 test/goal-graph.test.mjs
+6203ad28cc8f1d0e test/helpers.mjs
+03dc11d143857bf3 test/redact.test.mjs
+daac8ea1bb07f32f test/resume-identity.test.mjs
+6369d431b1f0e2c0 test/router.test.mjs
+a479e8305be244bf test/three-way-send.test.mjs
+9bfebfe00d751ec3 test/worker-fencing.test.mjs

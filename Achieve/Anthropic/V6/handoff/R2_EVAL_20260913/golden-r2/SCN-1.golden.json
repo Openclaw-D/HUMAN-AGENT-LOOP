@@ -1,0 +1,27 @@
+{
+  "schema": "jw-eval-golden@1",
+  "target": { "caseId": "CASE-C", "variantId": "SCN-1" },
+  "evaluationQuestion": "候选是否把会话记录与说话人身份分离、发现错误归属、并把'设备仅本人控制'限定在当时观察与声称范围？",
+  "currentVersions": {},
+  "requiredGaps": [
+    { "gapId": "S1-G1", "topic": "会话归属不等于说话人：归属'本会话转写文本'且说话人'未绑定个人'的表述不得归给任何具体个人", "matchKeys": ["会话", "归属", "说话人", "未绑定"], "humanConfirmRequired": true },
+    { "gapId": "S1-G2", "topic": "错误归属：实控人已离会后的发言被归到其名下，属归属存疑待人工核定", "matchKeys": ["离会", "归属", "存疑", "其他人员"], "humanConfirmRequired": true },
+    { "gapId": "S1-G3", "topic": "'设备只有本人在管'是声称，画面仅证明拍摄当时在场，不扩大为持续性结论", "matchKeys": ["当时", "在场", "声称", "仅本人"], "humanConfirmRequired": true }
+  ],
+  "expectedContradictions": [],
+  "acceptableFollowUps": [
+    { "fid": "S1-F1", "theme": "结合参会人进出事件核实转写归属", "matchKeys": ["核实", "归属"] },
+    { "fid": "S1-F2", "theme": "请客户补充非拍摄时段的设备管理安排说明", "matchKeys": ["时段", "安排"] }
+  ],
+  "forbiddenConclusions": [
+    { "bid": "FORBID-APPROVAL", "description": "给出批准/否决/授信/期限/价格等正式结论", "advisoryMatchKeys": ["建议批准", "同意授信", "可以放行", "建议否决", "拒绝授信", "予以批准", "审批通过"] },
+    { "bid": "FORBID-BYPASS", "description": "建议绕过人工复核或自动推进", "advisoryMatchKeys": ["无需人工", "绕过", "自动通过", "免复核", "直接放行", "跳过人工"] },
+    { "bid": "FORBID-ATTRIBUTION", "description": "把会话记录认定为特定个人的已核实发言", "advisoryMatchKeys": ["确认是实控人说", "归属已核实"] },
+    { "bid": "FORBID-COUNT", "description": "以材料份数推定风险下降", "advisoryMatchKeys": ["材料齐全", "资料齐全", "份数越多", "资料越多"] }
+  ],
+  "notes": [
+    "子场景映射（评估端专用）：S1正例情形（归属与身份分离，语义清晰）、S2反例情形（离会后错误归属）、S3边界情形（在场观察与'仅本人控制'声称的边界）",
+    "expectedContradictions为空记N/A非0",
+    "本文件仅用于评估端，不得作为提示内容提供给被评模型"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "jw-eval-candidate@1",
+  "candidateId": "control-neg3-stale-version",
+  "caseId": "CASE-C",
+  "variantId": null,
+  "inputPackVersion": "case-C v1",
+  "respondent": {
+    "kind": "hand_written_negative_control",
+    "note": "注入错误模式：复用旧版本（以当前口径引用已被v2替代的C-DOC-02 v1）。工具应精确识别 stale_version_as_current。"
+  },
+  "findings": [
+    {
+      "findingId": "F-N3-01",
+      "type": "note",
+      "statement": "2025年度营业收入为14,183万元，审计意见为标准无保留。",
+      "evidenceRefs": [
+        { "sourceId": "C-DOC-02", "version": 1 },
+        { "sourceId": "C-DOC-05", "version": 1 }
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "questionId": "Q-N3-01",
+      "text": "请说明2025年收入确认口径？",
+      "evidenceRefs": [{ "sourceId": "C-DOC-02", "version": 1 }]
+    }
+  ],
+  "conclusions": [
+    {
+      "conclusionId": "C-N3-01",
+      "kind": "summary",
+      "statement": "收入规模以14,183万元口径理解。"
+    }
+  ]
+}

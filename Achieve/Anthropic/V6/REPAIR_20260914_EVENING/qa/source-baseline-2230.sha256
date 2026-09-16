@@ -1,0 +1,19 @@
+# D路源码基线快照 2026-09-14 22:3x（A写入前；用于检测发布漂移）
+# 生成: sha256sum 相对路径
+99
+
+72e92143dc152754c88a01ae5eb011bd240a10893ade2db3fced436a4f3ccb5c *app/v5-preview/page.tsx
+fc7405feb91f32b41f1f4c4758fd384cae8de6b29950cefb93b1f47b5f06033f *app/v5-preview/remote-session/page.tsx
+1a2097ebdc36955e4ed295b6887b43fdb7d95c7fd1eee5bb1413069523363a24 *app/v5-preview/demo-story-panel.tsx
+62eddcfdb9dece96b3aef89ecdd754ada288ffea315f8baeaca79d049a3106e3 *app/v5-preview/se-overview.module.css
+11ff9d1e834c23091d7ceb1dbfe936ce0699b2233f98fb22505ff664f8e2833c *app/v5-preview/remote-session/se-interview.module.css
+58f7a153edeecbf94b1d9b51ae3988a6cb52f271c95efc8773b55a0d8cc7f324 *app/v5-preview/api-client.ts
+c8b742ed087ec2dfb891e7b0ec6698d583f4fa7cf2b30a3f2d9ab69a0a7ace7d *lib/v5-preview/store.ts
+3c4995474bd0c8af6d7872525c48823cdf677c81d135bcb5778b10418b16ebae *lib/v5-preview/remote-store.ts
+7f340baabe01dcb41d216cd513a418a44b7565b2740f712c1012bad7b84aa246 *lib/v5-preview/demo-story-service.ts
+b0647d2dd85d51038dc799a8b4ed9f7a6bf8eabfe36ad117b6da3e3b0f2e549f *lib/v5-preview/demo-story-data.ts
+c1d3873c4a3b59ee24b6f0ebca34485f9780849a1c1cfc3df056b0661ca42bc2 *lib/v5-preview/service.ts
+48bd8b8fd61de0a16370690e0a3b643d5d2996addc154bb394239fc04eeb7dd4 *lib/v5-preview/remote-service.ts
+a7041e617ccff62972326a96aa0ad39254fc13a539e6be0d507e41ed2f823dbb *lib/v5-preview/remote-request-registry.ts
+5fce26eda88991060399b409e4ed6d38394e46194d1fdca7260c05f11600e1ad *lib/v5-preview/remote-types.ts
+1ffc2a4ee34cd067a27cb9950985fba042d68b7cd6a1b20ddec35e1ae591dbbd *lib/v5-preview/demo-story-types.ts

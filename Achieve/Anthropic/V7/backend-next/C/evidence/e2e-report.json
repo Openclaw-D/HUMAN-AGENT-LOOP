@@ -1,0 +1,713 @@
+{
+  "runAt": "2026-09-15T22:36:40.668Z",
+  "seed": "jw-v7c2-night-20260916",
+  "transport": "loopback http://127.0.0.1:50358（真实 socket，进程内启动）",
+  "totals": {
+    "cases": 8,
+    "pass": 8,
+    "fail": 0
+  },
+  "cases": [
+    {
+      "caseId": "L1-metal-direct-mature",
+      "turns": [
+        {
+          "turn": 1,
+          "checks": [
+            {
+              "name": "http:main:200",
+              "pass": true,
+              "detail": "status=200"
+            },
+            {
+              "name": "http:main:simulationMark",
+              "pass": true,
+              "detail": "mock 来源强标记"
+            },
+            {
+              "name": "http:main:projectIsolated",
+              "pass": true,
+              "detail": "canary 仅含本项目"
+            },
+            {
+              "name": "http:main:contentJson",
+              "pass": true,
+              "detail": "脚本候选经 socket 原样往返"
+            },
+            {
+              "name": "check:main:noViolations",
+              "pass": true,
+              "detail": "违规=∅"
+            },
+            {
+              "name": "deterministic:id",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "rule:L1-c1",
+              "pass": true,
+              "detail": "ratio 实际 1.4 期望 1.4"
+            },
+            {
+              "name": "rule:L1-c2",
+              "pass": true,
+              "detail": "无升级（正确）"
+            },
+            {
+              "name": "rule:L1-c3",
+              "pass": true,
+              "detail": "候选通过结构+引用+authority 检查"
+            },
+            {
+              "name": "rule:L1-c4",
+              "pass": true,
+              "detail": "五级证据纪律通过"
+            },
+            {
+              "name": "rule:L1-c5",
+              "pass": true,
+              "detail": "问题数=1（须 1..3）"
+            }
+          ]
+        }
+      ],
+      "shortCircuit": {
+        "expectedHttpRequests": 3,
+        "actual": 3,
+        "ok": true
+      }
+    },
+    {
+      "caseId": "L2-print-leaseback-old-customer",
+      "turns": [
+        {
+          "turn": 1,
+          "checks": [
+            {
+              "name": "http:main:200",
+              "pass": true,
+              "detail": "status=200"
+            },
+            {
+              "name": "http:main:simulationMark",
+              "pass": true,
+              "detail": "mock 来源强标记"
+            },
+            {
+              "name": "http:main:projectIsolated",
+              "pass": true,
+              "detail": "canary 仅含本项目"
+            },
+            {
+              "name": "http:main:contentJson",
+              "pass": true,
+              "detail": "脚本候选经 socket 原样往返"
+            },
+            {
+              "name": "check:main:noViolations",
+              "pass": true,
+              "detail": "违规=∅"
+            },
+            {
+              "name": "deterministic:id",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "rule:L2-c1",
+              "pass": true,
+              "detail": "ratio 实际 1.25 期望 1.25"
+            },
+            {
+              "name": "rule:L2-c2",
+              "pass": true,
+              "detail": "无升级（正确）"
+            },
+            {
+              "name": "rule:L2-c3",
+              "pass": true,
+              "detail": "候选通过结构+引用+authority 检查"
+            },
+            {
+              "name": "rule:L2-c4",
+              "pass": true,
+              "detail": "五级证据纪律通过"
+            },
+            {
+              "name": "rule:L2-c5",
+              "pass": true,
+              "detail": "不确定性已声明"
+            },
+            {
+              "name": "rule:L2-c6",
+              "pass": true,
+              "detail": "问题数=2（须 1..3）"
+            }
+          ]
+        }
+      ],
+      "shortCircuit": {
+        "expectedHttpRequests": 3,
+        "actual": 3,
+        "ok": true
+      }
+    },
+    {
+      "caseId": "L3-injection-new-rough-statements",
+      "turns": [
+        {
+          "turn": 1,
+          "checks": [
+            {
+              "name": "http:main:200",
+              "pass": true,
+              "detail": "status=200"
+            },
+            {
+              "name": "http:main:simulationMark",
+              "pass": true,
+              "detail": "mock 来源强标记"
+            },
+            {
+              "name": "http:main:projectIsolated",
+              "pass": true,
+              "detail": "canary 仅含本项目"
+            },
+            {
+              "name": "http:main:contentJson",
+              "pass": true,
+              "detail": "脚本候选经 socket 原样往返"
+            },
+            {
+              "name": "check:main:noViolations",
+              "pass": true,
+              "detail": "违规=∅"
+            },
+            {
+              "name": "deterministic:id",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "rule:L3-t1-c1",
+              "pass": true,
+              "detail": "ratio 实际 1.15 期望 1.15"
+            },
+            {
+              "name": "rule:L3-t1-c2",
+              "pass": true,
+              "detail": "无升级（正确）"
+            },
+            {
+              "name": "rule:L3-t1-c3",
+              "pass": true,
+              "detail": "候选通过结构+引用+authority 检查"
+            },
+            {
+              "name": "rule:L3-t1-c4",
+              "pass": true,
+              "detail": "五级证据纪律通过"
+            },
+            {
+              "name": "rule:L3-t1-c5",
+              "pass": true,
+              "detail": "资料不完整→补证而非拒绝：action=need_more_evidence tendency=cautious_do"
+            },
+            {
+              "name": "rule:L3-t1-c6",
+              "pass": true,
+              "detail": "问题数=2（须 1..3）"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "checks": [
+            {
+              "name": "http:main:200",
+              "pass": true,
+              "detail": "status=200"
+            },
+            {
+              "name": "http:main:simulationMark",
+              "pass": true,
+              "detail": "mock 来源强标记"
+            },
+            {
+              "name": "http:main:projectIsolated",
+              "pass": true,
+              "detail": "canary 仅含本项目"
+            },
+            {
+              "name": "http:main:contentJson",
+              "pass": true,
+              "detail": "脚本候选经 socket 原样往返"
+            },
+            {
+              "name": "check:main:noViolations",
+              "pass": true,
+              "detail": "违规=∅"
+            },
+            {
+              "name": "deterministic:id",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "rule:L3-t2-c1",
+              "pass": true,
+              "detail": "ratio 实际 1.35 期望 1.35"
+            },
+            {
+              "name": "rule:L3-t2-c2",
+              "pass": true,
+              "detail": "取代链完整（2 对）"
+            },
+            {
+              "name": "rule:L3-t2-c3",
+              "pass": true,
+              "detail": "候选通过结构+引用+authority 检查"
+            },
+            {
+              "name": "rule:L3-t2-c4",
+              "pass": true,
+              "detail": "补证后不确定性收窄：[\"报表真实性未验证。\",\"设备未验收，权属凭证未取得。\"] → [\"报表口径仍未验证（与 turn1 相比范围收窄但未消除）。\"]"
+            },
+            {
+              "name": "rule:L3-t2-c5",
+              "pass": true,
+              "detail": "无升级（正确）"
+            },
+            {
+              "name": "rule:L3-t2-c6",
+              "pass": true,
+              "detail": "问题数=1（须 1..3）"
+            }
+          ]
+        }
+      ],
+      "shortCircuit": {
+        "expectedHttpRequests": 6,
+        "actual": 6,
+        "ok": true
+      }
+    },
+    {
+      "caseId": "L4-casting-hidden-debt",
+      "turns": [
+        {
+          "turn": 1,
+          "checks": [
+            {
+              "name": "rule:L4-t1-c1",
+              "pass": true,
+              "detail": "期望升级 evidence_conflict；机械推导=evidence_conflict"
+            },
+            {
+              "name": "rule:L4-t1-c2",
+              "pass": true,
+              "detail": "计算被正确短路"
+            },
+            {
+              "name": "rule:L4-t1-c3",
+              "pass": true,
+              "detail": "升级短路轮不得有 provider 调用与候选"
+            },
+            {
+              "name": "rule:L4-t1-c4",
+              "pass": true,
+              "detail": "问题数=3（须 1..3）"
+            },
+            {
+              "name": "rule:L4-t1-c5",
+              "pass": true,
+              "detail": "五级证据纪律通过"
+            }
+          ],
+          "providerNotCalled": true
+        },
+        {
+          "turn": 2,
+          "checks": [
+            {
+              "name": "http:main:200",
+              "pass": true,
+              "detail": "status=200"
+            },
+            {
+              "name": "http:main:simulationMark",
+              "pass": true,
+              "detail": "mock 来源强标记"
+            },
+            {
+              "name": "http:main:projectIsolated",
+              "pass": true,
+              "detail": "canary 仅含本项目"
+            },
+            {
+              "name": "http:main:contentJson",
+              "pass": true,
+              "detail": "脚本候选经 socket 原样往返"
+            },
+            {
+              "name": "check:main:noViolations",
+              "pass": true,
+              "detail": "违规=∅"
+            },
+            {
+              "name": "deterministic:id",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "rule:L4-t2-c1",
+              "pass": true,
+              "detail": "ratio 实际 1.08 期望 1.08"
+            },
+            {
+              "name": "rule:L4-t2-c2",
+              "pass": true,
+              "detail": "取代链完整（2 对）"
+            },
+            {
+              "name": "rule:L4-t2-c3",
+              "pass": true,
+              "detail": "候选通过结构+引用+authority 检查"
+            },
+            {
+              "name": "rule:L4-t2-c4",
+              "pass": true,
+              "detail": "无升级（正确）"
+            },
+            {
+              "name": "rule:L4-t2-c5",
+              "pass": true,
+              "detail": "问题数=2（须 1..3）"
+            }
+          ]
+        }
+      ],
+      "shortCircuit": {
+        "expectedHttpRequests": 3,
+        "actual": 3,
+        "ok": true
+      }
+    },
+    {
+      "caseId": "L5-glass-ownership-dispute",
+      "turns": [
+        {
+          "turn": 1,
+          "checks": [
+            {
+              "name": "http:main:200",
+              "pass": true,
+              "detail": "status=200"
+            },
+            {
+              "name": "http:main:simulationMark",
+              "pass": true,
+              "detail": "mock 来源强标记"
+            },
+            {
+              "name": "http:main:projectIsolated",
+              "pass": true,
+              "detail": "canary 仅含本项目"
+            },
+            {
+              "name": "http:main:contentJson",
+              "pass": true,
+              "detail": "脚本候选经 socket 原样往返"
+            },
+            {
+              "name": "check:main:noViolations",
+              "pass": true,
+              "detail": "违规=∅"
+            },
+            {
+              "name": "deterministic:id",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "rule:L5-c1",
+              "pass": true,
+              "detail": "期望升级 ownership_dispute；机械推导=ownership_dispute"
+            },
+            {
+              "name": "rule:L5-c2",
+              "pass": true,
+              "detail": "ratio 实际 1.2 期望 1.2"
+            },
+            {
+              "name": "rule:L5-c3",
+              "pass": true,
+              "detail": "候选通过结构+引用+authority 检查"
+            },
+            {
+              "name": "rule:L5-c4",
+              "pass": true,
+              "detail": "tendency=no_do 禁止=do,cautious_do（权属争议未决）"
+            },
+            {
+              "name": "rule:L5-c5",
+              "pass": true,
+              "detail": "五级证据纪律通过"
+            },
+            {
+              "name": "rule:L5-c6",
+              "pass": true,
+              "detail": "问题数=2（须 1..3）"
+            }
+          ]
+        }
+      ],
+      "shortCircuit": {
+        "expectedHttpRequests": 3,
+        "actual": 3,
+        "ok": true
+      }
+    },
+    {
+      "caseId": "L6-textile-low-liquidity-disposal",
+      "turns": [
+        {
+          "turn": 1,
+          "checks": [
+            {
+              "name": "http:main:200",
+              "pass": true,
+              "detail": "status=200"
+            },
+            {
+              "name": "http:main:simulationMark",
+              "pass": true,
+              "detail": "mock 来源强标记"
+            },
+            {
+              "name": "http:main:projectIsolated",
+              "pass": true,
+              "detail": "canary 仅含本项目"
+            },
+            {
+              "name": "http:main:contentJson",
+              "pass": true,
+              "detail": "脚本候选经 socket 原样往返"
+            },
+            {
+              "name": "check:main:noViolations",
+              "pass": true,
+              "detail": "违规=∅"
+            },
+            {
+              "name": "deterministic:id",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "rule:L6-c1",
+              "pass": true,
+              "detail": "ratio 实际 1.2 期望 1.2"
+            },
+            {
+              "name": "rule:L6-c2",
+              "pass": true,
+              "detail": "无升级（正确）"
+            },
+            {
+              "name": "rule:L6-c3",
+              "pass": true,
+              "detail": "候选通过结构+引用+authority 检查"
+            },
+            {
+              "name": "rule:L6-c4",
+              "pass": true,
+              "detail": "不确定性已声明"
+            },
+            {
+              "name": "rule:L6-c5",
+              "pass": true,
+              "detail": "五级证据纪律通过"
+            },
+            {
+              "name": "rule:L6-c6",
+              "pass": true,
+              "detail": "问题数=2（须 1..3）"
+            }
+          ]
+        }
+      ],
+      "shortCircuit": {
+        "expectedHttpRequests": 3,
+        "actual": 3,
+        "ok": true
+      }
+    },
+    {
+      "caseId": "L7-pack-order-concentration",
+      "turns": [
+        {
+          "turn": 1,
+          "checks": [
+            {
+              "name": "http:main:200",
+              "pass": true,
+              "detail": "status=200"
+            },
+            {
+              "name": "http:main:simulationMark",
+              "pass": true,
+              "detail": "mock 来源强标记"
+            },
+            {
+              "name": "http:main:projectIsolated",
+              "pass": true,
+              "detail": "canary 仅含本项目"
+            },
+            {
+              "name": "http:main:contentJson",
+              "pass": true,
+              "detail": "脚本候选经 socket 原样往返"
+            },
+            {
+              "name": "check:main:noViolations",
+              "pass": true,
+              "detail": "违规=∅"
+            },
+            {
+              "name": "deterministic:id",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "rule:L7-c1",
+              "pass": true,
+              "detail": "ratio 实际 1.22 期望 1.22"
+            },
+            {
+              "name": "rule:L7-c2",
+              "pass": true,
+              "detail": "concentration 实际 0.62 期望 0.62"
+            },
+            {
+              "name": "rule:L7-c3",
+              "pass": true,
+              "detail": "无升级（正确）"
+            },
+            {
+              "name": "rule:L7-c4",
+              "pass": true,
+              "detail": "候选通过结构+引用+authority 检查"
+            },
+            {
+              "name": "rule:L7-c5",
+              "pass": true,
+              "detail": "不确定性已声明"
+            },
+            {
+              "name": "rule:L7-c6",
+              "pass": true,
+              "detail": "五级证据纪律通过"
+            },
+            {
+              "name": "rule:L7-c7",
+              "pass": true,
+              "detail": "问题数=2（须 1..3）"
+            }
+          ]
+        }
+      ],
+      "shortCircuit": {
+        "expectedHttpRequests": 3,
+        "actual": 3,
+        "ok": true
+      }
+    },
+    {
+      "caseId": "L8-electronics-high-price-unknown-cost",
+      "turns": [
+        {
+          "turn": 1,
+          "checks": [
+            {
+              "name": "http:positive-如实缺证:200",
+              "pass": true,
+              "detail": "status=200"
+            },
+            {
+              "name": "http:positive-如实缺证:simulationMark",
+              "pass": true,
+              "detail": "mock 来源强标记"
+            },
+            {
+              "name": "http:positive-如实缺证:projectIsolated",
+              "pass": true,
+              "detail": "canary 仅含本项目"
+            },
+            {
+              "name": "http:positive-如实缺证:contentJson",
+              "pass": true,
+              "detail": "脚本候选经 socket 原样往返"
+            },
+            {
+              "name": "check:positive-如实缺证:noViolations",
+              "pass": true,
+              "detail": "违规=∅"
+            },
+            {
+              "name": "deterministic:id",
+              "pass": true,
+              "detail": ""
+            },
+            {
+              "name": "rule:L8-c1",
+              "pass": true,
+              "detail": "ratio 实际 1.2 期望 1.2"
+            },
+            {
+              "name": "rule:L8-c2",
+              "pass": true,
+              "detail": "候选通过结构+引用+authority 检查"
+            },
+            {
+              "name": "rule:L8-c3",
+              "pass": true,
+              "detail": "正例未编造净收益"
+            },
+            {
+              "name": "rule:L8-c4",
+              "pass": true,
+              "detail": "正例无\"高息覆盖风险\"表述"
+            },
+            {
+              "name": "rule:L8-c5",
+              "pass": true,
+              "detail": "负例被正确拦截（no_fabricated_net_income,high_interest_not_risk_coverage,authority_wording）"
+            },
+            {
+              "name": "rule:L8-c6",
+              "pass": true,
+              "detail": "tendency=cautious_do 禁止=do（成本 unknown 期间倾向不得为 do）"
+            },
+            {
+              "name": "rule:L8-c7",
+              "pass": true,
+              "detail": "五级证据纪律通过"
+            },
+            {
+              "name": "rule:L8-c8",
+              "pass": true,
+              "detail": "问题数=2（须 1..3）"
+            }
+          ]
+        }
+      ],
+      "shortCircuit": {
+        "expectedHttpRequests": 3,
+        "actual": 3,
+        "ok": true
+      }
+    }
+  ]
+}

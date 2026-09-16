@@ -1,0 +1,672 @@
+{
+  "schema": "jw-demo-story@1",
+  "storyId": "DEMO-M1-SIMPLIFY-20260914",
+  "synthetic": true,
+  "syntheticNotice": "全部内容匿名合成，不影射任何真实公司或个人。售后回租、金额（380万元/36期、原值520万元）、日期、编号均为原合成案例（M1）设定的一致性测试数字，不是公司政策阈值；不预设审批结果。本文件为固定演示的独立预设数据：演示消息不读取、不复制任何模型输入文件；预期验证要点（人工核对专用文件）不进入本文件，也不进入任何模型输入。绿色仅代表演示步骤完成，不构成业务结论。",
+  "sourceCaseRefs": [
+    "V6/handoff/API_OVERNIGHT_20260913/cases/main-case.md（M1 主案例：岐明包装机械（虚构））",
+    "V6/handoff/API_OVERNIGHT_20260913/cases/variant-contradiction.md（V2：满负荷 vs 一半产能 陈述矛盾）"
+  ],
+  "isolation": {
+    "modelInputPolicy": "本文件全部 messages 为演示预设文案，标注来源角色与合成标记；不调用模型、不含真实模型请求；模型角色消息一律带「模型（模拟）」标记与 authority=none 说明。",
+    "resetScope": "resetDemo 仅重置本模块的演示状态（由本文件派生）；不触碰产品会话、远端存储或任何真实业务数据。"
+  },
+  "stages": [
+    { "id": "opportunity", "label": "商机" },
+    { "id": "preReview", "label": "预审" },
+    { "id": "dueDiligence", "label": "尽调" },
+    { "id": "signing", "label": "签约" },
+    { "id": "postRental", "label": "租后" }
+  ],
+  "terminalStepId": "PR-03",
+  "terminalLabel": "已结清（演示）",
+  "domains": ["policy", "credit", "commerce", "asset"],
+  "domainLabels": { "policy": "政策", "credit": "信审", "commerce": "商务", "asset": "资产" },
+  "actors": {
+    "system": { "fromKind": "system", "fromName": "系统" },
+    "business": { "fromKind": "business", "fromName": "业务" },
+    "customer": { "fromKind": "business", "fromName": "客户（实控人，经业务代录）" },
+    "policy": { "fromKind": "domain", "fromName": "政策岗" },
+    "credit": { "fromKind": "domain", "fromName": "信审岗" },
+    "commerce": { "fromKind": "domain", "fromName": "商务岗" },
+    "asset": { "fromKind": "domain", "fromName": "资产岗" },
+    "creditModel": { "fromKind": "domain", "fromName": "信审模型（模拟）" },
+    "creditReviewer": { "fromKind": "domain", "fromName": "信审复核人（人工）" }
+  },
+  "initialView": {
+    "stages": { "opportunity": "pending", "preReview": "pending", "dueDiligence": "pending", "signing": "pending", "postRental": "pending" },
+    "domains": {
+      "policy": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" },
+      "credit": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" },
+      "commerce": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" },
+      "asset": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" }
+    },
+    "overallLabel": "待启动（合成演示）"
+  },
+  "evidence": [
+    { "docId": "M1-DOC-01", "title": "首次沟通纪要摘录", "sourceStatus": "claimed", "initialVersion": 1 },
+    { "docId": "M1-DOC-02", "title": "设备清单与序列号摘录（E1）", "sourceStatus": "recorded", "initialVersion": 1 },
+    { "docId": "M1-DOC-03", "title": "设备买卖合同要素页（E2）", "sourceStatus": "recorded", "initialVersion": 1 },
+    { "docId": "M1-DOC-04", "title": "现场巡检画面记录（E3，observationScope=仅拍摄当时可见区域）", "sourceStatus": "observed", "initialVersion": 1 },
+    { "docId": "M1-DOC-05", "title": "电费记录摘录", "sourceStatus": "recorded", "initialVersion": 1 }
+  ],
+  "opinions": [
+    {
+      "opinionId": "OP-CAP-ENERGY",
+      "text": "基于「年产值约450万元」口径的产能-能耗匹配分析",
+      "basedOn": { "docId": "M1-DOC-01", "version": 1 }
+    }
+  ],
+  "parallelGroups": [
+    {
+      "id": "PG-DD-AFTER-DOUBT",
+      "note": "疑点标记后的四项参与可任意顺序完成（部分并行）；四项全部完成后才到达人工判断节点 DD-07（汇合点）。不再要求六方每步发言。",
+      "steps": ["DD-03", "DD-04", "DD-05", "DD-06"]
+    }
+  ],
+  "steps": [
+    {
+      "stepId": "OPP-01",
+      "stage": "opportunity",
+      "title": "商机登记",
+      "kind": "auto",
+      "trigger": "演示开始后按「开始推进」自动完成",
+      "milestoneIndex": 1,
+      "requires": [],
+      "requiresAny": [],
+      "messages": [
+        { "actor": "business", "text": "已登记新客回租商机：岐明包装机械制造有限公司（虚构·合成演示）。客户拟通过售后回租融资380万元、36期（一致性测试合成数字，非审批依据）。首次沟通纪要已记录（M1-DOC-01 v1）。", "marks": ["合成演示"] }
+      ],
+      "evidenceRefs": [{ "docId": "M1-DOC-01", "version": 1 }],
+      "view": {
+        "stages": { "opportunity": "current", "preReview": "pending", "dueDiligence": "pending", "signing": "pending", "postRental": "pending" },
+        "domains": {
+          "policy": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" },
+          "credit": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" },
+          "commerce": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" },
+          "asset": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" }
+        },
+        "overallLabel": "商机登记完成"
+      }
+    },
+    {
+      "stepId": "PRE-01",
+      "stage": "preReview",
+      "title": "预审材料挂接",
+      "kind": "auto",
+      "trigger": "商机登记完成后自动",
+      "milestoneIndex": 2,
+      "requires": ["OPP-01"],
+      "requiresAny": [],
+      "messages": [
+        { "actor": "system", "text": "挂接演示材料：设备清单（M1-DOC-02 v1）、买卖合同要素页（M1-DOC-03 v1）、现场巡检画面记录（M1-DOC-04 v1，观察范围仅拍摄当时可见区域）、电费记录摘录（M1-DOC-05 v1）。均为标注的合成演示夹具。", "marks": ["合成演示"] }
+      ],
+      "evidenceRefs": [
+        { "docId": "M1-DOC-02", "version": 1 },
+        { "docId": "M1-DOC-03", "version": 1 },
+        { "docId": "M1-DOC-04", "version": 1 },
+        { "docId": "M1-DOC-05", "version": 1 }
+      ],
+      "view": {
+        "stages": { "opportunity": "done", "preReview": "current", "dueDiligence": "pending", "signing": "pending", "postRental": "pending" },
+        "domains": {
+          "policy": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" },
+          "credit": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" },
+          "commerce": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" },
+          "asset": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" }
+        },
+        "overallLabel": "预审材料挂接完成"
+      }
+    },
+    {
+      "stepId": "PRE-02",
+      "stage": "preReview",
+      "title": "预审核对通过（演示规则自动）",
+      "kind": "auto",
+      "trigger": "材料挂接完成后自动核对",
+      "milestoneIndex": 3,
+      "requires": ["PRE-01"],
+      "requiresAny": [],
+      "messages": [
+        { "actor": "system", "text": "演示材料类目齐备（合成演示规则，仅覆盖已挂接的演示夹具，不代表公司必需资料制度），预审通过；可发起远程尽调。", "marks": ["合成演示", "规则自动"] }
+      ],
+      "evidenceRefs": [],
+      "view": {
+        "stages": { "opportunity": "done", "preReview": "done", "dueDiligence": "pending", "signing": "pending", "postRental": "pending" },
+        "domains": {
+          "policy": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" },
+          "credit": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" },
+          "commerce": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" },
+          "asset": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" }
+        },
+        "overallLabel": "预审通过"
+      }
+    },
+    {
+      "stepId": "DD-01",
+      "stage": "dueDiligence",
+      "title": "发起远程尽调访谈",
+      "kind": "human-action",
+      "actorRole": "business",
+      "trigger": "业务点击「发起远程尽调」（人工动作：确立我方远程参与边界，不由系统代发起）",
+      "milestoneIndex": 4,
+      "requires": ["PRE-02"],
+      "requiresAny": [],
+      "messages": [
+        { "actor": "business", "text": "发起远程尽调：实控人在经营现场，我方远程参与；财务、生产人员在现场或实时入会。业务端以视频访谈为主，四域提示与内部交流分列。（合成演示设定，不开启真实摄像头、不录音录像）", "marks": ["合成演示", "现场/远程设定"] }
+      ],
+      "evidenceRefs": [],
+      "view": {
+        "stages": { "opportunity": "done", "preReview": "done", "dueDiligence": "current", "signing": "pending", "postRental": "pending" },
+        "domains": {
+          "policy": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" },
+          "credit": { "state": "pending", "judgment": "gray", "judgmentText": "准备中" },
+          "commerce": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" },
+          "asset": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" }
+        },
+        "overallLabel": "远程尽调发起"
+      }
+    },
+    {
+      "stepId": "DD-02",
+      "stage": "dueDiligence",
+      "title": "现场问答与系统标疑",
+      "kind": "auto",
+      "trigger": "访谈发起后自动记录并比对",
+      "milestoneIndex": 5,
+      "requires": ["DD-01"],
+      "requiresAny": [],
+      "evidenceAdds": [
+        { "docId": "M1-DOC-08", "title": "现场问答记录（远程访谈，实控人口述）", "sourceStatus": "claimed", "version": 1 }
+      ],
+      "evidenceRefs": [
+        { "docId": "M1-DOC-08", "version": 1 },
+        { "docId": "M1-DOC-01", "version": 1 },
+        { "docId": "M1-DOC-05", "version": 1 }
+      ],
+      "messages": [
+        { "actor": "customer", "text": "现场问答（M1-DOC-08 v1，合成）：「最近半年订单减少，目前大约一半产能在跑。」", "marks": ["合成演示", "claimed"] },
+        { "actor": "system", "text": "系统比对疑点 DD-DOUBT-1（产能口径，合成演示规则）：首次沟通纪要载「设备基本满负荷运转，订单排到三个月之后」（M1-DOC-01 v1）与现场问答「约一半产能在跑」（M1-DOC-08 v1）相互矛盾；「满负荷」声称与电费记录（M1-DOC-05 v1，近6个月月均约4.1万kWh）存在张力。两处陈述已双侧绑定来源，不判定哪次为真。", "marks": ["合成演示", "疑点标记"] },
+        { "actor": "creditModel", "text": "建议向客户澄清：请提供排产/订单记录与产量台账，以客观材料核对产能口径。（模拟输出，authority=none；不判定陈述真伪，不给出批准/否决/额度/价格建议）", "marks": ["模型（模拟）", "authority=none"] }
+      ],
+      "view": {
+        "stages": { "opportunity": "done", "preReview": "done", "dueDiligence": "current", "signing": "pending", "postRental": "pending" },
+        "domains": {
+          "policy": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" },
+          "credit": { "state": "current", "judgment": "yellow", "judgmentText": "疑点待澄清" },
+          "commerce": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" },
+          "asset": { "state": "pending", "judgment": "gray", "judgmentText": "未开始" }
+        },
+        "overallLabel": "尽调访谈中·疑点已标记"
+      }
+    },
+    {
+      "stepId": "DD-03",
+      "stage": "dueDiligence",
+      "title": "财务/生产现场补充与客户时点说明",
+      "kind": "human-action",
+      "actorRole": "business",
+      "trigger": "业务录入现场补充（与 DD-04/DD-05/DD-06 并行，任意顺序）",
+      "milestoneIndex": null,
+      "requires": ["DD-02"],
+      "requiresAny": [],
+      "evidenceAdds": [
+        { "docId": "M1-DOC-06", "title": "客户补充说明（实控人口述，业务代录）", "sourceStatus": "claimed", "version": 1 }
+      ],
+      "evidenceRefs": [{ "docId": "M1-DOC-06", "version": 1 }, { "docId": "M1-DOC-05", "version": 1 }],
+      "messages": [
+        { "actor": "business", "text": "财务人员（现场）补充：电费与产量台账初核口径已记录，正式台账待客户内部整理后补交；月均用电约4.1万kWh与产线当前实际排产一致。（合成演示陈述，未经书面台账核实）", "marks": ["合成演示", "现场补充"] },
+        { "actor": "customer", "text": "客户就购买时点口径补充（M1-DOC-06 v1，合成）：2021年11月与厂方签订购协议并付定金，主机2021年3月出厂；2022年5月正式签买卖合同、6月付清尾款、7月到厂安装。「2021年购入」系从签订订购协议起算；订购协议、定金收据和尾款付款凭证可以补交。", "marks": ["合成演示", "claimed"] }
+      ],
+      "view": null,
+      "notes": "并行组 PG-DD-AFTER-DOUBT 成员；完成不改变整体视图（视图仍由 DD-02 检查点表达）。"
+    },
+    {
+      "stepId": "DD-04",
+      "stage": "dueDiligence",
+      "title": "资产岗复检建议",
+      "kind": "auto",
+      "trigger": "疑点标记后自动发出（专业域必要参与，非每步发言）",
+      "milestoneIndex": null,
+      "requires": ["DD-02"],
+      "requiresAny": [],
+      "evidenceRefs": [{ "docId": "M1-DOC-04", "version": 1 }],
+      "messages": [
+        { "actor": "asset", "text": "巡检观察（M1-DOC-04 v1，仅当时可见区域：导轨局部锈蚀痕迹、液压站油路可见渗漏痕迹）与「几乎全新」声称存在差异；建议投前安排设备复检，并在租后巡检中提高对该设备的关注频次。是否安排由人工决定，不构成对设备整体状况的认定。", "marks": ["合成演示", "observed范围限定"] }
+      ],
+      "view": null,
+      "notes": "并行组成员。"
+    },
+    {
+      "stepId": "DD-05",
+      "stage": "dueDiligence",
+      "title": "政策岗权属链条提示",
+      "kind": "auto",
+      "trigger": "疑点标记后自动发出（专业域必要参与）",
+      "milestoneIndex": null,
+      "requires": ["DD-02"],
+      "requiresAny": [],
+      "evidenceRefs": [{ "docId": "M1-DOC-03", "version": 1 }, { "docId": "M1-DOC-06", "version": 1 }],
+      "messages": [
+        { "actor": "policy", "text": "售后回租需继续核对权属与登记合规：订购协议（2021）、买卖合同（2022-05）、发票、付款凭证的权属链条一致性是本单关键补证事项；补齐前不形成倾向性意见。（合成演示提示，非制度全文）", "marks": ["合成演示"] }
+      ],
+      "view": null,
+      "notes": "并行组成员；M1-DOC-06 由 DD-03 挂接，本步仅引用其内容（演示消息为预设，执行不依赖挂接顺序）。"
+    },
+    {
+      "stepId": "DD-06",
+      "stage": "dueDiligence",
+      "title": "商务岗成数口径提示",
+      "kind": "auto",
+      "trigger": "疑点标记后自动发出（专业域必要参与）",
+      "milestoneIndex": null,
+      "requires": ["DD-02"],
+      "requiresAny": [],
+      "evidenceRefs": [{ "docId": "M1-DOC-02", "version": 1 }, { "docId": "M1-DOC-03", "version": 1 }],
+      "messages": [
+        { "actor": "commerce", "text": "融资380万元对应客户申报入账原值520万元；成数口径待经济性核算（当前未配置），不填默认值、不建议价格。（合成演示）", "marks": ["合成演示", "not_configured"] }
+      ],
+      "view": null,
+      "notes": "并行组成员。"
+    },
+    {
+      "stepId": "DD-07",
+      "stage": "dueDiligence",
+      "title": "疑点人工处理（确认/纠正/退回）",
+      "kind": "human-decision",
+      "actorRole": "creditReviewer",
+      "trigger": "并行四项全部完成后暂停等待人工；不可被自动推进越过",
+      "milestoneIndex": null,
+      "requires": ["DD-03", "DD-04", "DD-05", "DD-06"],
+      "requiresAny": [],
+      "evidenceRefs": [{ "docId": "M1-DOC-01", "version": 1 }, { "docId": "M1-DOC-08", "version": 1 }],
+      "messages": [
+        { "actor": "system", "text": "四项并行补充已完成，疑点 DD-DOUBT-1（产能口径矛盾：M1-DOC-01 v1「基本满负荷」 vs M1-DOC-08 v1「约一半产能」）等待人工处理。自动推进在此暂停：本节点必须由信审复核人决定，模型意见不能替代。", "marks": ["人工决定节点", "合成演示"] }
+      ],
+      "decisionOptions": [
+        {
+          "decision": "confirm",
+          "label": "确认：现有记录无误，疑点保留为待澄清项（以客观材料补证后闭环）",
+          "outcome": "close",
+          "effects": {
+            "messages": [
+              { "actor": "creditReviewer", "text": "信审复核确认：现有记录无误，疑点 DD-DOUBT-1 保留为待澄清项（满负荷/一半产能矛盾待客观材料澄清）；不采信任一次陈述，随单流转至签约前复核。（人工决定，合成演示）", "marks": ["人工决定", "合成演示"] }
+            ]
+          },
+          "detail": "不采信任一次陈述；疑点挂账随单流转，签约前人工复核须再逐项核对。"
+        },
+        {
+          "decision": "correct",
+          "label": "纠正：更正记录笔误——纪要「年产值约450万元」应为「月产值约450万元」",
+          "outcome": "close",
+          "effects": {
+            "evidenceUpdates": [
+              { "docId": "M1-DOC-01", "newVersion": 2, "supersedesVersion": 1, "recordDocId": "M1-DOC-07", "reason": "人工更正：经与客户财务人员核对，「年产值约450万元」系业务记录笔误，应为「月产值约450万元」；该数字仍未经书面台账核实。" }
+            ],
+            "invalidateOpinions": ["OP-CAP-ENERGY"],
+            "messages": [
+              { "actor": "creditReviewer", "text": "人工更正记录（M1-DOC-07 v1，合成）：纪要「年产值约450万元」更正为「月产值约450万元」；更正前基于「年产值」口径的产能-能耗匹配分析一律作废。疑点 DD-DOUBT-1 中「满负荷 vs 一半产能」的矛盾仍待客观材料澄清，不受本更正影响。", "marks": ["人工纠正", "合成演示"] }
+            ]
+          },
+          "detail": "纠正更新证据版本（M1-DOC-01 v1→v2）并作废基于旧口径的意见；旧版本不再作为有效引用。"
+        },
+        {
+          "decision": "return",
+          "label": "退回：尽调退回补充——要求客户提供排产/订单/台账记录",
+          "outcome": "return",
+          "effects": {},
+          "viewPatch": {
+            "ceilingMilestoneIndex": 6,
+            "patch": {
+              "domains": { "credit": { "state": "current", "judgment": "red", "judgmentText": "尽调退回补充中" } },
+              "overallNote": "尽调退回补充中（未通过；不进入签约）"
+            }
+          },
+          "detail": "退回后尽调不通过、不得带着未处理疑点进入签约；经 DD-RT-1→DD-RT-2 补证后到 DD-07B 重新判断（演示内仅一次退回，DD-07B 不再提供退回选项）。"
+        }
+      ],
+      "view": null,
+      "notes": "主判断节点：确认/纠正为闭环（close）后续接 DD-08；退回为 return 进入补充路径。"
+    },
+    {
+      "stepId": "DD-RT-1",
+      "stage": "dueDiligence",
+      "title": "客户补交材料挂接（退回补充）",
+      "kind": "human-action",
+      "actorRole": "business",
+      "trigger": "DD-07 决定为「退回」后可用",
+      "milestoneIndex": null,
+      "requires": [{ "step": "DD-07", "outcome": ["return"] }],
+      "requiresAny": [],
+      "evidenceAdds": [
+        { "docId": "M1-DOC-09", "title": "排产与订单记录摘录（客户补交）", "sourceStatus": "recorded", "version": 1 }
+      ],
+      "evidenceRefs": [{ "docId": "M1-DOC-09", "version": 1 }],
+      "messages": [
+        { "actor": "business", "text": "客户已补交排产与订单记录摘录（M1-DOC-09 v1，合成演示材料）。尽调处于退回补充状态，尚未通过；对应阶段不显示为完成。", "marks": ["合成演示", "退回补充"] }
+      ],
+      "view": null,
+      "viewPatch": {
+        "ceilingMilestoneIndex": 6,
+        "patch": {
+          "domains": { "credit": { "state": "current", "judgment": "red", "judgmentText": "尽调退回补充中" } },
+          "overallNote": "尽调退回补充中（未通过；不进入签约）"
+        }
+      },
+      "notes": "材料补充是尽调阶段内的动作，不是额外业务阶段。"
+    },
+    {
+      "stepId": "DD-RT-2",
+      "stage": "dueDiligence",
+      "title": "补充材料复核（系统）",
+      "kind": "auto",
+      "trigger": "补交材料挂接后自动复核",
+      "milestoneIndex": null,
+      "requires": ["DD-RT-1"],
+      "requiresAny": [],
+      "evidenceRefs": [{ "docId": "M1-DOC-09", "version": 1 }],
+      "messages": [
+        { "actor": "system", "text": "补充材料已挂接并复核（合成演示规则：仅核对材料挂接与类目，不核实真伪）；疑点 DD-DOUBT-1 重新提交人工判断。", "marks": ["合成演示", "规则自动"] }
+      ],
+      "view": null,
+      "viewPatch": {
+        "ceilingMilestoneIndex": 6,
+        "patch": {
+          "domains": { "credit": { "state": "current", "judgment": "red", "judgmentText": "退回补充已复核·待重新判断" } },
+          "overallNote": "尽调退回补充中（未通过；不进入签约）"
+        }
+      }
+    },
+    {
+      "stepId": "DD-07B",
+      "stage": "dueDiligence",
+      "title": "疑点重新判断（补充后）",
+      "kind": "human-decision",
+      "actorRole": "creditReviewer",
+      "trigger": "退回补充复核完成后暂停等待人工；不可被自动推进越过",
+      "milestoneIndex": null,
+      "requires": ["DD-RT-2"],
+      "requiresAny": [],
+      "evidenceRefs": [],
+      "messages": [
+        { "actor": "system", "text": "补充后重新判断：本演示内退回仅一次，本节点不再提供退回选项；仅可确认或纠正。引用证据请以当前有效版本为准（如已更正，M1-DOC-01 有效版本为 v2）。", "marks": ["人工决定节点", "有限路径", "合成演示"] }
+      ],
+      "decisionOptions": [
+        {
+          "decision": "confirm",
+          "label": "确认：疑点处理完毕（待澄清项挂账闭环清单）",
+          "outcome": "close",
+          "effects": {
+            "messages": [
+              { "actor": "creditReviewer", "text": "信审复核确认（补充后）：补交材料已核对，疑点 DD-DOUBT-1 处理完毕；待澄清项进入闭环清单随单流转。（人工决定，合成演示）", "marks": ["人工决定", "合成演示"] }
+            ]
+          },
+          "detail": "确认后接 DD-08。"
+        },
+        {
+          "decision": "correct",
+          "label": "纠正：如仍发现记录错误，更正并作废基于旧版本的意见",
+          "outcome": "close",
+          "effects": {
+            "evidenceUpdates": [
+              { "docId": "M1-DOC-01", "newVersion": 2, "supersedesVersion": 1, "recordDocId": "M1-DOC-07", "reason": "人工更正（补证后执行）：「年产值约450万元」更正为「月产值约450万元」；基于旧口径的分析作废。" }
+            ],
+            "invalidateOpinions": ["OP-CAP-ENERGY"],
+            "messages": [
+              { "actor": "creditReviewer", "text": "人工更正记录（M1-DOC-07 v1，合成）：同 DD-07 纠正路径效果——M1-DOC-01 升版 v2，基于「年产值」口径的产能-能耗匹配分析作废。", "marks": ["人工纠正", "合成演示"] }
+            ]
+          },
+          "detail": "与 DD-07 纠正同效果；若在 DD-07 已纠正过，本效果幂等（同目标版本不重复升版）。"
+        }
+      ],
+      "view": null,
+      "notes": "再入判断节点：选项收窄为确认/纠正，图内编码有限性（无第二次退回）。"
+    },
+    {
+      "stepId": "DD-08",
+      "stage": "dueDiligence",
+      "title": "尽调结论汇总（信审）",
+      "kind": "auto",
+      "trigger": "判断节点闭环（确认或纠正）后自动汇总",
+      "milestoneIndex": 6,
+      "requires": [],
+      "requiresAny": [
+        { "step": "DD-07", "outcome": ["close"] },
+        { "step": "DD-07B", "outcome": ["close"] }
+      ],
+      "evidenceRefs": [],
+      "messages": [
+        { "actor": "credit", "text": "尽调汇总（合成演示，无正式审批结论）：①购买时点口径不一致=待补证（订购协议/定金收据/付款凭证）；②产能口径=待台账核实（若经纠正：已按「月产值」口径更正，基于「年产值」的产能-能耗匹配分析已作废）；③满负荷/一半产能矛盾=待客观材料（排产、订单、台账）澄清；④设备状况=待投前复检。全部为待核实事项，随单流转至签约前人工复核。", "marks": ["合成演示", "无审批结论"] }
+      ],
+      "view": {
+        "stages": { "opportunity": "done", "preReview": "done", "dueDiligence": "done", "signing": "pending", "postRental": "pending" },
+        "domains": {
+          "policy": { "state": "done", "judgment": "green", "judgmentText": "权属链条提示已记录" },
+          "credit": { "state": "done", "judgment": "yellow", "judgmentText": "待核实事项挂账" },
+          "commerce": { "state": "done", "judgment": "yellow", "judgmentText": "待经济性核算（未配置）" },
+          "asset": { "state": "done", "judgment": "yellow", "judgmentText": "待投前复检" }
+        },
+        "overallLabel": "尽调完成（待核实事项随单流转）"
+      },
+      "notes": "阶段完成=演示步骤完成（绿色）；待核实事项不因阶段完成而消失。"
+    },
+    {
+      "stepId": "SG-01",
+      "stage": "signing",
+      "title": "签约准备",
+      "kind": "auto",
+      "trigger": "尽调汇总后自动",
+      "milestoneIndex": 7,
+      "requires": ["DD-08"],
+      "requiresAny": [],
+      "evidenceRefs": [],
+      "messages": [
+        { "actor": "system", "text": "进入签约准备（演示）。待核实事项清单随单流转：签约前人工复核必须逐项核对，本节点为制度必需的人工决定，不由模型自信替代。", "marks": ["合成演示"] }
+      ],
+      "view": {
+        "stages": { "opportunity": "done", "preReview": "done", "dueDiligence": "done", "signing": "current", "postRental": "pending" },
+        "domains": {
+          "policy": { "state": "done", "judgment": "green", "judgmentText": "权属链条提示已记录" },
+          "credit": { "state": "done", "judgment": "yellow", "judgmentText": "签约前复核待人工" },
+          "commerce": { "state": "done", "judgment": "yellow", "judgmentText": "待经济性核算（未配置）" },
+          "asset": { "state": "done", "judgment": "yellow", "judgmentText": "待投前复检" }
+        },
+        "overallLabel": "签约准备中"
+      }
+    },
+    {
+      "stepId": "SG-02",
+      "stage": "signing",
+      "title": "签约前人工复核",
+      "kind": "human-decision",
+      "actorRole": "creditReviewer",
+      "trigger": "签约准备后暂停等待人工；不可被自动推进越过",
+      "milestoneIndex": null,
+      "requires": ["SG-01"],
+      "requiresAny": [],
+      "evidenceRefs": [],
+      "messages": [
+        { "actor": "system", "text": "签约前人工复核：对待核实事项清单（时点补证、产能台账、矛盾澄清、设备复检）逐项核对。本节点是流程内必需的人工决定：自动推进在此暂停，模型输出不能替代确认。", "marks": ["人工决定节点", "合成演示"] }
+      ],
+      "decisionOptions": [
+        {
+          "decision": "confirm",
+          "label": "确认：待核实事项已逐项核对，同意进入签约（演示）",
+          "outcome": "close",
+          "effects": {
+            "messages": [
+              { "actor": "creditReviewer", "text": "签约前人工复核确认：待核实事项清单已逐项核对（时点补证、产能台账、矛盾澄清、设备复检），同意进入签约。（人工决定，合成演示）", "marks": ["人工决定", "合成演示"] }
+            ]
+          },
+          "detail": "确认后接 SG-03。"
+        },
+        {
+          "decision": "return",
+          "label": "退回：某待核实事项未闭环，退回更新尽调汇总后重试",
+          "outcome": "return",
+          "effects": {},
+          "viewPatch": {
+            "ceilingMilestoneIndex": 8,
+            "patch": {
+              "domains": { "credit": { "state": "current", "judgment": "red", "judgmentText": "签约退回补充中" } },
+              "overallNote": "签约退回补充中（未通过）"
+            }
+          },
+          "detail": "退回经 SG-RT 补充说明后到 SG-02B 重新复核（演示内仅一次；SG-02B 仅提供确认）。"
+        }
+      ],
+      "view": null
+    },
+    {
+      "stepId": "SG-RT",
+      "stage": "signing",
+      "title": "签约退回补充（演示）",
+      "kind": "human-action",
+      "actorRole": "business",
+      "trigger": "SG-02 决定为「退回」后可用",
+      "milestoneIndex": null,
+      "requires": [{ "step": "SG-02", "outcome": ["return"] }],
+      "requiresAny": [],
+      "evidenceRefs": [],
+      "messages": [
+        { "actor": "business", "text": "签约退回：相关域补充说明已更新（合成演示；未闭环事项为「产能台账待核实」）。签约阶段不显示为完成；补充后进入重新复核。", "marks": ["合成演示", "退回补充"] }
+      ],
+      "view": null,
+      "viewPatch": {
+        "ceilingMilestoneIndex": 8,
+        "patch": {
+          "domains": { "credit": { "state": "current", "judgment": "red", "judgmentText": "签约退回补充中" } },
+          "overallNote": "签约退回补充中（未通过）"
+        }
+      }
+    },
+    {
+      "stepId": "SG-02B",
+      "stage": "signing",
+      "title": "签约前人工复核（补充后）",
+      "kind": "human-decision",
+      "actorRole": "creditReviewer",
+      "trigger": "退回补充完成后暂停等待人工；不可被自动推进越过",
+      "milestoneIndex": null,
+      "requires": ["SG-RT"],
+      "requiresAny": [],
+      "evidenceRefs": [],
+      "messages": [
+        { "actor": "system", "text": "补充后重新复核：本演示内签约退回仅一次，本节点仅提供确认选项。", "marks": ["人工决定节点", "有限路径", "合成演示"] }
+      ],
+      "decisionOptions": [
+        {
+          "decision": "confirm",
+          "label": "确认：补充说明已核对，同意进入签约（演示）",
+          "outcome": "close",
+          "effects": {
+            "messages": [
+              { "actor": "creditReviewer", "text": "签约前人工复核确认（补充后）：退回补充说明已核对，同意进入签约。（人工决定，合成演示）", "marks": ["人工决定", "合成演示"] }
+            ]
+          },
+          "detail": "确认后接 SG-03。"
+        }
+      ],
+      "view": null
+    },
+    {
+      "stepId": "SG-03",
+      "stage": "signing",
+      "title": "签约完成（演示）",
+      "kind": "auto",
+      "trigger": "签约前人工复核确认后自动",
+      "milestoneIndex": 8,
+      "requires": [],
+      "requiresAny": [
+        { "step": "SG-02", "outcome": ["close"] },
+        { "step": "SG-02B", "outcome": ["close"] }
+      ],
+      "evidenceRefs": [],
+      "messages": [
+        { "actor": "system", "text": "签约完成（合成演示；不发生真实合同、放款或登记行为）。待核实事项转入租后关注清单。", "marks": ["合成演示"] }
+      ],
+      "view": {
+        "stages": { "opportunity": "done", "preReview": "done", "dueDiligence": "done", "signing": "done", "postRental": "pending" },
+        "domains": {
+          "policy": { "state": "done", "judgment": "green", "judgmentText": "权属链条提示已记录" },
+          "credit": { "state": "done", "judgment": "green", "judgmentText": "签约前复核已确认" },
+          "commerce": { "state": "done", "judgment": "yellow", "judgmentText": "经济性核算未配置（如实保留）" },
+          "asset": { "state": "done", "judgment": "yellow", "judgmentText": "复检/关注安排待租后执行" }
+        },
+        "overallLabel": "签约完成（演示）"
+      }
+    },
+    {
+      "stepId": "PR-01",
+      "stage": "postRental",
+      "title": "起租与租后关注安排",
+      "kind": "auto",
+      "trigger": "签约完成后自动",
+      "milestoneIndex": 9,
+      "requires": ["SG-03"],
+      "requiresAny": [],
+      "evidenceRefs": [],
+      "messages": [
+        { "actor": "asset", "text": "已起租（演示）：按资产岗建议对该生产线提高巡检关注频次；投前复检建议转入租后执行清单。（合成演示）", "marks": ["合成演示"] }
+      ],
+      "view": {
+        "stages": { "opportunity": "done", "preReview": "done", "dueDiligence": "done", "signing": "done", "postRental": "current" },
+        "domains": {
+          "policy": { "state": "done", "judgment": "green", "judgmentText": "权属链条提示已记录" },
+          "credit": { "state": "done", "judgment": "green", "judgmentText": "签约前复核已确认" },
+          "commerce": { "state": "done", "judgment": "yellow", "judgmentText": "经济性核算未配置（如实保留）" },
+          "asset": { "state": "current", "judgment": "yellow", "judgmentText": "租后关注中" }
+        },
+        "overallLabel": "起租（演示）"
+      }
+    },
+    {
+      "stepId": "PR-02",
+      "stage": "postRental",
+      "title": "租后巡检记录",
+      "kind": "auto",
+      "trigger": "起租后自动",
+      "milestoneIndex": 10,
+      "requires": ["PR-01"],
+      "requiresAny": [],
+      "evidenceRefs": [],
+      "messages": [
+        { "actor": "system", "text": "租后巡检记录已登记（合成演示；巡检发现为合成设定，不代表设备实际状况）。", "marks": ["合成演示"] }
+      ],
+      "view": {
+        "stages": { "opportunity": "done", "preReview": "done", "dueDiligence": "done", "signing": "done", "postRental": "current" },
+        "domains": {
+          "policy": { "state": "done", "judgment": "green", "judgmentText": "权属链条提示已记录" },
+          "credit": { "state": "done", "judgment": "green", "judgmentText": "签约前复核已确认" },
+          "commerce": { "state": "done", "judgment": "yellow", "judgmentText": "经济性核算未配置（如实保留）" },
+          "asset": { "state": "current", "judgment": "yellow", "judgmentText": "巡检记录已登记" }
+        },
+        "overallLabel": "租后管理中"
+      }
+    },
+    {
+      "stepId": "PR-03",
+      "stage": "postRental",
+      "title": "已结清（演示终态）",
+      "kind": "auto",
+      "trigger": "租后巡检后自动",
+      "milestoneIndex": 11,
+      "requires": ["PR-02"],
+      "requiresAny": [],
+      "evidenceRefs": [],
+      "messages": [
+        { "actor": "system", "text": "项目已结清（演示终态）。点击「重新开始」仅重置本演示状态（由 demo-story.json 派生），不影响产品会话或任何真实业务数据。", "marks": ["合成演示", "终态"] }
+      ],
+      "view": {
+        "stages": { "opportunity": "done", "preReview": "done", "dueDiligence": "done", "signing": "done", "postRental": "done" },
+        "domains": {
+          "policy": { "state": "done", "judgment": "green", "judgmentText": "已结清（演示）" },
+          "credit": { "state": "done", "judgment": "green", "judgmentText": "已结清（演示）" },
+          "commerce": { "state": "done", "judgment": "green", "judgmentText": "已结清（演示）" },
+          "asset": { "state": "done", "judgment": "green", "judgmentText": "租后关注闭环（演示）" }
+        },
+        "overallLabel": "已结清（演示）"
+      }
+    }
+  ]
+}

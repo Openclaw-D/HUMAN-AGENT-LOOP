@@ -1,0 +1,1660 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Jianwei Architecture Poster Directions</title>
+<style>:root{color-scheme:light dark;background:light-dark(rgb(255 255 255), rgb(24 24 24))}html,body{margin:0}body{box-sizing:border-box;padding:1rem;background:inherit}iframe{display:block;width:100%;height:calc(100vh - 2rem);margin:0 auto;border:0}</style>
+</head>
+<body>
+<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="Jianwei Architecture Poster Directions" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
+&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
+&lt;title&gt;Jianwei Architecture Poster Directions&lt;/title&gt;
+&lt;style&gt;:root {
+  color-scheme: light dark;
+  background-color: var(
+    --background,
+    var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
+  ) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --color-background-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --card: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  --card-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --popover: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255), rgb(45 45 45))
+  );
+  --popover-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --primary: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --primary-foreground: var(
+    --color-text-inverse,
+    light-dark(rgb(255 255 255), rgb(13 13 13))
+  );
+  --secondary: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%))
+  );
+  --secondary-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: var(
+    --color-text-secondary,
+    light-dark(rgb(26 28 31 / 49.4%), rgb(255 255 255 / 49.8%))
+  );
+  --accent: var(
+    --color-background-info,
+    light-dark(rgb(229 242 255), rgb(13 39 63))
+  );
+  --accent-foreground: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --destructive: var(
+    --color-text-warning,
+    light-dark(rgb(226 85 7), rgb(255 133 73))
+  );
+  --border: var(
+    --color-border-secondary,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+  --input: var(
+    --color-border-primary,
+    light-dark(
+      rgb(26 28 31 / 11.8%),
+      color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+    )
+  );
+  --ring: var(
+    --color-ring-primary,
+    light-dark(rgb(51 156 255), rgb(131 195 255 / 76%))
+  );
+  --font-size-base: var(--font-text-md-size, 14px);
+  --blue: light-dark(rgb(51 156 255), rgb(51 156 255));
+  --orange: light-dark(rgb(226 85 7), rgb(251 106 34));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+  --red: light-dark(rgb(224 46 42), rgb(255 103 100));
+  --purple: light-dark(rgb(146 79 247), rgb(173 123 249));
+  --yellow: light-dark(rgb(255 195 0), rgb(255 210 64));
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, &quot;Segoe UI&quot;, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, &quot;Liberation Mono&quot;,
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --radius: var(--border-radius-lg, 12.5px);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url(&quot;data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 17 17&#x27;%3E%3Cpath d=&#x27;M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z&#x27;/%3E%3C/svg%3E&quot;);
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+}
+
+:root[data-theme=&quot;light&quot;] {
+  color-scheme: light;
+}
+
+:root[data-theme=&quot;dark&quot;] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html &gt; body {
+  /* Preserve MCP aliases for older inline renderers without creating :root cycles. */
+  --color-background-primary: var(
+    --background,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --color-text-primary: var(
+    --foreground,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --color-border-secondary: var(
+    --border,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+
+  margin: 0;
+  padding: 5px;
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium, 500);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: superellipse(1.5);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive &gt; .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align=&quot;right&quot;]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align=&quot;center&quot;]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: superellipse(1.5);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+#widget &gt; :not(.card, .progress) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress {
+  display: flex;
+  height: 6px;
+  margin-block: calc((var(--line-height-normal, 1.5em) - 6px) / 2);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+}
+
+.progress-bar {
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: var(--viz-series-1);
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls &gt; .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls &gt; .form-label &gt; :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type=&quot;file&quot;] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type=&quot;file&quot;]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type=&quot;file&quot;]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type=&quot;color&quot;] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: superellipse(1.5);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  corner-shape: superellipse(1.5);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type=&quot;checkbox&quot;]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: &quot;&quot;;
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type=&quot;radio&quot;] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type=&quot;radio&quot;]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: &quot;&quot;;
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+  [aria-pressed=&quot;true&quot;],
+  [aria-selected=&quot;true&quot;],
+  .is-selected
+) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed=&quot;true&quot;], [aria-selected=&quot;true&quot;], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse) {
+  .btn,
+  .form-control,
+  .form-select {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: max(16px, var(--font-size-normal));
+  }
+
+  .form-control[type=&quot;file&quot;]::file-selector-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-control-color[type=&quot;color&quot;] {
+    width: 44px;
+    height: 44px;
+  }
+
+  .form-control:is(
+    [type=&quot;date&quot;],
+    [type=&quot;datetime-local&quot;],
+    [type=&quot;month&quot;],
+    [type=&quot;time&quot;],
+    [type=&quot;week&quot;]
+  ) {
+    min-width: 0;
+    max-width: 100%;
+    padding-block: 8px;
+  }
+
+  .form-check {
+    min-height: 44px;
+    padding-inline: 15px;
+  }
+
+  .form-check-input {
+    position: relative;
+  }
+
+  .form-check-input::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    content: &quot;&quot;;
+    transform: translate(-50%, -50%);
+  }
+
+  .form-check-label {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .form-range {
+    height: 44px;
+    touch-action: pan-y;
+  }
+
+  .form-range::-webkit-slider-runnable-track {
+    height: 44px;
+  }
+
+  .form-range::-moz-range-track {
+    height: 44px;
+  }
+
+  .form-range::-webkit-slider-thumb {
+    margin-top: 12px;
+  }
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget &gt; svg {
+  width: 100%;
+}
+
+/* Model-authored chart rules can otherwise stretch icons after these styles load. */
+svg.lucide {
+  display: block;
+  width: 16px !important;
+  height: 16px !important;
+  flex: none;
+  margin: 0 !important;
+  stroke-width: 1.6;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html&gt;body{padding:0}&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;jianwei-architecture-poster-directions&quot; aria-label=&quot;见微竖屏技术架构海报五个方向&quot;&gt;
+  &lt;div class=&quot;viz-controls&quot; role=&quot;group&quot; aria-label=&quot;选择海报方向&quot;&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn btn-primary&quot; data-view=&quot;a&quot; aria-pressed=&quot;true&quot;&gt;A｜Case 中心&lt;/button&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn&quot; data-view=&quot;b&quot; aria-pressed=&quot;false&quot;&gt;B｜三面架构&lt;/button&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn&quot; data-view=&quot;c&quot; aria-pressed=&quot;false&quot;&gt;C｜并行智能&lt;/button&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn&quot; data-view=&quot;d&quot; aria-pressed=&quot;false&quot;&gt;D｜细胞扩张&lt;/button&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn&quot; data-view=&quot;e&quot; aria-pressed=&quot;false&quot;&gt;E｜技术内核&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;jw-poster-stage&quot;&gt;
+    &lt;section class=&quot;jw-poster&quot; data-panel=&quot;a&quot; aria-label=&quot;方向 A Case 中心总体架构&quot;&gt;
+      &lt;header class=&quot;jw-poster-header&quot;&gt;
+        &lt;div&gt;&lt;h1&gt;见微&lt;/h1&gt;&lt;span&gt;V4 ARCHITECTURE&lt;/span&gt;&lt;/div&gt;
+        &lt;h2&gt;一件真实业务，连接整家企业&lt;/h2&gt;
+      &lt;/header&gt;
+      &lt;svg viewBox=&quot;0 0 540 730&quot; role=&quot;img&quot; aria-label=&quot;真实 Case 位于中心，人和组织、企业能力资产、连接治理层以及三个产品表面围绕它协作&quot;&gt;
+        &lt;title&gt;Case 中心总体架构&lt;/title&gt;
+        &lt;desc&gt;中心是真实 Case；左侧是人和组织，右侧是系统资产和智能资产，外围是连接治理层，底部是作业面、管理面和演进面。&lt;/desc&gt;
+        &lt;g class=&quot;jw-lines&quot;&gt;
+          &lt;path d=&quot;M152 145 L230 270&quot;/&gt;&lt;path d=&quot;M388 145 L310 270&quot;/&gt;
+          &lt;path d=&quot;M270 345 L120 500&quot;/&gt;&lt;path d=&quot;M270 345 L270 500&quot;/&gt;&lt;path d=&quot;M270 345 L420 500&quot;/&gt;
+          &lt;circle cx=&quot;270&quot; cy=&quot;315&quot; r=&quot;158&quot;/&gt;&lt;circle cx=&quot;270&quot; cy=&quot;315&quot; r=&quot;116&quot; stroke-dasharray=&quot;4 7&quot;/&gt;
+        &lt;/g&gt;
+        &lt;g class=&quot;jw-node&quot;&gt;
+          &lt;rect x=&quot;40&quot; y=&quot;58&quot; width=&quot;190&quot; height=&quot;105&quot; rx=&quot;4&quot;/&gt;
+          &lt;text x=&quot;56&quot; y=&quot;86&quot; class=&quot;jw-label&quot;&gt;人和组织&lt;/text&gt;
+          &lt;text x=&quot;56&quot; y=&quot;112&quot;&gt;业务 / 专业人员 · 管理人员&lt;/text&gt;
+          &lt;text x=&quot;56&quot; y=&quot;136&quot;&gt;系统部门 · 智能部门 · 外部参与者&lt;/text&gt;
+          &lt;rect x=&quot;310&quot; y=&quot;58&quot; width=&quot;190&quot; height=&quot;105&quot; rx=&quot;4&quot;/&gt;
+          &lt;text x=&quot;326&quot; y=&quot;86&quot; class=&quot;jw-label&quot;&gt;企业能力资产&lt;/text&gt;
+          &lt;text x=&quot;326&quot; y=&quot;112&quot;&gt;系统 / 数据 / 规则 / API / Adapter&lt;/text&gt;
+          &lt;text x=&quot;326&quot; y=&quot;136&quot;&gt;模型 / Agent / Harness / Evaluation&lt;/text&gt;
+        &lt;/g&gt;
+        &lt;g class=&quot;jw-center&quot;&gt;
+          &lt;circle cx=&quot;270&quot; cy=&quot;315&quot; r=&quot;68&quot;/&gt;
+          &lt;text x=&quot;270&quot; y=&quot;307&quot;&gt;真实 CASE&lt;/text&gt;
+          &lt;text x=&quot;270&quot; y=&quot;334&quot;&gt;同一事实 · 同一责任 · 同一接续&lt;/text&gt;
+        &lt;/g&gt;
+        &lt;text x=&quot;270&quot; y=&quot;205&quot; class=&quot;jw-ring-label&quot;&gt;Context · Evidence · 协同 · Gate&lt;/text&gt;
+        &lt;text x=&quot;270&quot; y=&quot;438&quot; class=&quot;jw-ring-label&quot;&gt;Receipt · Version · Audit&lt;/text&gt;
+        &lt;g class=&quot;jw-surface&quot;&gt;
+          &lt;rect x=&quot;32&quot; y=&quot;500&quot; width=&quot;150&quot; height=&quot;118&quot; rx=&quot;4&quot;/&gt;
+          &lt;text x=&quot;107&quot; y=&quot;531&quot; class=&quot;jw-label&quot;&gt;作业面&lt;/text&gt;
+          &lt;text x=&quot;107&quot; y=&quot;561&quot;&gt;发生了什么&lt;/text&gt;&lt;text x=&quot;107&quot; y=&quot;584&quot;&gt;我要做什么&lt;/text&gt;
+          &lt;rect x=&quot;195&quot; y=&quot;500&quot; width=&quot;150&quot; height=&quot;118&quot; rx=&quot;4&quot;/&gt;
+          &lt;text x=&quot;270&quot; y=&quot;531&quot; class=&quot;jw-label&quot;&gt;管理面&lt;/text&gt;
+          &lt;text x=&quot;270&quot; y=&quot;561&quot;&gt;哪里偏离&lt;/text&gt;&lt;text x=&quot;270&quot; y=&quot;584&quot;&gt;谁负责与影响&lt;/text&gt;
+          &lt;rect x=&quot;358&quot; y=&quot;500&quot; width=&quot;150&quot; height=&quot;118&quot; rx=&quot;4&quot;/&gt;
+          &lt;text x=&quot;433&quot; y=&quot;531&quot; class=&quot;jw-label&quot;&gt;演进面&lt;/text&gt;
+          &lt;text x=&quot;433&quot; y=&quot;561&quot;&gt;如何验证改进&lt;/text&gt;&lt;text x=&quot;433&quot; y=&quot;584&quot;&gt;发布 / 观察 / 回滚&lt;/text&gt;
+        &lt;/g&gt;
+        &lt;g class=&quot;jw-footer-cycle&quot;&gt;
+          &lt;text x=&quot;270&quot; y=&quot;668&quot;&gt;感知 → 判断 → 行动 → 学习&lt;/text&gt;
+          &lt;text x=&quot;270&quot; y=&quot;700&quot;&gt;智能做准备｜权威有归属｜行动有 Receipt&lt;/text&gt;
+        &lt;/g&gt;
+      &lt;/svg&gt;
+      &lt;footer&gt;V4 CONTRACT｜P0 / P1 CANDIDATE｜AGENT AUTHORITY = NONE&lt;/footer&gt;
+    &lt;/section&gt;
+
+    &lt;section class=&quot;jw-poster&quot; data-panel=&quot;b&quot; aria-label=&quot;方向 B 三个产品表面架构&quot; hidden&gt;
+      &lt;header class=&quot;jw-poster-header&quot;&gt;
+        &lt;div&gt;&lt;h1&gt;见微&lt;/h1&gt;&lt;span&gt;THREE SURFACES&lt;/span&gt;&lt;/div&gt;
+        &lt;h2&gt;同一 Case，形成三种企业能力&lt;/h2&gt;
+      &lt;/header&gt;
+      &lt;svg viewBox=&quot;0 0 540 730&quot; role=&quot;img&quot; aria-label=&quot;作业面、管理面和演进面沿同一 Case 主轴纵向排列，两侧分别是组织和资产&quot;&gt;
+        &lt;title&gt;三个产品表面&lt;/title&gt;
+        &lt;desc&gt;中间是贯穿全图的 Case 主轴；左侧是人和组织，右侧是能力资产；作业、管理、演进三个表面共享连接治理层。&lt;/desc&gt;
+        &lt;g class=&quot;jw-lines&quot;&gt;&lt;path d=&quot;M270 80 L270 650&quot;/&gt;&lt;path d=&quot;M162 205 L378 205&quot;/&gt;&lt;path d=&quot;M162 365 L378 365&quot;/&gt;&lt;path d=&quot;M162 525 L378 525&quot;/&gt;&lt;/g&gt;
+        &lt;g class=&quot;jw-rail&quot;&gt;
+          &lt;text x=&quot;30&quot; y=&quot;88&quot; class=&quot;jw-label&quot;&gt;人和组织&lt;/text&gt;
+          &lt;text x=&quot;30&quot; y=&quot;132&quot;&gt;业务 / 专业人员&lt;/text&gt;&lt;text x=&quot;30&quot; y=&quot;158&quot;&gt;管理人员&lt;/text&gt;
+          &lt;text x=&quot;30&quot; y=&quot;184&quot;&gt;系统部门&lt;/text&gt;&lt;text x=&quot;30&quot; y=&quot;210&quot;&gt;智能部门&lt;/text&gt;
+          &lt;text x=&quot;510&quot; y=&quot;88&quot; class=&quot;jw-label&quot; text-anchor=&quot;end&quot;&gt;能力资产&lt;/text&gt;
+          &lt;text x=&quot;510&quot; y=&quot;132&quot; text-anchor=&quot;end&quot;&gt;既有系统 / 数据 / 规则&lt;/text&gt;
+          &lt;text x=&quot;510&quot; y=&quot;158&quot; text-anchor=&quot;end&quot;&gt;API / Adapter&lt;/text&gt;
+          &lt;text x=&quot;510&quot; y=&quot;184&quot; text-anchor=&quot;end&quot;&gt;模型 / Agent / Harness&lt;/text&gt;
+          &lt;text x=&quot;510&quot; y=&quot;210&quot; text-anchor=&quot;end&quot;&gt;Evaluation / Version&lt;/text&gt;
+        &lt;/g&gt;
+        &lt;g class=&quot;jw-case-spine&quot;&gt;
+          &lt;circle cx=&quot;270&quot; cy=&quot;90&quot; r=&quot;46&quot;/&gt;&lt;text x=&quot;270&quot; y=&quot;84&quot;&gt;真实&lt;/text&gt;&lt;text x=&quot;270&quot; y=&quot;105&quot;&gt;CASE&lt;/text&gt;
+        &lt;/g&gt;
+        &lt;g class=&quot;jw-layer&quot;&gt;
+          &lt;rect x=&quot;105&quot; y=&quot;238&quot; width=&quot;330&quot; height=&quot;112&quot; rx=&quot;4&quot;/&gt;
+          &lt;text x=&quot;130&quot; y=&quot;272&quot; class=&quot;jw-label&quot;&gt;01｜作业面&lt;/text&gt;
+          &lt;text x=&quot;130&quot; y=&quot;302&quot;&gt;Evidence → Candidate → Human Gate&lt;/text&gt;
+          &lt;text x=&quot;130&quot; y=&quot;329&quot;&gt;Receipt → 下一 handoff&lt;/text&gt;
+          &lt;rect x=&quot;105&quot; y=&quot;398&quot; width=&quot;330&quot; height=&quot;112&quot; rx=&quot;4&quot;/&gt;
+          &lt;text x=&quot;130&quot; y=&quot;432&quot; class=&quot;jw-label&quot;&gt;02｜管理面&lt;/text&gt;
+          &lt;text x=&quot;130&quot; y=&quot;462&quot;&gt;Events / Owners / Delays / Rework&lt;/text&gt;
+          &lt;text x=&quot;130&quot; y=&quot;489&quot;&gt;偏差 → 责任 → 经营影响&lt;/text&gt;
+          &lt;rect x=&quot;105&quot; y=&quot;558&quot; width=&quot;330&quot; height=&quot;112&quot; rx=&quot;4&quot;/&gt;
+          &lt;text x=&quot;130&quot; y=&quot;592&quot; class=&quot;jw-label&quot;&gt;03｜演进面&lt;/text&gt;
+          &lt;text x=&quot;130&quot; y=&quot;622&quot;&gt;Problem → Proposal → Evaluation&lt;/text&gt;
+          &lt;text x=&quot;130&quot; y=&quot;649&quot;&gt;Approval → Version → Rollback&lt;/text&gt;
+        &lt;/g&gt;
+        &lt;g class=&quot;jw-side-note&quot;&gt;
+          &lt;text x=&quot;30&quot; y=&quot;286&quot;&gt;完成真实工作&lt;/text&gt;&lt;text x=&quot;30&quot; y=&quot;446&quot;&gt;看清组织效率&lt;/text&gt;&lt;text x=&quot;30&quot; y=&quot;606&quot;&gt;让下一笔更好&lt;/text&gt;
+          &lt;text x=&quot;510&quot; y=&quot;286&quot; text-anchor=&quot;end&quot;&gt;正式动作有 Receipt&lt;/text&gt;
+          &lt;text x=&quot;510&quot; y=&quot;446&quot; text-anchor=&quot;end&quot;&gt;Projection 来自事实链&lt;/text&gt;
+          &lt;text x=&quot;510&quot; y=&quot;606&quot; text-anchor=&quot;end&quot;&gt;变更必须可验证回滚&lt;/text&gt;
+        &lt;/g&gt;
+      &lt;/svg&gt;
+      &lt;footer&gt;CONTEXT · EVIDENCE · GATE · RECEIPT · VERSION · AUDIT&lt;/footer&gt;
+    &lt;/section&gt;
+
+    &lt;section class=&quot;jw-poster&quot; data-panel=&quot;c&quot; aria-label=&quot;方向 C 智能并行准备与正式权威线性&quot; hidden&gt;
+      &lt;header class=&quot;jw-poster-header&quot;&gt;
+        &lt;div&gt;&lt;h1&gt;见微&lt;/h1&gt;&lt;span&gt;EFFICIENCY + AUTHORITY&lt;/span&gt;&lt;/div&gt;
+        &lt;h2&gt;智能并行准备，正式权威线性&lt;/h2&gt;
+      &lt;/header&gt;
+      &lt;svg viewBox=&quot;0 0 540 730&quot; role=&quot;img&quot; aria-label=&quot;多条智能准备线路并行进入候选结果，再通过授权规则或具名人员形成线性正式动作与回执&quot;&gt;
+        &lt;title&gt;效率与权威架构&lt;/title&gt;
+        &lt;desc&gt;Evidence 进入后，规则和智能能力并行完成解析、筛查、缺口识别与候选准备；正式权威只能经过授权规则或具名人员，动作成功由 Receipt 证明。&lt;/desc&gt;
+        &lt;text x=&quot;270&quot; y=&quot;54&quot; class=&quot;jw-label&quot; text-anchor=&quot;middle&quot;&gt;PARALLEL INTELLIGENCE｜提高准备效率&lt;/text&gt;
+        &lt;g class=&quot;jw-parallel-lines&quot;&gt;
+          &lt;path d=&quot;M55 105 H205 Q235 105 250 160&quot;/&gt;&lt;path d=&quot;M55 155 H205 Q235 155 250 180&quot;/&gt;
+          &lt;path d=&quot;M485 105 H335 Q305 105 290 160&quot;/&gt;&lt;path d=&quot;M485 155 H335 Q305 155 290 180&quot;/&gt;
+        &lt;/g&gt;
+        &lt;g class=&quot;jw-mini-node&quot;&gt;
+          &lt;rect x=&quot;30&quot; y=&quot;84&quot; width=&quot;142&quot; height=&quot;42&quot; rx=&quot;3&quot;/&gt;&lt;text x=&quot;101&quot; y=&quot;110&quot;&gt;Evidence 解析&lt;/text&gt;
+          &lt;rect x=&quot;30&quot; y=&quot;134&quot; width=&quot;142&quot; height=&quot;42&quot; rx=&quot;3&quot;/&gt;&lt;text x=&quot;101&quot; y=&quot;160&quot;&gt;规则筛查&lt;/text&gt;
+          &lt;rect x=&quot;368&quot; y=&quot;84&quot; width=&quot;142&quot; height=&quot;42&quot; rx=&quot;3&quot;/&gt;&lt;text x=&quot;439&quot; y=&quot;110&quot;&gt;缺口识别&lt;/text&gt;
+          &lt;rect x=&quot;368&quot; y=&quot;134&quot; width=&quot;142&quot; height=&quot;42&quot; rx=&quot;3&quot;/&gt;&lt;text x=&quot;439&quot; y=&quot;160&quot;&gt;候选解释&lt;/text&gt;
+        &lt;/g&gt;
+        &lt;g class=&quot;jw-candidate&quot;&gt;
+          &lt;circle cx=&quot;270&quot; cy=&quot;200&quot; r=&quot;58&quot;/&gt;&lt;text x=&quot;270&quot; y=&quot;193&quot;&gt;CANDIDATE&lt;/text&gt;&lt;text x=&quot;270&quot; y=&quot;216&quot;&gt;authority = none&lt;/text&gt;
+        &lt;/g&gt;
+        &lt;path class=&quot;jw-authority-line&quot; d=&quot;M270 258 V615&quot;/&gt;
+        &lt;g class=&quot;jw-authority-node&quot;&gt;
+          &lt;rect x=&quot;160&quot; y=&quot;288&quot; width=&quot;220&quot; height=&quot;72&quot; rx=&quot;4&quot;/&gt;
+          &lt;text x=&quot;270&quot; y=&quot;316&quot; class=&quot;jw-label&quot;&gt;AUTHORITY GATE&lt;/text&gt;
+          &lt;text x=&quot;270&quot; y=&quot;341&quot;&gt;授权规则 或 具名人员&lt;/text&gt;
+          &lt;rect x=&quot;160&quot; y=&quot;392&quot; width=&quot;220&quot; height=&quot;72&quot; rx=&quot;4&quot;/&gt;
+          &lt;text x=&quot;270&quot; y=&quot;420&quot; class=&quot;jw-label&quot;&gt;FORMAL ACTION&lt;/text&gt;
+          &lt;text x=&quot;270&quot; y=&quot;445&quot;&gt;退回 / 驳回 / 否决 / 通过&lt;/text&gt;
+          &lt;rect x=&quot;160&quot; y=&quot;496&quot; width=&quot;220&quot; height=&quot;72&quot; rx=&quot;4&quot;/&gt;
+          &lt;text x=&quot;270&quot; y=&quot;524&quot; class=&quot;jw-label&quot;&gt;CANONICAL RECEIPT&lt;/text&gt;
+          &lt;text x=&quot;270&quot; y=&quot;549&quot;&gt;Actor · Context · Policy · Result&lt;/text&gt;
+          &lt;rect x=&quot;160&quot; y=&quot;600&quot; width=&quot;220&quot; height=&quot;72&quot; rx=&quot;4&quot;/&gt;
+          &lt;text x=&quot;270&quot; y=&quot;628&quot; class=&quot;jw-label&quot;&gt;NEXT HANDOFF&lt;/text&gt;
+          &lt;text x=&quot;270&quot; y=&quot;653&quot;&gt;商务 / 资产继续；起租仍独立&lt;/text&gt;
+        &lt;/g&gt;
+        &lt;g class=&quot;jw-guardrail&quot;&gt;
+          &lt;text x=&quot;28&quot; y=&quot;315&quot;&gt;系统部门&lt;/text&gt;&lt;text x=&quot;28&quot; y=&quot;340&quot;&gt;规则 · 数据 · API&lt;/text&gt;&lt;text x=&quot;28&quot; y=&quot;365&quot;&gt;发布 · 运维 · 回滚&lt;/text&gt;
+          &lt;text x=&quot;512&quot; y=&quot;315&quot; text-anchor=&quot;end&quot;&gt;智能部门&lt;/text&gt;&lt;text x=&quot;512&quot; y=&quot;340&quot; text-anchor=&quot;end&quot;&gt;模型 · Agent · Harness&lt;/text&gt;&lt;text x=&quot;512&quot; y=&quot;365&quot; text-anchor=&quot;end&quot;&gt;Evaluation · 监控 · 降级&lt;/text&gt;
+          &lt;text x=&quot;28&quot; y=&quot;538&quot;&gt;FAIL CLOSED&lt;/text&gt;&lt;text x=&quot;28&quot; y=&quot;563&quot;&gt;timeout / unknown / stale&lt;/text&gt;
+          &lt;text x=&quot;512&quot; y=&quot;538&quot; text-anchor=&quot;end&quot;&gt;IDEMPOTENCY&lt;/text&gt;&lt;text x=&quot;512&quot; y=&quot;563&quot; text-anchor=&quot;end&quot;&gt;同一命令 · 同一 Receipt&lt;/text&gt;
+        &lt;/g&gt;
+      &lt;/svg&gt;
+      &lt;footer&gt;并行准备提高效率｜线性权威守住边界｜RECEIPT 证明结果&lt;/footer&gt;
+    &lt;/section&gt;
+
+    &lt;section class=&quot;jw-poster&quot; data-panel=&quot;d&quot; aria-label=&quot;方向 D 活细胞扩张为企业级能力&quot; hidden&gt;
+      &lt;header class=&quot;jw-poster-header&quot;&gt;
+        &lt;div&gt;&lt;h1&gt;见微&lt;/h1&gt;&lt;span&gt;LIVING CELL → ENTERPRISE&lt;/span&gt;&lt;/div&gt;
+        &lt;h2&gt;一个活细胞，如何扩散成企业能力&lt;/h2&gt;
+      &lt;/header&gt;
+      &lt;svg viewBox=&quot;0 0 540 730&quot; role=&quot;img&quot; aria-label=&quot;从信审活细胞开始，依次扩到大风控、多 Case、真实系统接入和企业级持续运营&quot;&gt;
+        &lt;title&gt;活细胞扩张路径&lt;/title&gt;
+        &lt;desc&gt;底部是感知、判断、行动、学习四能力组成的信审活细胞；它经过逐领域复制、多 Case 管理、真实系统接入后形成企业级持续运营。&lt;/desc&gt;
+        &lt;path class=&quot;jw-scale-line&quot; d=&quot;M270 650 V92&quot;/&gt;
+        &lt;g class=&quot;jw-scale-stage&quot;&gt;
+          &lt;circle cx=&quot;270&quot; cy=&quot;620&quot; r=&quot;72&quot;/&gt;
+          &lt;text x=&quot;270&quot; y=&quot;586&quot; class=&quot;jw-label jw-cell-text&quot;&gt;P1｜信审活细胞&lt;/text&gt;
+          &lt;text x=&quot;235&quot; y=&quot;616&quot; class=&quot;jw-cell-text&quot;&gt;感知&lt;/text&gt;&lt;text x=&quot;305&quot; y=&quot;616&quot; class=&quot;jw-cell-text&quot;&gt;判断&lt;/text&gt;
+          &lt;text x=&quot;235&quot; y=&quot;646&quot; class=&quot;jw-cell-text&quot;&gt;学习&lt;/text&gt;&lt;text x=&quot;305&quot; y=&quot;646&quot; class=&quot;jw-cell-text&quot;&gt;行动&lt;/text&gt;
+          &lt;rect x=&quot;84&quot; y=&quot;458&quot; width=&quot;372&quot; height=&quot;92&quot; rx=&quot;4&quot;/&gt;
+          &lt;text x=&quot;270&quot; y=&quot;488&quot; class=&quot;jw-label&quot;&gt;P2｜大风控组织&lt;/text&gt;
+          &lt;text x=&quot;270&quot; y=&quot;518&quot;&gt;政策 · 信审 · 商务 · 资产｜逐域确认 Evidence 与 Authority&lt;/text&gt;
+          &lt;rect x=&quot;84&quot; y=&quot;326&quot; width=&quot;372&quot; height=&quot;92&quot; rx=&quot;4&quot;/&gt;
+          &lt;text x=&quot;270&quot; y=&quot;356&quot; class=&quot;jw-label&quot;&gt;P3｜业务 + 多 Case 管理&lt;/text&gt;
+          &lt;text x=&quot;270&quot; y=&quot;386&quot;&gt;直租 · 存回 · 新回｜偏差 · 等待 · 责任 · 资源配置&lt;/text&gt;
+          &lt;rect x=&quot;84&quot; y=&quot;194&quot; width=&quot;372&quot; height=&quot;92&quot; rx=&quot;4&quot;/&gt;
+          &lt;text x=&quot;270&quot; y=&quot;224&quot; class=&quot;jw-label&quot;&gt;P4｜真实组织与系统接入&lt;/text&gt;
+          &lt;text x=&quot;270&quot; y=&quot;254&quot;&gt;local synthetic → read-only → shadow → controlled write&lt;/text&gt;
+          &lt;rect x=&quot;84&quot; y=&quot;62&quot; width=&quot;372&quot; height=&quot;92&quot; rx=&quot;4&quot;/&gt;
+          &lt;text x=&quot;270&quot; y=&quot;92&quot; class=&quot;jw-label&quot;&gt;P5｜企业级持续运营&lt;/text&gt;
+          &lt;text x=&quot;270&quot; y=&quot;122&quot;&gt;权限 · 安全 · SLO · 审计 · 模型治理 · 价值评价&lt;/text&gt;
+        &lt;/g&gt;
+        &lt;g class=&quot;jw-scale-note&quot;&gt;
+          &lt;text x=&quot;34&quot; y=&quot;620&quot;&gt;一个真实 Case&lt;/text&gt;&lt;text x=&quot;34&quot; y=&quot;646&quot;&gt;完成最小闭环&lt;/text&gt;
+          &lt;text x=&quot;506&quot; y=&quot;488&quot; text-anchor=&quot;end&quot;&gt;复制专业机制&lt;/text&gt;&lt;text x=&quot;506&quot; y=&quot;514&quot; text-anchor=&quot;end&quot;&gt;不复制未经验证假设&lt;/text&gt;
+          &lt;text x=&quot;34&quot; y=&quot;356&quot;&gt;单 Case 稳定后&lt;/text&gt;&lt;text x=&quot;34&quot; y=&quot;382&quot;&gt;才进入团队经营&lt;/text&gt;
+          &lt;text x=&quot;506&quot; y=&quot;224&quot; text-anchor=&quot;end&quot;&gt;每一级重新确认&lt;/text&gt;&lt;text x=&quot;506&quot; y=&quot;250&quot; text-anchor=&quot;end&quot;&gt;权限 / 数据 / 回滚&lt;/text&gt;
+          &lt;text x=&quot;34&quot; y=&quot;92&quot;&gt;终局不是做完&lt;/text&gt;&lt;text x=&quot;34&quot; y=&quot;118&quot;&gt;而是持续共同演进&lt;/text&gt;
+        &lt;/g&gt;
+      &lt;/svg&gt;
+      &lt;footer&gt;每一期只增加一个主要复杂度｜P0 / P1 当前仍需证据 Gate&lt;/footer&gt;
+    &lt;/section&gt;
+
+    &lt;section class=&quot;jw-poster jw-poster-dark&quot; data-panel=&quot;e&quot; aria-label=&quot;方向 E V4 技术内核&quot; hidden&gt;
+      &lt;header class=&quot;jw-poster-header&quot;&gt;
+        &lt;div&gt;&lt;h1&gt;见微&lt;/h1&gt;&lt;span&gt;V4 TECHNICAL KERNEL&lt;/span&gt;&lt;/div&gt;
+        &lt;h2&gt;人机协同，不靠口号，靠可证明的运行内核&lt;/h2&gt;
+      &lt;/header&gt;
+      &lt;svg viewBox=&quot;0 0 540 730&quot; role=&quot;img&quot; aria-label=&quot;三个产品表面通过服务端 DTO 读取可重建 Projection，正式状态来自独立领域内核与追加式 Evidence Event Receipt 账本&quot;&gt;
+        &lt;title&gt;V4 技术内核&lt;/title&gt;
+        &lt;desc&gt;作业、管理、演进三个产品表面只消费服务端 DTO；领域内核负责状态机、权限、策略、幂等和失败关闭；Evidence、Event 和 Receipt 追加记录，Projection 可重建。&lt;/desc&gt;
+        &lt;g class=&quot;jw-tech-surface&quot;&gt;
+          &lt;rect x=&quot;28&quot; y=&quot;45&quot; width=&quot;148&quot; height=&quot;72&quot; rx=&quot;3&quot;/&gt;&lt;text x=&quot;102&quot; y=&quot;73&quot; class=&quot;jw-label&quot;&gt;作业面&lt;/text&gt;&lt;text x=&quot;102&quot; y=&quot;96&quot;&gt;Case work&lt;/text&gt;
+          &lt;rect x=&quot;196&quot; y=&quot;45&quot; width=&quot;148&quot; height=&quot;72&quot; rx=&quot;3&quot;/&gt;&lt;text x=&quot;270&quot; y=&quot;73&quot; class=&quot;jw-label&quot;&gt;管理面&lt;/text&gt;&lt;text x=&quot;270&quot; y=&quot;96&quot;&gt;Projection&lt;/text&gt;
+          &lt;rect x=&quot;364&quot; y=&quot;45&quot; width=&quot;148&quot; height=&quot;72&quot; rx=&quot;3&quot;/&gt;&lt;text x=&quot;438&quot; y=&quot;73&quot; class=&quot;jw-label&quot;&gt;演进面&lt;/text&gt;&lt;text x=&quot;438&quot; y=&quot;96&quot;&gt;Version governance&lt;/text&gt;
+        &lt;/g&gt;
+        &lt;path class=&quot;jw-tech-flow&quot; d=&quot;M102 117 V155 H438 V117 M270 155 V185&quot;/&gt;
+        &lt;g class=&quot;jw-tech-layer&quot;&gt;
+          &lt;rect x=&quot;54&quot; y=&quot;185&quot; width=&quot;432&quot; height=&quot;62&quot; rx=&quot;3&quot;/&gt;
+          &lt;text x=&quot;270&quot; y=&quot;210&quot; class=&quot;jw-label&quot;&gt;V4 SERVER DTO / API&lt;/text&gt;
+          &lt;text x=&quot;270&quot; y=&quot;233&quot;&gt;同一 Case · attempt · Context identity｜bounded body｜stable error&lt;/text&gt;
+          &lt;rect x=&quot;54&quot; y=&quot;278&quot; width=&quot;432&quot; height=&quot;132&quot; rx=&quot;3&quot;/&gt;
+          &lt;text x=&quot;270&quot; y=&quot;307&quot; class=&quot;jw-label&quot;&gt;DOMAIN + AUTHORITY KERNEL&lt;/text&gt;
+          &lt;text x=&quot;82&quot; y=&quot;339&quot;&gt;Classification&lt;/text&gt;&lt;text x=&quot;220&quot; y=&quot;339&quot;&gt;Lifecycle state&lt;/text&gt;&lt;text x=&quot;365&quot; y=&quot;339&quot;&gt;Policy&lt;/text&gt;
+          &lt;text x=&quot;82&quot; y=&quot;371&quot;&gt;State transition&lt;/text&gt;&lt;text x=&quot;220&quot; y=&quot;371&quot;&gt;Idempotency&lt;/text&gt;&lt;text x=&quot;365&quot; y=&quot;371&quot;&gt;Fail closed&lt;/text&gt;
+          &lt;rect x=&quot;54&quot; y=&quot;440&quot; width=&quot;432&quot; height=&quot;102&quot; rx=&quot;3&quot;/&gt;
+          &lt;text x=&quot;270&quot; y=&quot;469&quot; class=&quot;jw-label&quot;&gt;APPEND-ONLY AUTHORITY LEDGER&lt;/text&gt;
+          &lt;text x=&quot;270&quot; y=&quot;500&quot;&gt;Evidence → Candidate → Decision → Receipt → Event&lt;/text&gt;
+          &lt;text x=&quot;270&quot; y=&quot;526&quot;&gt;Projection 可重建｜Receipt 不可由前端乐观生成&lt;/text&gt;
+          &lt;rect x=&quot;54&quot; y=&quot;572&quot; width=&quot;202&quot; height=&quot;94&quot; rx=&quot;3&quot;/&gt;
+          &lt;text x=&quot;155&quot; y=&quot;602&quot; class=&quot;jw-label&quot;&gt;SYSTEM ASSETS&lt;/text&gt;
+          &lt;text x=&quot;155&quot; y=&quot;632&quot;&gt;数据 · 规则 · API · Adapter&lt;/text&gt;
+          &lt;rect x=&quot;284&quot; y=&quot;572&quot; width=&quot;202&quot; height=&quot;94&quot; rx=&quot;3&quot;/&gt;
+          &lt;text x=&quot;385&quot; y=&quot;602&quot; class=&quot;jw-label&quot;&gt;INTELLIGENCE ASSETS&lt;/text&gt;
+          &lt;text x=&quot;385&quot; y=&quot;632&quot;&gt;Model · Agent · Harness · Eval&lt;/text&gt;
+        &lt;/g&gt;
+        &lt;g class=&quot;jw-tech-rails&quot;&gt;
+          &lt;text x=&quot;28&quot; y=&quot;306&quot;&gt;具名 Human Gate&lt;/text&gt;&lt;text x=&quot;28&quot; y=&quot;331&quot;&gt;或 authorized rule&lt;/text&gt;
+          &lt;text x=&quot;512&quot; y=&quot;306&quot; text-anchor=&quot;end&quot;&gt;Agent&lt;/text&gt;&lt;text x=&quot;512&quot; y=&quot;331&quot; text-anchor=&quot;end&quot;&gt;authority = none&lt;/text&gt;
+        &lt;/g&gt;
+      &lt;/svg&gt;
+      &lt;footer&gt;UI CLICK ≠ SUCCESS｜MODEL CHANGE ≠ LEARNING｜RECEIPT = ACTION EVIDENCE&lt;/footer&gt;
+    &lt;/section&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;sr-only&quot; aria-live=&quot;polite&quot; id=&quot;jw-poster-live&quot;&gt;当前显示：A Case 中心&lt;/div&gt;
+
+  &lt;style&gt;
+    #jianwei-architecture-poster-directions {
+      color: var(--foreground);
+      background: transparent;
+      width: 100%;
+    }
+    #jianwei-architecture-poster-directions .viz-controls {
+      margin-bottom: 1rem;
+    }
+    #jianwei-architecture-poster-directions .jw-poster-stage {
+      display: grid;
+      place-items: start center;
+    }
+    #jianwei-architecture-poster-directions .jw-poster {
+      width: min(100%, 540px);
+      box-sizing: border-box;
+      aspect-ratio: 9 / 16;
+      padding: 1.25rem;
+      background: var(--background);
+      color: var(--foreground);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    #jianwei-architecture-poster-directions .jw-poster[hidden] { display: none; }
+    #jianwei-architecture-poster-directions .jw-poster-dark {
+      background: var(--foreground);
+      color: var(--background);
+    }
+    #jianwei-architecture-poster-directions .jw-poster-header {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      align-items: end;
+      border-bottom: 1px solid currentColor;
+      padding-bottom: .75rem;
+    }
+    #jianwei-architecture-poster-directions .jw-poster-header h1,
+    #jianwei-architecture-poster-directions .jw-poster-header h2 { margin: 0; }
+    #jianwei-architecture-poster-directions .jw-poster-header h2 { text-align: right; }
+    #jianwei-architecture-poster-directions .jw-poster-header span { display: block; opacity: .58; }
+    #jianwei-architecture-poster-directions svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin-top: .5rem;
+      color: inherit;
+    }
+    #jianwei-architecture-poster-directions footer {
+      border-top: 1px solid currentColor;
+      padding-top: .65rem;
+      text-align: center;
+      opacity: .68;
+    }
+    #jianwei-architecture-poster-directions svg text {
+      fill: currentColor;
+      font-family: &quot;Microsoft YaHei&quot;, &quot;Noto Sans SC&quot;, sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+    }
+    #jianwei-architecture-poster-directions svg .jw-label { font-size: 15px; font-weight: 500; }
+    #jianwei-architecture-poster-directions svg rect,
+    #jianwei-architecture-poster-directions svg circle,
+    #jianwei-architecture-poster-directions svg path {
+      vector-effect: non-scaling-stroke;
+    }
+    #jianwei-architecture-poster-directions .jw-lines path,
+    #jianwei-architecture-poster-directions .jw-lines circle,
+    #jianwei-architecture-poster-directions .jw-parallel-lines path,
+    #jianwei-architecture-poster-directions .jw-scale-line,
+    #jianwei-architecture-poster-directions .jw-tech-flow {
+      fill: none; stroke: currentColor; stroke-width: 1; opacity: .42;
+    }
+    #jianwei-architecture-poster-directions .jw-node rect,
+    #jianwei-architecture-poster-directions .jw-surface rect,
+    #jianwei-architecture-poster-directions .jw-layer rect,
+    #jianwei-architecture-poster-directions .jw-mini-node rect,
+    #jianwei-architecture-poster-directions .jw-authority-node rect,
+    #jianwei-architecture-poster-directions .jw-scale-stage rect,
+    #jianwei-architecture-poster-directions .jw-tech-surface rect,
+    #jianwei-architecture-poster-directions .jw-tech-layer rect {
+      fill: none; stroke: currentColor; stroke-width: 1; opacity: .86;
+    }
+    #jianwei-architecture-poster-directions .jw-center circle,
+    #jianwei-architecture-poster-directions .jw-candidate circle,
+    #jianwei-architecture-poster-directions .jw-case-spine circle,
+    #jianwei-architecture-poster-directions .jw-scale-stage circle {
+      fill: var(--foreground); stroke: currentColor; stroke-width: 1;
+    }
+    #jianwei-architecture-poster-directions .jw-poster-dark .jw-center circle,
+    #jianwei-architecture-poster-directions .jw-poster-dark .jw-candidate circle,
+    #jianwei-architecture-poster-directions .jw-poster-dark .jw-case-spine circle,
+    #jianwei-architecture-poster-directions .jw-poster-dark .jw-scale-stage circle {
+      fill: var(--background);
+    }
+    #jianwei-architecture-poster-directions .jw-center text,
+    #jianwei-architecture-poster-directions .jw-candidate text,
+    #jianwei-architecture-poster-directions .jw-case-spine text,
+    #jianwei-architecture-poster-directions .jw-cell-text {
+      fill: var(--background); text-anchor: middle; font-weight: 500;
+    }
+    #jianwei-architecture-poster-directions .jw-ring-label,
+    #jianwei-architecture-poster-directions .jw-footer-cycle text,
+    #jianwei-architecture-poster-directions .jw-layer text,
+    #jianwei-architecture-poster-directions .jw-mini-node text,
+    #jianwei-architecture-poster-directions .jw-authority-node text,
+    #jianwei-architecture-poster-directions .jw-scale-stage text,
+    #jianwei-architecture-poster-directions .jw-tech-surface text,
+    #jianwei-architecture-poster-directions .jw-tech-layer text { text-anchor: middle; }
+    #jianwei-architecture-poster-directions .jw-authority-line {
+      fill: none; stroke: currentColor; stroke-width: 5;
+    }
+    #jianwei-architecture-poster-directions .jw-side-note,
+    #jianwei-architecture-poster-directions .jw-guardrail,
+    #jianwei-architecture-poster-directions .jw-scale-note,
+    #jianwei-architecture-poster-directions .jw-tech-rails { opacity: .64; }
+    @media (max-width: 420px) {
+      #jianwei-architecture-poster-directions .jw-poster { padding: .75rem; }
+      #jianwei-architecture-poster-directions .jw-poster-header { grid-template-columns: 1fr; }
+      #jianwei-architecture-poster-directions .jw-poster-header h2 { text-align: left; }
+    }
+  &lt;/style&gt;
+
+  &lt;script&gt;
+    (() =&gt; {
+      const root = document.getElementById(&#x27;jianwei-architecture-poster-directions&#x27;);
+      const buttons = Array.from(root.querySelectorAll(&#x27;[data-view]&#x27;));
+      const panels = Array.from(root.querySelectorAll(&#x27;[data-panel]&#x27;));
+      const live = root.querySelector(&#x27;#jw-poster-live&#x27;);
+      const names = {
+        a: &#x27;A Case 中心&#x27;, b: &#x27;B 三面架构&#x27;, c: &#x27;C 并行智能&#x27;,
+        d: &#x27;D 细胞扩张&#x27;, e: &#x27;E 技术内核&#x27;
+      };
+      buttons.forEach((button) =&gt; {
+        button.addEventListener(&#x27;click&#x27;, () =&gt; {
+          const view = button.dataset.view;
+          buttons.forEach((item) =&gt; {
+            const active = item.dataset.view === view;
+            item.setAttribute(&#x27;aria-pressed&#x27;, String(active));
+            item.classList.toggle(&#x27;btn-primary&#x27;, active);
+          });
+          panels.forEach((panel) =&gt; { panel.hidden = panel.dataset.panel !== view; });
+          live.textContent = `当前显示：${names[view]}`;
+        });
+      });
+    })();
+  &lt;/script&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  if (window.FloatingUIDOM == null) {
+    return;
+  }
+  const { autoUpdate, computePosition, flip, offset, shift, size } =
+    window.FloatingUIDOM;
+  const tooltipPlacements = new Set([&quot;top&quot;, &quot;right&quot;, &quot;bottom&quot;, &quot;left&quot;]);
+  const tooltipId = `codex-visualization-tooltip-${
+    window.crypto?.randomUUID?.() ?? Date.now().toString(36)
+  }`;
+  const tooltipGap = 5;
+  const hoverDelay = 700;
+  const skipDelay = 300;
+  let activeTrigger = null;
+  let pendingTrigger = null;
+  let tooltip = null;
+  let openTimeout = null;
+  let autoUpdateCleanup = null;
+  let positionRequest = 0;
+  let skipDelayUntil = 0;
+  let lastPointerWasTouch = false;
+  let pinnedByTouch = false;
+
+  const getTrigger = (target) =&gt;
+    target?.nodeType === Node.ELEMENT_NODE
+      ? target.closest(&quot;[data-tooltip]&quot;)
+      : null;
+  const containsTarget = (trigger, target) =&gt;
+    target?.nodeType != null &amp;&amp; trigger.contains(target);
+  const getContent = (trigger) =&gt;
+    trigger.getAttribute(&quot;data-tooltip&quot;)?.trim() ?? &quot;&quot;;
+  const getPlacement = (trigger) =&gt; {
+    const placement = trigger.getAttribute(&quot;data-tooltip-placement&quot;);
+    return tooltipPlacements.has(placement) ? placement : &quot;top&quot;;
+  };
+  const getTooltip = () =&gt; {
+    if (tooltip == null) {
+      tooltip = document.createElement(&quot;div&quot;);
+      tooltip.id = tooltipId;
+      tooltip.className = &quot;tooltip&quot;;
+      tooltip.setAttribute(&quot;role&quot;, &quot;tooltip&quot;);
+    }
+    return tooltip;
+  };
+  const setDescribedBy = (trigger, described) =&gt; {
+    const ids = new Set(
+      (trigger.getAttribute(&quot;aria-describedby&quot;) ?? &quot;&quot;)
+        .split(/\s+/)
+        .filter(Boolean),
+    );
+    if (described) {
+      ids.add(tooltipId);
+    } else {
+      ids.delete(tooltipId);
+    }
+    if (ids.size === 0) {
+      trigger.removeAttribute(&quot;aria-describedby&quot;);
+    } else {
+      trigger.setAttribute(&quot;aria-describedby&quot;, [...ids].join(&quot; &quot;));
+    }
+  };
+  const clearOpenTimeout = () =&gt; {
+    if (openTimeout != null) {
+      window.clearTimeout(openTimeout);
+      openTimeout = null;
+    }
+    pendingTrigger = null;
+  };
+  const closeTooltip = (activateSkipDelay = true) =&gt; {
+    clearOpenTimeout();
+    pinnedByTouch = false;
+    positionRequest += 1;
+    autoUpdateCleanup?.();
+    autoUpdateCleanup = null;
+    if (activeTrigger == null) {
+      return;
+    }
+    setDescribedBy(activeTrigger, false);
+    activeTrigger = null;
+    tooltip?.remove();
+    if (activateSkipDelay) {
+      skipDelayUntil = Date.now() + skipDelay;
+    }
+  };
+  const updatePosition = (trigger, floating) =&gt; {
+    const request = ++positionRequest;
+    void computePosition(trigger, floating, {
+      middleware: [
+        offset(tooltipGap),
+        flip({ padding: tooltipGap }),
+        shift({ padding: tooltipGap }),
+        size({
+          padding: tooltipGap,
+          apply({ availableHeight, availableWidth, elements }) {
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-width&quot;,
+              `${Math.max(0, availableWidth)}px`,
+            );
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-height&quot;,
+              `${Math.max(0, availableHeight)}px`,
+            );
+          },
+        }),
+      ],
+      placement: getPlacement(trigger),
+      strategy: &quot;fixed&quot;,
+    })
+      .then(({ x, y }) =&gt; {
+        if (activeTrigger !== trigger || request !== positionRequest) {
+          return;
+        }
+        const scale = window.devicePixelRatio || 1;
+        floating.style.transform = `translate(${Math.round(x * scale) / scale}px, ${Math.round(y * scale) / scale}px)`;
+        floating.style.visibility = &quot;visible&quot;;
+      })
+      .catch(() =&gt; {
+        if (activeTrigger === trigger &amp;&amp; request === positionRequest) {
+          closeTooltip(false);
+        }
+      });
+  };
+  const openTooltip = (trigger) =&gt; {
+    const content = getContent(trigger);
+    if (!trigger.isConnected || content.length === 0) {
+      return;
+    }
+    clearOpenTimeout();
+    if (activeTrigger === trigger) {
+      return;
+    }
+    closeTooltip();
+    const floating = getTooltip();
+    floating.textContent = content;
+    floating.style.visibility = &quot;hidden&quot;;
+    floating.style.transform = &quot;translate(0, 0)&quot;;
+    document.body.appendChild(floating);
+    activeTrigger = trigger;
+    setDescribedBy(trigger, true);
+    autoUpdateCleanup = autoUpdate(trigger, floating, () =&gt; {
+      updatePosition(trigger, floating);
+    });
+  };
+  const requestOpen = (trigger, immediate = false) =&gt; {
+    if (
+      getContent(trigger).length === 0 ||
+      activeTrigger === trigger ||
+      pendingTrigger === trigger
+    ) {
+      return;
+    }
+    clearOpenTimeout();
+    pendingTrigger = trigger;
+    const delay =
+      immediate || activeTrigger != null || Date.now() &lt; skipDelayUntil
+        ? 0
+        : hoverDelay;
+    if (delay === 0) {
+      openTooltip(trigger);
+      return;
+    }
+    openTimeout = window.setTimeout(() =&gt; {
+      openTimeout = null;
+      pendingTrigger = null;
+      openTooltip(trigger);
+    }, delay);
+  };
+  const handlePointerOpen = (event) =&gt; {
+    if (event.pointerType === &quot;touch&quot;) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    requestOpen(trigger);
+  };
+  const handlePointer = (event) =&gt; {
+    lastPointerWasTouch =
+      event.type === &quot;pointerdown&quot; &amp;&amp; event.pointerType === &quot;touch&quot;;
+  };
+  const handleTouchClick = (event) =&gt; {
+    const isTouch = event.pointerType === &quot;touch&quot; || lastPointerWasTouch;
+    lastPointerWasTouch = false;
+    if (!isTouch || event.detail === 0) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (
+      trigger == null ||
+      !trigger.isConnected ||
+      getContent(trigger).length === 0 ||
+      (pinnedByTouch &amp;&amp; activeTrigger === trigger)
+    ) {
+      if (pinnedByTouch) {
+        closeTooltip();
+      }
+      return;
+    }
+    openTooltip(trigger);
+    pinnedByTouch = activeTrigger === trigger;
+    window.setTimeout(() =&gt; {
+      if (activeTrigger === trigger &amp;&amp; !trigger.isConnected) {
+        closeTooltip(false);
+      }
+    }, 0);
+  };
+  const handleLeave = (event) =&gt; {
+    if (pinnedByTouch) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const handleFocusIn = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (trigger?.matches(&quot;:focus-visible&quot;)) {
+      requestOpen(trigger, true);
+    }
+  };
+  const handleKeyDown = (event) =&gt; {
+    if (event.key === &quot;Escape&quot;) {
+      closeTooltip();
+    }
+  };
+  const handleContextMenu = (event) =&gt; {
+    lastPointerWasTouch = false;
+    const trigger = getTrigger(event.target);
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const destroy = () =&gt; {
+    closeTooltip(false);
+    lastPointerWasTouch = false;
+    document.removeEventListener(&quot;pointerover&quot;, handlePointerOpen);
+    document.removeEventListener(&quot;pointerdown&quot;, handlePointer);
+    document.removeEventListener(&quot;pointercancel&quot;, handlePointer);
+    document.removeEventListener(&quot;click&quot;, handleTouchClick);
+    document.removeEventListener(&quot;pointerout&quot;, handleLeave);
+    document.removeEventListener(&quot;focusin&quot;, handleFocusIn);
+    document.removeEventListener(&quot;focusout&quot;, handleLeave);
+    document.removeEventListener(&quot;keydown&quot;, handleKeyDown);
+    document.removeEventListener(&quot;contextmenu&quot;, handleContextMenu);
+    tooltip = null;
+  };
+
+  document.addEventListener(&quot;pointerover&quot;, handlePointerOpen);
+  document.addEventListener(&quot;pointerdown&quot;, handlePointer);
+  document.addEventListener(&quot;pointercancel&quot;, handlePointer);
+  document.addEventListener(&quot;click&quot;, handleTouchClick);
+  document.addEventListener(&quot;pointerout&quot;, handleLeave);
+  document.addEventListener(&quot;focusin&quot;, handleFocusIn);
+  document.addEventListener(&quot;focusout&quot;, handleLeave);
+  document.addEventListener(&quot;keydown&quot;, handleKeyDown);
+  document.addEventListener(&quot;contextmenu&quot;, handleContextMenu);
+  window.addEventListener(&quot;pagehide&quot;, destroy, { once: true });
+})();
+&lt;/script&gt;
+&lt;script id=&quot;codex-visualization-lucide&quot; async src=&quot;https://unpkg.com/lucide@1.17.0/dist/umd/lucide.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  const initialize = () =&gt; {
+    globalThis.lucide?.createIcons({ attrs: { width: 16, height: 16 } });
+  };
+  if (globalThis.lucide != null) {
+    initialize();
+    return;
+  }
+  document
+    .getElementById(&quot;codex-visualization-lucide&quot;)
+    ?.addEventListener(&quot;load&quot;, initialize, { once: true });
+})();
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+</body>
+</html>

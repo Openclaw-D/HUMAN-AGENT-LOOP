@@ -1,0 +1,596 @@
+{
+  "name": "x-matrix",
+  "at": "2026-09-14T23:50:52.139Z",
+  "durationMs": 9851,
+  "suiteError": null,
+  "pass": [
+    {
+      "id": "FIX-1 发布规则版本",
+      "cls": "工程",
+      "detail": {
+        "ok": true,
+        "ruleVersion": {
+          "version": 1,
+          "status": "published",
+          "indicators": [
+            "产能口径"
+          ],
+          "allowedTools": [
+            "calc.basic"
+          ],
+          "humanEscalation": [
+            "证据矛盾"
+          ],
+          "notes": "D测试规则 v1",
+          "publishedAt": "2026-09-14T23:50:42.758Z"
+        },
+        "storeVersion": 1
+      }
+    },
+    {
+      "id": "FIX-2 创建项目(factVersion=1)",
+      "cls": "工程",
+      "detail": {
+        "ok": true,
+        "project": {
+          "projectId": "p-mu1wbrdh-nj6zp9av",
+          "name": "D路X矩阵项目",
+          "factVersion": 1,
+          "createdAt": "2026-09-14T23:50:42.773Z",
+          "updatedAt": "2026-09-14T23:50:42.773Z"
+        },
+        "storeVersion": 2
+      }
+    },
+    {
+      "id": "FIX-3 附着证据v1(factVersion→2)",
+      "cls": "工程",
+      "detail": {
+        "ok": true,
+        "evidence": {
+          "evidenceId": "ev-mu1wbrdx-vdlpmv2n",
+          "projectId": "p-mu1wbrdh-nj6zp9av",
+          "version": 1,
+          "kind": "note",
+          "content": {
+            "text": "产能记录：月产值约450万元"
+          },
+          "sha256": "d295537decae66f78fc67381ee95ecc662f9cbd97e4249e57e4fc63369bce8b9",
+          "supersedes": null,
+          "supersededBy": null,
+          "factVersion": 2,
+          "capturedAt": "2026-09-14T23:50:42.789Z"
+        },
+        "projectFactVersion": 2,
+        "storeVersion": 3
+      }
+    },
+    {
+      "id": "FIX-4 创建run(pending,快照factVersion=2)",
+      "cls": "工程",
+      "detail": {
+        "ok": true,
+        "run": {
+          "runId": "run-mu1wbref-66pb72vv",
+          "projectId": "p-mu1wbrdh-nj6zp9av",
+          "ruleVersion": 1,
+          "factVersion": 2,
+          "inputs": [
+            {
+              "evidenceId": "ev-mu1wbrdx-vdlpmv2n",
+              "version": 1
+            }
+          ],
+          "state": "pending",
+          "calculation": null,
+          "opinions": [],
+          "humanActions": [],
+          "version": 1,
+          "createdAt": "2026-09-14T23:50:42.807Z",
+          "updatedAt": "2026-09-14T23:50:42.807Z"
+        },
+        "storeVersion": 1
+      }
+    },
+    {
+      "id": "X-1pre 甲端写成功",
+      "cls": "工程",
+      "detail": {
+        "ok": true,
+        "evidence": {
+          "evidenceId": "ev-mu1wbres-l9o4a2bj",
+          "projectId": "p-mu1wbrdh-nj6zp9av",
+          "version": 1,
+          "kind": "note",
+          "content": {
+            "text": "X-1 甲端写入"
+          },
+          "sha256": "8b0e26700c1c14a3ff10c3c0560514d5aaf8329559a5b7a9061aae5f4eeb9d4a",
+          "supersedes": null,
+          "supersededBy": null,
+          "factVersion": 3,
+          "capturedAt": "2026-09-14T23:50:42.820Z"
+        },
+        "projectFactVersion": 3,
+        "storeVersion": 4
+      }
+    },
+    {
+      "id": "X-1a 乙端读到同 factVersion",
+      "cls": "工程",
+      "detail": {
+        "wrote": 3,
+        "read": 3
+      }
+    },
+    {
+      "id": "X-1b 乙端证据列表含新写入",
+      "cls": "工程",
+      "detail": 2
+    },
+    {
+      "id": "X-1c 两客户端同刻读取一致",
+      "cls": "工程",
+      "detail": ""
+    },
+    {
+      "id": "X-2a 同requestId同载荷重放=replayed:true",
+      "cls": "工程",
+      "detail": {
+        "r1": 200,
+        "r2": 200,
+        "replayed": true
+      }
+    },
+    {
+      "id": "X-2b 重放不重复记账(factVersion只+1)",
+      "cls": "工程",
+      "detail": {
+        "before": 3,
+        "after": 4
+      }
+    },
+    {
+      "id": "X-2c 同requestId换载荷→409 REQUEST_MISMATCH",
+      "cls": "工程",
+      "detail": {
+        "ok": false,
+        "error": "REQUEST_MISMATCH",
+        "message": "同 requestId 但载荷不同：重试不得更换载荷"
+      }
+    },
+    {
+      "id": "X-2d 并发4×同requestId：恰好一次生效版本只+1",
+      "cls": "工程",
+      "detail": {
+        "okOnce": 1,
+        "replayN": 3,
+        "statuses": [
+          200,
+          200,
+          200,
+          200
+        ],
+        "before": 4,
+        "after": 5
+      }
+    },
+    {
+      "id": "X-2e 回执查询命中幂等记录",
+      "cls": "工程",
+      "detail": {
+        "found": true,
+        "hasReceipt": true
+      }
+    },
+    {
+      "id": "X-2f 未知requestId→found:false（不伪装命中）",
+      "cls": "工程",
+      "detail": {
+        "ok": true,
+        "found": false
+      }
+    },
+    {
+      "id": "X-2g 过期版本→409 VERSION_CONFLICT+serverVersion",
+      "cls": "工程",
+      "detail": {
+        "ok": false,
+        "error": "VERSION_CONFLICT",
+        "message": "项目事实版本已更新：客户端 v1，服务端 v5",
+        "serverVersion": 5
+      }
+    },
+    {
+      "id": "X-3a 重启后事实恢复版本一致",
+      "cls": "工程",
+      "detail": {
+        "before": 5,
+        "after": 6
+      }
+    },
+    {
+      "id": "X-3b run恢复(opinions/humanActions在)",
+      "cls": "工程",
+      "detail": {
+        "state": "pending"
+      }
+    },
+    {
+      "id": "X-3c 重启后同requestId仍幂等重放",
+      "cls": "工程",
+      "detail": {
+        "status": 200,
+        "replayed": true
+      }
+    },
+    {
+      "id": "X-3d 重放不重复记账",
+      "cls": "工程",
+      "detail": {
+        "now": 6
+      }
+    },
+    {
+      "id": "X-3e 重启后新写版本单调+1",
+      "cls": "工程",
+      "detail": ""
+    },
+    {
+      "id": "FIX-5 写入模型候选意见",
+      "cls": "工程",
+      "detail": {
+        "ok": true,
+        "opinion": {
+          "opinionId": "op-mu1wbsrh-y1z59twa",
+          "authority": "none",
+          "provider": "simulation",
+          "requestReceipt": "sim-dqa-397da0c7",
+          "candidate": {
+            "observations": [
+              "月产值450万与申报基本满负荷存在口径差异"
+            ],
+            "evidenceRefs": [
+              "ev-mu1wbrdx-vdlpmv2n"
+            ],
+            "assumptions": [
+              "按月度口径"
+            ],
+            "uncertainty": [
+              "台账未核实"
+            ],
+            "recommendedHumanAction": "need_more_evidence"
+          },
+          "basedOnEvidence": [
+            {
+              "evidenceId": "ev-mu1wbrdx-vdlpmv2n",
+              "version": 1
+            }
+          ],
+          "at": "2026-09-14T23:50:44.573Z"
+        },
+        "runVersion": 2,
+        "runState": "candidate_ready"
+      }
+    },
+    {
+      "id": "FIX-6 run=candidate_ready 且 authority=none",
+      "cls": "工程",
+      "detail": {
+        "state": "candidate_ready"
+      }
+    },
+    {
+      "id": "FIX-7 写入可验证计算(带公式版本)",
+      "cls": "工程",
+      "detail": {
+        "ok": true,
+        "calculation": {
+          "toolVersion": "calc.basic@1",
+          "inputHash": "sha256-dqa-88d1126b",
+          "output": {
+            "value": 450,
+            "unit": "万元/月"
+          },
+          "assumptions": [
+            "月度口径"
+          ],
+          "computedAt": "2026-09-14T23:50:44.619Z",
+          "computedBy": "calculation-tool"
+        },
+        "runVersion": 3
+      }
+    },
+    {
+      "id": "X-4a escalation→unknown 被接受",
+      "cls": "工程",
+      "detail": {
+        "ok": true,
+        "runState": "unknown",
+        "runVersion": 2,
+        "reason": "X-4 模拟发送后未知"
+      }
+    },
+    {
+      "id": "X-4b run.state=unknown（非failed非success）",
+      "cls": "工程",
+      "detail": "unknown"
+    },
+    {
+      "id": "X-4c 无自动重试（1.5s后仍unknown）",
+      "cls": "工程",
+      "detail": "unknown"
+    },
+    {
+      "id": "X-4d unknown 态写意见被拒（状态机门，非pending）",
+      "cls": "工程",
+      "detail": {
+        "status": 409,
+        "err": "RUN_ESCALATED"
+      }
+    },
+    {
+      "id": "X-4e unknown 后人工 take_over→resolved",
+      "cls": "工程",
+      "detail": {
+        "ha": 200,
+        "state": "resolved"
+      }
+    },
+    {
+      "id": "X-5a supersede 生成新证据且 supersedes 链接正确",
+      "cls": "工程",
+      "detail": {
+        "supersedes": "ev-mu1wbrdx-vdlpmv2n"
+      }
+    },
+    {
+      "id": "X-5b 基于被取代证据的 opinion stale:true",
+      "cls": "工程",
+      "detail": {
+        "stale": true
+      }
+    },
+    {
+      "id": "X-5c run 事实过期信号（响应顶层 stale，合同'run 顶层'实现取响应顶层）",
+      "cls": "工程",
+      "detail": {
+        "topStale": true,
+        "currentFv": 8,
+        "runFv": 2
+      }
+    },
+    {
+      "id": "X-5d 历史意见保留未删（只追加）",
+      "cls": "工程",
+      "detail": 1
+    },
+    {
+      "id": "X-5e 基于新证据的新 run 不 stale（未命中不失效）",
+      "cls": "工程",
+      "detail": {}
+    },
+    {
+      "id": "X-5f 已取代证据再取代→409 EVIDENCE_SUPERSEDED",
+      "cls": "工程",
+      "detail": {
+        "ok": false,
+        "error": "EVIDENCE_SUPERSEDED",
+        "message": "该证据已被 ev-mu1wbu39-nnkiwspk 取代",
+        "serverVersion": 8
+      }
+    },
+    {
+      "id": "X-6a 缺 toolVersion→400",
+      "cls": "工程",
+      "detail": {
+        "ok": false,
+        "error": "INVALID_INPUT",
+        "message": "toolVersion 必须是非空 string（≤64）"
+      }
+    },
+    {
+      "id": "X-6b 缺 inputHash→400",
+      "cls": "工程",
+      "detail": {
+        "ok": false,
+        "error": "INVALID_INPUT",
+        "message": "inputHash 必须是非空 string（≤128）"
+      }
+    },
+    {
+      "id": "X-6c 缺 output→400（不补造数值）",
+      "cls": "工程",
+      "detail": {
+        "ok": false,
+        "error": "INVALID_INPUT",
+        "message": "output 必须是对象"
+      }
+    },
+    {
+      "id": "X-6d 失败计算未落库",
+      "cls": "工程",
+      "detail": null
+    },
+    {
+      "id": "X-7a 引用不存在的证据被拒",
+      "cls": "工程",
+      "detail": {
+        "status": 400,
+        "err": "INVALID_INPUT"
+      }
+    },
+    {
+      "id": "X-7b 伪造引用未落库",
+      "cls": "工程",
+      "detail": ""
+    },
+    {
+      "id": "X-7c 禁用键 \"approval\" 结构拒绝且未落库",
+      "cls": "工程",
+      "detail": {
+        "status": 400,
+        "baseN": 0,
+        "afterN": 0
+      }
+    },
+    {
+      "id": "X-7c 禁用键 \"approved\" 结构拒绝且未落库",
+      "cls": "工程",
+      "detail": {
+        "status": 400,
+        "baseN": 0,
+        "afterN": 0
+      }
+    },
+    {
+      "id": "X-7c 禁用键 \"decision\" 结构拒绝且未落库",
+      "cls": "工程",
+      "detail": {
+        "status": 400,
+        "baseN": 0,
+        "afterN": 0
+      }
+    },
+    {
+      "id": "X-7c 禁用键 \"quota\" 结构拒绝且未落库",
+      "cls": "工程",
+      "detail": {
+        "status": 400,
+        "baseN": 0,
+        "afterN": 0
+      }
+    },
+    {
+      "id": "X-7c 禁用键 \"price\" 结构拒绝且未落库",
+      "cls": "工程",
+      "detail": {
+        "status": 400,
+        "baseN": 0,
+        "afterN": 0
+      }
+    },
+    {
+      "id": "X-7c 禁用键 \"rate\" 结构拒绝且未落库",
+      "cls": "工程",
+      "detail": {
+        "status": 400,
+        "baseN": 0,
+        "afterN": 0
+      }
+    },
+    {
+      "id": "X-8a actorRole=model→403 ROLE_FORBIDDEN",
+      "cls": "工程",
+      "detail": {
+        "ok": false,
+        "error": "ROLE_FORBIDDEN",
+        "message": "正式动作仅授权人类角色（actorRole 必须 \"human\"；模型/Agent 无审批权）"
+      }
+    },
+    {
+      "id": "X-8b 越权未落库 formalOutcome=null",
+      "cls": "工程",
+      "detail": {
+        "n": 0
+      }
+    },
+    {
+      "id": "X-8c 有效凭据+过期版本→409",
+      "cls": "工程",
+      "detail": {
+        "ok": false,
+        "error": "VERSION_CONFLICT",
+        "message": "运行版本已更新：客户端 v1000，服务端 v1",
+        "serverVersion": 1
+      }
+    },
+    {
+      "id": "X-8d 正式人工动作→resolved 且 formalOutcome=最近humanAction（响应顶层）",
+      "cls": "工程",
+      "detail": {
+        "ha": 200,
+        "state": "resolved",
+        "foTop": "accept_candidate"
+      }
+    },
+    {
+      "id": "X-8e resolved 终态+有效凭据再动作被拒（D-3 终态保护）",
+      "cls": "工程",
+      "detail": {
+        "status": 409,
+        "err": "RUN_RESOLVED"
+      }
+    },
+    {
+      "id": "X-8f 无凭据自称human被拒（D-6 修复验证）",
+      "cls": "工程",
+      "detail": {
+        "status": 403,
+        "err": "PRINCIPAL_UNTRUSTED",
+        "before": "resolved",
+        "after": "resolved"
+      }
+    },
+    {
+      "id": "X-9a 非法载荷→400 且 ok:false+error",
+      "cls": "工程",
+      "detail": {
+        "ok": false,
+        "error": "INVALID_INPUT",
+        "message": "kind 必须是非空 string（≤64）"
+      }
+    },
+    {
+      "id": "X-9b 不存在资源→404 NOT_FOUND",
+      "cls": "工程",
+      "detail": {
+        "ok": false,
+        "error": "NOT_FOUND",
+        "message": "运行不存在"
+      }
+    },
+    {
+      "id": "X-9c Cache-Control: no-store",
+      "cls": "工程",
+      "detail": "no-store"
+    },
+    {
+      "id": "X-9d 破损JSON体→400（不500不静默）",
+      "cls": "工程",
+      "detail": 400
+    },
+    {
+      "id": "X-10a 损坏 facts.json→500 STORE_CORRUPT",
+      "cls": "工程",
+      "detail": {
+        "status": 500,
+        "err": "STORE_CORRUPT"
+      }
+    },
+    {
+      "id": "X-10b 不静默重置损坏文件",
+      "cls": "工程",
+      "detail": ""
+    },
+    {
+      "id": "X-10c 损坏 runs.json→500 STORE_CORRUPT",
+      "cls": "工程",
+      "detail": {
+        "status": 500
+      }
+    },
+    {
+      "id": "X-10d 恢复文件后服务恢复",
+      "cls": "工程",
+      "detail": 200
+    }
+  ],
+  "fail": [],
+  "notes": [
+    {
+      "at": "2026-09-14T23:50:42.754Z",
+      "msg": "server up port=3491 data=C:\\Users\\22673\\Desktop\\Anthropic\\V7\\backend\\D\\runtime\\data-x-1789429842302"
+    }
+  ]
+}

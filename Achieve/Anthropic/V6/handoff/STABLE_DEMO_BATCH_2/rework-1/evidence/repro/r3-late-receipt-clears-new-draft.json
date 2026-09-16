@@ -1,0 +1,38 @@
+{
+  "defect": "R3/P1 旧回执清空用户后来输入的新草稿",
+  "environment": {
+    "url": "http://localhost:3321/v5-preview",
+    "instance": "site/.v6-runtime 隔离副本（PID 18872）",
+    "data": "隔离合成数据（approval 情景，本轮复现期间版本 v34→v35）",
+    "browser": "ZCode IAB 真实页面，桌面视口 1280x900",
+    "injection": "页内包装 window.fetch：POST /api/v5-preview/messages 真实到达服务端立即落账，但回执延迟 3 秒释放给页面（响应真实、未伪造）。时序采集全部在单次页内 evaluate 完成，避免跨调用标签页节流影响。"
+  },
+  "timeline": [
+    {
+      "step": "发送消息 A 并在 1 秒后（回执仍在途）把输入编辑为 B",
+      "request": {
+        "method": "POST",
+        "url": "/api/v5-preview/messages",
+        "status": 200,
+        "serverProcessedImmediately": true,
+        "body": { "requestId": "a981f154-a265-4566-afd6-0b1e18254b07", "expectedVersion": 35, "text": "R3复现：旧消息A（合成）", "actorRole": "business" },
+        "injected": "response-delayed-3s"
+      },
+      "duringFlightInput": "R3复现：新草稿B不应被清空（合成）",
+      "note": "在途期间输入框可编辑（chat-panel.tsx:96 不禁用输入），B 已通过 React onChange 提交为当前草稿"
+    },
+    {
+      "step": "页内轮询输入框值（t 以发送时刻为 0）",
+      "trace": [
+        { "dt": 1004, "value": "R3复现：新草稿B不应被清空（合成）", "phase": "在途编辑后" },
+        { "dt": 2000, "value": "R3复现：新草稿B不应被清空（合成）" },
+        { "dt": 3010, "value": "R3复现：新草稿B不应被清空（合成）", "phase": "回执即将释放" },
+        { "dt": 4000, "value": "", "phase": "A 的回执释放后——B 被清空" }
+      ],
+      "finalValue": "",
+      "messageCount": 3,
+      "conclusion": "chat-panel.tsx:44 成功后无条件 setInput('')：A 的（重放/正常）回执清掉了用户后来编辑的新草稿 B。补充说明表单 todo-card.tsx:65 为同一代码模式（同批修复）。"
+    }
+  ],
+  "note": "R3 的 A→B→A 修订序列（字符串相同但属不同草稿修订）在修复后以草稿修订标识判定，见 rework-1 行为回归测试与验收矩阵。"
+}

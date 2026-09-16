@@ -1,0 +1,90 @@
+{
+  "version": "b-contract-stub@0.2.0(对齐A CONTRACT v1.0)",
+  "state": {
+    "goals": [
+      [
+        "g1",
+        {
+          "version": 2,
+          "status": "candidate_ready",
+          "stale": false,
+          "executorKind": "agent",
+          "projectId": "p1",
+          "goalKey": "model_review",
+          "inputVersions": {
+            "factVersion": "1",
+            "ruleVersion": "1"
+          },
+          "goalId": "g1",
+          "fencingSeq": 1,
+          "assignment": {
+            "goalId": "g1",
+            "assignee": "c1",
+            "fencingToken": 1,
+            "leaseUntil": "2026-09-15T18:51:29.143Z",
+            "claimedAt": "2026-09-15T18:50:29.143Z"
+          },
+          "result": {
+            "provider": "simulation",
+            "output": {
+              "observations": [
+                "o"
+              ],
+              "evidenceRefs": [],
+              "assumptions": [],
+              "uncertainty": []
+            }
+          },
+          "receiptCount": 1
+        }
+      ]
+    ],
+    "receipts": [
+      [
+        "rqP",
+        {
+          "requestId": "rqP",
+          "goalId": "g1",
+          "fencingToken": 1,
+          "kind": "execution_completed",
+          "result": {
+            "provider": "simulation",
+            "output": {
+              "observations": [
+                "o"
+              ],
+              "evidenceRefs": [],
+              "assumptions": [],
+              "uncertainty": []
+            }
+          },
+          "at": "2026-09-15T18:50:29.145Z"
+        }
+      ]
+    ],
+    "humanRequests": [],
+    "events": [
+      {
+        "seq": 1,
+        "eventId": "ev-1",
+        "eventType": "GOAL_READY",
+        "goalId": "g1",
+        "at": "2026-09-15T18:50:29.139Z"
+      },
+      {
+        "seq": 2,
+        "eventId": "ev-2",
+        "eventType": "GOAL_CLAIMED",
+        "goalId": "g1",
+        "at": "2026-09-15T18:50:29.143Z"
+      },
+      {
+        "seq": 3,
+        "eventId": "ev-3",
+        "eventType": "GOAL_CANDIDATE_READY",
+        "goalId": "g1",
+        "at": "2026-09-15T18:50:29.145Z"
+      }
+    ]
+  }
+}

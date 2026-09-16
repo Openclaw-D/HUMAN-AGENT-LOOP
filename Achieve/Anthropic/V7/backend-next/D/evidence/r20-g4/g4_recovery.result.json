@@ -1,0 +1,22 @@
+{
+  "suite": "g4_recovery",
+  "results": [
+    {
+      "id": "D-12",
+      "title": "运行中杀worker→恢复续跑：已回执步不重执行、unknown零盲重发（B侧）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "pass",
+      "assertions": 16,
+      "failures": [],
+      "ms": 4365,
+      "note": ""
+    }
+  ],
+  "pass": 1,
+  "fail": 0,
+  "skip": 0,
+  "blocked": 0,
+  "totalAssertions": 16,
+  "runnerError": null
+}

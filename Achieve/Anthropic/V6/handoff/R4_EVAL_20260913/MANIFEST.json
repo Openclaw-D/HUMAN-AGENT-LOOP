@@ -1,0 +1,234 @@
+{
+  "schema": "jw-eval-manifest@1",
+  "generatedBy": "node tools/replay-cli.mjs manifest（runtime/ 为可变输出，不入冻结清单）",
+  "interfaceVersions": {
+    "product-trajectory": "1（generation 非负语义兼容修正；与 R3 冻结版字段兼容）",
+    "mobile-measurement": "1（新增可选 meta.screenshotHashes 同运行绑定）",
+    "trajectory-verdict": "1",
+    "mobile-verdict": "1",
+    "replay-cli": "1.1.0-r4（--gate CI 模式 / inputs-check / T7 真变形）"
+  },
+  "baselineDependency": {
+    "r3EvalBatch": "../R3_EVAL_20260913/（只读；schema 与控制轨迹来源，本轮仅运行零写入 selftest 回归 32/32）",
+    "r2EvalBatch": "../R2_EVAL_20260913/（只读；零写入 selftest 回归 109/109）",
+    "productModel": "jianwei-v3/site/lib/v5-preview/{remote-types,remote-timeline,remote-store}.ts（只读；generation 非负语义由真实 store 冒烟确认）"
+  },
+  "reproducibleCommands": [
+    "node tools/replay-cli.mjs selftest",
+    "node tools/replay-cli.mjs metamorphic",
+    "node tools/replay-cli.mjs replay --trajectory trajectories/handwritten/pos-1-full-lifecycle.json --gate",
+    "node tools/replay-cli.mjs replay --trajectory trajectories/handwritten/neg-pre-overreach.json --gate",
+    "node tools/replay-cli.mjs replay --trajectory evidence-r4/runtime/gate-undecided-sample.json --gate",
+    "node tools/replay-cli.mjs replay --trajectory evidence-r4/runtime/gate-schemafail-sample.json --gate",
+    "node tools/replay-cli.mjs inputs-check",
+    "node tools/mobile-measure-check.mjs --measurement trajectories/mobile-fixtures/mm-pass.json",
+    "node tools/export-trajectory-from-store.mjs --store ../../../jianwei-v3/site/.v5-preview-data/remote-store.json --session rs-mtyqc012-gikrdvjw --out evidence-r4/runtime/real-store-smoke-trajectory.json",
+    "node ../R2_EVAL_20260913/tools/eval-cli-r2.mjs selftest",
+    "node ../R3_EVAL_20260913/tools/replay-cli.mjs selftest",
+    "node tools/replay-cli.mjs manifest"
+  ],
+  "knownLimitations": [
+    "INTEGRATION BLOCKED：MAIN 输入包 0/3 轨迹、0/1 量测——整体闭环不接受，不冒充产品证据",
+    "回放判定为事件/记录级结构判定，语义完备性不做声称；UNDECIDED 路由人工",
+    "手写控制轨迹只证明回放器判定正确，不代表产品已执行",
+    "真机 Safari、真实ASR/视频/相机、真实模型 NOT TESTED",
+    "homoglyph 去重局限沿用 R2 记录（回放器不做文本去重，风险面不同）"
+  ],
+  "constraints": {
+    "realModelCalls": 0,
+    "newDependencies": 0,
+    "productCodeChanges": 0,
+    "servicesStarted": 0,
+    "gitWriteOperations": 0,
+    "codexOperations": 0,
+    "writeScope": "V6/handoff/R4_EVAL_20260913/"
+  },
+  "notes": [
+    "Gate 退出码：0=仅pass/na；4=violation>0；5=undecided>0或GATE BLOCKED；6=inputs-check缺输入——接受脚本不得把 6/5/4 当 PASS",
+    "golden 不进入任何被评对象；轨迹来源标记强制",
+    "可变输出在 evidence-r4/runtime/（不入冻结清单）；R2/R3 冻结 evidence 未被覆盖"
+  ],
+  "fileCount": 36,
+  "files": [
+    {
+      "path": "AGENT_LEDGER.md",
+      "sha256": "e464852dd66d517f36f068521dcb81e760378d3675cb86346112f20f184fdd32",
+      "bytes": 1977
+    },
+    {
+      "path": "docs/manifest-meta.json",
+      "sha256": "c142132d9cae1a3cafa632f0765da1c8b12a8d622af575233cc7f0e91f7ed8c4",
+      "bytes": 2942
+    },
+    {
+      "path": "docs/MOBILE_MEASUREMENT_SCHEMA.md",
+      "sha256": "6c8ed62f030c84cdabdb2d4e90020152d3439cd8518fbea740adeabfbc431789",
+      "bytes": 2471
+    },
+    {
+      "path": "docs/TRAJECTORY_SCHEMA.md",
+      "sha256": "2389f368c5117fd93f044865cfd1b2a79999e728a8519fb97098623284d96a4e",
+      "bytes": 4307
+    },
+    {
+      "path": "evidence-r4/final-verification.txt",
+      "sha256": "ca603f24d2241205376d2bfc63490f42d26d190eee2e8962dce1831c3cbc9b28",
+      "bytes": 370
+    },
+    {
+      "path": "evidence-r4/gate-exitcode-verify.txt",
+      "sha256": "28eb999bbcd6f669943a8fb456a2629e99f0b097f7b52e31b15e8284fadd0dca",
+      "bytes": 655
+    },
+    {
+      "path": "evidence-r4/inputs-check-initial.txt",
+      "sha256": "06b6ba151c3b1431be3dc59ae892333d2322680765d762e3c1f66262274f2086",
+      "bytes": 750
+    },
+    {
+      "path": "evidence-r4/selftest-r4-output.txt",
+      "sha256": "c588f636300ecb5bb204bd2993c3985c91ced0fb12209f1f5caf94a787263904",
+      "bytes": 3745
+    },
+    {
+      "path": "evidence-r4/smoke-and-regression.txt",
+      "sha256": "e2b1a43b2b2d686e0264d88b7091c6909464043f34ef44a518b0f1285881e3fc",
+      "bytes": 877
+    },
+    {
+      "path": "EXPORT_COMMANDS.md",
+      "sha256": "6d76d5e47899d1597b0071db080739d7c94d5d95b20e4d5acc8b8e5762a5adac",
+      "bytes": 3298
+    },
+    {
+      "path": "MOBILE_ACCEPTANCE.md",
+      "sha256": "e906ac661319ce5c2209e1e31957de9e685a6d4f92c0b74ac8bc5d4834222e68",
+      "bytes": 2516
+    },
+    {
+      "path": "MORNING_REPORT.md",
+      "sha256": "e233638cacaebe3a0e59cf983c5f9ffdfe855de20d05eacbe5cb342168e694b6",
+      "bytes": 2080
+    },
+    {
+      "path": "RECEIPTS.md",
+      "sha256": "03648f8351a4b5d7e42456e12c75d76b23e02891b77ee5066725f66f33214419",
+      "bytes": 1466
+    },
+    {
+      "path": "REPORT.md",
+      "sha256": "7d2ab284a27ed7fab5e7e8bbdf17b5a191b814a57e9c3b499a75e3e317d32afb",
+      "bytes": 3137
+    },
+    {
+      "path": "RISK_MATRIX.md",
+      "sha256": "cbab31ecea38d303d2a0f523e603c84c5df6d565bc0db316f7a9fadc4dc9ea4a",
+      "bytes": 4275
+    },
+    {
+      "path": "STATUS.md",
+      "sha256": "f38c40ae6928446d344529ac8cbda22bbbecbd102af5842565c199c55a29e127",
+      "bytes": 2420
+    },
+    {
+      "path": "tools/export-trajectory-from-store.mjs",
+      "sha256": "dc043c7010bc9f2d0e9dcef3e3bbb90a03df2a668e986b8c893d043e27f6411a",
+      "bytes": 4022
+    },
+    {
+      "path": "tools/mobile-measure-check.mjs",
+      "sha256": "8645ac184d0b0d075f0a46e5df6db686be0a15b350d7ffdd9fc65f0b94f19737",
+      "bytes": 4588
+    },
+    {
+      "path": "tools/replay-cli.mjs",
+      "sha256": "012cc6e693e3e77d2a86e08c0f55548fab214e31189f2051eaa853eacd01d723",
+      "bytes": 41969
+    },
+    {
+      "path": "trajectories/handwritten/neg-dup-todo-flip.json",
+      "sha256": "33ecdc233614f8efa849e30982108a40af14e34a1258e7d6ab8dbc4e05d12656",
+      "bytes": 6451
+    },
+    {
+      "path": "trajectories/handwritten/neg-hangup-loss.json",
+      "sha256": "3228f70993eb6fc1c6784374d9b62f142e74154de4b2945796349eb00e392227",
+      "bytes": 6872
+    },
+    {
+      "path": "trajectories/handwritten/neg-human-missing.json",
+      "sha256": "6933649b85f8105dab577d252884085819d2e83b84af9c28fb20a45bd867519b",
+      "bytes": 5512
+    },
+    {
+      "path": "trajectories/handwritten/neg-late-pause.json",
+      "sha256": "ebf362d7bd9620433565597add4c92babfff890736d6f4a42a8019d4103ecf91",
+      "bytes": 9179
+    },
+    {
+      "path": "trajectories/handwritten/neg-opinion-lost.json",
+      "sha256": "096cf4f25915e8cf2adb83eef68fe61db8fab59233a1ea86b92e99ea0a9a1f05",
+      "bytes": 5976
+    },
+    {
+      "path": "trajectories/handwritten/neg-pre-overreach.json",
+      "sha256": "3e745322e78207a0842e20ef7c615157c7beda5b86dbc37032749b328d732df2",
+      "bytes": 6309
+    },
+    {
+      "path": "trajectories/handwritten/neg-rule-escalation.json",
+      "sha256": "bdc04981613279bed5a8055072fddd60abe2c44f8d45d35660b567222ff5eb5b",
+      "bytes": 6005
+    },
+    {
+      "path": "trajectories/handwritten/neg-version-missing.json",
+      "sha256": "813f29e86aaedc015245a98320fc2a2da394018617874cfd97ee968bd6c25bf1",
+      "bytes": 5057
+    },
+    {
+      "path": "trajectories/handwritten/neg-wrong-session.json",
+      "sha256": "099690a89a29d471c50039bae6d7746c4dbe2a6a57623b051a9aeb7128570b5f",
+      "bytes": 5059
+    },
+    {
+      "path": "trajectories/handwritten/pos-1-full-lifecycle.json",
+      "sha256": "511b96ddf58ad236ecce35a09e6b0d0ec2c913d638698fdc4ad0a60c026317b3",
+      "bytes": 10282
+    },
+    {
+      "path": "trajectories/handwritten/pos-2-human-control-hangup.json",
+      "sha256": "92eda58caa4eb3a825df1c49b92e0e426d12c95e220d05929e1c050712811428",
+      "bytes": 10694
+    },
+    {
+      "path": "trajectories/handwritten/pos-3-corrections-scoped.json",
+      "sha256": "c28586446c24e40a8db8ace15556b14c27f28ff162084be527e7c9b4d356cbbe",
+      "bytes": 8738
+    },
+    {
+      "path": "trajectories/mobile-fixtures/mm-fail-first-screen.json",
+      "sha256": "6b1a010db6e4d556708497af89a75d630d279db07ed0f45e907cf2c6cc83cc7e",
+      "bytes": 1413
+    },
+    {
+      "path": "trajectories/mobile-fixtures/mm-fail-hangup.json",
+      "sha256": "c937ed46961af9c5cba6adc94b6e1624dcbdd613b1d39cdf64089e61d419e13e",
+      "bytes": 1421
+    },
+    {
+      "path": "trajectories/mobile-fixtures/mm-fail-overflow.json",
+      "sha256": "c88d2883f422c806f227780640a49d77e44569949642ee839f8824f069307e28",
+      "bytes": 1413
+    },
+    {
+      "path": "trajectories/mobile-fixtures/mm-fail-viewport.json",
+      "sha256": "cc0b7d8af1d83d8a7ae0ede621fcddfb6d57d1f50048cd0eed213687f4eb48cd",
+      "bytes": 1472
+    },
+    {
+      "path": "trajectories/mobile-fixtures/mm-pass.json",
+      "sha256": "a9cdc01ea4b67b3aa32eba6a08c07bb7d6d50544eaa5f7bed4be77a2ac978eff",
+      "bytes": 1412
+    }
+  ]
+}

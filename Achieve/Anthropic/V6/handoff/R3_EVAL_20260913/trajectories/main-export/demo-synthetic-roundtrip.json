@@ -1,0 +1,166 @@
+{
+  "schema": "product-trajectory@1",
+  "meta": {
+    "trajectoryId": "trj-SESS-R3P1-202609122246",
+    "source": "product_export",
+    "exportedAt": "2026-09-12T22:46:17.265Z",
+    "exportTool": "export-trajectory-from-store.mjs（store版本=1，时间线来源=session）",
+    "note": "合成演练副本（基于pos-1夹具经exporter导出），验证导出→回放链路；非MAIN产出，不冒称应用已执行"
+  },
+  "session": {
+    "sessionId": "SESS-R3P1",
+    "projectId": "2026PA21001",
+    "title": "合成正例1：全生命周期",
+    "status": "ended",
+    "generation": 1,
+    "participants": [
+      {
+        "participantId": "p-biz",
+        "displayName": "业务岗",
+        "kind": "business",
+        "domainRole": "business",
+        "attendance": "live_only",
+        "attendanceVerified": true,
+        "joined": true
+      },
+      {
+        "participantId": "p-policy",
+        "displayName": "政策岗",
+        "kind": "domain",
+        "domainRole": "policy",
+        "attendance": "live_only",
+        "attendanceVerified": true,
+        "joined": true
+      },
+      {
+        "participantId": "p-credit",
+        "displayName": "信审岗",
+        "kind": "domain",
+        "domainRole": "credit",
+        "attendance": "live_only",
+        "attendanceVerified": true,
+        "joined": true
+      },
+      {
+        "participantId": "p-owner",
+        "displayName": "实控人",
+        "kind": "customer",
+        "domainRole": "customer-actual-controller",
+        "attendance": "on_site_declared",
+        "attendanceVerified": false,
+        "joined": true
+      }
+    ],
+    "video": {
+      "provider": "none",
+      "state": "not_configured",
+      "message": "视频服务未接入"
+    },
+    "createdAt": "2026-09-13T01:00:00Z",
+    "updatedAt": "2026-09-13T02:00:00Z"
+  },
+  "evidence": [
+    {
+      "evidenceId": "EV-1",
+      "projectId": "2026PA21001",
+      "sessionId": "SESS-R3P1",
+      "fixtureId": "fx-1",
+      "title": "设备铭牌（合成fixture）",
+      "sourceType": "simulation_fixture",
+      "capturedAt": "2026-09-13T01:05:00Z",
+      "receivedAt": "2026-09-13T01:06:00Z",
+      "mime": "image/svg+xml",
+      "width": 640,
+      "height": 360,
+      "sha256": "synthetic",
+      "version": 1,
+      "supersededBy": null
+    }
+  ],
+  "annotations": [
+    {
+      "annotationId": "AN-1",
+      "sessionId": "SESS-R3P1",
+      "evidenceId": "EV-1",
+      "evidenceVersion": 1,
+      "rect": {
+        "x": 0.1,
+        "y": 0.2,
+        "w": 0.3,
+        "h": 0.2
+      },
+      "question": "铭牌年份与清单是否一致？",
+      "author": "p-biz",
+      "status": "resolved",
+      "version": 1,
+      "createdAt": "2026-09-13T01:10:00Z",
+      "replies": [
+        {
+          "replyId": "RP-1",
+          "kind": "model_simulation",
+          "author": "p-model",
+          "text": "模拟回复：与清单一致（引用EV-1@v1）",
+          "at": "2026-09-13T01:12:00Z"
+        }
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "reviewId": "RV-1",
+      "sessionId": "SESS-R3P1",
+      "targetType": "evidence",
+      "targetId": "EV-1",
+      "targetVersion": 1,
+      "action": "confirm",
+      "opinion": "人工核对一致",
+      "reviewer": "p-credit",
+      "at": "2026-09-13T01:20:00Z"
+    },
+    {
+      "reviewId": "RV-2",
+      "sessionId": "SESS-R3P1",
+      "targetType": "annotation",
+      "targetId": "AN-1",
+      "targetVersion": 1,
+      "action": "confirm",
+      "opinion": "阶段推进经人工确认",
+      "reviewer": "p-policy",
+      "at": "2026-09-13T01:30:00Z"
+    }
+  ],
+  "calculations": [
+    {
+      "calcId": "CAL-1",
+      "sessionId": "SESS-R3P1",
+      "status": "not_configured",
+      "reasons": [
+        "核算口径未配置"
+      ],
+      "inputs": [],
+      "inputDigest": "none",
+      "basedOn": {
+        "remoteVersion": 3,
+        "ruleConfigStatus": "unconfigured",
+        "generation": 1
+      },
+      "result": {
+        "kind": "none"
+      },
+      "at": "2026-09-13T01:40:00Z",
+      "version": 1
+    }
+  ],
+  "timeline": [],
+  "todos": [],
+  "ruleConfig": {
+    "version": 0,
+    "status": "unconfigured",
+    "layers": {
+      "technicalQuality": null,
+      "evidenceSufficiency": null,
+      "businessRisk": null,
+      "economics": null
+    }
+  }
+}

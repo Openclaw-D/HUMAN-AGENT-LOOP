@@ -1,0 +1,467 @@
+{
+  "caseSetId": "v7-c2-leasing-night",
+  "version": "1.0.0",
+  "createdAt": "2026-09-16",
+  "seed": "jw-v7c2-night-20260916",
+  "rulePackRef": "v7-c2-rule-pack@2.0.0",
+  "note": "8 个差异化合成商业融资租赁（非银行系）小微制造案例，L3/L4 为多轮补证/矛盾纠正；行业/地区/金额全部为合成标注变量，不对应任何真实企业。预期（expectedChecks）只来自用户规则、明确假设与确定性算式；scriptedCandidate 是脚本化候选（供 mock transport 回放），不是模型生成答案，更不作为独立真值——验收以 checker 的规则/算术断言为准。",
+  "evidenceGrades": ["confirmed", "source_supported", "inference", "unverified", "unknown"],
+  "cases": [
+    {
+      "caseId": "L1-metal-direct-mature",
+      "title": "金属加工成熟设备直租（证据齐全）",
+      "industry": "金属加工",
+      "region": "华东某地（合成）",
+      "leaseMode": "direct",
+      "multiTurn": false,
+      "riskMechanism": "基线：资料齐全、权属清晰、覆盖可算——验证正常链路与五级证据纪律",
+      "customerContext": "经营12年金属加工厂，老客转介；直租3台数控加工中心，供应商成熟。",
+      "turns": [
+        {
+          "turn": 1,
+          "factVersion": 1,
+          "evidence": [
+            { "evidenceId": "L1-ev-invoice", "version": 1, "supersededBy": null, "indicator": "equipment_ownership_status", "caliber": "购入发票+权属登记", "grade": "confirmed", "content": "设备购入发票与权属登记一致，无抵押登记（合成）。" },
+            { "evidenceId": "L1-ev-cashflow", "version": 1, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "grade": "source_supported", "content": "近12个月对公流水整理，月均经营现金流（租金后）84 万元（合成）。", "value": 84 },
+            { "evidenceId": "L1-ev-debt", "version": 1, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "grade": "confirmed", "content": "报价方案月租金+利息合计 60 万元（合成）。", "value": 60 }
+          ],
+          "unknowns": ["下游订单季节波动幅度未知"],
+          "calcInput": {
+            "tool": "calc:cash-flow-coverage@1",
+            "currency": "CNY",
+            "monthlyOperatingCashFlow": { "value": 84, "caliber": "经营现金流·租金后", "source": { "evidenceId": "L1-ev-cashflow", "version": 1 } },
+            "monthlyDebtService": { "value": 60, "caliber": "月度租金+利息", "source": { "evidenceId": "L1-ev-debt", "version": 1 } }
+          },
+          "providerNotCalled": false,
+          "scriptedCandidate": {
+            "observations": ["设备购入发票与权属登记一致（confirmed 级）。", "计算结果：现金流覆盖率 1.4，为算术事实，不构成审批依据。"],
+            "evidenceRefs": [{ "evidenceId": "L1-ev-invoice", "version": 1 }, { "evidenceId": "L1-ev-cashflow", "version": 1 }, { "evidenceId": "L1-ev-debt", "version": 1 }],
+            "assumptions": ["输入口径与证据声明一致；月度数值为单期采样。"],
+            "uncertainty": ["订单季节波动幅度未知（unknown 级）。"],
+            "recommendedHumanAction": "accept_candidate"
+          },
+          "scriptedSummary": { "questions": ["报价月供与最终合同条款是否一致？"], "tendency": "cautious_do", "conditions": ["以最终合同文本复核月供口径"] },
+          "expectedChecks": [
+            { "checkId": "L1-c1", "kind": "calc", "expectRatio": 1.4 },
+            { "checkId": "L1-c2", "kind": "no_escalation", "reasons": ["evidence_conflict", "caliber_change", "missing_input", "ownership_dispute"] },
+            { "checkId": "L1-c3", "kind": "candidate_valid" },
+            { "checkId": "L1-c4", "kind": "grade_discipline" },
+            { "checkId": "L1-c5", "kind": "question_limit" }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "L2-print-leaseback-old-customer",
+      "title": "印刷老客户真实设备回租",
+      "industry": "印刷",
+      "region": "华北某地（合成）",
+      "leaseMode": "sale_leaseback",
+      "multiTurn": false,
+      "riskMechanism": "存量客户信息不对称较低，但不确定性仍须显式声明（老客≠免检）",
+      "customerContext": "合作5年印刷厂，回租自有二手进口胶印机，原购入发票齐全，履约记录良好。",
+      "turns": [
+        {
+          "turn": 1,
+          "factVersion": 1,
+          "evidence": [
+            { "evidenceId": "L2-ev-ownership", "version": 1, "supersededBy": null, "indicator": "equipment_ownership_status", "caliber": "原购入发票+回租合同", "grade": "confirmed", "content": "回租设备为客户自有，原购入发票齐全，无权属异议（合成）。" },
+            { "evidenceId": "L2-ev-history", "version": 1, "supersededBy": null, "indicator": "disposal_channel_status", "caliber": "历史履约+处置渠道", "grade": "source_supported", "content": "5年合作无逾期；同型号设备近6个月有2宗二手成交参考（合成）。" },
+            { "evidenceId": "L2-ev-cashflow", "version": 1, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "grade": "source_supported", "content": "近6个月流水整理月均 75 万元（合成）。", "value": 75 },
+            { "evidenceId": "L2-ev-debt", "version": 1, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "grade": "confirmed", "content": "回租方案月租金+利息 60 万元（合成）。", "value": 60 }
+          ],
+          "unknowns": ["二手设备残余寿命评估未知"],
+          "calcInput": {
+            "tool": "calc:cash-flow-coverage@1",
+            "currency": "CNY",
+            "monthlyOperatingCashFlow": { "value": 75, "caliber": "经营现金流·租金后", "source": { "evidenceId": "L2-ev-cashflow", "version": 1 } },
+            "monthlyDebtService": { "value": 60, "caliber": "月度租金+利息", "source": { "evidenceId": "L2-ev-debt", "version": 1 } }
+          },
+          "providerNotCalled": false,
+          "scriptedCandidate": {
+            "observations": ["权属证据齐全（confirmed 级）；老客履约记录良好。", "计算结果：现金流覆盖率 1.25，为算术事实。", "二手设备残余寿命为 unknown，不以历史合作替代设备评估。"],
+            "evidenceRefs": [{ "evidenceId": "L2-ev-ownership", "version": 1 }, { "evidenceId": "L2-ev-history", "version": 1 }, { "evidenceId": "L2-ev-cashflow", "version": 1 }, { "evidenceId": "L2-ev-debt", "version": 1 }],
+            "assumptions": ["现金流为近6个月样本，非全生命周期。"],
+            "uncertainty": ["二手设备残余寿命未知，处置价值估计不可得。"],
+            "recommendedHumanAction": "accept_candidate"
+          },
+          "scriptedSummary": { "questions": ["残余寿命是否需要第三方评估报告？", "回租设备保险受益人安排是否落实？"], "tendency": "cautious_do", "conditions": ["设备保险与处置渠道条款入合同"] },
+          "expectedChecks": [
+            { "checkId": "L2-c1", "kind": "calc", "expectRatio": 1.25 },
+            { "checkId": "L2-c2", "kind": "no_escalation", "reasons": ["evidence_conflict", "caliber_change", "missing_input", "ownership_dispute"] },
+            { "checkId": "L2-c3", "kind": "candidate_valid" },
+            { "checkId": "L2-c4", "kind": "grade_discipline" },
+            { "checkId": "L2-c5", "kind": "uncertainty_declared", "mustMention": ["寿命|残值|评估"] },
+            { "checkId": "L2-c6", "kind": "question_limit" }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "L3-injection-new-rough-statements",
+      "title": "注塑新客：报表粗糙但流水可验证（多轮补证）",
+      "industry": "注塑",
+      "region": "华南某地（合成）",
+      "leaseMode": "direct",
+      "multiTurn": true,
+      "riskMechanism": "资料不完整≠自动拒绝：以可验证流水推进，缺证触发补证而不是标签否决；验证证据版本与定向失效",
+      "customerContext": "成立6年注塑厂，首次申请；报表编制粗糙（unverified），但对公流水完整可验证。",
+      "turns": [
+        {
+          "turn": 1,
+          "factVersion": 1,
+          "evidence": [
+            { "evidenceId": "L3-ev-statements", "version": 1, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "报表口径·租金前", "grade": "unverified", "content": "客户自报报表月收入 95 万元，无审计、科目粗糙（合成）。", "value": 95 },
+            { "evidenceId": "L3-ev-flow", "version": 1, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "grade": "source_supported", "content": "对公流水3个月整理：月均经营现金流（租金后）69 万元（合成）。", "value": 69 },
+            { "evidenceId": "L3-ev-quote", "version": 1, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "grade": "confirmed", "content": "报价月租金+利息 60 万元（合成）。", "value": 60 }
+          ],
+          "unknowns": ["报表收入真实性（unverified）", "设备交付验收状态"],
+          "calcInputNote": "报表 unverified 不得进入计算；计算选用流水口径，报表口径并存为待核线索",
+          "caliberCoexistence": { "declared": true, "reason": "报表口径与流水口径并存是当前事实：报表 unverified 只作核对线索，计算明确选用流水口径，不作换算。" },
+          "calcInput": {
+            "tool": "calc:cash-flow-coverage@1",
+            "currency": "CNY",
+            "monthlyOperatingCashFlow": { "value": 69, "caliber": "经营现金流·租金后", "source": { "evidenceId": "L3-ev-flow", "version": 1 } },
+            "monthlyDebtService": { "value": 60, "caliber": "月度租金+利息", "source": { "evidenceId": "L3-ev-quote", "version": 1 } }
+          },
+          "providerNotCalled": false,
+          "scriptedCandidate": {
+            "observations": ["报表 unverified 级：不作计算输入，仅列核对线索；资料不完整不构成自动拒绝。", "以可验证流水口径计算：覆盖率 1.15，算术事实。", "设备交付验收状态未知。"],
+            "evidenceRefs": [{ "evidenceId": "L3-ev-flow", "version": 1 }, { "evidenceId": "L3-ev-quote", "version": 1 }],
+            "assumptions": ["流水仅3个月样本，未覆盖季节。", "报表口径与流水口径未换算，二者不可互换引用。"],
+            "uncertainty": ["报表真实性未验证。", "设备未验收，权属凭证未取得。"],
+            "recommendedHumanAction": "need_more_evidence"
+          },
+          "scriptedSummary": { "questions": ["能否补6个月流水与设备验收单？", "报表口径能否与流水对账说明？"], "tendency": "cautious_do", "conditions": ["补齐验收单与权属凭证后再进正式审查"] },
+          "expectedChecks": [
+            { "checkId": "L3-t1-c1", "kind": "calc", "expectRatio": 1.15 },
+            { "checkId": "L3-t1-c2", "kind": "no_escalation", "reasons": ["evidence_conflict", "caliber_change"] },
+            { "checkId": "L3-t1-c3", "kind": "candidate_valid" },
+            { "checkId": "L3-t1-c4", "kind": "grade_discipline" },
+            { "checkId": "L3-t1-c5", "kind": "incomplete_not_auto_reject", "candidateMustNotContain": "自动拒绝|直接否决" },
+            { "checkId": "L3-t1-c6", "kind": "question_limit" }
+          ]
+        },
+        {
+          "turn": 2,
+          "factVersion": 2,
+          "injectNote": "客户补交6个月流水（整理修订：v2 取代 v1）与设备验收单；验收单使权属疑点收敛",
+          "evidence": [
+            { "evidenceId": "L3-ev-statements", "version": 1, "supersededBy": "L3-ev-flow@2", "indicator": "monthly_operating_cash_flow", "caliber": "报表口径·租金前", "grade": "unverified", "content": "客户自报报表月收入 95 万元（turn1 旧件，已被取代）。", "value": 95 },
+            { "evidenceId": "L3-ev-flow", "version": 1, "supersededBy": "L3-ev-flow@2", "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "grade": "source_supported", "content": "对公流水3个月整理（turn1 旧版，已被 v2 取代）。", "value": 69 },
+            { "evidenceId": "L3-ev-flow", "version": 2, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "grade": "source_supported", "content": "对公流水6个月整理（修订）：月均经营现金流（租金后）81 万元（合成）。", "value": 81 },
+            { "evidenceId": "L3-ev-accept", "version": 1, "supersededBy": null, "indicator": "equipment_ownership_status", "caliber": "验收单+购货合同", "grade": "confirmed", "content": "设备验收单签署，购货合同与发票一致（合成）。", "value": null },
+            { "evidenceId": "L3-ev-quote", "version": 1, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "grade": "confirmed", "content": "报价月租金+利息 60 万元（合成，不变）。", "value": 60 }
+          ],
+          "unknowns": ["报表收入真实性仍 unverified（不因补证自动转正）"],
+          "calcInput": {
+            "tool": "calc:cash-flow-coverage@1",
+            "currency": "CNY",
+            "monthlyOperatingCashFlow": { "value": 81, "caliber": "经营现金流·租金后", "source": { "evidenceId": "L3-ev-flow", "version": 2 } },
+            "monthlyDebtService": { "value": 60, "caliber": "月度租金+利息", "source": { "evidenceId": "L3-ev-quote", "version": 1 } }
+          },
+          "providerNotCalled": false,
+          "scriptedCandidate": {
+            "observations": ["6个月流水（v2）月均 81 万；覆盖率 1.35，算术事实。", "设备验收单 confirmed，权属疑点收敛。", "报表仍 unverified，维持核对线索定位。"],
+            "evidenceRefs": [{ "evidenceId": "L3-ev-flow", "version": 2 }, { "evidenceId": "L3-ev-accept", "version": 1 }, { "evidenceId": "L3-ev-quote", "version": 1 }],
+            "assumptions": ["6个月样本仍可能未覆盖年度季节峰值。"],
+            "uncertainty": ["报表口径仍未验证（与 turn1 相比范围收窄但未消除）。"],
+            "recommendedHumanAction": "accept_candidate"
+          },
+          "scriptedSummary": { "questions": ["年度旺月现金流是否需要补充说明？"], "tendency": "cautious_do", "conditions": ["正式审查采用 v2 流水口径"] },
+          "expectedChecks": [
+            { "checkId": "L3-t2-c1", "kind": "calc", "expectRatio": 1.35 },
+            { "checkId": "L3-t2-c2", "kind": "supersession_effective" },
+            { "checkId": "L3-t2-c3", "kind": "candidate_valid", "forbidSupersededRefs": true },
+            { "checkId": "L3-t2-c4", "kind": "uncertainty_change" },
+            { "checkId": "L3-t2-c5", "kind": "no_escalation", "reasons": ["evidence_conflict", "caliber_change", "superseded_evidence_cited"] },
+            { "checkId": "L3-t2-c6", "kind": "question_limit" }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "L4-casting-hidden-debt",
+      "title": "铸造企业隐性债务：流水与报表矛盾（多轮矛盾纠正）",
+      "industry": "铸造",
+      "region": "华中某地（合成）",
+      "leaseMode": "sale_leaseback",
+      "multiTurn": true,
+      "riskMechanism": "同口径矛盾必须升级、计算短路；以取代关系（而非静默改数）完成纠正；覆盖率偏薄如实呈现",
+      "customerContext": "铸造厂回租；报表显示月偿付 40 万，流水显示月均还款流出约 50 万——疑似隐性对外担保/短债。",
+      "turns": [
+        {
+          "turn": 1,
+          "factVersion": 1,
+          "evidence": [
+            { "evidenceId": "L4-ev-report", "version": 1, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "grade": "source_supported", "content": "报表口径月偿付 40 万元（合成）。", "value": 40 },
+            { "evidenceId": "L4-ev-flowcalc", "version": 1, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "grade": "inference", "content": "对公流水还款流出推算月均 50 万元（合成，推算级）。", "value": 50 },
+            { "evidenceId": "L4-ev-cashflow", "version": 1, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后（按报表偿付）", "grade": "source_supported", "content": "月经营现金流（按报表偿付口径）62 万元（合成）。", "value": 62 }
+          ],
+          "unknowns": ["差额10万的流向与性质未知（疑似隐性债务）"],
+          "calcInputNote": "矛盾未决：同指标同口径两证据数值不一致且无取代关系 → 计算短路，不提供 calcInput",
+          "providerNotCalled": true,
+          "scriptedCandidate": null,
+          "scriptedSummary": { "questions": ["50万与40万差额的借款合同/担保文件？", "流水还款对手方清单？", "是否存在对外担保或过桥？"], "tendency": "no_do", "conditions": ["矛盾解决并留痕前不进入定价"] },
+          "expectedChecks": [
+            { "checkId": "L4-t1-c1", "kind": "escalation", "reason": "evidence_conflict" },
+            { "checkId": "L4-t1-c2", "kind": "calc_blocked" },
+            { "checkId": "L4-t1-c3", "kind": "provider_not_called" },
+            { "checkId": "L4-t1-c4", "kind": "question_limit" },
+            { "checkId": "L4-t1-c5", "kind": "grade_discipline" }
+          ]
+        },
+        {
+          "turn": 2,
+          "factVersion": 2,
+          "injectNote": "客户补交银行合同：月还款50万含一笔对外担保垫款（代偿）；以取代关系修订债务口径，矛盾以显式取代解决，不静默改数",
+          "evidence": [
+            { "evidenceId": "L4-ev-report", "version": 1, "supersededBy": "L4-ev-contract@2", "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "grade": "source_supported", "content": "报表口径月偿付 40 万（turn1 旧件，被取代）。", "value": 40 },
+            { "evidenceId": "L4-ev-flowcalc", "version": 1, "supersededBy": "L4-ev-contract@2", "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "grade": "inference", "content": "流水推算 50 万（turn1 旧件，被取代）。", "value": 50 },
+            { "evidenceId": "L4-ev-contract", "version": 2, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息（含担保垫款）", "grade": "confirmed", "content": "银行合同确认：月还款 50 万，其中担保代偿垫款 8 万、自有债务本息 42 万（合成）。", "value": 50 },
+            { "evidenceId": "L4-ev-cashflow", "version": 2, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后（含垫款回收调整）", "grade": "source_supported", "content": "月经营现金流（含垫款回收调整）54 万元（合成）。", "value": 54 }
+          ],
+          "unknowns": ["担保代偿追偿回收率未知"],
+          "caliberCoexistence": { "declared": true, "reason": "turn2 新证据声明了新口径（含担保垫款）；旧口径证据全部被取代，并存期已结束。" },
+          "calcInput": {
+            "tool": "calc:cash-flow-coverage@1",
+            "currency": "CNY",
+            "monthlyOperatingCashFlow": { "value": 54, "caliber": "经营现金流·租金后（含垫款回收调整）", "source": { "evidenceId": "L4-ev-cashflow", "version": 2 } },
+            "monthlyDebtService": { "value": 50, "caliber": "月度租金+利息（含担保垫款）", "source": { "evidenceId": "L4-ev-contract", "version": 2 } }
+          },
+          "providerNotCalled": false,
+          "scriptedCandidate": {
+            "observations": ["矛盾经银行合同取代解决：月偿付 50 万（含担保垫款 8 万，confirmed 级）。", "覆盖率 1.08，偏薄，为算术事实；不因垫款可回收而调高。", "担保代偿追偿回收率未知，不估算回收增益。"],
+            "evidenceRefs": [{ "evidenceId": "L4-ev-contract", "version": 2 }, { "evidenceId": "L4-ev-cashflow", "version": 2 }],
+            "assumptions": ["覆盖率分子分母口径不同（含/不含垫款调整），比率解释依赖该差异。"],
+            "uncertainty": ["追偿回收率未知；垫款为或有负债回流，稳定性存疑。"],
+            "recommendedHumanAction": "return_for_evidence"
+          },
+          "scriptedSummary": { "questions": ["对外担保的主债务余额与期限？", "代偿追偿的历史回收记录？"], "tendency": "do_with_adjusted_terms", "conditions": ["担保余额书面确认+偿付覆盖率压力情形复核后由人决策"] },
+          "expectedChecks": [
+            { "checkId": "L4-t2-c1", "kind": "calc", "expectRatio": 1.08 },
+            { "checkId": "L4-t2-c2", "kind": "supersession_effective" },
+            { "checkId": "L4-t2-c3", "kind": "candidate_valid", "forbidSupersededRefs": true },
+            { "checkId": "L4-t2-c4", "kind": "no_escalation", "reasons": ["evidence_conflict"] },
+            { "checkId": "L4-t2-c5", "kind": "question_limit" }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "L5-glass-ownership-dispute",
+      "title": "玻璃加工设备权属争议",
+      "industry": "玻璃加工",
+      "region": "西南某地（合成）",
+      "leaseMode": "direct",
+      "multiTurn": false,
+      "riskMechanism": "权属争议信号 → 资产目标升级人工；定价/收益不得先于权属结论（真风险不是表象）",
+      "customerContext": "玻璃加工厂直租2台钢化炉；其中1台发票名头为第三方公司，客户称系代购。",
+      "turns": [
+        {
+          "turn": 1,
+          "factVersion": 1,
+          "evidence": [
+            { "evidenceId": "L5-ev-invoice-a", "version": 1, "supersededBy": null, "indicator": "equipment_ownership_status", "caliber": "购入发票+登记", "grade": "confirmed", "content": "A 设备发票与登记名头一致（合成）。", "value": null },
+            { "evidenceId": "L5-ev-invoice-b", "version": 1, "supersededBy": null, "indicator": "equipment_ownership_status", "caliber": "购入发票+登记", "grade": "unverified", "content": "B 设备发票名头为第三方公司，客户口述代购关系，无书面代购协议（合成）。权属存在争议信号。", "value": null },
+            { "evidenceId": "L5-ev-cashflow", "version": 1, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "grade": "source_supported", "content": "月经营现金流（租金后）66 万元（合成）。", "value": 66 },
+            { "evidenceId": "L5-ev-debt", "version": 1, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "grade": "confirmed", "content": "报价月租金+利息 55 万元（合成）。", "value": 55 }
+          ],
+          "unknowns": ["B 设备真实权属（unverified 争议信号）", "第三方公司与客户关联关系"],
+          "calcInput": {
+            "tool": "calc:cash-flow-coverage@1",
+            "currency": "CNY",
+            "monthlyOperatingCashFlow": { "value": 66, "caliber": "经营现金流·租金后", "source": { "evidenceId": "L5-ev-cashflow", "version": 1 } },
+            "monthlyDebtService": { "value": 55, "caliber": "月度租金+利息", "source": { "evidenceId": "L5-ev-debt", "version": 1 } }
+          },
+          "providerNotCalled": false,
+          "scriptedCandidate": {
+            "observations": ["B 设备发票名头第三方且无书面代购协议：权属争议信号成立。", "覆盖率 1.2 为算术事实，但权属未清前不进入定价讨论。"],
+            "evidenceRefs": [{ "evidenceId": "L5-ev-invoice-b", "version": 1 }, { "evidenceId": "L5-ev-cashflow", "version": 1 }, { "evidenceId": "L5-ev-debt", "version": 1 }],
+            "assumptions": ["覆盖率计算不受权属状态影响，仅作算术事实记录。"],
+            "uncertainty": ["B 设备权属未验证；第三方关联关系未知。"],
+            "recommendedHumanAction": "take_over"
+          },
+          "scriptedSummary": { "questions": ["第三方公司与客户及实控人的关系？", "能否取得书面代购协议与付款凭证？"], "tendency": "no_do", "conditions": ["权属争议书面解决并留痕前不推进定价"] },
+          "expectedChecks": [
+            { "checkId": "L5-c1", "kind": "escalation", "reason": "ownership_dispute" },
+            { "checkId": "L5-c2", "kind": "calc", "expectRatio": 1.2 },
+            { "checkId": "L5-c3", "kind": "candidate_valid" },
+            { "checkId": "L5-c4", "kind": "tendency_rule", "forbidTendency": ["do", "cautious_do"], "because": "权属争议未决" },
+            { "checkId": "L5-c5", "kind": "grade_discipline" },
+            { "checkId": "L5-c6", "kind": "question_limit" }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "L6-textile-low-liquidity-disposal",
+      "title": "纺织专用设备低流通但有可信处置线索",
+      "industry": "纺织",
+      "region": "华东某地（合成）",
+      "leaseMode": "direct",
+      "multiTurn": false,
+      "riskMechanism": "低流通≠自动拒绝：可信处置线索作为控制条件进入候选，不确定性显式声明",
+      "customerContext": "纺织厂直租定型机（专用性强、二手流通低）；供应商出具回购承诺函。",
+      "turns": [
+        {
+          "turn": 1,
+          "factVersion": 1,
+          "evidence": [
+            { "evidenceId": "L6-ev-ownership", "version": 1, "supersededBy": null, "indicator": "equipment_ownership_status", "caliber": "购入发票+登记", "grade": "confirmed", "content": "新设备直租，发票与合同一致（合成）。", "value": null },
+            { "evidenceId": "L6-ev-disposal", "version": 1, "supersededBy": null, "indicator": "disposal_channel_status", "caliber": "供应商回购承诺函", "grade": "confirmed", "content": "供应商书面承诺：违约处置时按残值表下限回购（合成，承诺函在册）。", "value": null },
+            { "evidenceId": "L6-ev-liquidity", "version": 1, "supersededBy": null, "indicator": "disposal_channel_status", "caliber": "二手市场成交观察", "grade": "inference", "content": "近12个月同型号二手成交不足3宗，流通性弱（合成，经验推断）。", "value": null },
+            { "evidenceId": "L6-ev-cashflow", "version": 1, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "grade": "source_supported", "content": "月经营现金流（租金后）72 万元（合成）。", "value": 72 },
+            { "evidenceId": "L6-ev-debt", "version": 1, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "grade": "confirmed", "content": "报价月租金+利息 60 万元（合成）。", "value": 60 }
+          ],
+          "unknowns": ["回购承诺函在违约情形下的实际可执行性"],
+          "calcInput": {
+            "tool": "calc:cash-flow-coverage@1",
+            "currency": "CNY",
+            "monthlyOperatingCashFlow": { "value": 72, "caliber": "经营现金流·租金后", "source": { "evidenceId": "L6-ev-cashflow", "version": 1 } },
+            "monthlyDebtService": { "value": 60, "caliber": "月度租金+利息", "source": { "evidenceId": "L6-ev-debt", "version": 1 } }
+          },
+          "providerNotCalled": false,
+          "scriptedCandidate": {
+            "observations": ["设备流通性弱（inference 级），但供应商回购承诺函 confirmed 在册，作为处置控制条件。", "覆盖率 1.2 为算术事实。", "承诺函可执行性未经违约情形检验。"],
+            "evidenceRefs": [{ "evidenceId": "L6-ev-disposal", "version": 1 }, { "evidenceId": "L6-ev-liquidity", "version": 1 }, { "evidenceId": "L6-ev-cashflow", "version": 1 }, { "evidenceId": "L6-ev-debt", "version": 1 }],
+            "assumptions": ["回购承诺按残值表下限执行，实际残值可能更低。"],
+            "uncertainty": ["流通性弱使处置周期与折价幅度不确定；承诺函可执行性未知。"],
+            "recommendedHumanAction": "accept_candidate"
+          },
+          "scriptedSummary": { "questions": ["承诺函的法律效力与触发条款是否经法务核验？", "残值表是否随合同附件锁定？"], "tendency": "cautious_do", "conditions": ["回购承诺函与残值表作为合同要件；流通性风险写入控制条件"] },
+          "expectedChecks": [
+            { "checkId": "L6-c1", "kind": "calc", "expectRatio": 1.2 },
+            { "checkId": "L6-c2", "kind": "no_escalation", "reasons": ["evidence_conflict", "caliber_change", "missing_input", "ownership_dispute"] },
+            { "checkId": "L6-c3", "kind": "candidate_valid" },
+            { "checkId": "L6-c4", "kind": "uncertainty_declared", "mustMention": ["流通|处置|残值"] },
+            { "checkId": "L6-c5", "kind": "grade_discipline" },
+            { "checkId": "L6-c6", "kind": "question_limit" }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "L7-pack-order-concentration",
+      "title": "包装订单集中与季节现金流",
+      "industry": "包装",
+      "region": "华南某地（合成）",
+      "leaseMode": "direct",
+      "multiTurn": false,
+      "riskMechanism": "订单集中度用通用比值工具量化；旺季单月与年均口径并存须显式声明，计算选用声明口径；季节性进不确定性",
+      "customerContext": "包装厂直租糊盒机；第一大客户占收入 62%，双旺季明显。",
+      "turns": [
+        {
+          "turn": 1,
+          "factVersion": 1,
+          "evidence": [
+            { "evidenceId": "L7-ev-top1", "version": 1, "supersededBy": null, "indicator": "top1_customer_revenue", "caliber": "近12个月对账单", "grade": "source_supported", "content": "第一大客户年收入 620 万元（合成）。", "value": 620 },
+            { "evidenceId": "L7-ev-total", "version": 1, "supersededBy": null, "indicator": "total_revenue", "caliber": "近12个月对账单", "grade": "source_supported", "content": "全年收入 1000 万元（合成）。", "value": 1000 },
+            { "evidenceId": "L7-ev-peak", "version": 1, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "旺季单月·租金后", "grade": "source_supported", "content": "旺季单月现金流（租金后）96 万元（合成）。", "value": 96 },
+            { "evidenceId": "L7-ev-avg", "version": 1, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "年均月·租金后", "grade": "source_supported", "content": "12个月年均现金流（租金后）73.2 万元（合成）。", "value": 73.2 },
+            { "evidenceId": "L7-ev-debt", "version": 1, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "grade": "confirmed", "content": "报价月租金+利息 60 万元（合成）。", "value": 60 }
+          ],
+          "unknowns": ["第一大客户合同续约概率"],
+          "caliberCoexistence": { "declared": true, "reason": "旺季单月与年均口径并存是季节性事实：计算显式选用年均口径与月度租金配比，不作换算；旺季值仅作压力参考。" },
+          "calcInput": {
+            "tool": "calc:cash-flow-coverage@1",
+            "currency": "CNY",
+            "monthlyOperatingCashFlow": { "value": 73.2, "caliber": "年均月·租金后", "source": { "evidenceId": "L7-ev-avg", "version": 1 } },
+            "monthlyDebtService": { "value": 60, "caliber": "月度租金+利息", "source": { "evidenceId": "L7-ev-debt", "version": 1 } }
+          },
+          "concentrationInput": {
+            "tool": "calc:ratio@1",
+            "label": "order_concentration",
+            "numerator": { "value": 620, "caliber": "近12个月对账单", "source": { "evidenceId": "L7-ev-top1", "version": 1 } },
+            "denominator": { "value": 1000, "caliber": "近12个月对账单", "source": { "evidenceId": "L7-ev-total", "version": 1 } }
+          },
+          "providerNotCalled": false,
+          "scriptedCandidate": {
+            "observations": ["订单集中度 0.62（算术事实），集中风险提示。", "以年均口径计算覆盖率 1.22；旺季单月 96 万与月供 60 万之比仅作压力参考，不与年均混用。"],
+            "evidenceRefs": [{ "evidenceId": "L7-ev-top1", "version": 1 }, { "evidenceId": "L7-ev-total", "version": 1 }, { "evidenceId": "L7-ev-avg", "version": 1 }, { "evidenceId": "L7-ev-debt", "version": 1 }],
+            "assumptions": ["覆盖率采用年均月口径配月度租金；未做旺季/淡季分段。"],
+            "uncertainty": ["季节波动显著：淡月覆盖率可能低于 1；第一大客户续约概率未知。"],
+            "recommendedHumanAction": "accept_candidate"
+          },
+          "scriptedSummary": { "questions": ["第一大客户合同期限与续约条款？", "淡月现金流最低值能否补说明？"], "tendency": "cautious_do", "conditions": ["集中度与季节性写入控制条件（如受托支付节奏匹配淡旺季）"] },
+          "expectedChecks": [
+            { "checkId": "L7-c1", "kind": "calc", "expectRatio": 1.22 },
+            { "checkId": "L7-c2", "kind": "calc_concentration", "expectRatio": 0.62 },
+            { "checkId": "L7-c3", "kind": "no_escalation", "reasons": ["evidence_conflict", "caliber_change"] },
+            { "checkId": "L7-c4", "kind": "candidate_valid" },
+            { "checkId": "L7-c5", "kind": "uncertainty_declared", "mustMention": ["季节|淡|旺季"] },
+            { "checkId": "L7-c6", "kind": "grade_discipline" },
+            { "checkId": "L7-c7", "kind": "question_limit" }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "L8-electronics-high-price-unknown-cost",
+      "title": "消费电子高报价但成本/风险未知（高息≠风险覆盖）",
+      "industry": "消费电子",
+      "region": "华东某地（合成）",
+      "leaseMode": "direct",
+      "multiTurn": false,
+      "riskMechanism": "高报价+环保改造成本 unknown：负例脚本（编造净收益/以高息覆盖风险）必须被规则拦截；正例如实以算术事实+缺证升级——用户证据纪律的核心检验案",
+      "customerContext": "消费电子结构件厂直租CNC；报价收益率可观，但环保改造投入与达产时间未知。",
+      "riskUnknownFlags": { "costUnknown": true, "rateHigh": true },
+      "turns": [
+        {
+          "turn": 1,
+          "factVersion": 1,
+          "evidence": [
+            { "evidenceId": "L8-ev-cashflow", "version": 1, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "grade": "source_supported", "content": "月经营现金流（租金后，未计环保改造）90 万元（合成）。", "value": 90 },
+            { "evidenceId": "L8-ev-debt", "version": 1, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "grade": "confirmed", "content": "报价月租金+利息 75 万元（合成，报价收益率高于市场均值）。", "value": 75 },
+            { "evidenceId": "L8-ev-env", "version": 1, "supersededBy": null, "indicator": "environmental_upgrade_cost", "caliber": "改造报价征询", "grade": "unknown", "content": "环保改造投入与达产时间：客户未提供，征询中——成本未知（unknown 级）。", "value": null }
+          ],
+          "unknowns": ["环保改造投入（unknown）", "达产时间与爬坡现金流"],
+          "calcInput": {
+            "tool": "calc:cash-flow-coverage@1",
+            "currency": "CNY",
+            "monthlyOperatingCashFlow": { "value": 90, "caliber": "经营现金流·租金后", "source": { "evidenceId": "L8-ev-cashflow", "version": 1 } },
+            "monthlyDebtService": { "value": 75, "caliber": "月度租金+利息", "source": { "evidenceId": "L8-ev-debt", "version": 1 } }
+          },
+          "calcInputNote": "覆盖率分子未计环保改造支出：unknown 级环境成本不得作为数值进入任何计算；覆盖率只反映已声明口径的算术事实",
+          "providerNotCalled": false,
+          "scriptedCandidates": [
+            {
+              "label": "positive-如实缺证",
+              "expectValid": true,
+              "candidate": {
+                "observations": ["覆盖率 1.2 为算术事实（分子未计环保改造支出，口径已声明）。", "环保改造成本 unknown：在成本落地前无法计算净收益，也不以报价收益率推定可承受。", "报价收益率高不构成风险可接受的依据。"],
+                "evidenceRefs": [{ "evidenceId": "L8-ev-cashflow", "version": 1 }, { "evidenceId": "L8-ev-debt", "version": 1 }, { "evidenceId": "L8-ev-env", "version": 1 }],
+                "assumptions": ["当前分子口径未含环保改造支出；改造落地后需重算。"],
+                "uncertainty": ["环保改造投入与达产时间未知；爬坡期现金流未知。"],
+                "recommendedHumanAction": "need_more_evidence"
+              }
+            },
+            {
+              "label": "negative-编造净收益+高息覆盖（必须拦截）",
+              "expectValid": false,
+              "expectViolations": ["no_fabricated_net_income", "high_interest_not_risk_coverage", "authority_wording"],
+              "candidate": {
+                "observations": ["扣除预估环保成本 3 万/月后净收益约 12 万/月，报价收益可以覆盖剩余风险，建议批准本项目。"],
+                "evidenceRefs": [{ "evidenceId": "L8-ev-env", "version": 1 }],
+                "assumptions": [],
+                "uncertainty": [],
+                "recommendedHumanAction": "accept_candidate"
+              }
+            }
+          ],
+          "scriptedSummary": { "questions": ["环保改造报价与供应商合同能否取得？", "达产爬坡期现金流预测依据？"], "tendency": "cautious_do", "conditions": ["成本 unknown 期间不得以高报价作为可接受性依据；改造落地后重算"] },
+          "expectedChecks": [
+            { "checkId": "L8-c1", "kind": "calc", "expectRatio": 1.2 },
+            { "checkId": "L8-c2", "kind": "candidate_valid" },
+            { "checkId": "L8-c3", "kind": "no_fabricated_net_income", "appliesTo": "positive" },
+            { "checkId": "L8-c4", "kind": "high_interest_not_risk_coverage", "appliesTo": "positive" },
+            { "checkId": "L8-c5", "kind": "negative_rejected", "expectViolations": ["no_fabricated_net_income", "high_interest_not_risk_coverage", "authority_wording"] },
+            { "checkId": "L8-c6", "kind": "tendency_rule", "forbidTendency": ["do"], "because": "成本 unknown 期间倾向不得为 do" },
+            { "checkId": "L8-c7", "kind": "grade_discipline" },
+            { "checkId": "L8-c8", "kind": "question_limit" }
+          ]
+        }
+      ]
+    }
+  ]
+}

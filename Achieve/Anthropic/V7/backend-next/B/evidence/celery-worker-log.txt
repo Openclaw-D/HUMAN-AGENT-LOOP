@@ -1,0 +1,139 @@
+Collecting celery==5.4.0 (from -r requirements.txt (line 8))
+  Downloading celery-5.4.0-py3-none-any.whl.metadata (21 kB)
+Collecting redis==5.0.8 (from -r requirements.txt (line 9))
+  Downloading redis-5.0.8-py3-none-any.whl.metadata (9.2 kB)
+Collecting requests==2.32.3 (from -r requirements.txt (line 10))
+  Downloading requests-2.32.3-py3-none-any.whl.metadata (4.6 kB)
+Collecting billiard<5.0,>=4.2.0 (from celery==5.4.0->-r requirements.txt (line 8))
+  Downloading billiard-4.2.4-py3-none-any.whl.metadata (4.8 kB)
+Collecting kombu<6.0,>=5.3.4 (from celery==5.4.0->-r requirements.txt (line 8))
+  Downloading kombu-5.6.2-py3-none-any.whl.metadata (3.5 kB)
+Collecting vine<6.0,>=5.1.0 (from celery==5.4.0->-r requirements.txt (line 8))
+  Downloading vine-5.1.0-py3-none-any.whl.metadata (2.7 kB)
+Collecting click<9.0,>=8.1.2 (from celery==5.4.0->-r requirements.txt (line 8))
+  Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+Collecting click-didyoumean>=0.3.0 (from celery==5.4.0->-r requirements.txt (line 8))
+  Downloading click_didyoumean-0.3.1-py3-none-any.whl.metadata (3.9 kB)
+Collecting click-repl>=0.2.0 (from celery==5.4.0->-r requirements.txt (line 8))
+  Downloading click_repl-0.3.0-py3-none-any.whl.metadata (3.6 kB)
+Collecting click-plugins>=1.1.1 (from celery==5.4.0->-r requirements.txt (line 8))
+  Downloading click_plugins-1.1.1.2-py2.py3-none-any.whl.metadata (6.5 kB)
+Collecting tzdata>=2022.7 (from celery==5.4.0->-r requirements.txt (line 8))
+  Downloading tzdata-2026.4-py2.py3-none-any.whl.metadata (1.4 kB)
+Collecting python-dateutil>=2.8.2 (from celery==5.4.0->-r requirements.txt (line 8))
+  Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+Collecting charset-normalizer<4,>=2 (from requests==2.32.3->-r requirements.txt (line 10))
+  Downloading charset_normalizer-3.5.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (45 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45.9/45.9 kB 7.4 MB/s eta 0:00:00
+Collecting idna<4,>=2.5 (from requests==2.32.3->-r requirements.txt (line 10))
+  Downloading idna-3.19-py3-none-any.whl.metadata (9.2 kB)
+Collecting urllib3<3,>=1.21.1 (from requests==2.32.3->-r requirements.txt (line 10))
+  Downloading urllib3-2.7.0-py3-none-any.whl.metadata (6.9 kB)
+Collecting certifi>=2017.4.17 (from requests==2.32.3->-r requirements.txt (line 10))
+  Downloading certifi-2026.7.22-py3-none-any.whl.metadata (2.5 kB)
+Collecting prompt-toolkit>=3.0.36 (from click-repl>=0.2.0->celery==5.4.0->-r requirements.txt (line 8))
+  Downloading prompt_toolkit-3.0.53-py3-none-any.whl.metadata (6.4 kB)
+Collecting amqp<6.0.0,>=5.1.1 (from kombu<6.0,>=5.3.4->celery==5.4.0->-r requirements.txt (line 8))
+  Downloading amqp-5.3.1-py3-none-any.whl.metadata (8.9 kB)
+Requirement already satisfied: packaging in /usr/local/lib/python3.11/site-packages (from kombu<6.0,>=5.3.4->celery==5.4.0->-r requirements.txt (line 8)) (26.3)
+Collecting six>=1.5 (from python-dateutil>=2.8.2->celery==5.4.0->-r requirements.txt (line 8))
+  Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+Collecting wcwidth>=0.1.4 (from prompt-toolkit>=3.0.36->click-repl>=0.2.0->celery==5.4.0->-r requirements.txt (line 8))
+  Downloading wcwidth-0.8.3-py3-none-any.whl.metadata (43 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 43.3/43.3 kB 11.8 MB/s eta 0:00:00
+Downloading celery-5.4.0-py3-none-any.whl (425 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 426.0/426.0 kB 12.8 MB/s eta 0:00:00
+Downloading redis-5.0.8-py3-none-any.whl (255 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 255.6/255.6 kB 13.1 MB/s eta 0:00:00
+Downloading requests-2.32.3-py3-none-any.whl (64 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 64.9/64.9 kB 19.9 MB/s eta 0:00:00
+Downloading billiard-4.2.4-py3-none-any.whl (87 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 87.1/87.1 kB 15.0 MB/s eta 0:00:00
+Downloading certifi-2026.7.22-py3-none-any.whl (136 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 137.0/137.0 kB 15.2 MB/s eta 0:00:00
+Downloading charset_normalizer-3.5.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (262 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 262.3/262.3 kB 8.5 MB/s eta 0:00:00
+Downloading click-8.5.0-py3-none-any.whl (125 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 125.3/125.3 kB 8.0 MB/s eta 0:00:00
+Downloading click_didyoumean-0.3.1-py3-none-any.whl (3.6 kB)
+Downloading click_plugins-1.1.1.2-py2.py3-none-any.whl (11 kB)
+Downloading click_repl-0.3.0-py3-none-any.whl (10 kB)
+Downloading idna-3.19-py3-none-any.whl (68 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 68.5/68.5 kB 11.7 MB/s eta 0:00:00
+Downloading kombu-5.6.2-py3-none-any.whl (214 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 214.2/214.2 kB 14.5 MB/s eta 0:00:00
+Downloading vine-5.1.0-py3-none-any.whl (9.6 kB)
+Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 229.9/229.9 kB 13.3 MB/s eta 0:00:00
+Downloading tzdata-2026.4-py2.py3-none-any.whl (347 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 347.5/347.5 kB 12.5 MB/s eta 0:00:00
+Downloading urllib3-2.7.0-py3-none-any.whl (131 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 131.1/131.1 kB 19.4 MB/s eta 0:00:00
+Downloading amqp-5.3.1-py3-none-any.whl (50 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 50.9/50.9 kB 10.5 MB/s eta 0:00:00
+Downloading prompt_toolkit-3.0.53-py3-none-any.whl (392 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 392.3/392.3 kB 11.9 MB/s eta 0:00:00
+Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+Downloading wcwidth-0.8.3-py3-none-any.whl (331 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 331.7/331.7 kB 13.5 MB/s eta 0:00:00
+Installing collected packages: wcwidth, vine, urllib3, tzdata, six, redis, idna, click, charset-normalizer, certifi, billiard, requests, python-dateutil, prompt-toolkit, click-plugins, click-didyoumean, amqp, kombu, click-repl, celery
+Successfully installed amqp-5.3.1 billiard-4.2.4 celery-5.4.0 certifi-2026.7.22 charset-normalizer-3.5.1 click-8.5.0 click-didyoumean-0.3.1 click-plugins-1.1.1.2 click-repl-0.3.0 idna-3.19 kombu-5.6.2 prompt-toolkit-3.0.53 python-dateutil-2.9.0.post0 redis-5.0.8 requests-2.32.3 six-1.17.0 tzdata-2026.4 urllib3-2.7.0 vine-5.1.0 wcwidth-0.8.3
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+
+[notice] A new release of pip is available: 24.0 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+/usr/local/lib/python3.11/site-packages/celery/platforms.py:829: SecurityWarning: You're running the worker with superuser privileges: this is
+absolutely not recommended!
+
+Please specify a different user using the --uid option.
+
+User information: uid=0 euid=0 gid=0 egid=0
+
+  warnings.warn(SecurityWarning(ROOT_DISCOURAGED.format(
+ 
+ -------------- celery@ef7fd7e299c1 v5.4.0 (opalescent)
+--- ***** ----- 
+-- ******* ---- Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.41 2026-09-15 18:43:14
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         b_dispatch:0x731f57f680d0
+- ** ---------- .> transport:   redis://redis:6379/0
+- ** ---------- .> results:     redis://redis:6379/1
+- *** --- * --- .> concurrency: 1 (solo)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . tasks.dispatch_goal_execution
+
+[2026-09-15 18:43:14,469: WARNING/MainProcess] /usr/local/lib/python3.11/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2026-09-15 18:43:14,473: INFO/MainProcess] Connected to redis://redis:6379/0
+[2026-09-15 18:43:14,473: WARNING/MainProcess] /usr/local/lib/python3.11/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2026-09-15 18:43:14,475: INFO/MainProcess] mingle: searching for neighbors
+[2026-09-15 18:43:15,481: INFO/MainProcess] mingle: all alone
+[2026-09-15 18:43:15,490: INFO/MainProcess] celery@ef7fd7e299c1 ready.
+[2026-09-15 18:43:59,812: INFO/MainProcess] Task tasks.dispatch_goal_execution[ac0987c3-d3bd-4f5a-b0c1-b580b8d235c6] received
+[2026-09-15 18:43:59,827: INFO/MainProcess] Task tasks.dispatch_goal_execution[ac0987c3-d3bd-4f5a-b0c1-b580b8d235c6] retry: Retry in 2s: ExecutorUnavailable('executor 5xx (500) for b-goal-1')
+[2026-09-15 18:43:59,828: INFO/MainProcess] Task tasks.dispatch_goal_execution[4f81cc02-53dc-4e80-8d20-206af036dc5c] received
+[2026-09-15 18:43:59,835: INFO/MainProcess] Task tasks.dispatch_goal_execution[4f81cc02-53dc-4e80-8d20-206af036dc5c] retry: Retry in 2s: ExecutorUnavailable('executor 5xx (500) for b-goal-2')
+[2026-09-15 18:43:59,836: INFO/MainProcess] Task tasks.dispatch_goal_execution[513e97fc-522d-4ff8-91d6-d30c4f6d670b] received
+[2026-09-15 18:43:59,843: INFO/MainProcess] Task tasks.dispatch_goal_execution[513e97fc-522d-4ff8-91d6-d30c4f6d670b] retry: Retry in 2s: ExecutorUnavailable('executor 5xx (500) for b-goal-3')
+[2026-09-15 18:43:59,845: INFO/MainProcess] Task tasks.dispatch_goal_execution[ac0987c3-d3bd-4f5a-b0c1-b580b8d235c6] received
+[2026-09-15 18:43:59,845: INFO/MainProcess] Task tasks.dispatch_goal_execution[4f81cc02-53dc-4e80-8d20-206af036dc5c] received
+[2026-09-15 18:43:59,846: INFO/MainProcess] Task tasks.dispatch_goal_execution[513e97fc-522d-4ff8-91d6-d30c4f6d670b] received
+[2026-09-15 18:44:01,827: INFO/MainProcess] Task tasks.dispatch_goal_execution[ac0987c3-d3bd-4f5a-b0c1-b580b8d235c6] succeeded in 0.005186473999856389s: {'goalId': 'b-goal-1', 'attempt': 2, 'status': 200}
+[2026-09-15 18:44:01,838: INFO/MainProcess] Task tasks.dispatch_goal_execution[4f81cc02-53dc-4e80-8d20-206af036dc5c] succeeded in 0.004365114000393078s: {'goalId': 'b-goal-2', 'attempt': 2, 'status': 200}
+[2026-09-15 18:44:01,846: INFO/MainProcess] Task tasks.dispatch_goal_execution[513e97fc-522d-4ff8-91d6-d30c4f6d670b] succeeded in 0.004323063999436272s: {'goalId': 'b-goal-3', 'attempt': 2, 'status': 200}

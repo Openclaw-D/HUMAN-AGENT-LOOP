@@ -1,0 +1,17 @@
+  ok: C 规则包通过 C 自身校验
+[1] C 规则包已发布为 A RuleVersion v1
+[2] 证据已挂接 ev-mu1vp49r-xuvcyb1e / ev-mu1vp49t-gcpexoob（factVersion → 3）
+[3] 运行 run-mu1vp49v-qdb62zkx（factVersion=3，state=pending）
+  ok: C 现金流覆盖计算成功
+  ok: 计算结果落 A calculation 记录
+[4] 计算：coverage=1.2（tool calc:cash-flow-coverage@1）
+  ok: C 候选校验通过（C 形状）
+  ok: C 权威措辞扫描无决定性表述
+  ok: 候选意见落库（A 结构 + C 预校验双层）
+  ok: C 层拒绝越权候选
+  ok: A 层拒绝禁用键 400
+  ok: 证据更正后旧意见 stale
+  ok: run 顶层 stale（factVersion 前进）
+  ok: 人工动作 → pending 新循环 + formalOutcome 留痕
+
+ASSEMBLY ROUND PASS（dataDir: C:\Users\22673\AppData\Local\Temp\v7-assembly-LCu3lV）

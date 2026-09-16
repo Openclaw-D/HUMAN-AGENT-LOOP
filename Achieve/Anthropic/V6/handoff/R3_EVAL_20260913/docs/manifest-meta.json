@@ -1,0 +1,45 @@
+{
+  "interfaceVersions": {
+    "product-trajectory": "1（冻结；字段取自产品 remote-types.ts/remote-timeline.ts）",
+    "mobile-measurement": "1",
+    "trajectory-verdict": "1",
+    "mobile-verdict": "1",
+    "replay-cli": "1.0.0"
+  },
+  "baselineDependency": {
+    "r2EvalBatch": "../R2_EVAL_20260913/（只读；本轮仅运行其零写入 selftest 作 109/109 回归，未重跑会写 evidence 的 metamorphic）",
+    "productModel": "jianwei-v3/site/lib/v5-preview/{remote-types,remote-timeline}.ts（只读依据；trajectory schema 字段与其对齐）"
+  },
+  "reproducibleCommands": [
+    "node tools/replay-cli.mjs selftest",
+    "node tools/replay-cli.mjs metamorphic",
+    "node tools/replay-cli.mjs replay --trajectory trajectories/handwritten/pos-1-full-lifecycle.json",
+    "node tools/replay-cli.mjs replay --trajectory trajectories/handwritten/neg-pre-overreach.json",
+    "node tools/mobile-measure-check.mjs --measurement trajectories/mobile-fixtures/mm-pass.json",
+    "node tools/mobile-measure-check.mjs --measurement trajectories/mobile-fixtures/mm-fail-overflow.json",
+    "node tools/export-trajectory-from-store.mjs --store evidence-r3/runtime/synthetic-store-fixture.json --session SESS-R3P1 --timeline-from session --out evidence-r3/runtime/exported-trajectory.json",
+    "node ../R2_EVAL_20260913/tools/eval-cli-r2.mjs selftest",
+    "node tools/replay-cli.mjs manifest"
+  ],
+  "knownLimitations": [
+    "INTEGRATION BLOCKED：尚未收到任何 MAIN 来源轨迹（要求≥3条），整体闭环按 DoD 不接受；工具侧就绪",
+    "手机量测 BLOCKED：未收到 MAIN 真实 DOM 量测；合成夹具仅验证检查器本身",
+    "回放判定为事件/记录级结构判定，语义完备性不做声称；UNDECIDED 项路由人工",
+    "手写控制轨迹（source=handwritten）只证明回放器判定正确，不代表产品已执行",
+    "真实模型质量、真机 Safari、真实ASR/视频 NOT TESTED"
+  ],
+  "constraints": {
+    "realModelCalls": 0,
+    "newDependencies": 0,
+    "productCodeChanges": 0,
+    "servicesStarted": 0,
+    "gitWriteOperations": 0,
+    "codexOperations": 0,
+    "writeScope": "V6/handoff/R3_EVAL_20260913/"
+  },
+  "notes": [
+    "golden 不进入任何被评对象；轨迹来源标记强制（product_export/handwritten 双校验）",
+    "可变输出全部在 evidence-r3/runtime/（不入冻结清单）；R2 冻结 evidence 未被覆盖（仅重跑零写入 selftest）",
+    "手机量测无原始 DOM 量测文件不 PASS；截图仅为佐证"
+  ]
+}

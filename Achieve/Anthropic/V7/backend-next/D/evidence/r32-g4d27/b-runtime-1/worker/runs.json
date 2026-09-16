@@ -1,0 +1,22 @@
+{
+  "#cursor": {
+    "eventSeq": 327
+  },
+  "v7d-b-worker:g-mu33cgeo-dd366702f4c9:c1-1789502098755": {
+    "status": "recovered:already-submitted",
+    "goalId": "g-mu33cgeo-dd366702f4c9",
+    "fencingToken": 1,
+    "startedAt": "2026-09-15T19:54:58.800Z",
+    "leaseUntil": "2026-09-15T19:55:28.788Z",
+    "claimedAt": "2026-09-15T19:54:58.755Z",
+    "at": "2026-09-15T19:55:18.434Z"
+  },
+  "v7d-b-worker:g-mu33cv9e-31021ee4be8d:c1-1789502120231": {
+    "status": "running",
+    "goalId": "g-mu33cv9e-31021ee4be8d",
+    "fencingToken": 1,
+    "startedAt": "2026-09-15T19:55:20.279Z",
+    "leaseUntil": "2026-09-15T19:55:50.270Z",
+    "claimedAt": "2026-09-15T19:55:20.231Z"
+  }
+}

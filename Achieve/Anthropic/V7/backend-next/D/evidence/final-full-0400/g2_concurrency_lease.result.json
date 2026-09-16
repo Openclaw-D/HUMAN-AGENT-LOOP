@@ -1,0 +1,44 @@
+{
+  "suite": "g2_concurrency_lease",
+  "results": [
+    {
+      "id": "D-06",
+      "title": "两客户端同时领取同一任务：恰一2xx，唯一assignee",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 23,
+      "failures": [],
+      "ms": 1870,
+      "note": ""
+    },
+    {
+      "id": "D-07",
+      "title": "两客户端并发提交同目标：恰一成功，版本恰+1，效果不重复",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 26,
+      "failures": [],
+      "ms": 225,
+      "note": ""
+    },
+    {
+      "id": "D-08",
+      "title": "过期租约写回拒绝 + fencing单调：过期complete/旧token均被结构性拒绝且零写副作用",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 39,
+      "failures": [],
+      "ms": 10785,
+      "note": ""
+    }
+  ],
+  "pass": 3,
+  "fail": 0,
+  "skip": 0,
+  "blocked": 0,
+  "totalAssertions": 88,
+  "runnerError": null
+}

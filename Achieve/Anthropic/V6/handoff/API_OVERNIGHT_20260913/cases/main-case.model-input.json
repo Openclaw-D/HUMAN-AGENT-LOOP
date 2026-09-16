@@ -1,0 +1,115 @@
+{
+  "schema": "jw-api-demo-case@1",
+  "synthetic": true,
+  "syntheticNotice": "全部内容匿名合成，不影射任何真实公司或个人；金额/期限为一致性测试用合成数字，不是公司政策阈值；本文件只含允许进入模型输入的内容（标注问题、客户陈述与人工回复原文、证据引用），预期验证要点在 main-case.expected.md，严禁并入本文件或模型请求。",
+  "caseId": "M1",
+  "companyFake": "岐明包装机械制造有限公司（虚构）",
+  "transactionFake": "售后回租（新客）拟融资380万元/36期（未审批，仅一致性测试数字）",
+  "interfaceRef": "V6/handoff/API_OVERNIGHT_20260913/CONTRACT.md §2/§5",
+  "session": {
+    "op": "create-session",
+    "title": "岐明包装机械（虚构）·新客回租尽调访谈·合成演示"
+  },
+  "steps": [
+    {
+      "stepId": "S1-E1",
+      "op": "attach-evidence",
+      "fixtureId": "fixture-equipment",
+      "docRef": "M1-DOC-02 设备清单与序列号摘录 v1（written_document·recorded）",
+      "suggestRequestId": "m1-attach-e1-01"
+    },
+    {
+      "stepId": "S1-E2",
+      "op": "attach-evidence",
+      "fixtureId": "fixture-contract",
+      "docRef": "M1-DOC-03 设备买卖合同要素页 v1（written_document·recorded）",
+      "suggestRequestId": "m1-attach-e2-01"
+    },
+    {
+      "stepId": "S1-E3",
+      "op": "attach-evidence",
+      "fixtureId": "fixture-inspection",
+      "docRef": "M1-DOC-04 现场巡检画面记录 v1（onsite_visual·observed，仅拍摄当时可见区域）",
+      "suggestRequestId": "m1-attach-e3-01"
+    },
+    {
+      "stepId": "S2-Q",
+      "op": "annotate",
+      "evidenceStepRef": "S1-E1",
+      "annotationQuestion": "业务标疑（设备清单页）：客户实控人声称该数控横切机为“2021年购入、发票齐全、几乎全新”。本页清单所载：型号QM-NC2200，序列号SL-2021-0337，主机出厂日期2021-03。合同要素页载明：设备买卖合同签订于2022-05，合同价505万元。另据电费记录摘录，近6个月月均用电约4.1万kWh。请依据以上材料核对：该设备的取得/购买时点口径是否一致？如发现疑点，请列出疑点、说明依据（对应哪份材料），并给出建议向客户追问的问题。不要给出批准、否决、额度或价格建议。",
+      "docRefs": ["M1-DOC-02 v1", "M1-DOC-03 v1", "M1-DOC-05 电费记录摘录 v1"],
+      "suggestRequestId": "m1-annot-q1-01"
+    },
+    {
+      "stepId": "S2-A1",
+      "op": "analyze",
+      "annotationStepRef": "S2-Q",
+      "domainRoles": ["credit"],
+      "purpose": "follow_up_generation",
+      "suggestRequestId": "m1-analyze-01",
+      "note": "第1次分析：仅见早期资料与标注问题"
+    },
+    {
+      "stepId": "S3-R1",
+      "op": "reply",
+      "annotationStepRef": "S2-Q",
+      "kind": "business",
+      "docRef": "M1-DOC-06 客户补充说明 v1（supplement·claimed）",
+      "text": "客户补充说明（实控人口述，业务代录）：2021年11月与厂方签了订购协议并付定金，设备主机2021年3月出厂；2022年5月正式签买卖合同、6月付清尾款、7月到厂安装。我们说的“2021年购入”是从签订订购协议算起。订购协议、定金收据和尾款付款凭证都可以补交。",
+      "suggestRequestId": "m1-reply-cust-01"
+    },
+    {
+      "stepId": "S3-A2",
+      "op": "analyze",
+      "annotationStepRef": "S2-Q",
+      "domainRoles": ["credit"],
+      "purpose": "follow_up_generation",
+      "suggestRequestId": "m1-analyze-02",
+      "note": "第2次分析：读到客户补充（新内容触发新版本）"
+    },
+    {
+      "stepId": "S4-R2a",
+      "op": "reply",
+      "annotationStepRef": "S2-Q",
+      "kind": "domain",
+      "docRef": "M1-DOC-07 人工更正记录 v1",
+      "text": "人工更正：首次沟通纪要中“年产值约450万元”系业务记录笔误，经与客户财务人员核对应为“月产值约450万元”，现予更正；该数字仍未经书面台账核实，以客户后续提供的台账为准。更正前基于“年产值”的产能-能耗匹配分析一律作废。",
+      "suggestRequestId": "m1-reply-corr-01"
+    },
+    {
+      "stepId": "S4-R2b",
+      "op": "reply",
+      "annotationStepRef": "S2-Q",
+      "kind": "domain",
+      "text": "专业纠正（信审复核人）：其一，现有材料只能说明“购买时点口径不一致”，不能推断设备被调换或客户欺诈，该表述超出证据范围；其二，“几乎全新”是客户声称，巡检画面观察（导轨局部锈蚀、液压站油路可见渗漏痕迹，仅拍摄当时可见区域）不构成对设备整体状况的认定；两者保持“待核实”状态。",
+      "suggestRequestId": "m1-reply-corr-02"
+    },
+    {
+      "stepId": "S4-A3",
+      "op": "analyze",
+      "annotationStepRef": "S2-Q",
+      "domainRoles": ["credit"],
+      "purpose": "follow_up_generation",
+      "suggestRequestId": "m1-analyze-03",
+      "note": "第3次分析：读到人工纠正后的口径"
+    },
+    {
+      "stepId": "S5-DOMAIN",
+      "op": "reply",
+      "annotationStepRef": "S2-Q",
+      "kind": "domain",
+      "text": "专业域必要参与（人工意见，非模型输出）。政策岗：售后回租需继续核对权属与登记合规——订购协议（2021）、买卖合同（2022）、发票、付款凭证的权属链条一致性是本单关键补证事项，补齐前不形成倾向性意见。商务岗：融资380万元对应申报原值520万元，成数口径待经济性核算（当前not_configured），不填默认值、不建议价格。资产岗：巡检观察与“几乎全新”声称存在差异，建议（由人工决定）投前安排设备复检，并在租后巡检中提高对该设备的关注频次。",
+      "suggestRequestId": "m1-reply-dom-01"
+    },
+    {
+      "stepId": "S6-READBACK",
+      "op": "read-back",
+      "expect": "刷新后三次分析的basedOn（证据版本/remoteVersion/generation）递进可查；business/domain与模型回复可区分；无回复丢失"
+    }
+  ],
+  "requestDiscipline": {
+    "requestIdRule": "每步新requestId；同requestId重放幂等返回原响应（CONTRACT §5/§7）",
+    "expectedVersionRule": "expectedVersion 取上一步响应中的 remoteVersion（运行时读取，不预写死）",
+    "expectedAnswers": "预期验证要点一律在 main-case.expected.md，不进入本文件与任何模型请求"
+  }
+}

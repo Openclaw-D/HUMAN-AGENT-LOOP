@@ -1,0 +1,16 @@
+{
+  "#cursor": {
+    "eventSeq": 189
+  },
+  "v7d-b25-d25-5:g-mu368cwq-d957855d424d:c1-1789506946452": {
+    "status": "submitted",
+    "goalId": "g-mu368cwq-d957855d424d",
+    "fencingToken": 1,
+    "startedAt": "2026-09-15T21:15:46.510Z",
+    "leaseUntil": "2026-09-15T21:15:54.500Z",
+    "claimedAt": "2026-09-15T21:15:46.452Z",
+    "outcomeState": "candidate_ready",
+    "aGoalVersion": 4,
+    "at": "2026-09-15T21:15:46.585Z"
+  }
+}

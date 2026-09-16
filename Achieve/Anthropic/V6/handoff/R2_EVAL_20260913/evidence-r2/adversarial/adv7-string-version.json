@@ -1,0 +1,28 @@
+{
+  "schema": "jw-eval-candidate@2",
+  "candidateId": "ADV-07-STRING-VERSION",
+  "caseId": "CASE-B",
+  "variantId": null,
+  "respondent": {
+    "kind": "adversarial_probe_handwritten",
+    "note": "SA-9 人工构造探针，不构成任何真实模型质量证据。意图：漏报探测——version 用字符串 \"1\" 而非数字 1（schema v2 明确规定不接受），语义上完全合理，应被 schema 层失败关闭（exit 2），不得带病评分。"
+  },
+  "findings": [
+    {
+      "findingId": "F-ADV7-01",
+      "type": "gap",
+      "statement": "受让设备缺少权属凭证与过户记录。",
+      "evidenceRefs": [{ "sourceId": "B-SUP-01", "version": "1" }]
+    }
+  ],
+  "questions": [
+    {
+      "questionId": "Q-ADV7-01",
+      "text": "请补充受让协议与付款全链凭证。",
+      "evidenceRefs": [{ "sourceId": "B-SUP-01", "version": 1 }]
+    }
+  ],
+  "conclusions": [],
+  "decisions": [],
+  "unresolved": []
+}

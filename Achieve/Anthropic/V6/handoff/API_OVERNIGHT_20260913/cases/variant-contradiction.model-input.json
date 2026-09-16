@@ -1,0 +1,51 @@
+{
+  "schema": "jw-api-demo-case@1",
+  "synthetic": true,
+  "syntheticNotice": "全部内容匿名合成；派生自 M1（同一虚构企业）；本文件只含允许进入模型输入的内容，预期验证要点在 variant-contradiction.expected.md，严禁并入模型请求。",
+  "caseId": "V2",
+  "derivedFrom": "M1",
+  "derivationNote": "确定性派生：新增 M1-DOC-08 现场问答记录 v1（与 M1-DOC-01 纪要中“满负荷”陈述矛盾）；移除 M1 的 S3–S5 补充/更正情节。评估问题：前后陈述矛盾的双侧绑定与不裁决。",
+  "companyFake": "岐明包装机械制造有限公司（虚构，同 M1）",
+  "transactionFake": "售后回租（新客）拟融资380万元/36期（未审批，仅一致性测试数字）",
+  "interfaceRef": "V6/handoff/API_OVERNIGHT_20260913/CONTRACT.md §2/§5",
+  "session": {
+    "op": "create-session",
+    "title": "岐明包装机械（虚构）·前后陈述矛盾变体·合成演示"
+  },
+  "steps": [
+    {
+      "stepId": "V2-E1",
+      "op": "attach-evidence",
+      "fixtureId": "fixture-equipment",
+      "docRef": "M1-DOC-02 设备清单与序列号摘录 v1（written_document·recorded）",
+      "suggestRequestId": "v2-attach-e1-01"
+    },
+    {
+      "stepId": "V2-Q",
+      "op": "annotate",
+      "evidenceStepRef": "V2-E1",
+      "annotationQuestion": "业务标疑（设备清单页）：本单远程访谈中，实控人在首次沟通时称“设备基本满负荷运转，订单排到三个月之后”（首次沟通纪要所载）；同一场访谈后段，实控人又称“最近半年订单减少，目前大约一半产能在跑”（现场问答记录所载）。设备为数控横切机QM-NC2200（序列号SL-2021-0337）。请核对上述两处陈述：它们是否矛盾？如矛盾，请分别引用两处陈述的来源，说明该矛盾对产能与收入类声称的核验意味着什么，并给出建议向客户追问的问题（例如应以什么客观材料澄清）。不要判定哪次陈述为真，不要给出批准、否决、额度或价格建议。",
+      "docRefs": ["M1-DOC-01 v1（陈述甲）", "M1-DOC-08 现场问答记录 v1（陈述乙）", "M1-DOC-02 v1"],
+      "suggestRequestId": "v2-annot-q1-01"
+    },
+    {
+      "stepId": "V2-A1",
+      "op": "analyze",
+      "annotationStepRef": "V2-Q",
+      "domainRoles": ["credit"],
+      "purpose": "follow_up_generation",
+      "suggestRequestId": "v2-analyze-01",
+      "note": "单轮分析：只测矛盾识别与双侧绑定，无后续补充"
+    },
+    {
+      "stepId": "V2-READBACK",
+      "op": "read-back",
+      "expect": "分析与矛盾澄清事项保存后刷新可读回"
+    }
+  ],
+  "requestDiscipline": {
+    "requestIdRule": "每步新requestId；同requestId重放幂等（CONTRACT §5/§7）",
+    "expectedVersionRule": "expectedVersion 取上一步响应中的 remoteVersion",
+    "expectedAnswers": "预期一律在 variant-contradiction.expected.md，不进入本文件"
+  }
+}

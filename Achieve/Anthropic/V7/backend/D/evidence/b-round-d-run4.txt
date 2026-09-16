@@ -1,0 +1,21 @@
+  ok: C 规则包校验通过
+[seed] 项目 p-mu1nhbj7-0eu6gasv，证据 ev-mu1nhbjd-xnldhimv/ev-mu1nhbjh-phw5kvq3，规则 v1
+[run] A run run-mu1nhbjv-jtj7k637（factVersion=3，v1）
+  [start] b-brd-mu1nhbii: ratio_query, 步数 2
+  [step] b-brd-mu1nhbii::model:commerce:pricing_context::a0 → simulated(sent=false)
+  [a-sync] opinion b-brd-mu1nhbii::op:model:commerce:pricing_context:a0 → runVersion 2
+  [tool] b-brd-mu1nhbii:tool:calc:cash-flow-coverage → succeeded
+  [a-sync] calculation b-brd-mu1nhbii::calc:tool:calc:cash-flow-coverage:a0 → runVersion 3
+  ok: B 编排跑至 completed（模型 simulated + 工具 succeeded + 前序满足）
+  ok: 意见命令回执可查（确定性 requestId）
+  ok: 回执 requestReceipt 关联 B 网关标识（两者非同一 ID 体系，ICR-3）
+  ok: 模型候选意见经 sink 落库（provider=simulation, authority=none）
+  ok: C 计算经 sink 落 A calculation（toolVersion 一致）
+  ok: 状态 candidate_ready（completed 终态不自动升级正式状态）
+  ok: 基于证据失效引用在位（2 条）
+  ok: B 重入去重（deduped）
+  ok: A 意见不重复（幂等 sink + B 去重）
+  ok: 无凭据正式动作失败关闭（403 PRINCIPAL_UNTRUSTED）
+  ok: 人工接受 → resolved + formalOutcome（principalId 留痕）
+
+B-ROUND PASS（A data: C:\Users\22673\AppData\Local\Temp\v7-asm-a-N4VRMO | B journal: C:\Users\22673\AppData\Local\Temp\v7-asm-b-znyNsA）

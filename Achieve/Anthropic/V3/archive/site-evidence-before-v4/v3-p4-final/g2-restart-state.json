@@ -1,0 +1,62 @@
+{
+  "phase": "pre-restart",
+  "baseUrl": "http://localhost:4311",
+  "routes": [
+    {
+      "pathname": "/",
+      "status": 200
+    },
+    {
+      "pathname": "/collaboration",
+      "status": 200
+    },
+    {
+      "pathname": "/value",
+      "status": 200
+    },
+    {
+      "pathname": "/opportunity",
+      "status": 200
+    },
+    {
+      "pathname": "/insight",
+      "status": 200
+    },
+    {
+      "pathname": "/business",
+      "status": 200
+    },
+    {
+      "pathname": "/policy",
+      "status": 200
+    },
+    {
+      "pathname": "/credit",
+      "status": 200
+    },
+    {
+      "pathname": "/commercial",
+      "status": 200
+    },
+    {
+      "pathname": "/asset",
+      "status": 200
+    }
+  ],
+  "persistence": "sqlite_local_demo",
+  "runtimeEpoch": "DEMO-EPOCH-0009",
+  "checks": {
+    "sqliteReadiness": "PASS",
+    "crossRouteSession": "PASS",
+    "nullProgress": "PASS",
+    "sameKeyConcurrentCount": 8,
+    "sameKeyUniqueMessageIds": 1,
+    "sameKeyUniqueCandidateIds": 1,
+    "invalidLineageCode": "EVIDENCE_RECEIPT_NOT_FOUND",
+    "crossCaseCode": "BACKGROUND_CASE_READ_ONLY",
+    "externalInternalMessageVisible": false,
+    "externalFormalReceiptVisible": false,
+    "unauthorizedResetCode": "ACTION_SCOPE_DENIED",
+    "authorizedResetCleared": true
+  }
+}

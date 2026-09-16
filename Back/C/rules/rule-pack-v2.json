@@ -1,0 +1,69 @@
+{
+  "rulePackId": "v7-c2-rule-pack",
+  "version": "2.0.0",
+  "status": "experimental",
+  "createdAt": "2026-09-16",
+  "lineage": "派生自 V7/backend/C/rules/rule-pack-v1.json（1.1.0，sha256 ef620fc9…）；旧件只读保留，本包为 backend-next 独立副本的夜间扩展，未在旧路径改动。",
+  "enumAlignment": "recommendedHumanAction 枚举沿用 CONTRACT v0 实测值（need_more_evidence 等 4 值）；tendency 为 C 内部 v0 形状，待 A 契约发布后对齐。",
+  "confirmedBoundaries": [
+    "模型输出仅为候选意见，authority=none；正式审批、否决、退回与例外由人决定。",
+    "计算工具只返回带单位、假设与公式版本的确定性结果，结果本身不构成风险结论或审批依据。",
+    "证据以 factVersion 与 supersededBy 取代关系为准；引用已取代证据的意见必须失效并升级人工。",
+    "缺输入或缺口径时不得补造数值；缺失必须显式拒绝并升级人工。",
+    "本轮不发布任何真实金融政策阈值；规则只定义指标、范围、允许工具与人工门条件类别。",
+    "服务对象为中国大陆商业融资租赁（非银行系金租）；金融租赁监管规则不直接套用，法定适用性未知项标记待核对。"
+  ],
+  "userConstraints": [
+    { "id": "incomplete_not_auto_reject", "statement": "小微制造业资料不完整不是自动拒绝理由；缺证触发补证升级，不触发标签化否决。", "enforcement": "checker: escalation reason missing_input/need_more_evidence 对应的是补证动作，不得映射为 no_do 倾向的唯一依据" },
+    { "id": "high_interest_not_risk_coverage", "statement": "高利率/高报价不补偿不可理解风险；不得以收益覆盖为由接受未知风险。", "enforcement": "checker: high_interest_not_risk_coverage 措辞探针 + riskUnknown 案例中 accept_candidate 禁止" },
+    { "id": "no_fabricated_net_income", "statement": "未知成本不能补造净收益；缺 PD/LGD/成本时不产出预期损失或净收益数值。", "enforcement": "checker: no_fabricated_net_income 数值探针 + unknown_grade 证据不得进入计算输入" },
+    { "id": "region_not_label", "statement": "地区弱是验证线索不是标签拒绝；不得以地区为唯一理由否决。", "enforcement": "checker: region_not_label 措辞探针" },
+    { "id": "question_limit_3", "statement": "升级人工时聚焦 1—3 个最值得验证的问题。", "enforcement": "checker: question_limit 汇总问题数 ≤3" },
+    { "id": "evidence_five_grades", "statement": "证据五级：confirmed / source_supported / inference / unverified / unknown；数值证据必须标级。", "enforcement": "checker: grade_discipline 结构校验；unknown 级数值不得进入确定性计算输入" },
+    { "id": "tendency_is_candidate_not_approval", "statement": "候选倾向（做/谨慎做/调整条件后做/不做）是模型/模拟候选，不是正式审批，见微不是上级或超级审批人。", "enforcement": "checker: candidate schema authority 措辞扫描 + tendency 枚举校验" }
+  ],
+  "scope": {
+    "indicators": [
+      "monthly_operating_cash_flow", "monthly_debt_service", "cash_flow_coverage",
+      "top1_customer_revenue", "total_revenue", "order_concentration",
+      "equipment_ownership_status", "disposal_channel_status", "environmental_upgrade_cost"
+    ],
+    "allowedTools": ["calc:cash-flow-coverage@1", "calc:ratio@1"],
+    "requiredEvidenceFields": ["evidenceId", "version", "supersededBy", "indicator", "caliber", "grade", "content"],
+    "inputCaliberRequired": true,
+    "currencyAllowList": ["CNY", "USD"],
+    "period": { "unit": "month", "min": 1, "max": 36 }
+  },
+  "humanEscalation": [
+    { "reason": "rule_not_covered", "when": "输入指标不在 scope.indicators 或工具不在 allowedTools" },
+    { "reason": "missing_input", "when": "计算必填输入缺失、非法、非正月供，或引用 unknown 级数值作计算输入" },
+    { "reason": "caliber_change", "when": "同一指标在不同证据间口径不一致且无声明换算" },
+    { "reason": "evidence_conflict", "when": "同指标同口径多证据数值不一致且无取代关系" },
+    { "reason": "superseded_evidence_cited", "when": "候选意见引用已被取代版本的证据" },
+    { "reason": "model_output_invalid", "when": "模型输出结构不合格、缺必需字段、引用不存在证据或含执行性审批措辞" },
+    { "reason": "call_not_sent", "when": "模型通道未配置或请求未发出（如实标注未发送，不伪造成败）" },
+    { "reason": "call_unknown", "when": "模型请求发送后结果不可知（超时/中断），不得自动重试为成功" },
+    { "reason": "calc_mismatch", "when": "候选引用的数值与可验证计算输出不一致" },
+    { "reason": "uncertainty_understatement", "when": "机械信号（矛盾/假设/口径/历史取代）要求不确定声明而候选自报零不确定" },
+    { "reason": "ownership_dispute", "when": "设备权属存在争议信号（发票第三方名头/登记缺失/权属异议），资产目标必须升级，不得进入定价" },
+    { "reason": "unknown_cost_in_income", "when": "候选在成本未知（unknown/unverified 级）情况下产出净收益/预期损失数值" },
+    { "reason": "high_rate_as_risk_coverage", "when": "候选以利率/报价/收益覆盖为由主张接受未知风险" },
+    { "reason": "region_label_reject", "when": "候选以地区标签为唯一理由作否决/不做表述" },
+    { "reason": "over_question_limit", "when": "升级人工的问题清单超过 3 问" }
+  ],
+  "outputBoundary": {
+    "candidateFields": ["observations", "evidenceRefs", "assumptions", "uncertainty", "recommendedHumanAction"],
+    "candidateForbidden": [
+      "执行性审批决定（批准/否决/同意授信等第一人称决定）",
+      "额度、定价、费率的结论性数值决定",
+      "把计算结果直接表述为审批依据或结论"
+    ],
+    "recommendedHumanActionEnum": ["accept_candidate", "return_for_evidence", "take_over", "need_more_evidence"],
+    "tendencyEnum": ["do", "cautious_do", "do_with_adjusted_terms", "no_do"],
+    "tendencyNote": "tendency 只出现在汇总类输出（jianwei 摘要）中作候选倾向，属建议不是审批；不存在无需人工的出口。"
+  },
+  "notes": [
+    "本包不含任何真实阈值（覆盖率多少算可接受等由人工/正式制度决定）；案例中的数值期望只验证算术与升级链路。",
+    "v1 的 scenarioLeads 未随迁（旧探索线索不自动晋升）；行业分析必须落到当前地区和企业。"
+  ]
+}

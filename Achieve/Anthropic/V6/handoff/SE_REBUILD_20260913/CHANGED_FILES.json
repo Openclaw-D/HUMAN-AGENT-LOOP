@@ -1,0 +1,114 @@
+{
+  "app/v5-preview/page.tsx": {
+    "existedBefore": true,
+    "beforeHash": "b4261ea791b9ef9c67533443b545986a3cf372a70311096b87743ce7cd1cd565",
+    "afterHash": "712170486aaa62a396a85643bd99e2d3a96cdac66a34bd2015ed026b262b8785",
+    "changed": true,
+    "owner": "A"
+  },
+  "app/v5-preview/rows-view.tsx": {
+    "existedBefore": true,
+    "beforeHash": "aa1f6c049cf13f157fdf47ee190583a71821d17352c4de9efceced6a6c44dce4",
+    "afterHash": "fc4b766ccbd552409544750a62e4f605de951b6452cc87b0f2e0c9d9deff592a",
+    "changed": true,
+    "owner": "A"
+  },
+  "app/v5-preview/rows-logic.ts": {
+    "existedBefore": true,
+    "beforeHash": "3a62e296c31d484635e72393aa25a266a3ba00eac975b1497262f7dff84d27ea",
+    "afterHash": "3a62e296c31d484635e72393aa25a266a3ba00eac975b1497262f7dff84d27ea",
+    "changed": false,
+    "owner": "A"
+  },
+  "app/v5-preview/domain-row.tsx": {
+    "existedBefore": true,
+    "beforeHash": "0f6dd3f56e59e53ebf7547d2c8b8c49297987a97a75b6f50b73f80bad22e91eb",
+    "afterHash": "e0395fff0862bcdd235cd606efe2ab65fdbd16b59ded7ce7a20879a2947af60e",
+    "changed": true,
+    "owner": "A"
+  },
+  "app/v5-preview/chat-panel.tsx": {
+    "existedBefore": true,
+    "beforeHash": "c1c4ab44f6a3a018348a4063eaa725571e4901597f40c1274f1e012c95b87fe5",
+    "afterHash": "374ed9211c8fd8754058fc2d0270de6a0844adbf2abe824842bbc45d4e5b2ff5",
+    "changed": true,
+    "owner": "A"
+  },
+  "app/v5-preview/todo-card.tsx": {
+    "existedBefore": true,
+    "beforeHash": "573549824898decf9f1ce53cb2e799a89495bda8598c29fd2803c439fbf8a8b6",
+    "afterHash": "cd5a154cfdf01a544869cebe685cacd4007cdb7b3a098358332be8ecbd8f02cc",
+    "changed": true,
+    "owner": "A"
+  },
+  "app/v5-preview/api-client.ts": {
+    "existedBefore": true,
+    "beforeHash": "5447d1b8d236446820d3b7b941595d4ad225ddd19cc1ef9682de6c760c4da518",
+    "afterHash": "5447d1b8d236446820d3b7b941595d4ad225ddd19cc1ef9682de6c760c4da518",
+    "changed": false,
+    "owner": "A"
+  },
+  "app/v5-preview/preview.module.css": {
+    "existedBefore": true,
+    "beforeHash": "0a483a9242a468a1509d0109b780199d905b1c061476f5acffc156bbbe180adf",
+    "afterHash": "0a483a9242a468a1509d0109b780199d905b1c061476f5acffc156bbbe180adf",
+    "changed": false,
+    "owner": "A"
+  },
+  "app/v5-preview/remote-session/page.tsx": {
+    "existedBefore": true,
+    "beforeHash": "fe47890d551582cc8006d3632c491e58b7f39010fb40cc6ae31605fad168426a",
+    "afterHash": "f098e6974503a58f3fb57b5ef28e0c2b4bebb0c600f96db0e3cc838b02cb8d16",
+    "changed": true,
+    "owner": "B"
+  },
+  "app/v5-preview/remote-session/camera-panel.tsx": {
+    "existedBefore": true,
+    "beforeHash": "112f362fea6ca5b8a61a1d843d304458870c31d7521991004ed0b56748ab5065",
+    "afterHash": "a3afcbbadc21b62373fcb96109df4488abbad44523fb94c8c4fcaa1821da0a41",
+    "changed": true,
+    "owner": "B"
+  },
+  "lib/v5-preview/shared-types.ts": {
+    "existedBefore": true,
+    "beforeHash": "84ca18b2ee80cbca3fa79721c63119720a614d74507e4fdc7076f6b08d48439a",
+    "afterHash": "84ca18b2ee80cbca3fa79721c63119720a614d74507e4fdc7076f6b08d48439a",
+    "changed": false,
+    "owner": "MAIN"
+  },
+  "package.json": {
+    "existedBefore": true,
+    "beforeHash": "93d31083c8560a963ef41286dcdc5ec4a7cb4f1372f4fee7ee0789e1b17c3b0f",
+    "afterHash": "93d31083c8560a963ef41286dcdc5ec4a7cb4f1372f4fee7ee0789e1b17c3b0f",
+    "changed": false,
+    "owner": "MAIN"
+  },
+  "tsconfig.json": {
+    "existedBefore": true,
+    "beforeHash": "3c0c756d30455c45b90eaf4ebce829c849e0e502bcb7a4ff23ef23407162efe8",
+    "afterHash": "3c0c756d30455c45b90eaf4ebce829c849e0e502bcb7a4ff23ef23407162efe8",
+    "changed": false,
+    "owner": "MAIN"
+  },
+  "app/v5-preview/se-overview.module.css": {
+    "existedBefore": false,
+    "beforeHash": null,
+    "afterHash": "ee56ebb5eef22cde1b5dad4824c0b45049512a80debd23c10f15fd41a84d1072",
+    "changed": true,
+    "owner": "A"
+  },
+  "app/v5-preview/se-icons.tsx": {
+    "existedBefore": false,
+    "beforeHash": null,
+    "afterHash": "c921e0ca74d2ea64d7ce1a90607c6e78d34696116990b2f6671464e6d1b92b77",
+    "changed": true,
+    "owner": "A(MAIN创建后移交)"
+  },
+  "app/v5-preview/remote-session/se-interview.module.css": {
+    "existedBefore": false,
+    "beforeHash": null,
+    "afterHash": "1f87f94a96608628c3f0a464d120a41f74ae54e69f8e4ec1b8c9b37a16f182ed",
+    "changed": true,
+    "owner": "B"
+  }
+}

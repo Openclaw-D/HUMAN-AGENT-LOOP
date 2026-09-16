@@ -1,0 +1,66 @@
+{
+  "#cursor": {
+    "eventSeq": 309
+  },
+  "v7d-b25-d25-6:g-mu36lucq-eef0fa1b389c:c1-1789507575585": {
+    "status": "submitted",
+    "goalId": "g-mu36lucq-eef0fa1b389c",
+    "fencingToken": 1,
+    "startedAt": "2026-09-15T21:26:15.628Z",
+    "leaseUntil": "2026-09-15T21:26:23.619Z",
+    "claimedAt": "2026-09-15T21:26:15.585Z",
+    "outcomeState": "candidate_ready",
+    "aGoalVersion": 4,
+    "at": "2026-09-15T21:26:15.703Z"
+  },
+  "v7d-b25-d25-6:g-mu36luip-174b7a931543:c1-1789507575849": {
+    "status": "submitted",
+    "goalId": "g-mu36luip-174b7a931543",
+    "fencingToken": 1,
+    "startedAt": "2026-09-15T21:26:15.892Z",
+    "leaseUntil": "2026-09-15T21:26:23.882Z",
+    "claimedAt": "2026-09-15T21:26:15.849Z",
+    "outcomeState": "candidate_ready",
+    "aGoalVersion": 4,
+    "at": "2026-09-15T21:26:15.981Z"
+  },
+  "v7d-b25-d25-6:g-mu36m266-6a67627b5636:c1-1789507585719": {
+    "status": "submitted",
+    "goalId": "g-mu36m266-6a67627b5636",
+    "fencingToken": 1,
+    "startedAt": "2026-09-15T21:26:25.767Z",
+    "leaseUntil": "2026-09-15T21:26:33.754Z",
+    "claimedAt": "2026-09-15T21:26:25.719Z",
+    "outcomeState": "candidate_ready",
+    "aGoalVersion": 4,
+    "at": "2026-09-15T21:26:25.919Z"
+  },
+  "v7d-b25-d25-6:g-mu36m24j-f0d5f46edec8:c1-1789507585768": {
+    "status": "submitted",
+    "outcomeState": "candidate_ready",
+    "aGoalVersion": 4,
+    "at": "2026-09-15T21:26:25.925Z"
+  },
+  "v7d-b25-d25-6:g-mu36m2bo-3dd62f419d6e:c1-1789507586122": {
+    "status": "submitted",
+    "goalId": "g-mu36m2bo-3dd62f419d6e",
+    "fencingToken": 1,
+    "startedAt": "2026-09-15T21:26:26.180Z",
+    "leaseUntil": "2026-09-15T21:26:34.172Z",
+    "claimedAt": "2026-09-15T21:26:26.122Z",
+    "outcomeState": "candidate_ready",
+    "aGoalVersion": 4,
+    "at": "2026-09-15T21:26:26.245Z"
+  },
+  "v7d-b25-d25-6:g-mu36m2a4-68ee2b670fb7:c1-1789507586122": {
+    "status": "submitted",
+    "goalId": "g-mu36m2a4-68ee2b670fb7",
+    "fencingToken": 1,
+    "startedAt": "2026-09-15T21:26:26.213Z",
+    "leaseUntil": "2026-09-15T21:26:34.203Z",
+    "claimedAt": "2026-09-15T21:26:26.122Z",
+    "outcomeState": "candidate_ready",
+    "aGoalVersion": 4,
+    "at": "2026-09-15T21:26:26.286Z"
+  }
+}

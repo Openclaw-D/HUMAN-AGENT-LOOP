@@ -1,0 +1,296 @@
+
+> v7-backend-b-orchestration@0.1.0 test
+> node --test test/thin-recovery.test.mjs test/langgraph-recovery.test.mjs test/adapter-bridge.test.mjs test/equivalence.test.mjs test/loopback-http.test.mjs test/a-live-integration.test.mjs test/d9-trusted-resume.test.mjs
+
+TAP version 13
+# Subtest: A 活集成 v0.1:编排落库 + 合法动作显式凭据 + 匿名/错凭据负例 + 凭据零落盘
+ok 1 - A 活集成 v0.1:编排落库 + 合法动作显式凭据 + 匿名/错凭据负例 + 凭据零落盘
+  ---
+  duration_ms: 388.2797
+  type: 'test'
+  ...
+# Subtest: A 活集成 v0.1:D-4 意见状态门(escalation 后闭门) + 未注入 verifier 默认失败关闭
+ok 2 - A 活集成 v0.1:D-4 意见状态门(escalation 后闭门) + 未注入 verifier 默认失败关闭
+  ---
+  duration_ms: 159.8105
+  type: 'test'
+  ...
+# Subtest: bridge: succeeded → 步 succeeded,候选白名单,findings→observations
+ok 3 - bridge: succeeded → 步 succeeded,候选白名单,findings→observations
+  ---
+  duration_ms: 2.6399
+  type: 'test'
+  ...
+# Subtest: bridge: simulated 显式标记,不与真实混写
+ok 4 - bridge: simulated 显式标记,不与真实混写
+  ---
+  duration_ms: 0.1901
+  type: 'test'
+  ...
+# Subtest: bridge: not_configured → 确定未发送(sent=false)
+ok 5 - bridge: not_configured → 确定未发送(sent=false)
+  ---
+  duration_ms: 0.1713
+  type: 'test'
+  ...
+# Subtest: bridge: cancelled(证明未送达) → sent=false;unknown → sent 不可判定
+ok 6 - bridge: cancelled(证明未送达) → sent=false;unknown → sent 不可判定
+  ---
+  duration_ms: 0.3487
+  type: 'test'
+  ...
+# Subtest: bridge: failed 按错误分类——越权/结构违规 → human_violation;transport 错误 → failed
+ok 7 - bridge: failed 按错误分类——越权/结构违规 → human_violation;transport 错误 → failed
+  ---
+  duration_ms: 0.244
+  type: 'test'
+  ...
+# Subtest: bridge: stale → 结果不得当现行(sent=true)
+ok 8 - bridge: stale → 结果不得当现行(sent=true)
+  ---
+  duration_ms: 0.1242
+  type: 'test'
+  ...
+# Subtest: bridge: 仅提问无观察 → waiting_evidence(补证等待)
+ok 9 - bridge: 仅提问无观察 → waiting_evidence(补证等待)
+  ---
+  duration_ms: 0.25
+  type: 'test'
+  ...
+# Subtest: 边界转换:toA 数组转字符串且 none 省略;toC 对象引用且 none 按 whenNone 投影
+ok 10 - 边界转换:toA 数组转字符串且 none 省略;toC 对象引用且 none 按 whenNone 投影
+  ---
+  duration_ms: 0.3016
+  type: 'test'
+  ...
+# Subtest: 边界转换:return_for_evidence 在 A/C 两侧都保留
+ok 11 - 边界转换:return_for_evidence 在 A/C 两侧都保留
+  ---
+  duration_ms: 0.3724
+  type: 'test'
+  ...
+# Subtest: buildModelRequest:确定性——同输入逐字节同载荷同指纹;version 数字转字符串
+ok 12 - buildModelRequest:确定性——同输入逐字节同载荷同指纹;version 数字转字符串
+  ---
+  duration_ms: 0.6581
+  type: 'test'
+  ...
+# Subtest: 汇总:模拟来源整包标记;推荐动作取最高优先级
+ok 13 - 汇总:模拟来源整包标记;推荐动作取最高优先级
+  ---
+  duration_ms: 0.321
+  type: 'test'
+  ...
+# Subtest: 工具候选:纯计算无风险结论,推荐动作 none
+ok 14 - 工具候选:纯计算无风险结论,推荐动作 none
+  ---
+  duration_ms: 0.2217
+  type: 'test'
+  ...
+# Subtest: D-9 thin:无验证器/错凭据/伪造actor/验证器异常 → 全部失败关闭且零外部调用
+ok 15 - D-9 thin:无验证器/错凭据/伪造actor/验证器异常 → 全部失败关闭且零外部调用
+  ---
+  duration_ms: 43.2338
+  type: 'test'
+  ...
+# Subtest: D-9 thin:授权器拒绝错项目/错动作(AUTHORIZATION_DENIED);合成可信正例可恢复
+ok 16 - D-9 thin:授权器拒绝错项目/错动作(AUTHORIZATION_DENIED);合成可信正例可恢复
+  ---
+  duration_ms: 34.5045
+  type: 'test'
+  ...
+# Subtest: D-9 langgraph:无验证器/错凭据/伪造actor → 边界拒绝,零 checkpoint 写入,零外部调用
+ok 17 - D-9 langgraph:无验证器/错凭据/伪造actor → 边界拒绝,零 checkpoint 写入,零外部调用
+  ---
+  duration_ms: 158.1649
+  type: 'test'
+  ...
+# Subtest: D-9 langgraph:错项目/错动作授权拒绝;合成可信正例恢复 + 凭据零落盘(含 checkpoint)
+ok 18 - D-9 langgraph:错项目/错动作授权拒绝;合成可信正例恢复 + 凭据零落盘(含 checkpoint)
+  ---
+  duration_ms: 120.7773
+  type: 'test'
+  ...
+# Subtest: 等价:成功路径(new_application)
+ok 19 - 等价:成功路径(new_application)
+  ---
+  duration_ms: 124.28
+  type: 'test'
+  ...
+# Subtest: 等价:双角色并发(evidence_updated)
+ok 20 - 等价:双角色并发(evidence_updated)
+  ---
+  duration_ms: 87.6831
+  type: 'test'
+  ...
+# Subtest: 等价:正式前序失败→资产阻塞(asset_review)
+ok 21 - 等价:正式前序失败→资产阻塞(asset_review)
+  ---
+  duration_ms: 69.0907
+  type: 'test'
+  ...
+# Subtest: 等价:未配置 → human_required
+ok 22 - 等价:未配置 → human_required
+  ---
+  duration_ms: 65.307
+  type: 'test'
+  ...
+# Subtest: 等价:发送后未知 → unknown
+ok 23 - 等价:发送后未知 → unknown
+  ---
+  duration_ms: 71.5606
+  type: 'test'
+  ...
+# Subtest: 等价:工具计算(ratio_query 齐输入)
+ok 24 - 等价:工具计算(ratio_query 齐输入)
+  ---
+  duration_ms: 91.4681
+  type: 'test'
+  ...
+# Subtest: 等价:未知事件类型 → human_required
+ok 25 - 等价:未知事件类型 → human_required
+  ---
+  duration_ms: 59.5589
+  type: 'test'
+  ...
+# Subtest: langgraph: 单角色成功路径 → completed + checkpoint 文件真实落盘
+ok 26 - langgraph: 单角色成功路径 → completed + checkpoint 文件真实落盘
+  ---
+  duration_ms: 117.8038
+  type: 'test'
+  ...
+# Subtest: langgraph: 双角色并发(evidence_updated)
+ok 27 - langgraph: 双角色并发(evidence_updated)
+  ---
+  duration_ms: 72.6271
+  type: 'test'
+  ...
+# Subtest: langgraph: 正式前序不得越过——政策失败时资产步阻塞且未调用
+ok 28 - langgraph: 正式前序不得越过——政策失败时资产步阻塞且未调用
+  ---
+  duration_ms: 56.112
+  type: 'test'
+  ...
+# Subtest: langgraph: provider 未配置 → human_required 且未发送
+ok 29 - langgraph: provider 未配置 → human_required 且未发送
+  ---
+  duration_ms: 50.7323
+  type: 'test'
+  ...
+# Subtest: langgraph: 发送后未知 → unknown;人工核实后显式重试成功
+ok 30 - langgraph: 发送后未知 → unknown;人工核实后显式重试成功
+  ---
+  duration_ms: 214.5381
+  type: 'test'
+  ...
+# Subtest: langgraph: 模型仅提问 → waiting_evidence(interrupt 落盘);重启新实例后 provide_evidence 继续
+ok 31 - langgraph: 模型仅提问 → waiting_evidence(interrupt 落盘);重启新实例后 provide_evidence 继续
+  ---
+  duration_ms: 100.1717
+  type: 'test'
+  ...
+# Subtest: langgraph: resume 校验失败 → 再 interrupt(pauseNotice),随后合法 resume 完成
+ok 32 - langgraph: resume 校验失败 → 再 interrupt(pauseNotice),随后合法 resume 完成
+  ---
+  duration_ms: 86.4786
+  type: 'test'
+  ...
+# Subtest: langgraph: C 工具集成——缺输入 waiting_evidence;齐全则 succeeded + inputHash 可重放
+ok 33 - langgraph: C 工具集成——缺输入 waiting_evidence;齐全则 succeeded + inputHash 可重放
+  ---
+  duration_ms: 126.1881
+  type: 'test'
+  ...
+# Subtest: langgraph: 重复 start 同输入幂等(状态保持);view 读盘一致
+ok 34 - langgraph: 重复 start 同输入幂等(状态保持);view 读盘一致
+  ---
+  duration_ms: 87.59
+  type: 'test'
+  ...
+# Subtest: langgraph: 崩溃重启续跑(无 pending interrupt)→ intent 无回执判 unknown
+ok 35 - langgraph: 崩溃重启续跑(无 pending interrupt)→ intent 无回执判 unknown
+  ---
+  duration_ms: 249.7924
+  type: 'test'
+  ...
+# Subtest: 回环 HTTP:mock OpenAI 形状服务 + 真实 provider transport + 编排全链路
+ok 36 - 回环 HTTP:mock OpenAI 形状服务 + 真实 provider transport + 编排全链路
+  ---
+  duration_ms: 97.7805
+  type: 'test'
+  ...
+# Subtest: thin: 单角色成功路径(new_application)→ completed + 白名单候选 authority=none
+ok 37 - thin: 单角色成功路径(new_application)→ completed + 白名单候选 authority=none
+  ---
+  duration_ms: 34.7827
+  type: 'test'
+  ...
+# Subtest: thin: 双角色并发(evidence_updated)同轮完成
+ok 38 - thin: 双角色并发(evidence_updated)同轮完成
+  ---
+  duration_ms: 21.7471
+  type: 'test'
+  ...
+# Subtest: thin: 正式前序不得越过——政策失败时资产步被阻塞,不发起调用
+ok 39 - thin: 正式前序不得越过——政策失败时资产步被阻塞,不发起调用
+  ---
+  duration_ms: 28.2041
+  type: 'test'
+  ...
+# Subtest: thin: provider 未配置 → human_required 且表明未发送(sent=false)
+ok 40 - thin: provider 未配置 → human_required 且表明未发送(sent=false)
+  ---
+  duration_ms: 19.4206
+  type: 'test'
+  ...
+# Subtest: thin: 发送后未知(indeterminate)→ unknown 终态,不自动重试
+ok 41 - thin: 发送后未知(indeterminate)→ unknown 终态,不自动重试
+  ---
+  duration_ms: 23.669
+  type: 'test'
+  ...
+# Subtest: thin: 模型仅提问无观察 → waiting_evidence;人工补证且模型有证据后完成(generation+1)
+ok 42 - thin: 模型仅提问无观察 → waiting_evidence;人工补证且模型有证据后完成(generation+1)
+  ---
+  duration_ms: 39.7123
+  type: 'test'
+  ...
+# Subtest: thin: 崩溃恢复——意图无回执判 unknown;人工核实后显式重试成功(requestId 换 attempt)
+ok 43 - thin: 崩溃恢复——意图无回执判 unknown;人工核实后显式重试成功(requestId 换 attempt)
+  ---
+  duration_ms: 153.7207
+  type: 'test'
+  ...
+# Subtest: thin: 重复 start 同输入幂等复用(deduped);同 id 异载荷 409
+ok 44 - thin: 重复 start 同输入幂等复用(deduped);同 id 异载荷 409
+  ---
+  duration_ms: 19.9833
+  type: 'test'
+  ...
+# Subtest: thin: 真实 C 工具集成——成功计算 + 缺输入补证等待 + 人工补参后完成
+ok 45 - thin: 真实 C 工具集成——成功计算 + 缺输入补证等待 + 人工补参后完成
+  ---
+  duration_ms: 26.8604
+  type: 'test'
+  ...
+# Subtest: thin: C 工具输入齐全 → 计算 succeeded,inputHash 稳定可重放
+ok 46 - thin: C 工具输入齐全 → 计算 succeeded,inputHash 稳定可重放
+  ---
+  duration_ms: 28.1047
+  type: 'test'
+  ...
+# Subtest: thin: journal 尾部撕裂行恢复(丢弃+留痕);中部损坏硬错误
+ok 47 - thin: journal 尾部撕裂行恢复(丢弃+留痕);中部损坏硬错误
+  ---
+  duration_ms: 21.9461
+  type: 'test'
+  ...
+1..47
+# tests 47
+# suites 0
+# pass 47
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6617.2016

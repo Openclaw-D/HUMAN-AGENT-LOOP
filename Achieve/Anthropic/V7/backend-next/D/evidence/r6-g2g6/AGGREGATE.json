@@ -1,0 +1,172 @@
+{
+  "run": "r6-g2g6",
+  "startedUtc": "r6-g2g6",
+  "endedUtc": "2026-09-15T18:59:58.296Z",
+  "suites": [
+    {
+      "file": "g2_concurrency_lease.test.mjs",
+      "exitCode": 0,
+      "crashed": false,
+      "res": {
+        "suite": "g2_concurrency_lease",
+        "results": [
+          {
+            "id": "D-06",
+            "title": "两客户端同时领取同一任务：恰一2xx，唯一assignee",
+            "severity": "P0",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 23,
+            "failures": [],
+            "ms": 1613,
+            "note": ""
+          },
+          {
+            "id": "D-07",
+            "title": "两客户端并发提交同目标：恰一成功，版本恰+1，效果不重复",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 26,
+            "failures": [],
+            "ms": 209,
+            "note": ""
+          },
+          {
+            "id": "D-08",
+            "title": "过期租约写回拒绝 + fencing单调：过期complete/旧token均被结构性拒绝且零写副作用",
+            "severity": "P0",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 39,
+            "failures": [],
+            "ms": 10798,
+            "note": ""
+          }
+        ],
+        "pass": 3,
+        "fail": 0,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 88,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    },
+    {
+      "file": "g6_evidence_invalidation.test.mjs",
+      "exitCode": 0,
+      "crashed": false,
+      "res": {
+        "suite": "g6_evidence_invalidation",
+        "results": [
+          {
+            "id": "D-19",
+            "title": "证据取代定向失效：命中链路失效/decided跳过/无关目标逐字节不变/历史保留",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 52,
+            "failures": [],
+            "ms": 1775,
+            "note": ""
+          },
+          {
+            "id": "D-19b",
+            "title": "v1.2非accepted命中路径：ready目标取代→invalidated→立即重绑回ready；下游随上游再验收恢复ready",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 31,
+            "failures": [],
+            "ms": 261,
+            "note": ""
+          },
+          {
+            "id": "D-20",
+            "title": "非法操作边界：取代不存在证据404；重复取代409 EVIDENCE_SUPERSEDED；未知goalKey拒绝",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 27,
+            "failures": [],
+            "ms": 278,
+            "note": ""
+          }
+        ],
+        "pass": 3,
+        "fail": 0,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 110,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    }
+  ],
+  "totals": {
+    "suites": 2,
+    "crashed": 0,
+    "pass": 6,
+    "fail": 0,
+    "skip": 0,
+    "blocked": 0,
+    "totalAssertions": 198
+  },
+  "flat": [
+    {
+      "id": "D-06",
+      "title": "两客户端同时领取同一任务：恰一2xx，唯一assignee",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 23,
+      "ms": 1613
+    },
+    {
+      "id": "D-07",
+      "title": "两客户端并发提交同目标：恰一成功，版本恰+1，效果不重复",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 26,
+      "ms": 209
+    },
+    {
+      "id": "D-08",
+      "title": "过期租约写回拒绝 + fencing单调：过期complete/旧token均被结构性拒绝且零写副作用",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 39,
+      "ms": 10798
+    },
+    {
+      "id": "D-19",
+      "title": "证据取代定向失效：命中链路失效/decided跳过/无关目标逐字节不变/历史保留",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 52,
+      "ms": 1775
+    },
+    {
+      "id": "D-19b",
+      "title": "v1.2非accepted命中路径：ready目标取代→invalidated→立即重绑回ready；下游随上游再验收恢复ready",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 31,
+      "ms": 261
+    },
+    {
+      "id": "D-20",
+      "title": "非法操作边界：取代不存在证据404；重复取代409 EVIDENCE_SUPERSEDED；未知goalKey拒绝",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 27,
+      "ms": 278
+    }
+  ]
+}

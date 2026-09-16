@@ -1,0 +1,14 @@
+{
+  "#cursor": {
+    "eventSeq": 284
+  },
+  "v7d-b-worker:g-mu3311xb-bb98aa6e91e1:c1-1789501566785": {
+    "status": "recovered:submitted",
+    "goalId": "g-mu3311xb-bb98aa6e91e1",
+    "fencingToken": 1,
+    "startedAt": "2026-09-15T19:46:06.830Z",
+    "leaseUntil": "2026-09-15T19:46:36.819Z",
+    "claimedAt": "2026-09-15T19:46:06.785Z",
+    "at": "2026-09-15T19:46:11.411Z"
+  }
+}

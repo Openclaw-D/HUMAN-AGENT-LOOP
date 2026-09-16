@@ -1,0 +1,4 @@
+c0cf5ca0b6891a9c5e89742d3282127f171ce1706a99c8d8c4b0050ef36c9922  ../CONTRACT.md
+d9e9fdb1c046c5deeca9b47248fdff90d3e3bc26aebb3194a65babf2e7054f25  ../C/src/calculation-tool.mjs
+18357e52de9d3b8486732464b56532369a2863999f62b11c8eec33fac8ff8d27  ../../../V6/handoff/PARALLEL_MODEL_ADAPTER_20260913/src/adapter.mjs
+22662cf1020af9f9f577766df028823ec4eec0f62dc32ab123e0198a1173bc0b  ../../../V6/handoff/PARALLEL_MODEL_ADAPTER_20260913/src/providers/http-json.mjs

@@ -1,0 +1,49 @@
+{
+  "suite": "g3_outbox_idem",
+  "results": [
+    {
+      "id": "D-09",
+      "title": "outbox与业务写同事务：成功写出事件；失败写零孤儿事件（DB行级核验）",
+      "severity": "P1",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 26,
+      "failures": [
+        {
+          "msg": "失败写零孤儿outbox行（同事务回滚）",
+          "detail": "{\"actual\":\"96\",\"expected\":\"92\"}"
+        }
+      ],
+      "ms": 1728,
+      "note": ""
+    },
+    {
+      "id": "D-10",
+      "title": "至少一次投递+重复投递：订阅端500→重投同eventId；业务效果不因重投重复",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 27,
+      "failures": [],
+      "ms": 1215,
+      "note": ""
+    },
+    {
+      "id": "D-11",
+      "title": "requestId幂等：同载荷重放replayed；异载荷409 REQUEST_MISMATCH且第二效果不生效",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 25,
+      "failures": [],
+      "ms": 623,
+      "note": ""
+    }
+  ],
+  "pass": 2,
+  "fail": 1,
+  "skip": 0,
+  "blocked": 0,
+  "totalAssertions": 78,
+  "runnerError": null
+}

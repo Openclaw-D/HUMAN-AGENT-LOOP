@@ -1,0 +1,508 @@
+TAP version 13
+# Subtest: F0：隔离数据目录（本套件首个测试内设置 env；isolation=none 共享进程下避免跨套件互踩）
+ok 1 - F0：隔离数据目录（本套件首个测试内设置 env；isolation=none 共享进程下避免跨套件互踩）
+  ---
+  duration_ms: 1.0809
+  type: 'test'
+  ...
+# Subtest: F2：paused 阻断模型步骤与 confirm 类复核；补证/纠正/暂停说明仍可用；resume_round 显式留痕恢复；generation 隔离在途
+ok 2 - F2：paused 阻断模型步骤与 confirm 类复核；补证/纠正/暂停说明仍可用；resume_round 显式留痕恢复；generation 隔离在途
+  ---
+  duration_ms: 19.6505
+  type: 'test'
+  ...
+# Subtest: F3：confirm→request_retake 后当前有效资格撤销（非 human_verified、显示待重拍）；历史意见保留
+ok 3 - F3：confirm→request_retake 后当前有效资格撤销（非 human_verified、显示待重拍）；历史意见保留
+  ---
+  duration_ms: 8.2643
+  type: 'test'
+  ...
+# Subtest: F3b：superseded 证据不可再新 confirm（API 层拒绝）；新证据不继承旧确认
+ok 4 - F3b：superseded 证据不可再新 confirm（API 层拒绝）；新证据不继承旧确认
+  ---
+  duration_ms: 7.3162
+  type: 'test'
+  ...
+# Subtest: F4：同 requestId 换 inputs → REQUEST_MISMATCH；同输入原样重放稳定；结果绑定版本，规则/状态变化后 stale
+ok 5 - F4：同 requestId 换 inputs → REQUEST_MISMATCH；同输入原样重放稳定；结果绑定版本，规则/状态变化后 stale
+  ---
+  duration_ms: 8.0776
+  type: 'test'
+  ...
+# Subtest: F6：新证据 sha256 等于 renderFixtureSvg 实际字节摘要（不含旧 ID 掺入）；旧记录 digestOf=fixture_meta_legacy 可恢复
+ok 6 - F6：新证据 sha256 等于 renderFixtureSvg 实际字节摘要（不含旧 ID 掺入）；旧记录 digestOf=fixture_meta_legacy 可恢复
+  ---
+  duration_ms: 7.5527
+  type: 'test'
+  ...
+# Subtest: B：模型 provider adapter——超时/畸形/空结果/不存在证据/暂停中/过期版本/重复请求/部分失败 全部结构化失败，无伪成功
+ok 7 - B：模型 provider adapter——超时/畸形/空结果/不存在证据/暂停中/过期版本/重复请求/部分失败 全部结构化失败，无伪成功
+  ---
+  duration_ms: 57.5873
+  type: 'test'
+  ...
+# Subtest: R0：隔离数据目录（本套件首个测试内设置 env）
+ok 8 - R0：隔离数据目录（本套件首个测试内设置 env）
+  ---
+  duration_ms: 0.1297
+  type: 'test'
+  ...
+# Subtest: R1：创建会话 → 九名参与者、实控人自报现场且未核实、视频 not_configured；幂等重放；换载荷 REQUEST_MISMATCH
+ok 9 - R1：创建会话 → 九名参与者、实控人自报现场且未核实、视频 not_configured；幂等重放；换载荷 REQUEST_MISMATCH
+  ---
+  duration_ms: 2.6766
+  type: 'test'
+  ...
+# Subtest: R2：版本门——过期 expectedVersion → VERSION_CONFLICT + serverVersion
+ok 10 - R2：版本门——过期 expectedVersion → VERSION_CONFLICT + serverVersion
+  ---
+  duration_ms: 0.6128
+  type: 'test'
+  ...
+# Subtest: R3：证据附着——白名单外 fixture 拒绝；附着成功；重复 requestId 幂等不重复
+ok 11 - R3：证据附着——白名单外 fixture 拒绝；附着成功；重复 requestId 幂等不重复
+  ---
+  duration_ms: 1.9617
+  type: 'test'
+  ...
+# Subtest: R4：标注——悬空证据拒绝；非法圈选拒绝；版本不符拒绝；合法创建
+ok 12 - R4：标注——悬空证据拒绝；非法圈选拒绝；版本不符拒绝；合法创建
+  ---
+  duration_ms: 1.9589
+  type: 'test'
+  ...
+# Subtest: R5：模拟模型追问——显式 SIMULATION、确定性、每标注仅一轮；业务回复正常
+ok 13 - R5：模拟模型追问——显式 SIMULATION、确定性、每标注仅一轮；业务回复正常
+  ---
+  duration_ms: 3.5714
+  type: 'test'
+  ...
+# Subtest: R6：人工复核——确认→证据 human_verified（现算）；版本不符 409；pause_round 会话级暂停
+ok 14 - R6：人工复核——确认→证据 human_verified（现算）；版本不符 409；pause_round 会话级暂停
+  ---
+  duration_ms: 2.7891
+  type: 'test'
+  ...
+# Subtest: R7：跨会话拒绝——用另一会话 id 访问证据/标注 → NOT_FOUND（失败关闭）
+ok 15 - R7：跨会话拒绝——用另一会话 id 访问证据/标注 → NOT_FOUND（失败关闭）
+  ---
+  duration_ms: 3.0557
+  type: 'test'
+  ...
+# Subtest: R8：重拍取代——旧证据 expired、不可再标疑；取代后旧确认不自动继承
+ok 16 - R8：重拍取代——旧证据 expired、不可再标疑；取代后旧确认不自动继承
+  ---
+  duration_ms: 1.8922
+  type: 'test'
+  ...
+# Subtest: R9：出席确认——自报→确认+verified；live_only 不可确认
+ok 17 - R9：出席确认——自报→确认+verified；live_only 不可确认
+  ---
+  duration_ms: 2.0611
+  type: 'test'
+  ...
+# Subtest: R10：核算——默认 not_configured+输入清单；contract_fixture 负收益 blocked；正收益 ready_for_review 且不放行；非 test_fixture 来源拒绝；缺输入 missing_inputs
+ok 18 - R10：核算——默认 not_configured+输入清单；contract_fixture 负收益 blocked；正收益 ready_for_review 且不放行；非 test_fixture 来源拒绝；缺输入 missing_inputs
+  ---
+  duration_ms: 6.095
+  type: 'test'
+  ...
+# Subtest: R11：规则配置——四层全部 unconfigured，未知值不是 0
+ok 19 - R11：规则配置——四层全部 unconfigured，未知值不是 0
+  ---
+  duration_ms: 0.4972
+  type: 'test'
+  ...
+# Subtest: R1 parseStoredNoteRequest：合法记录原样恢复；破损/变形/缺字段失败关闭
+ok 20 - R1 parseStoredNoteRequest：合法记录原样恢复；破损/变形/缺字段失败关闭
+  ---
+  duration_ms: 0.7037
+  type: 'test'
+  ...
+# Subtest: R1 parseStoredMessageRequest：消息记录独立解析，与说明互不混用
+ok 21 - R1 parseStoredMessageRequest：消息记录独立解析，与说明互不混用
+  ---
+  duration_ms: 0.1443
+  type: 'test'
+  ...
+# Subtest: R1 重放体逐字来自恢复记录：requestId/expectedVersion/todoId/text 不被当前版本重建
+ok 22 - R1 重放体逐字来自恢复记录：requestId/expectedVersion/todoId/text 不被当前版本重建
+  ---
+  duration_ms: 0.1352
+  type: 'test'
+  ...
+# Subtest: R2 decideRepeatSubmit：同内容重放原请求；内容不同阻断；空通道放行新请求
+ok 23 - R2 decideRepeatSubmit：同内容重放原请求；内容不同阻断；空通道放行新请求
+  ---
+  duration_ms: 0.1297
+  type: 'test'
+  ...
+# Subtest: R2 恢复入口文案按类型区分；阻断提示明确且不泄露内部码
+ok 24 - R2 恢复入口文案按类型区分；阻断提示明确且不泄露内部码
+  ---
+  duration_ms: 0.2624
+  type: 'test'
+  ...
+# Subtest: R2 旧成功回执不能清掉新请求：所有权判定（requestId 不匹配即陈旧）
+ok 25 - R2 旧成功回执不能清掉新请求：所有权判定（requestId 不匹配即陈旧）
+  ---
+  duration_ms: 0.0995
+  type: 'test'
+  ...
+# Subtest: R3 shouldClearDraftAfterConfirmation：A→B→A 修订序列不得误清新草稿
+ok 26 - R3 shouldClearDraftAfterConfirmation：A→B→A 修订序列不得误清新草稿
+  ---
+  duration_ms: 0.0784
+  type: 'test'
+  ...
+# Subtest: R3 情景切换：旧情景记录失效，旧回执不得挂上新情景
+ok 27 - R3 情景切换：旧情景记录失效，旧回执不得挂上新情景
+  ---
+  duration_ms: 0.134
+  type: 'test'
+  ...
+# Subtest: 恢复受限提示：损坏与旧版哨兵各有可理解文案；确认冲突话术不宣称已落账
+ok 28 - 恢复受限提示：损坏与旧版哨兵各有可理解文案；确认冲突话术不宣称已落账
+  ---
+  duration_ms: 0.2728
+  type: 'test'
+  ...
+# Subtest: 接线：page.tsx 双通道恢复记录 + 发送前持久化 + 所有权检查 + 确认重放原载荷
+ok 29 - 接线：page.tsx 双通道恢复记录 + 发送前持久化 + 所有权检查 + 确认重放原载荷
+  ---
+  duration_ms: 0.3321
+  type: 'test'
+  ...
+# Subtest: 接线：恢复入口不依赖待办状态；草稿清空以修订标识判定
+ok 30 - 接线：恢复入口不依赖待办状态；草稿清空以修订标识判定
+  ---
+  duration_ms: 0.3605
+  type: 'test'
+  ...
+# Subtest: F1 shouldClearDraftForRequest：确认 A 只能按 A 自己的关联与未变修订清空
+ok 31 - F1 shouldClearDraftForRequest：确认 A 只能按 A 自己的关联与未变修订清空
+  ---
+  duration_ms: 0.0992
+  type: 'test'
+  ...
+# Subtest: F2 SubmitOutcome 携带请求身份：ok/conflict 必带 requestId，阻断结果不带
+ok 32 - F2 SubmitOutcome 携带请求身份：ok/conflict 必带 requestId，阻断结果不带
+  ---
+  duration_ms: 0.5041
+  type: 'test'
+  ...
+# Subtest: F2 冲突横幅以所有权为前提；陈旧结果静默返回
+ok 33 - F2 冲突横幅以所有权为前提；陈旧结果静默返回
+  ---
+  duration_ms: 0.334
+  type: 'test'
+  ...
+# Subtest: F2 情景上下文门比对页面当前情景（不是发送时快照）
+ok 34 - F2 情景上下文门比对页面当前情景（不是发送时快照）
+  ---
+  duration_ms: 0.2882
+  type: 'test'
+  ...
+# Subtest: 接线：两组件的草稿关联按 requestId 建立，clearDraft/clearInput 同步清理旧反馈
+ok 35 - 接线：两组件的草稿关联按 requestId 建立，clearDraft/clearInput 同步清理旧反馈
+  ---
+  duration_ms: 0.8064
+  type: 'test'
+  ...
+# Subtest: A1：消息版本过期（expectedVersion=0，服务端 v7）→ VERSION_CONFLICT，不追加不递增
+ok 36 - A1：消息版本过期（expectedVersion=0，服务端 v7）→ VERSION_CONFLICT，不追加不递增
+  ---
+  duration_ms: 2.0856
+  type: 'test'
+  ...
+# Subtest: A2：消息正确版本 → 接受（v8）；同 requestId 同载荷重放 → replayed 不重复记账
+ok 37 - A2：消息正确版本 → 接受（v8）；同 requestId 同载荷重放 → replayed 不重复记账
+  ---
+  duration_ms: 3.2633
+  type: 'test'
+  ...
+# Subtest: A3：同 requestId 换载荷 → REQUEST_MISMATCH（不得用新并发语义规避）
+ok 38 - A3：同 requestId 换载荷 → REQUEST_MISMATCH（不得用新并发语义规避）
+  ---
+  duration_ms: 2.3442
+  type: 'test'
+  ...
+# Subtest: B0：合法种子总览必须通过新校验（基线不回归）
+ok 39 - B0：合法种子总览必须通过新校验（基线不回归）
+  ---
+  duration_ms: 0.9995
+  type: 'test'
+  ...
+# Subtest: B：畸形总览必须 STORE_CORRUPT 且不静默重置——四个 null 域（Codex 探针原样本）
+ok 40 - B：畸形总览必须 STORE_CORRUPT 且不静默重置——四个 null 域（Codex 探针原样本）
+  ---
+  duration_ms: 0.6997
+  type: 'test'
+  ...
+# Subtest: B：畸形总览必须 STORE_CORRUPT 且不静默重置——域顺序错乱（信审在前）
+ok 41 - B：畸形总览必须 STORE_CORRUPT 且不静默重置——域顺序错乱（信审在前）
+  ---
+  duration_ms: 0.6206
+  type: 'test'
+  ...
+# Subtest: B：畸形总览必须 STORE_CORRUPT 且不静默重置——段状态非法（finished）
+ok 42 - B：畸形总览必须 STORE_CORRUPT 且不静默重置——段状态非法（finished）
+  ---
+  duration_ms: 0.5961
+  type: 'test'
+  ...
+# Subtest: B：畸形总览必须 STORE_CORRUPT 且不静默重置——段名缺失（空字符串）
+ok 43 - B：畸形总览必须 STORE_CORRUPT 且不静默重置——段名缺失（空字符串）
+  ---
+  duration_ms: 0.595
+  type: 'test'
+  ...
+# Subtest: B：畸形总览必须 STORE_CORRUPT 且不静默重置——判断状态非法（blue）
+ok 44 - B：畸形总览必须 STORE_CORRUPT 且不静默重置——判断状态非法（blue）
+  ---
+  duration_ms: 0.5576
+  type: 'test'
+  ...
+# Subtest: B：畸形总览必须 STORE_CORRUPT 且不静默重置——判断文本为空
+ok 45 - B：畸形总览必须 STORE_CORRUPT 且不静默重置——判断文本为空
+  ---
+  duration_ms: 0.5512
+  type: 'test'
+  ...
+# Subtest: B：畸形总览必须 STORE_CORRUPT 且不静默重置——todo 以数字伪装对象
+ok 46 - B：畸形总览必须 STORE_CORRUPT 且不静默重置——todo 以数字伪装对象
+  ---
+  duration_ms: 0.5445
+  type: 'test'
+  ...
+# Subtest: B：畸形总览必须 STORE_CORRUPT 且不静默重置——消息 fromKind 非法
+ok 47 - B：畸形总览必须 STORE_CORRUPT 且不静默重置——消息 fromKind 非法
+  ---
+  duration_ms: 0.6049
+  type: 'test'
+  ...
+# Subtest: B：畸形总览必须 STORE_CORRUPT 且不静默重置——消息时间为非法字符串
+ok 48 - B：畸形总览必须 STORE_CORRUPT 且不静默重置——消息时间为非法字符串
+  ---
+  duration_ms: 0.6879
+  type: 'test'
+  ...
+# Subtest: B：畸形总览必须 STORE_CORRUPT 且不静默重置——情景非法
+ok 49 - B：畸形总览必须 STORE_CORRUPT 且不静默重置——情景非法
+  ---
+  duration_ms: 0.5559
+  type: 'test'
+  ...
+# Subtest: B：畸形总览必须 STORE_CORRUPT 且不静默重置——updatedAt 不可解析
+ok 50 - B：畸形总览必须 STORE_CORRUPT 且不静默重置——updatedAt 不可解析
+  ---
+  duration_ms: 0.5422
+  type: 'test'
+  ...
+# Subtest: B：畸形幂等响应（response.overview 缺失 / replayed 非 boolean）→ STORE_CORRUPT
+ok 51 - B：畸形幂等响应（response.overview 缺失 / replayed 非 boolean）→ STORE_CORRUPT
+  ---
+  duration_ms: 1.8073
+  type: 'test'
+  ...
+# Subtest: C：轮询更新后以"完整原载荷"重试 → replayed 命中且不回退服务端真相
+ok 52 - C：轮询更新后以"完整原载荷"重试 → replayed 命中且不回退服务端真相
+  ---
+  duration_ms: 2.8907
+  type: 'test'
+  ...
+# Subtest: D：切换往返后旧批次 expectedVersion=7 必须 VERSION_CONFLICT，不得写入新批次
+ok 53 - D：切换往返后旧批次 expectedVersion=7 必须 VERSION_CONFLICT，不得写入新批次
+  ---
+  duration_ms: 3.852
+  type: 'test'
+  ...
+# Subtest: D：切换后的正确版本可正常写入；seed 三连切换版本持续单调
+ok 54 - D：切换后的正确版本可正常写入；seed 三连切换版本持续单调
+  ---
+  duration_ms: 5.3813
+  type: 'test'
+  ...
+# Subtest: E：种子与全部用户可见消息不得出现 Decision/Receipt 英文边界词
+ok 55 - E：种子与全部用户可见消息不得出现 Decision/Receipt 英文边界词
+  ---
+  duration_ms: 0.2945
+  type: 'test'
+  ...
+# Subtest: E：补充说明提交后总体说明同步反映"待复核"，且与黄灯一致
+ok 56 - E：补充说明提交后总体说明同步反映"待复核"，且与黄灯一致
+  ---
+  duration_ms: 1.827
+  type: 'test'
+  ...
+# Subtest: CP2-2 服务端行为：待复核后同 requestId 原载荷重放仍确认成功，不影响后续状态
+ok 57 - CP2-2 服务端行为：待复核后同 requestId 原载荷重放仍确认成功，不影响后续状态
+  ---
+  duration_ms: 2.7374
+  type: 'test'
+  ...
+# Subtest: CP2-3 服务端行为：资产待办提交后资产域转待复核（黄），信审不受影响
+ok 58 - CP2-3 服务端行为：资产待办提交后资产域转待复核（黄），信审不受影响
+  ---
+  duration_ms: 1.9614
+  type: 'test'
+  ...
+# Subtest: CP2-4 行为：NOT_FOUND 话术不含内部 todoId；错误映射白名单拒绝内部标识
+ok 59 - CP2-4 行为：NOT_FOUND 话术不含内部 todoId；错误映射白名单拒绝内部标识
+  ---
+  duration_ms: 1.538
+  type: 'test'
+  ...
+# Subtest: CP2-1 行为：shouldApplyOverview 全入口判定（GET/写入/重放共用）
+ok 60 - CP2-1 行为：shouldApplyOverview 全入口判定（GET/写入/重放共用）
+  ---
+  duration_ms: 0.0848
+  type: 'test'
+  ...
+# Subtest: CP2-5 服务端行为：切换后旧批次请求被拒（含消息），未确认请求不得污染新情景
+ok 61 - CP2-5 服务端行为：切换后旧批次请求被拒（含消息），未确认请求不得污染新情景
+  ---
+  duration_ms: 2.5823
+  type: 'test'
+  ...
+# Subtest: v5-preview 文件清单：新横条方案齐备、旧方案文件已移除、目录无多余文件
+ok 62 - v5-preview 文件清单：新横条方案齐备、旧方案文件已移除、目录无多余文件
+  ---
+  duration_ms: 0.8668
+  type: 'test'
+  ...
+# Subtest: 隔离：不引用 v4life / api/v4；浏览器存储只承载 rework-1 待确认命令恢复记录（非业务事实）
+ok 63 - 隔离：不引用 v4life / api/v4；浏览器存储只承载 rework-1 待确认命令恢复记录（非业务事实）
+  ---
+  duration_ms: 0.8496
+  type: 'test'
+  ...
+# Subtest: 隔离：lib/** 仅允许 type-only import，且仅限 lib/v5-preview/shared-types
+ok 64 - 隔离：lib/** 仅允许 type-only import，且仅限 lib/v5-preview/shared-types
+  ---
+  duration_ms: 0.9654
+  type: 'test'
+  ...
+# Subtest: 隔离：HTTP 只指向 /api/v5-preview/** 四个冻结端点
+ok 65 - 隔离：HTTP 只指向 /api/v5-preview/** 四个冻结端点
+  ---
+  duration_ms: 0.1831
+  type: 'test'
+  ...
+# Subtest: CSS palette：app/v5-preview 全部 hex 必须为灰度(r=g=b)或三个信号色
+ok 66 - CSS palette：app/v5-preview 全部 hex 必须为灰度(r=g=b)或三个信号色
+  ---
+  duration_ms: 0.41
+  type: 'test'
+  ...
+# Subtest: 颜色纪律：信号色只出现在状态灯类；分段条/表单反馈只允许灰度
+ok 67 - 颜色纪律：信号色只出现在状态灯类；分段条/表单反馈只允许灰度
+  ---
+  duration_ms: 0.3524
+  type: 'test'
+  ...
+# Subtest: 关键 UI 字符串：预览标注/演示控制/补充说明/项目沟通/冲突横幅
+ok 68 - 关键 UI 字符串：预览标注/演示控制/补充说明/项目沟通/冲突横幅
+  ---
+  duration_ms: 0.1131
+  type: 'test'
+  ...
+# Subtest: V6-CTRL E：用户界面去除英文边界词/内部错误码入口，仅保留一处中文边界提示
+ok 69 - V6-CTRL E：用户界面去除英文边界词/内部错误码入口，仅保留一处中文边界提示
+  ---
+  duration_ms: 0.3882
+  type: 'test'
+  ...
+# Subtest: V6-CTRL C：完整原请求重试与旧 overview 不回退（纯逻辑真实执行）
+ok 70 - V6-CTRL C：完整原请求重试与旧 overview 不回退（纯逻辑真实执行）
+  ---
+  duration_ms: 0.1722
+  type: 'test'
+  ...
+# Subtest: 无障碍：输入均有 label；面板可展开均有 aria-expanded；状态灯文字可读
+ok 71 - 无障碍：输入均有 label；面板可展开均有 aria-expanded；状态灯文字可读
+  ---
+  duration_ms: 0.1023
+  type: 'test'
+  ...
+# Subtest: 页面不提供正式业务按钮（批准/放款/正式批准不出现）
+ok 72 - 页面不提供正式业务按钮（批准/放款/正式批准不出现）
+  ---
+  duration_ms: 0.2982
+  type: 'test'
+  ...
+# Subtest: 请求构造契约：requestId / expectedVersion / actorRole:business / todoId
+ok 73 - 请求构造契约：requestId / expectedVersion / actorRole:business / todoId
+  ---
+  duration_ms: 0.1145
+  type: 'test'
+  ...
+# Subtest: 409 冲突决策（真实执行）：草稿保留、横幅携带 v旧→v新、要求重新 GET
+ok 74 - 409 冲突决策（真实执行）：草稿保留、横幅携带 v旧→v新、要求重新 GET
+  ---
+  duration_ms: 0.1349
+  type: 'test'
+  ...
+# Subtest: 请求体构造（真实执行）：actorRole 固定 business，字段完整
+ok 75 - 请求体构造（真实执行）：actorRole 固定 business，字段完整
+  ---
+  duration_ms: 0.3586
+  type: 'test'
+  ...
+# Subtest: 演示示意与展示派生（真实执行）：情景固定宽度、未知失败关闭、fromKind/段状态/时间
+ok 76 - 演示示意与展示派生（真实执行）：情景固定宽度、未知失败关闭、fromKind/段状态/时间
+  ---
+  duration_ms: 0.1804
+  type: 'test'
+  ...
+# Subtest: 抬头项目行去重（真实执行 + 源码接线）：编号不重复拼接
+ok 77 - 抬头项目行去重（真实执行 + 源码接线）：编号不重复拼接
+  ---
+  duration_ms: 0.1012
+  type: 'test'
+  ...
+# Subtest: 待办卡按状态收敛提交入口：待复核只显示说明、不再提供注定 404 的表单
+ok 78 - 待办卡按状态收敛提交入口：待复核只显示说明、不再提供注定 404 的表单
+  ---
+  duration_ms: 0.1822
+  type: 'test'
+  ...
+# Subtest: 409 保留草稿（源码断言）：清空收敛到唯一出口且经修订判定；冲突/错误分支保留
+ok 79 - 409 保留草稿（源码断言）：清空收敛到唯一出口且经修订判定；冲突/错误分支保留
+  ---
+  duration_ms: 0.1501
+  type: 'test'
+  ...
+# Subtest: P1-2 requestId 引用生命周期：仅 NETWORK 保留，确定性结果立即清空（真实执行 + 源码接线）
+ok 80 - P1-2 requestId 引用生命周期：仅 NETWORK 保留，确定性结果立即清空（真实执行 + 源码接线）
+  ---
+  duration_ms: 0.1208
+  type: 'test'
+  ...
+# Subtest: P2-5 死反馈 formOk 已删除；成功反馈由服务端状态（待复核说明）承载
+ok 81 - P2-5 死反馈 formOk 已删除；成功反馈由服务端状态（待复核说明）承载
+  ---
+  duration_ms: 0.1127
+  type: 'test'
+  ...
+# Subtest: P2-3 冲突内联提示 + P3-7 兜底文案退化为不带版本
+ok 82 - P2-3 冲突内联提示 + P3-7 兜底文案退化为不带版本
+  ---
+  duration_ms: 0.0991
+  type: 'test'
+  ...
+# Subtest: P2-4 / P3-4 / P3-6 / P3-8 打磨：NOT_FOUND 文案映射、消息列表可聚焦播报、region 语义、页面题消费 scenarioLabel
+ok 83 - P2-4 / P3-4 / P3-6 / P3-8 打磨：NOT_FOUND 文案映射、消息列表可聚焦播报、region 语义、页面题消费 scenarioLabel
+  ---
+  duration_ms: 0.262
+  type: 'test'
+  ...
+1..83
+# tests 83
+# suites 0
+# pass 83
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5186.5271

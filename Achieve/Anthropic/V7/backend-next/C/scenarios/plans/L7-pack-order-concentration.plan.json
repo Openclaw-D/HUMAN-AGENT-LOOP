@@ -1,0 +1,118 @@
+{
+  "planVersion": "1.0.0",
+  "contractRef": "A CONTRACT v0.1",
+  "templateRef": {
+    "templateId": "goal-template-commercial-leasing-v1",
+    "note": "A 落库后以实际 templateId 回填实例化"
+  },
+  "caseId": "L7-pack-order-concentration",
+  "steps": [
+    {
+      "step": "createProject",
+      "templateId": "goal-template-commercial-leasing-v1",
+      "name": "L7-pack-order-concentration"
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 1,
+      "evidenceId": "L7-ev-top1",
+      "version": 1,
+      "payload": {
+        "kind": "top1_customer_revenue",
+        "content": {
+          "indicator": "top1_customer_revenue",
+          "caliber": "近12个月对账单",
+          "grade": "source_supported",
+          "value": 620,
+          "note": "第一大客户年收入 620 万元（合成）。"
+        }
+      }
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 1,
+      "evidenceId": "L7-ev-total",
+      "version": 1,
+      "payload": {
+        "kind": "total_revenue",
+        "content": {
+          "indicator": "total_revenue",
+          "caliber": "近12个月对账单",
+          "grade": "source_supported",
+          "value": 1000,
+          "note": "全年收入 1000 万元（合成）。"
+        }
+      }
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 1,
+      "evidenceId": "L7-ev-peak",
+      "version": 1,
+      "payload": {
+        "kind": "monthly_operating_cash_flow",
+        "content": {
+          "indicator": "monthly_operating_cash_flow",
+          "caliber": "旺季单月·租金后",
+          "grade": "source_supported",
+          "value": 96,
+          "note": "旺季单月现金流（租金后）96 万元（合成）。"
+        }
+      }
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 1,
+      "evidenceId": "L7-ev-avg",
+      "version": 1,
+      "payload": {
+        "kind": "monthly_operating_cash_flow",
+        "content": {
+          "indicator": "monthly_operating_cash_flow",
+          "caliber": "年均月·租金后",
+          "grade": "source_supported",
+          "value": 73.2,
+          "note": "12个月年均现金流（租金后）73.2 万元（合成）。"
+        }
+      }
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 1,
+      "evidenceId": "L7-ev-debt",
+      "version": 1,
+      "payload": {
+        "kind": "monthly_debt_service",
+        "content": {
+          "indicator": "monthly_debt_service",
+          "caliber": "月度租金+利息",
+          "grade": "confirmed",
+          "value": 60,
+          "note": "报价月租金+利息 60 万元（合成）。"
+        }
+      }
+    },
+    {
+      "step": "createHumanRequest",
+      "turn": 1,
+      "payload": {
+        "kind": "clarification",
+        "question": "第一大客户合同期限与续约条款？",
+        "requestedRole": "business",
+        "requiredEvidenceKinds": []
+      }
+    },
+    {
+      "step": "createHumanRequest",
+      "turn": 1,
+      "payload": {
+        "kind": "clarification",
+        "question": "淡月现金流最低值能否补说明？",
+        "requestedRole": "business",
+        "requiredEvidenceKinds": []
+      }
+    }
+  ],
+  "stepCount": 8,
+  "divergences": []
+}

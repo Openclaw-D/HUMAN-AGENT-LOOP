@@ -1,0 +1,33 @@
+== render CASE-B + EVT-1（事件场景资料包，节选） ==
+# 合成案例B｜禾丰农装（资料有可澄清缺口）｜EVT-1（语音草稿→关键金额纠偏→旧依据下游失效（合成事件场景））
+> 全部企业、人物、设备、编号、金额均为匿名合成，不影射任何真实公司或个人；本案例是未来真实授权资料的替代测试材料，不声称用户已提供三套资料；案例不预设正式审批结果
+> 观察规则：未观察到不等于不存在：画面与材料范围之外的情况一律记为未知；缺口可澄清，澄清前不推定为已解决
+
+## S1 首次沟通纪要（2026-08-26）
+
+### B-EVT-01 v1 [event_log] 会话事件记录摘录（合成事件数据，非真实ASR接通）
+（采集：系统事件记录（合成） @ 2026-09-12 10:00–10:40，收到 2026-09-12 10:41）
+- [B-EVT-01-F1|recorded] 10:02 业务岗（手机端）在访谈中创建语音草稿补充说明；语音转写（ASR候选）将设备款写成'四千二百万'，草稿标记为未确认草稿，关键字段（金额）带未确认标记。（注：ASR候选转写，不是已核实事实）
+- [B-EVT-01-F2|recorded] 10:18 业务岗在手机上更正关键金额为'420万元'，产生用户更正事件；草稿升级为 v2，旧金额版本被替代（superseded）。
+- [B-EVT-01-F3|recorded] 10:19 系统按替代关系把绑定旧金额版本的标注（合成标注A）与人工复核记录（合成复核R）标记为已过期，等待重新确认；系统不做任何自动放行或自动改判。
+- [B-EVT-01-F4|recorded] 10:20 依赖旧金额的核算尝试被标记为过期（其口径本就未配置，保持'无法完成'状态）；下游失败关闭，不自动沿用旧数字。
+- [B-EVT-01-F5|recorded] 10:22 会议页事件流显示上述事件序列与待人判断项：更正后金额尚需人工与书面材料核对确认。
+
+== neg7/8/9 明确schema失败信息与真实退出码（out+err分开采集） ==
+--- neg7-null-candidate
+exit=2
+[schema/用法失败] 候选 schema 校验失败 neg7-null-candidate.json:
+  - 候选必须是JSON对象（得到 null）
+--- neg8-wrong-types
+exit=2
+[schema/用法失败] 候选 schema 校验失败 neg8-wrong-types.json:
+  - findings 必须为数组（得到 string）
+  - questions 必须为数组（得到 object）
+  - conclusions 必须为数组（得到 boolean）
+--- neg9-nested-malformed
+exit=2
+[schema/用法失败] 候选 schema 校验失败 neg9-nested-malformed.json:
+  - findings[0] 必须为非null对象
+  - findings[1].evidenceRefs[0] 的 evidenceRef.sourceId 必须为非空字符串
+  - findings[1].evidenceRefs[0] 的 evidenceRef.version 必须为>=1的整数（不接受字符串或其他类型）
+  - conclusions[0].statement 必须为字符串

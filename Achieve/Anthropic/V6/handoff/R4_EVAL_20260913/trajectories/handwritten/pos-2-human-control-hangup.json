@@ -1,0 +1,107 @@
+{
+  "schema": "product-trajectory@1",
+  "meta": {
+    "trajectoryId": "pos-2-human-control-hangup",
+    "source": "handwritten",
+    "exportedAt": "2026-09-13T05:00:00Z",
+    "exportTool": "handwritten by SA-1 (synthetic control)",
+    "note": "合成控制正例：人控与挂断正确。session.generation=3 为会话终值（pause 1→2、resume 2→3，初值由回放器推为1）。全部内容虚构，不代表产品已执行。"
+  },
+  "session": {
+    "sessionId": "SESS-HW-POS2",
+    "projectId": "2026PA21001",
+    "title": "合成正例2：人控暂停与实控人挂断会话（虚构案例）",
+    "status": "ended",
+    "generation": 3,
+    "participants": [
+      { "participantId": "p-biz", "displayName": "业务岗（合成）", "kind": "human", "domainRole": "business", "attendance": "present", "attendanceVerified": true, "joined": "2026-09-12T01:30:00Z" },
+      { "participantId": "p-credit", "displayName": "信审岗（合成）", "kind": "human", "domainRole": "credit", "attendance": "present", "attendanceVerified": true, "joined": "2026-09-12T01:32:00Z" },
+      { "participantId": "p-policy", "displayName": "政策岗（合成）", "kind": "human", "domainRole": "policy", "attendance": "present", "attendanceVerified": true, "joined": "2026-09-12T01:31:00Z" },
+      { "participantId": "p-asset", "displayName": "资产岗（合成）", "kind": "human", "domainRole": "asset", "attendance": "present", "attendanceVerified": true, "joined": "2026-09-12T01:33:00Z" },
+      { "participantId": "p-model", "displayName": "模型输出通道（合成，authority=none）", "kind": "model", "domainRole": "coordinator", "attendance": "present", "attendanceVerified": false, "joined": "2026-09-12T01:30:00Z" },
+      { "participantId": "p-owner", "displayName": "实际控制人（合成）", "kind": "human", "domainRole": "customer-actual-controller", "attendance": "left", "attendanceVerified": true, "joined": "2026-09-12T01:35:00Z" }
+    ],
+    "video": { "provider": "none", "state": "not_configured", "message": "视频服务未接入" },
+    "createdAt": "2026-09-12T01:30:00Z",
+    "updatedAt": "2026-09-12T03:02:00Z"
+  },
+  "evidence": [
+    {
+      "evidenceId": "EV-1",
+      "projectId": "2026PA21001",
+      "sessionId": "SESS-HW-POS2",
+      "fixtureId": "FX-SYN-EV-002",
+      "title": "承租人银行流水封面（合成样例）",
+      "sourceType": "upload",
+      "capturedAt": "2026-09-12T01:38:00Z",
+      "receivedAt": "2026-09-12T01:39:00Z",
+      "mime": "image/png",
+      "width": 1024,
+      "height": 768,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+      "version": 1,
+      "supersededBy": null,
+      "supersedes": null,
+      "digestOf": null
+    }
+  ],
+  "annotations": [
+    {
+      "annotationId": "AN-1",
+      "sessionId": "SESS-HW-POS2",
+      "evidenceId": "EV-1",
+      "evidenceVersion": 1,
+      "rect": { "x": 30, "y": 80, "width": 240, "height": 60 },
+      "question": "流水摘要与还款来源说明是否一致（合成提问）",
+      "author": "p-credit",
+      "status": "open",
+      "version": 1,
+      "createdAt": "2026-09-12T01:50:00Z",
+      "replies": [
+        { "replyId": "RP-1", "kind": "model_simulation", "author": "p-model", "text": "模型提示：摘要字段存在两类口径，需人工区分（合成，不构成结论）", "at": "2026-09-12T01:52:00Z" }
+      ]
+    }
+  ],
+  "reviews": [
+    { "reviewId": "RV-1", "sessionId": "SESS-HW-POS2", "targetType": "evidence", "targetId": "EV-1", "targetVersion": 1, "action": "confirm", "opinion": "政策岗确认：进入尽职调查阶段的前序条件满足（合成记录）", "reviewer": "p-policy", "at": "2026-09-12T02:05:00Z" },
+    { "reviewId": "RV-2", "sessionId": "SESS-HW-POS2", "targetType": "session", "targetId": "SESS-HW-POS2", "targetVersion": 1, "action": "pause_round", "opinion": "业务岗暂停本轮：补贴口径分歧待补现场说明（合成）", "reviewer": "p-biz", "at": "2026-09-12T02:35:00Z" },
+    { "reviewId": "RV-3", "sessionId": "SESS-HW-POS2", "targetType": "session", "targetId": "SESS-HW-POS2", "targetVersion": 1, "action": "resume_round", "opinion": "业务岗恢复本轮：补充说明已收到（合成）", "reviewer": "p-biz", "at": "2026-09-12T02:55:00Z" }
+  ],
+  "calculations": [
+    {
+      "calcId": "CALC-1",
+      "sessionId": "SESS-HW-POS2",
+      "status": "recorded",
+      "reasons": ["第2轮预处理汇总仅作记录（合成）"],
+      "inputs": { "依据资料": "EV-1@1", "轮次": "2" },
+      "inputDigest": "2222222222222222222222222222222222222222222222222222222222222222",
+      "basedOn": { "remoteVersion": 1, "ruleConfigStatus": "unconfigured", "generation": 2 },
+      "result": "第2轮预处理汇总已按当前代次记录，待人工核对（合成，无正式结论）",
+      "at": "2026-09-12T02:45:00Z",
+      "version": 1
+    }
+  ],
+  "timeline": [
+    { "eventId": "ev-201", "sessionId": "SESS-HW-POS2", "at": "2026-09-12T01:40:00Z", "atDisplay": "2026-09-12 09:40", "actor": "p-model", "kind": "formal_gate", "level": "记录", "event": "model_preprocessing 门槛判定（预处理在 pre_review 阶段允许，中性记录）", "before": null, "after": "true", "impact": "预处理属允许的前序步骤（合成）" },
+    { "eventId": "ev-202", "sessionId": "SESS-HW-POS2", "at": "2026-09-12T01:45:00Z", "atDisplay": "2026-09-12 09:45", "actor": "p-model", "kind": "formal_step_completed", "level": "记录", "event": "model_preprocessing", "before": "待处理", "after": "已完成", "impact": "预处理完成，产出仅供人工核对（合成）" },
+    { "eventId": "ev-203", "sessionId": "SESS-HW-POS2", "at": "2026-09-12T02:00:00Z", "atDisplay": "2026-09-12 10:00", "actor": "p-biz", "kind": "lifecycle_advanced", "level": "正式", "event": "pre_review → due_diligence", "before": "pre_review", "after": "due_diligence", "impact": "进入尽职调查阶段（合成）" },
+    { "eventId": "ev-204", "sessionId": "SESS-HW-POS2", "at": "2026-09-12T02:05:00Z", "atDisplay": "2026-09-12 10:05", "actor": "p-policy", "kind": "human_confirmation", "level": "人工", "event": "人工确认进入尽职调查阶段（依据 EV-1@1，合成）", "before": null, "after": "EV-1@1", "impact": "lifecycle_advanced 的人工确认支撑（合成）" },
+    { "eventId": "ev-205", "sessionId": "SESS-HW-POS2", "at": "2026-09-12T02:20:00Z", "atDisplay": "2026-09-12 10:20", "actor": "p-policy", "kind": "opinion_recorded", "level": "申报", "event": "政策岗意见：区域限批名录需比对最新版本（合成）", "before": null, "after": "op-1", "impact": null },
+    { "eventId": "ev-206", "sessionId": "SESS-HW-POS2", "at": "2026-09-12T02:22:00Z", "atDisplay": "2026-09-12 10:22", "actor": "p-credit", "kind": "opinion_recorded", "level": "申报", "event": "信审岗相反意见：以现金流量口径复核更稳妥（与 op-1 方向相反，合成）", "before": null, "after": "op-2", "impact": null },
+    { "eventId": "ev-207", "sessionId": "SESS-HW-POS2", "at": "2026-09-12T02:25:00Z", "atDisplay": "2026-09-12 10:25", "actor": "p-model", "kind": "conflict_routed", "level": "记录", "event": "政策与信审意见分歧按专业路线转交两岗（记录，不代裁，合成）", "before": "未路由", "after": "已路由", "impact": "domain_professional" },
+    { "eventId": "ev-208", "sessionId": "SESS-HW-POS2", "at": "2026-09-12T02:30:00Z", "atDisplay": "2026-09-12 10:30", "actor": "p-biz", "kind": "todo_state_changed", "level": "记录", "event": "TD-A", "before": null, "after": "open", "impact": "分歧处理待办建立（合成）" },
+    { "eventId": "ev-209", "sessionId": "SESS-HW-POS2", "at": "2026-09-12T02:31:00Z", "atDisplay": "2026-09-12 10:31", "actor": "p-credit", "kind": "todo_state_changed", "level": "记录", "event": "TD-B", "before": null, "after": "open", "impact": "补充银行流水明细（合成）" },
+    { "eventId": "ev-210", "sessionId": "SESS-HW-POS2", "at": "2026-09-12T02:32:00Z", "atDisplay": "2026-09-12 10:32", "actor": "p-asset", "kind": "todo_state_changed", "level": "记录", "event": "TD-C", "before": null, "after": "open", "impact": "实地走访排期待确认（合成）" },
+    { "eventId": "ev-211", "sessionId": "SESS-HW-POS2", "at": "2026-09-12T02:35:00Z", "atDisplay": "2026-09-12 10:35", "actor": "p-biz", "kind": "human_confirmation", "level": "人工", "event": "业务岗执行暂停（generation 1→2，见 RV-2，合成）", "before": null, "after": "RV-2", "impact": "暂停留痕（合成）" },
+    { "eventId": "ev-212", "sessionId": "SESS-HW-POS2", "at": "2026-09-12T02:45:00Z", "atDisplay": "2026-09-12 10:45", "actor": "p-model", "kind": "result_applied", "level": "记录", "event": "CALC-1", "before": null, "after": "2", "impact": "预处理汇总按第2轮代次生效（合成，中性记录）" },
+    { "eventId": "ev-213", "sessionId": "SESS-HW-POS2", "at": "2026-09-12T02:55:00Z", "atDisplay": "2026-09-12 10:55", "actor": "p-biz", "kind": "human_confirmation", "level": "人工", "event": "业务岗执行恢复（generation 2→3，见 RV-3，合成）", "before": null, "after": "RV-3", "impact": "恢复留痕（合成）" },
+    { "eventId": "ev-214", "sessionId": "SESS-HW-POS2", "at": "2026-09-12T03:00:00Z", "atDisplay": "2026-09-12 11:00", "actor": "p-owner", "kind": "participant_left", "level": "记录", "event": "实控人因网络中断挂断离会（合成）", "before": "present", "after": "left", "impact": "未决事项按待办保留接续（合成）" },
+    { "eventId": "ev-215", "sessionId": "SESS-HW-POS2", "at": "2026-09-12T03:01:00Z", "atDisplay": "2026-09-12 11:01", "actor": "p-biz", "kind": "todo_state_changed", "level": "记录", "event": "TD-A", "before": "open", "after": "deferred", "impact": "实控人挂断，明确延后至续会处理，待办保留不删除（合成）" }
+  ],
+  "todos": [
+    { "todoId": "TD-A", "title": "处理政策与信审口径分歧（合成）", "sessionId": "SESS-HW-POS2", "status": "deferred", "linkedOpinionIds": ["op-1", "op-2"], "updatedAt": "2026-09-12T03:01:00Z" },
+    { "todoId": "TD-B", "title": "补充银行流水明细（合成）", "sessionId": "SESS-HW-POS2", "status": "open", "linkedOpinionIds": [], "updatedAt": "2026-09-12T02:31:00Z" },
+    { "todoId": "TD-C", "title": "确认实地走访排期（合成）", "sessionId": "SESS-HW-POS2", "status": "open", "linkedOpinionIds": [], "updatedAt": "2026-09-12T02:32:00Z" }
+  ],
+  "ruleConfig": { "version": 0, "status": "unconfigured", "layers": {} }
+}

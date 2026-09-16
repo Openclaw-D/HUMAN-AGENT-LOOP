@@ -1,0 +1,167 @@
+{
+  "planVersion": "1.0.0",
+  "contractRef": "A CONTRACT v0.1",
+  "templateRef": {
+    "templateId": "goal-template-commercial-leasing-v1",
+    "note": "A 落库后以实际 templateId 回填实例化"
+  },
+  "caseId": "L4-casting-hidden-debt",
+  "steps": [
+    {
+      "step": "createProject",
+      "templateId": "goal-template-commercial-leasing-v1",
+      "name": "L4-casting-hidden-debt"
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 1,
+      "evidenceId": "L4-ev-report",
+      "version": 1,
+      "payload": {
+        "kind": "monthly_debt_service",
+        "content": {
+          "indicator": "monthly_debt_service",
+          "caliber": "月度租金+利息",
+          "grade": "source_supported",
+          "value": 40,
+          "note": "报表口径月偿付 40 万元（合成）。"
+        }
+      }
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 1,
+      "evidenceId": "L4-ev-flowcalc",
+      "version": 1,
+      "payload": {
+        "kind": "monthly_debt_service",
+        "content": {
+          "indicator": "monthly_debt_service",
+          "caliber": "月度租金+利息",
+          "grade": "inference",
+          "value": 50,
+          "note": "对公流水还款流出推算月均 50 万元（合成，推算级）。"
+        }
+      }
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 1,
+      "evidenceId": "L4-ev-cashflow",
+      "version": 1,
+      "payload": {
+        "kind": "monthly_operating_cash_flow",
+        "content": {
+          "indicator": "monthly_operating_cash_flow",
+          "caliber": "经营现金流·租金后（按报表偿付）",
+          "grade": "source_supported",
+          "value": 62,
+          "note": "月经营现金流（按报表偿付口径）62 万元（合成）。"
+        }
+      }
+    },
+    {
+      "step": "createHumanRequest",
+      "turn": 1,
+      "payload": {
+        "kind": "missing_evidence",
+        "question": "50万与40万差额的借款合同/担保文件？",
+        "requestedRole": "business",
+        "requiredEvidenceKinds": []
+      }
+    },
+    {
+      "step": "createHumanRequest",
+      "turn": 1,
+      "payload": {
+        "kind": "missing_evidence",
+        "question": "流水还款对手方清单？",
+        "requestedRole": "business",
+        "requiredEvidenceKinds": []
+      }
+    },
+    {
+      "step": "createHumanRequest",
+      "turn": 1,
+      "payload": {
+        "kind": "missing_evidence",
+        "question": "是否存在对外担保或过桥？",
+        "requestedRole": "business",
+        "requiredEvidenceKinds": []
+      }
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 2,
+      "evidenceId": "L4-ev-cashflow",
+      "version": 2,
+      "payload": {
+        "kind": "monthly_operating_cash_flow",
+        "content": {
+          "indicator": "monthly_operating_cash_flow",
+          "caliber": "经营现金流·租金后（含垫款回收调整）",
+          "grade": "source_supported",
+          "value": 54,
+          "note": "月经营现金流（含垫款回收调整）54 万元（合成）。"
+        }
+      }
+    },
+    {
+      "step": "supersedeEvidence",
+      "turn": 2,
+      "targetEvidenceId": "L4-ev-report",
+      "targetVersion": 1,
+      "successorLabel": "L4-ev-contract@2",
+      "payload": {
+        "content": {
+          "indicator": "monthly_debt_service",
+          "caliber": "月度租金+利息（含担保垫款）",
+          "grade": "confirmed",
+          "value": 50,
+          "note": "银行合同确认：月还款 50 万，其中担保代偿垫款 8 万、自有债务本息 42 万（合成）。"
+        }
+      }
+    },
+    {
+      "step": "supersedeEvidence",
+      "turn": 2,
+      "targetEvidenceId": "L4-ev-flowcalc",
+      "targetVersion": 1,
+      "successorLabel": "L4-ev-contract@2",
+      "payload": {
+        "content": {
+          "indicator": "monthly_debt_service",
+          "caliber": "月度租金+利息（含担保垫款）",
+          "grade": "confirmed",
+          "value": 50,
+          "note": "银行合同确认：月还款 50 万，其中担保代偿垫款 8 万、自有债务本息 42 万（合成）。"
+        }
+      }
+    },
+    {
+      "step": "createHumanRequest",
+      "turn": 2,
+      "payload": {
+        "kind": "clarification",
+        "question": "对外担保的主债务余额与期限？",
+        "requestedRole": "business",
+        "requiredEvidenceKinds": []
+      }
+    },
+    {
+      "step": "createHumanRequest",
+      "turn": 2,
+      "payload": {
+        "kind": "clarification",
+        "question": "代偿追偿的历史回收记录？",
+        "requestedRole": "business",
+        "requiredEvidenceKinds": []
+      }
+    }
+  ],
+  "stepCount": 12,
+  "divergences": [
+    "跨 id 取代投影：L4-ev-report@1 的失效由取代者 L4-ev-contract@2 内容执行 supersede（A 新实体）实现",
+    "跨 id 取代投影：L4-ev-flowcalc@1 的失效由取代者 L4-ev-contract@2 内容执行 supersede（A 新实体）实现"
+  ]
+}

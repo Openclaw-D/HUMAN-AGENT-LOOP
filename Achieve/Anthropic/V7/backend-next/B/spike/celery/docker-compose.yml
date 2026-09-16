@@ -1,0 +1,48 @@
+# Celery spike:redis(broker) + celery worker(Linux 容器)。
+# 与既有 Dify 容器/数据完全隔离:独立项目名 b-celery-spike,独立网络,宿主回环不对外。
+# 启动/停止/恢复:
+#   docker compose -f spike/celery/docker-compose.yml up -d redis worker
+#   docker compose -f spike/celery/docker-compose.yml run --rm producer
+#   docker compose -f spike/celery/docker-compose.yml down
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: b-celery-spike-redis
+    ports:
+      - "127.0.0.1:16379:6379"   # 仅回环,隔离
+    networks: [b-spike]
+
+  worker:
+    image: python:3.11-slim
+    container_name: b-celery-spike-worker
+    depends_on: [redis]
+    working_dir: /spike
+    volumes:
+      - ./:/spike
+    # 锁版安装(来源 PyPI);--pool=solo 简化 spike 的预取语义
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt &&
+             celery -A tasks worker --loglevel=info --pool=solo --concurrency=1"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # 指向宿主(Windows Docker Desktop 亦兼容)
+    networks: [b-spike]
+
+  producer:
+    image: python:3.11-slim
+    depends_on: [worker]
+    working_dir: /spike
+    volumes:
+      - ./:/spike
+    environment:
+      - EXECUTOR_URL=http://host.docker.internal:3799
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt &&
+             python producer.py b-goal-1 b-goal-2 b-goal-3"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks: [b-spike]
+    restart: "no"
+
+networks:
+  b-spike:
+    name: b-celery-spike-net

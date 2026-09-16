@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="300" viewBox="0 0 480 300">
+  <rect x="0" y="0" width="480" height="300" fill="#eceae4"/>
+  <rect x="0" y="0" width="480" height="34" fill="#8a6d1a"/>
+  <text x="240" y="23" font-family="sans-serif" font-size="15" fill="#ffffff" text-anchor="middle" font-weight="bold">合成测试证据·自制测试图形｜CASE-B B-VIS-02 v1 铭牌示意</text>
+  <rect x="110" y="70" width="260" height="180" fill="#d9d4c8" stroke="#5a5348" stroke-width="3"/>
+  <text x="240" y="105" font-family="sans-serif" font-size="15" fill="#222" text-anchor="middle" font-weight="bold">合成锻压装备厂乙</text>
+  <text x="240" y="140" font-family="sans-serif" font-size="14" fill="#222" text-anchor="middle">数控折弯机</text>
+  <text x="240" y="170" font-family="sans-serif" font-size="14" fill="#222" text-anchor="middle">出厂编号 DY-2022-0183</text>
+  <text x="240" y="200" font-family="sans-serif" font-size="14" fill="#222" text-anchor="middle">出厂年份 2022</text>
+  <text x="240" y="232" font-family="sans-serif" font-size="12" fill="#666" text-anchor="middle">旁挂编号牌：HF-PR-0311（与发票一致）</text>
+</svg>

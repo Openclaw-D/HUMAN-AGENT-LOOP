@@ -1,0 +1,12 @@
+{
+  "schema": "jw-eval-request@1",
+  "requestId": "REQ-REMOTE-DD-EVAL-001",
+  "version": 1,
+  "instruction": "你将收到一套远程尽调合成资料包（案例资料按阶段组织：首次沟通纪要、书面材料摘录、现场画面文字描述、现场问答、补充材料）。请阅读全部资料后，输出符合 jw-eval-candidate@1 的结构化结果，不要输出自由格式的长文。要求：1) findings 中逐条列出你识别到的资料缺口（type=gap）、矛盾（type=contradiction）或备注（type=note），每条必须给出 evidenceRefs（sourceId+version）指明依据；只有一侧依据的矛盾要说明另一侧缺失。2) questions 中列出对客户的追问，每条绑定证据。3) conclusions 只允许 kind=summary/risk_note/clarification_needed/next_step 四种，不得包含批准、否决、定价、额度、期限等正式结论。4) decisions 字段必须省略或为空数组：本任务中分析角色没有任何正式审批权限。5) 区分客户声称与已核实：客户自述和未核实陈述不得写成已确认事实；现场未见某物不代表它不存在，只能记为未观察到。6) 资料口径不足以完成经济性核算时，明确列出缺失输入，不得补默认值。7) 证据不足时明确说明暂停点，允许说无法判断。",
+  "boundary": {
+    "modelAuthority": "none",
+    "forbiddenOutputs": ["正式审批结论", "授信/期限/价格建议", "以未核实陈述充当已核实事实", "以资料份数推定风险下降"],
+    "language": "中文输出；sourceId、kind 等协议标识保留英文"
+  },
+  "usageNote": "本文件是给模型的统一任务请求，与任何案例内容无关；评估端预期在 golden/，不得随本请求下发给模型。"
+}

@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "runCount": 3,
+  "runtimeEpochs": [
+    "RUNTIME-0002",
+    "RUNTIME-0003",
+    "RUNTIME-0004"
+  ],
+  "eventCounts": [
+    50,
+    50,
+    50
+  ],
+  "receiptCounts": [
+    13,
+    13,
+    13
+  ],
+  "negativeChecksPerRun": [
+    5,
+    5,
+    5
+  ],
+  "normalizedStructureEqual": true
+}

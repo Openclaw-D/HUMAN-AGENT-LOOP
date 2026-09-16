@@ -1,0 +1,152 @@
+{
+  "schema": "jw-eval-candidate@1",
+  "candidateId": "independent-CASE-C",
+  "caseId": "CASE-C",
+  "variantId": null,
+  "inputPackVersion": "case-C v1",
+  "respondent": {
+    "kind": "hand_written_reference_answer",
+    "note": "人工撰写的独立参考答案，非任何真实模型输出；用于示范期望格式并作为评估工具的positive control"
+  },
+  "findings": [
+    {
+      "findingId": "F-C-01",
+      "type": "contradiction",
+      "statement": "HT-IM-2214铭牌出厂年份2019，与发票及清单记载2022-06购入矛盾；实控人'代理商压库两年'的解释属口头声称，未经核实，不能弥合该矛盾。",
+      "evidenceRefs": [
+        { "sourceId": "C-VIS-02", "version": 1 },
+        { "sourceId": "C-DOC-04", "version": 1 },
+        { "sourceId": "C-QA-01", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-C-02",
+      "type": "contradiction",
+      "statement": "铭牌出厂编号HT-IM-2216R与清单/发票编号HT-IM-2216不一致，且该铭牌字体与其余字段明显不同、似为后期重打；换牌原因无凭证。",
+      "evidenceRefs": [
+        { "sourceId": "C-VIS-03", "version": 1 },
+        { "sourceId": "C-DOC-03", "version": 1 },
+        { "sourceId": "C-DOC-04", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-C-03",
+      "type": "contradiction",
+      "statement": "实控人自述'2024年完成扩产、新增车间已投用'，但固定资产原值2023–2025三年基本持平（2,950→2,981→3,012万元），设备类扩产投入缺乏报表佐证；财务负责人称投入在装修与工装，亦无凭证。",
+      "evidenceRefs": [
+        { "sourceId": "C-FC-01", "version": 1 },
+        { "sourceId": "C-DOC-05", "version": 1 },
+        { "sourceId": "C-QA-01", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-C-04",
+      "type": "gap",
+      "statement": "HT-IM-2214购置链条未核实：需厂家出厂记录、代理协议或报关单证实真实出厂与两年仓储流转；当前仅有实控人口头解释。",
+      "evidenceRefs": [
+        { "sourceId": "C-QA-01", "version": 1 },
+        { "sourceId": "C-VIS-02", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-C-05",
+      "type": "gap",
+      "statement": "HT-IM-2216R铭牌重打/换牌说法无厂家维修工单或换牌凭证支持。",
+      "evidenceRefs": [
+        { "sourceId": "C-QA-01", "version": 1 },
+        { "sourceId": "C-VIS-03", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-C-06",
+      "type": "gap",
+      "statement": "维保记录不全：2214与2216R在授权服务商系统无保养记录，与2215的连续年度记录形成对照；无记录不等于未保养，但需补全。",
+      "evidenceRefs": [{ "sourceId": "C-SUP-01", "version": 1 }]
+    },
+    {
+      "findingId": "F-C-07",
+      "type": "gap",
+      "statement": "扩产对应的装修与工装投入无凭证，新增车间本轮未入镜；未入镜不等于不存在，需补充画面与投入凭证。",
+      "evidenceRefs": [
+        { "sourceId": "C-QA-01", "version": 1 },
+        { "sourceId": "C-VIS-01", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-C-08",
+      "type": "gap",
+      "statement": "经济性核算输入（资金成本、预期信用损失、运营成本、资本占用成本）未配置，核算无法完成；租金报价虽注明含税口径但留购价未定。",
+      "evidenceRefs": [{ "sourceId": "C-SUP-02", "version": 1 }]
+    },
+    {
+      "findingId": "F-C-09",
+      "type": "note",
+      "statement": "版本提示：审计报告以v2重报版为当前有效版本（2025年收入13,331万元）；v1保留意见版已被替代，引用2025年收入一律采用重报口径。",
+      "evidenceRefs": [
+        { "sourceId": "C-DOC-02", "version": 2, "refRole": "current" },
+        { "sourceId": "C-DOC-02", "version": 1, "refRole": "historical" }
+      ]
+    },
+    {
+      "findingId": "F-C-10",
+      "type": "note",
+      "statement": "观察范围说明：现场画面与文字描述仅反映取景范围；'未观察到'与'不存在'是两回事，翻新与否、新增车间状态在补充证据到达前均为未知。",
+      "evidenceRefs": []
+    }
+  ],
+  "questions": [
+    {
+      "questionId": "Q-C-01",
+      "text": "请提供HT-IM-2214的厂家出厂记录、报关单或代理商购销协议，以核实2019出厂至2022交付之间的真实流转？",
+      "evidenceRefs": [
+        { "sourceId": "C-VIS-02", "version": 1 },
+        { "sourceId": "C-QA-01", "version": 1 }
+      ]
+    },
+    {
+      "questionId": "Q-C-02",
+      "text": "请提供HT-IM-2216R换牌维修的厂家凭证（维修工单、更换控制柜记录、新铭牌出处）？",
+      "evidenceRefs": [
+        { "sourceId": "C-VIS-03", "version": 1 },
+        { "sourceId": "C-QA-01", "version": 1 }
+      ]
+    },
+    {
+      "questionId": "Q-C-03",
+      "text": "请补充新增车间实拍及装修、工装投入的合同或发票？",
+      "evidenceRefs": [{ "sourceId": "C-QA-01", "version": 1 }]
+    },
+    {
+      "questionId": "Q-C-04",
+      "text": "请补全HT-IM-2214与HT-IM-2216R的保养维保记录，或说明由谁维保？",
+      "evidenceRefs": [{ "sourceId": "C-SUP-01", "version": 1 }]
+    }
+  ],
+  "conclusions": [
+    {
+      "conclusionId": "C-C-01",
+      "kind": "summary",
+      "statement": "案例C存在三处未闭合矛盾（2214年份、2216R编号、扩产与原值），另有5项缺口；其中设备真实性类矛盾为关键项。"
+    },
+    {
+      "conclusionId": "C-C-02",
+      "kind": "risk_note",
+      "statement": "三处矛盾闭合前不推进任何倾向性判断；实控人解释均为声称，画面观察范围之外的状况未知。"
+    },
+    {
+      "conclusionId": "C-C-03",
+      "kind": "clarification_needed",
+      "statement": "需向厂家/服务商/客户分别取证：出厂与流转记录、换牌维修凭证、维保台账、装修工装投入。"
+    },
+    {
+      "conclusionId": "C-C-04",
+      "kind": "next_step",
+      "statement": "按Q-C-01至Q-C-04收集补证；补充材料到达后重新评估矛盾是否闭合，由人工复核决定是否恢复推进。"
+    }
+  ],
+  "unresolved": [
+    "HT-IM-2214是否为2019年出厂设备的真实流转：证据不足，暂停推进",
+    "HT-IM-2216R与HT-IM-2216是否同一设备：证据不足，待厂家换牌凭证",
+    "扩产投入的真实构成：装修/工装说法无凭证，待补充"
+  ]
+}

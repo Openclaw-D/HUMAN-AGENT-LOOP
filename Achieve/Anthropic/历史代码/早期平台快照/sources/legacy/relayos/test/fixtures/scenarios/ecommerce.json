@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": 1,
+  "scenarioKey": "ecommerce",
+  "synthetic": true,
+  "deidentified": true,
+  "title": "合成电商商品治理压力测试",
+  "nextAction": "由具名复核人完成合成写回 Gate 后关闭事项。",
+  "trigger": {
+    "type": "ecommerceTrigger",
+    "summary": "公开线索驱动的去标识化合成 Trigger：商品与流量线索核对、具名复核和受控写回。",
+    "boundary": "I"
+  },
+  "goal": {
+    "statement": "在不推断真实企业状态的前提下，验证商品与流量线索核对、具名复核和受控写回的共同闭环。",
+    "constraints": [
+      "仅使用公开线索驱动的去标识化合成数据。",
+      "模型建议没有权威；任何受保护写回必须经过具名 Human Gate。",
+      "不得把模拟阈值或结果解释为真实预算、流程或效果。"
+    ],
+    "boundary": "I"
+  },
+  "evidence": [
+    {
+      "id": "ecommerce-evidence-f",
+      "boundary": "F",
+      "summary": "F 事实：公开记录仅表明方向、职责或规模线索，不代表实时在招、预算、真实内部流程或已达成效果。",
+      "marketEvidenceIds": [
+        "BYTE-016",
+        "JD-008",
+        "JD-004",
+        "TENCENT-001",
+        "TENCENT-006"
+      ],
+      "dataClassification": "public"
+    },
+    {
+      "id": "ecommerce-evidence-i",
+      "boundary": "I",
+      "summary": "I 有证据推断：这是由公开线索驱动的去标识化合成流程推断，不代表任何企业实际运作。",
+      "marketEvidenceIds": [
+        "BYTE-016"
+      ],
+      "dataClassification": "public"
+    },
+    {
+      "id": "ecommerce-evidence-h",
+      "boundary": "H",
+      "summary": "H 待验证假设：真实流程、权限、阈值、预算与实际效果均待验证。",
+      "marketEvidenceIds": [],
+      "dataClassification": "public"
+    }
+  ],
+  "handoff": {
+    "packageSummary": "提交版本化目标、F/I/H 证据边界与合成下一步，供具名复核人判断。",
+    "clarificationReason": "先澄清证据边界与受保护动作，不改变当前 owner。",
+    "acceptReason": "具名复核人确认只接受合成测试责任，不确认任何真实企业事实。",
+    "nextAction": "打开 protectedUpdate Human Gate 并仅在通过后创建 ActionIntent。"
+  },
+  "gate": {
+    "policyId": "protectedUpdate",
+    "question": "是否允许 Mock connector 执行一次去标识化合成 update？",
+    "protectedActions": [
+      "action.authorize"
+    ],
+    "resolutionRationale": "仅批准本次合成测试动作；不构成真实业务授权。"
+  },
+  "action": {
+    "systemId": "core-system",
+    "operation": "update"
+  },
+  "exception": {
+    "type": "synthetic-upstream-ambiguity",
+    "severity": "high",
+    "reason": "合成 provider 或 connector 的失败、未知状态与证据歧义必须显式进入 Exception/Escalation。"
+  },
+  "metrics": [
+    {
+      "metricKey": "reviewedSkuCount",
+      "category": "business",
+      "value": 2,
+      "unit": "count",
+      "sourceSystem": "core-system"
+    },
+    {
+      "metricKey": "unauthorizedTrafficActionCount",
+      "category": "risk",
+      "value": 1,
+      "unit": "count",
+      "sourceSystem": "relayos"
+    },
+    {
+      "metricKey": "reviewCycleHours",
+      "category": "efficiency",
+      "value": 6,
+      "unit": "hours",
+      "sourceSystem": "relayos"
+    }
+  ],
+  "scenarioExtensions": {
+    "ecommerce": {
+      "merchantId": "synthetic-merchant-001",
+      "skuId": "synthetic-sku-001",
+      "policyVersion": "synthetic-policy-v1",
+      "appealId": "synthetic-appeal-001",
+      "trafficWindow": "synthetic-window-001"
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "schema": "product-trajectory@1",
+  "meta": {
+    "trajectoryId": "neg-wrong-session",
+    "source": "handwritten",
+    "exportedAt": "2026-09-13T05:00:00Z",
+    "exportTool": "handwritten by SA-1 (synthetic control)",
+    "note": "合成控制负例：标注 AN-1 的 sessionId=SESS-OTHER，与会话归属不一致（注入违规：R-SESS）。其余记录均归属本会话。其余部分照正例构造。全部内容虚构，不代表产品已执行。"
+  },
+  "session": {
+    "sessionId": "SESS-HW-NEG-SESS",
+    "projectId": "2026PA21001",
+    "title": "合成负例：标注归属错误会话（虚构案例）",
+    "status": "live",
+    "generation": 1,
+    "participants": [
+      { "participantId": "p-biz", "displayName": "业务岗（合成）", "kind": "human", "domainRole": "business", "attendance": "present", "attendanceVerified": true, "joined": "2026-09-12T01:30:00Z" },
+      { "participantId": "p-credit", "displayName": "信审岗（合成）", "kind": "human", "domainRole": "credit", "attendance": "present", "attendanceVerified": true, "joined": "2026-09-12T01:32:00Z" },
+      { "participantId": "p-policy", "displayName": "政策岗（合成）", "kind": "human", "domainRole": "policy", "attendance": "present", "attendanceVerified": true, "joined": "2026-09-12T01:31:00Z" },
+      { "participantId": "p-asset", "displayName": "资产岗（合成）", "kind": "human", "domainRole": "asset", "attendance": "present", "attendanceVerified": true, "joined": "2026-09-12T01:33:00Z" },
+      { "participantId": "p-model", "displayName": "模型输出通道（合成，authority=none）", "kind": "model", "domainRole": "coordinator", "attendance": "present", "attendanceVerified": false, "joined": "2026-09-12T01:30:00Z" },
+      { "participantId": "p-owner", "displayName": "实际控制人（合成）", "kind": "human", "domainRole": "customer-actual-controller", "attendance": "present", "attendanceVerified": true, "joined": "2026-09-12T01:35:00Z" }
+    ],
+    "video": { "provider": "none", "state": "not_configured", "message": "视频服务未接入" },
+    "createdAt": "2026-09-12T01:30:00Z",
+    "updatedAt": "2026-09-12T02:10:00Z"
+  },
+  "evidence": [
+    {
+      "evidenceId": "EV-1",
+      "projectId": "2026PA21001",
+      "sessionId": "SESS-HW-NEG-SESS",
+      "fixtureId": "FX-SYN-NEG-006",
+      "title": "营业执照照片（合成样例）",
+      "sourceType": "upload",
+      "capturedAt": "2026-09-12T01:36:00Z",
+      "receivedAt": "2026-09-12T01:37:00Z",
+      "mime": "image/png",
+      "width": 1024,
+      "height": 768,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000015",
+      "version": 1,
+      "supersededBy": null,
+      "supersedes": null,
+      "digestOf": null
+    }
+  ],
+  "annotations": [
+    {
+      "annotationId": "AN-1",
+      "sessionId": "SESS-OTHER",
+      "evidenceId": "EV-1",
+      "evidenceVersion": 1,
+      "rect": { "x": 35, "y": 65, "width": 190, "height": 42 },
+      "question": "统一社会信用代码与申请表是否一致（合成提问，归属了错误会话）",
+      "author": "p-biz",
+      "status": "open",
+      "version": 1,
+      "createdAt": "2026-09-12T01:52:00Z",
+      "replies": []
+    }
+  ],
+  "reviews": [
+    { "reviewId": "RV-1", "sessionId": "SESS-HW-NEG-SESS", "targetType": "evidence", "targetId": "EV-1", "targetVersion": 1, "action": "confirm", "opinion": "政策岗确认：进入尽职调查阶段的前序条件满足（合成记录）", "reviewer": "p-policy", "at": "2026-09-12T02:05:00Z" }
+  ],
+  "calculations": [],
+  "timeline": [
+    { "eventId": "ev-901", "sessionId": "SESS-HW-NEG-SESS", "at": "2026-09-12T01:40:00Z", "atDisplay": "2026-09-12 09:40", "actor": "p-model", "kind": "formal_gate", "level": "记录", "event": "model_preprocessing 门槛判定（预处理在 pre_review 阶段允许，中性记录）", "before": null, "after": "true", "impact": "预处理属允许的前序步骤（合成）" },
+    { "eventId": "ev-902", "sessionId": "SESS-HW-NEG-SESS", "at": "2026-09-12T02:00:00Z", "atDisplay": "2026-09-12 10:00", "actor": "p-biz", "kind": "lifecycle_advanced", "level": "正式", "event": "pre_review → due_diligence", "before": "pre_review", "after": "due_diligence", "impact": "进入尽职调查阶段（合成）" },
+    { "eventId": "ev-903", "sessionId": "SESS-HW-NEG-SESS", "at": "2026-09-12T02:05:00Z", "atDisplay": "2026-09-12 10:05", "actor": "p-policy", "kind": "human_confirmation", "level": "人工", "event": "人工确认进入尽职调查阶段（依据 EV-1@1，合成）", "before": null, "after": "EV-1@1", "impact": "lifecycle_advanced 的人工确认支撑（合成）" }
+  ],
+  "todos": [
+    { "todoId": "TD-1", "title": "核对信用代码（合成）", "sessionId": "SESS-HW-NEG-SESS", "status": "open", "linkedOpinionIds": [], "updatedAt": "2026-09-12T01:52:00Z" }
+  ],
+  "ruleConfig": { "version": 0, "status": "unconfigured", "layers": {} },
+  "expectedRule": "R-SESS"
+}

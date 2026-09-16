@@ -1,0 +1,212 @@
+{
+  "gate": "G3",
+  "status": "BLOCKED",
+  "baseUrl": "http://localhost:4311",
+  "viewport": {
+    "dpr": 1.5,
+    "height": 1080,
+    "title": "见微 · 融资租赁协同",
+    "url": "http://localhost:4311/",
+    "width": 1920
+  },
+  "rootMetrics": {
+    "h1Count": 1,
+    "h1Text": [
+      "见微 V3 融资租赁事项协作蓝图"
+    ],
+    "moduleLinks": [
+      {
+        "h": 230,
+        "label": "进入协同模块",
+        "w": 230,
+        "x": 845,
+        "y": 109
+      },
+      {
+        "h": 202,
+        "label": "进入商机模块",
+        "w": 202,
+        "x": 130,
+        "y": 329
+      },
+      {
+        "h": 202,
+        "label": "进入见微模块",
+        "w": 202,
+        "x": 859,
+        "y": 329
+      },
+      {
+        "h": 202,
+        "label": "进入价值模块",
+        "w": 202,
+        "x": 1589,
+        "y": 329
+      },
+      {
+        "h": 157,
+        "label": "进入政策模块",
+        "w": 157,
+        "x": 1112,
+        "y": 549
+      },
+      {
+        "h": 157,
+        "label": "进入信审模块",
+        "w": 157,
+        "x": 1112,
+        "y": 763
+      },
+      {
+        "h": 202,
+        "label": "进入业务模块",
+        "w": 202,
+        "x": 859,
+        "y": 638
+      },
+      {
+        "h": 157,
+        "label": "进入商务模块",
+        "w": 157,
+        "x": 651,
+        "y": 763
+      },
+      {
+        "h": 157,
+        "label": "进入资产模块",
+        "w": 157,
+        "x": 651,
+        "y": 549
+      }
+    ],
+    "oldRoleTabs": [],
+    "phases": true,
+    "progress": [
+      {
+        "html": "<span class=\"jw-progress\" role=\"img\" aria-label=\"四档粗粒度进度：第 3 档，顺时针从右上开始\"><i data-quarter=\"upper-right\" class=\"is-filled\"></i><i data-quarter=\"lower-right\" class=\"is-filled\"></i><i data-quarter=\"lower-left\" class=\"is-filled\"></i><i data-quarter=\"upper-left\" class=\"\"></i></span>",
+        "label": "四档粗粒度进度：第 3 档，顺时针从右上开始",
+        "style": null,
+        "tag": "SPAN"
+      },
+      {
+        "html": "<span class=\"jw-progress\" role=\"img\" aria-label=\"四档粗粒度进度：第 3 档，顺时针从右上开始\"><i data-quarter=\"upper-right\" class=\"is-filled\"></i><i data-quarter=\"lower-right\" class=\"is-filled\"></i><i data-quarter=\"lower-left\" class=\"is-filled\"></i><i data-quarter=\"upper-left\" class=\"\"></i></span>",
+        "label": "四档粗粒度进度：第 3 档，顺时针从右上开始",
+        "style": null,
+        "tag": "SPAN"
+      },
+      {
+        "html": "<span class=\"jw-progress\" role=\"img\" aria-label=\"四档粗粒度进度：第 3 档，顺时针从右上开始\"><i data-quarter=\"upper-right\" class=\"is-filled\"></i><i data-quarter=\"lower-right\" class=\"is-filled\"></i><i data-quarter=\"lower-left\" class=\"is-filled\"></i><i data-quarter=\"upper-left\" class=\"\"></i></span>",
+        "label": "四档粗粒度进度：第 3 档，顺时针从右上开始",
+        "style": null,
+        "tag": "SPAN"
+      },
+      {
+        "html": "<span class=\"jw-progress\" role=\"img\" aria-label=\"四档粗粒度进度：第 3 档，顺时针从右上开始\"><i data-quarter=\"upper-right\" class=\"is-filled\"></i><i data-quarter=\"lower-right\" class=\"is-filled\"></i><i data-quarter=\"lower-left\" class=\"is-filled\"></i><i data-quarter=\"upper-left\" class=\"\"></i></span>",
+        "label": "四档粗粒度进度：第 3 档，顺时针从右上开始",
+        "style": null,
+        "tag": "SPAN"
+      },
+      {
+        "html": "<span class=\"jw-progress\" role=\"img\" aria-label=\"四档粗粒度进度：第 2 档，顺时针从右上开始\"><i data-quarter=\"upper-right\" class=\"is-filled\"></i><i data-quarter=\"lower-right\" class=\"is-filled\"></i><i data-quarter=\"lower-left\" class=\"\"></i><i data-quarter=\"upper-left\" class=\"\"></i></span>",
+        "label": "四档粗粒度进度：第 2 档，顺时针从右上开始",
+        "style": null,
+        "tag": "SPAN"
+      },
+      {
+        "html": "<span class=\"jw-progress\" role=\"img\" aria-label=\"四档粗粒度进度：第 3 档，顺时针从右上开始\"><i data-quarter=\"upper-right\" class=\"is-filled\"></i><i data-quarter=\"lower-right\" class=\"is-filled\"></i><i data-quarter=\"lower-left\" class=\"is-filled\"></i><i data-quarter=\"upper-left\" class=\"\"></i></span>",
+        "label": "四档粗粒度进度：第 3 档，顺时针从右上开始",
+        "style": null,
+        "tag": "SPAN"
+      },
+      {
+        "html": "<span class=\"jw-progress\" role=\"img\" aria-label=\"四档粗粒度进度：第 3 档，顺时针从右上开始\"><i data-quarter=\"upper-right\" class=\"is-filled\"></i><i data-quarter=\"lower-right\" class=\"is-filled\"></i><i data-quarter=\"lower-left\" class=\"is-filled\"></i><i data-quarter=\"upper-left\" class=\"\"></i></span>",
+        "label": "四档粗粒度进度：第 3 档，顺时针从右上开始",
+        "style": null,
+        "tag": "SPAN"
+      },
+      {
+        "html": "<span class=\"jw-progress\" role=\"img\" aria-label=\"四档粗粒度进度：第 2 档，顺时针从右上开始\"><i data-quarter=\"upper-right\" class=\"is-filled\"></i><i data-quarter=\"lower-right\" class=\"is-filled\"></i><i data-quarter=\"lower-left\" class=\"\"></i><i data-quarter=\"upper-left\" class=\"\"></i></span>",
+        "label": "四档粗粒度进度：第 2 档，顺时针从右上开始",
+        "style": null,
+        "tag": "SPAN"
+      },
+      {
+        "html": "<span class=\"jw-progress\" role=\"img\" aria-label=\"四档粗粒度进度：第 3 档，顺时针从右上开始\"><i data-quarter=\"upper-right\" class=\"is-filled\"></i><i data-quarter=\"lower-right\" class=\"is-filled\"></i><i data-quarter=\"lower-left\" class=\"is-filled\"></i><i data-quarter=\"upper-left\" class=\"\"></i></span>",
+        "label": "四档粗粒度进度：第 3 档，顺时针从右上开始",
+        "style": null,
+        "tag": "SPAN"
+      }
+    ],
+    "projectPool": false,
+    "scroll": {
+      "h": 1080,
+      "w": 1920
+    },
+    "viewport": {
+      "h": 1080,
+      "w": 1920
+    },
+    "visiblePercentTokens": []
+  },
+  "console": [
+    {
+      "level": "error",
+      "message": "[vinext] RSC prefetch setup error: TypeError: te is not a function\n    at http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js:2:5167",
+      "timestamp": "2026-08-30T11:24:37.128Z",
+      "url": "http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js"
+    },
+    {
+      "level": "error",
+      "message": "[vinext] RSC prefetch setup error: TypeError: te is not a function\n    at http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js:2:5167",
+      "timestamp": "2026-08-30T11:24:37.128Z",
+      "url": "http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js"
+    },
+    {
+      "level": "error",
+      "message": "[vinext] RSC prefetch setup error: TypeError: te is not a function\n    at http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js:2:5167",
+      "timestamp": "2026-08-30T11:24:37.128Z",
+      "url": "http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js"
+    },
+    {
+      "level": "error",
+      "message": "[vinext] RSC prefetch setup error: TypeError: te is not a function\n    at http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js:2:5167",
+      "timestamp": "2026-08-30T11:24:37.128Z",
+      "url": "http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js"
+    },
+    {
+      "level": "error",
+      "message": "[vinext] RSC prefetch setup error: TypeError: te is not a function\n    at http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js:2:5167",
+      "timestamp": "2026-08-30T11:24:37.129Z",
+      "url": "http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js"
+    },
+    {
+      "level": "error",
+      "message": "[vinext] RSC prefetch setup error: TypeError: te is not a function\n    at http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js:2:5167",
+      "timestamp": "2026-08-30T11:24:37.129Z",
+      "url": "http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js"
+    },
+    {
+      "level": "error",
+      "message": "[vinext] RSC prefetch setup error: TypeError: te is not a function\n    at http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js:2:5167",
+      "timestamp": "2026-08-30T11:24:37.129Z",
+      "url": "http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js"
+    },
+    {
+      "level": "error",
+      "message": "[vinext] RSC prefetch setup error: TypeError: te is not a function\n    at http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js:2:5167",
+      "timestamp": "2026-08-30T11:24:37.129Z",
+      "url": "http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js"
+    },
+    {
+      "level": "error",
+      "message": "[vinext] RSC prefetch setup error: TypeError: te is not a function\n    at http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js:2:5167",
+      "timestamp": "2026-08-30T11:24:37.129Z",
+      "url": "http://localhost:4311/_next/static/chunks/link-DrsDsN7s.js"
+    }
+  ],
+  "expected": "console errors/warnings = []",
+  "actual": {
+    "count": 9,
+    "message": "[vinext] RSC prefetch setup error: TypeError: te is not a function"
+  }
+}

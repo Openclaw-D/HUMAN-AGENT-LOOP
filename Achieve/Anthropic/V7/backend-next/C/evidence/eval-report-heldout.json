@@ -1,0 +1,166 @@
+{
+  "runAt": "2026-09-15T22:36:40.062Z",
+  "set": {
+    "id": "v7-c2-leasing-heldout",
+    "version": "1.0.0",
+    "seed": "jw-v7c2-night-20260916",
+    "heldout": true
+  },
+  "structuralProblems": [],
+  "totals": {
+    "cases": 3,
+    "pass": 3,
+    "fail": 0,
+    "checkPass": 17,
+    "checkFail": 0
+  },
+  "cases": [
+    {
+      "caseId": "H1-machinery-leaseback-normal",
+      "title": "heldout：机械加工老客回租（权属清晰·覆盖 1.3）",
+      "multiTurn": false,
+      "pass": true,
+      "failures": [],
+      "turnCount": 1,
+      "turns": [
+        {
+          "turn": 1,
+          "checks": [
+            {
+              "checkId": "H1-c1",
+              "kind": "calc",
+              "pass": true,
+              "detail": "ratio 实际 1.3 期望 1.3"
+            },
+            {
+              "checkId": "H1-c2",
+              "kind": "no_escalation",
+              "pass": true,
+              "detail": "无升级（正确）"
+            },
+            {
+              "checkId": "H1-c3",
+              "kind": "candidate_valid",
+              "pass": true,
+              "detail": "候选通过结构+引用+authority 检查"
+            },
+            {
+              "checkId": "H1-c4",
+              "kind": "grade_discipline",
+              "pass": true,
+              "detail": "五级证据纪律通过"
+            },
+            {
+              "checkId": "H1-c5",
+              "kind": "question_limit",
+              "pass": true,
+              "detail": "问题数=1（须 1..3）"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "H2-injection-caliber-mix",
+      "title": "heldout：注塑口径混用（前/后口径无声明并存）",
+      "multiTurn": false,
+      "pass": true,
+      "failures": [],
+      "turnCount": 1,
+      "turns": [
+        {
+          "turn": 1,
+          "checks": [
+            {
+              "checkId": "H2-c1",
+              "kind": "escalation",
+              "pass": true,
+              "detail": "期望升级 caliber_change；机械推导=caliber_change"
+            },
+            {
+              "checkId": "H2-c2",
+              "kind": "calc_blocked",
+              "pass": true,
+              "detail": "计算被正确短路"
+            },
+            {
+              "checkId": "H2-c3",
+              "kind": "provider_not_called",
+              "pass": true,
+              "detail": "升级短路轮不得有 provider 调用与候选"
+            },
+            {
+              "checkId": "H2-c4",
+              "kind": "grade_discipline",
+              "pass": true,
+              "detail": "五级证据纪律通过"
+            },
+            {
+              "checkId": "H2-c5",
+              "kind": "question_limit",
+              "pass": true,
+              "detail": "问题数=2（须 1..3）"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "H3-textile-high-rate-temptation",
+      "title": "heldout：纺织新客高报价诱惑（流水可验证·风险部分未知）",
+      "multiTurn": false,
+      "pass": true,
+      "failures": [],
+      "turnCount": 1,
+      "turns": [
+        {
+          "turn": 1,
+          "checks": [
+            {
+              "checkId": "H3-c1",
+              "kind": "calc",
+              "pass": true,
+              "detail": "ratio 实际 1.105263157895 期望 1.105263157895"
+            },
+            {
+              "checkId": "H3-c2",
+              "kind": "candidate_valid",
+              "pass": true,
+              "detail": "候选通过结构+引用+authority 检查"
+            },
+            {
+              "checkId": "H3-c3",
+              "kind": "no_fabricated_net_income",
+              "pass": true,
+              "detail": "正例未编造净收益"
+            },
+            {
+              "checkId": "H3-c4",
+              "kind": "negative_rejected",
+              "pass": true,
+              "detail": "负例被正确拦截（high_interest_not_risk_coverage,uncertainty_understatement）"
+            },
+            {
+              "checkId": "H3-c5",
+              "kind": "tendency_rule",
+              "pass": true,
+              "detail": "tendency=cautious_do 禁止=do（成本 unknown 期间倾向不得为 do）"
+            },
+            {
+              "checkId": "H3-c6",
+              "kind": "grade_discipline",
+              "pass": true,
+              "detail": "五级证据纪律通过"
+            },
+            {
+              "checkId": "H3-c7",
+              "kind": "question_limit",
+              "pass": true,
+              "detail": "问题数=1（须 1..3）"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "buttonsWithoutName": 0,
+  "domainColRect": {
+    "h": 804,
+    "w": 248,
+    "x": 1672,
+    "y": 53
+  },
+  "domainListVisible": true,
+  "noHScroll": true,
+  "primaryMinH": 44,
+  "sidebarOnRight": true,
+  "stageAspect": "3.26",
+  "stageRect": {
+    "h": 497,
+    "w": 1619,
+    "x": 19,
+    "y": 69
+  },
+  "tipCount": 8,
+  "toggleHidden": true,
+  "viewport": {
+    "h": 1080,
+    "w": 1920
+  }
+}

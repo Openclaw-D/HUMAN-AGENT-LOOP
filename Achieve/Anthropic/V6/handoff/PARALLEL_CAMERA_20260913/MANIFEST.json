@@ -1,0 +1,51 @@
+{
+  "batch": "PARALLEL_CAMERA_20260913-B1",
+  "task": "并行任务B：设备拍照控制器与本地预览",
+  "taskEntry": "V6/ZCODE_PARALLEL_B_CAMERA_20260913.md",
+  "createdUtc": "2026-09-13",
+  "status": "READY_FOR_REVIEW",
+  "interfaceVersion": "0.1.0-candidate",
+  "writer": "ZCode（并行B独立任务；本目录唯一writer）",
+  "dependencies": "无第三方依赖（Node/浏览器原生API）",
+  "repro": {
+    "test": "node --test test/camera-controller.test.mjs test/thumbnail.test.mjs",
+    "syntaxCheck": "node --check src/camera-controller.mjs src/thumbnail.mjs src/standalone/standalone-main.mjs tools/serve-standalone.mjs test/camera-controller.test.mjs test/thumbnail.test.mjs",
+    "serveSample": "node tools/serve-standalone.mjs  (127.0.0.1动态端口, Ctrl+C停止, 自有进程自清理)",
+    "environment": "node v22.23.1 / win32 10.0.26200 x64 / Git Bash"
+  },
+  "files": [
+    { "path": "src/camera-controller.mjs", "sha256": "fbfac814db7bd469530985ec3465dfe05f519b6635b4f8293278aff29a511351", "bytes": 18284, "role": "核心控制器（可注入依赖，九态生命周期）" },
+    { "path": "src/thumbnail.mjs", "sha256": "8722747b7a560f73dcf72120accd658310419590df6ea0ad07fdad786c6f042e", "bytes": 3572, "role": "浏览器默认解码/缩略图（Node优雅降级）" },
+    { "path": "src/standalone/index.html", "sha256": "93de52d24821da9ad4b1995f6fa0277dda9810fe9f18dfdfc4b064a7c0b4d0bd", "bytes": 1982, "role": "极小standalone样例页（测试壳）" },
+    { "path": "src/standalone/standalone-main.mjs", "sha256": "7e858364dc62e5e6f3a4226b5c4d11a9b32ffc22342299fb2f748eb211e95053", "bytes": 4413, "role": "样例页装配（默认不请求设备，pagehide自动dispose）" },
+    { "path": "test/camera-controller.test.mjs", "sha256": "87feb7809a423b35ed8c945e9d2034da7b14767d89d735d784f925e620240858", "bytes": 22388, "role": "控制器测试（假设备轨道+合成Blob，28项）" },
+    { "path": "test/thumbnail.test.mjs", "sha256": "0f4ab47fdd66982c2aa4732311fdcc0413ff1f10bf6ad2810eb52cb283af6b44", "bytes": 1220, "role": "缩略图Node降级测试（4项）" },
+    { "path": "tools/serve-standalone.mjs", "sha256": "d1296d2da6d49e90d992a4a8d1f24823245a7134db44759697d2d49208b4eb49", "bytes": 1784, "role": "本地静态样例服务（只读、动态端口）" },
+    { "path": "INTEGRATION.md", "sha256": "d3699c8cf0c790d9c97b012125ade0c4d9191eeefdd4b08f201580de5d35d836", "bytes": 9108, "role": "冻结接口契约（输入/输出/错误/所有权与清理）" },
+    { "path": "CAMERA_READINESS.md", "sha256": "41c6d5fbdef3a0d5519be311e7d1eef3a519beb662b099f5bb7df52f9a1efd89", "bytes": 6206, "role": "能力就绪度：官方文档对照+待测矩阵（全部NOT TESTED）+真机清单" },
+    { "path": "REPORT.md", "sha256": "39f3ef91690cf1992485232db3369e9cfe8fa79db84ea054154b314d3b2f72dd", "bytes": 5403, "role": "执行报告与验证证据索引" },
+    { "path": "STATUS.md", "sha256": "b79653565eb9f2aa3502f11c6fe49155ef0b1ddedf85e09be51f506cedbd0e2f", "bytes": 2170, "role": "批次状态（READY_FOR_REVIEW，冻结声明）" },
+    { "path": "evidence/node-test-run-1.log", "sha256": "86fcdc5880bb2ee65a5d92aa875d2435958aca9720850b42f553b51f90af0999", "bytes": 8649, "role": "测试原始日志（第一轮，含3失败及报错原文）" },
+    { "path": "evidence/node-test-run-2.log", "sha256": "6aff7075a3e523fe2a9091ed5e44486d28699b827361b51e3a28b2a25a837867", "bytes": 6735, "role": "测试原始日志（最终轮，32/32通过）" },
+    { "path": "evidence/syntax-check.log", "sha256": "af89e64a2a7e3bfb246f801d169f9f76a4a490b7e375d7281d415199c636420d", "bytes": 284, "role": "最终文件语法检查日志" },
+    { "path": "evidence/serve-smoke.log", "sha256": "10ee9d7f106737882e68a3c6441d0994820d4876d5e0043629a17d0dda49eaca", "bytes": 577, "role": "样例服务冒烟（端口/PID/清理确认）" },
+    { "path": "evidence/serve-process.out", "sha256": "4e1fe27acd9bf5667ac8214b22ea9ce51bc633ad41b16f3846d5b2d7ef7521e4", "bytes": 151, "role": "服务进程原始输出（端口55005）" }
+  ],
+  "verification": {
+    "tests": "32/32通过（evidence/node-test-run-2.log）",
+    "syntax": "6/6通过（evidence/syntax-check.log）",
+    "serveSmoke": "页面与模块200且MIME正确；目录穿越被拒；PID 104660已kill，无残留监听（evidence/serve-smoke.log）",
+    "realDevice": "NOT TESTED（真机/真实浏览器矩阵见CAMERA_READINESS.md §4，未实测不填通过）"
+  },
+  "knownLimitations": [
+    "真机与真实浏览器全路径未实测；ImageCapture预期仅Chromium系可用（iOS Safari/Firefox预期自动回退选图），该预期未验证",
+    "浏览器内真实画布缩略图路径未在真实浏览器验证（Node层已验证优雅降级）",
+    "不解析EXIF：capturedAt恒为null，拍摄时间未知，不用本机时间冒充",
+    "缩略图输出JPEG：有损、丢alpha",
+    "provenance恒为unverified：capture提示与文件来源均不证明现场拍摄/设备真实性",
+    "本轮不上传、不持久保存、不发模型、无RTC/3D；预览刷新即失；上传/入库属下一独立Gate"
+  ],
+  "secrets": "none",
+  "modelCalls": 0,
+  "cleanup": "无残留进程/监听/临时文件；样例服务进程已关闭并验证"
+}

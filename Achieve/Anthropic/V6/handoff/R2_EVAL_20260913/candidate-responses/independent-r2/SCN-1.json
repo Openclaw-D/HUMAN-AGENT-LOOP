@@ -1,0 +1,100 @@
+{
+  "schema": "jw-eval-candidate@2",
+  "candidateId": "independent-r2-SCN-1",
+  "caseId": "CASE-C",
+  "variantId": "SCN-1",
+  "inputPackVersion": "case-C v1 + SCN-1（加入C-EVT-11）",
+  "respondent": {
+    "kind": "hand_written_reference_answer",
+    "note": "人工撰写的独立参考答案，非任何真实模型输出；作为R2评估工具的positive control"
+  },
+  "findings": [
+    {
+      "findingId": "F-S1-01",
+      "type": "gap",
+      "statement": "事件记录C-EVT-11显示：09:50一段关于模具订单的表述在会议事件流中归属栏为'本会话转写文本'，说话人身份栏为'未绑定个人'，未关联任何个人身份。会话归属与说话人归属是两个维度：仅绑定到会话的文本不能推定为任何特定人发言，也不得归给任何具体个人。",
+      "evidenceRefs": [
+        { "sourceId": "C-EVT-11", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-S1-02",
+      "type": "gap",
+      "statement": "10:05一条转写段被自动归属到实控人庚先生名下；10:06参会人进出事件显示庚先生已于10:02离会，该时段镜头内发言的是现场其他人员。转写归属与离会事件冲突，系统已发出归属存疑提示，待人工重新核定；核定前该段不得记为庚先生的发言。",
+      "evidenceRefs": [
+        { "sourceId": "C-EVT-11", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-S1-03",
+      "type": "gap",
+      "statement": "10:15实控人庚先生在画面中自述（声称）'设备只有本人在管'。该'仅本人管理'说法按声称处理：画面仅能证明拍摄当时其在场，非拍摄时段的设备接触情况无记录，不得把当时观察外推为持续性结论。",
+      "evidenceRefs": [
+        { "sourceId": "C-EVT-11", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-S1-04",
+      "type": "note",
+      "statement": "能力边界：本场景只提供合成事件记录数据，不代表真实会议或媒体采集已接入；上述判断只适用于事件记录本身。",
+      "evidenceRefs": [
+        { "sourceId": "C-EVT-11", "version": 1 }
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "questionId": "Q-S1-01",
+      "text": "请结合参会人进出事件核实10:05转写段的真实归属：确认该时段实际发言的现场人员身份，人工核定后更新归属记录，并排查同期是否还有同类错误归属。",
+      "evidenceRefs": [
+        { "sourceId": "C-EVT-11", "version": 1 }
+      ]
+    },
+    {
+      "questionId": "Q-S1-02",
+      "text": "请客户就非拍摄时段的设备管理安排作出补充说明：由谁管理、如何交接与监督，用以补足'仅本人在管'这一声称在非拍摄时段的证据空缺。",
+      "evidenceRefs": [
+        { "sourceId": "C-EVT-11", "version": 1 }
+      ]
+    }
+  ],
+  "conclusions": [
+    {
+      "conclusionId": "C-S1-01",
+      "kind": "summary",
+      "statement": "事件记录要求三层分离：会话归属（本会话转写文本、说话人未绑定个人）不等于说话人身份；转写归属与参会人离会事件冲突时属归属存疑、待人工核定；'仅本人在管'是声称，观察范围仅限拍摄当时在场。",
+      "evidenceRefs": [
+        { "sourceId": "C-EVT-11", "version": 1 }
+      ]
+    },
+    {
+      "conclusionId": "C-S1-02",
+      "kind": "risk_note",
+      "statement": "错误归属若不经进出事件交叉核对发现，会把现场其他人员的表述记到实控人名下，误导责任归属与后续问询对象；'仅本人控制'若外推为持续性结论，等于用单时点画面替代对设备管理链条的核查。",
+      "evidenceRefs": [
+        { "sourceId": "C-EVT-11", "version": 1 }
+      ]
+    },
+    {
+      "conclusionId": "C-S1-03",
+      "kind": "clarification_needed",
+      "statement": "10:05段实际说话人身份未定，归属存疑待人工核定；非拍摄时段设备管理无记录，'设备只有本人在管'的声称在记录内既不能证实也不能证伪。",
+      "evidenceRefs": [
+        { "sourceId": "C-EVT-11", "version": 1 }
+      ]
+    },
+    {
+      "conclusionId": "C-S1-04",
+      "kind": "next_step",
+      "statement": "下一步：以参会人进出事件核实并人工核定10:05段归属；请客户补充非拍摄时段的设备管理安排说明；两项完成前，相关段落维持未绑定个人与声称口径，不作个人化使用。",
+      "evidenceRefs": [
+        { "sourceId": "C-EVT-11", "version": 1 }
+      ]
+    }
+  ],
+  "decisions": [],
+  "unresolved": [
+    "10:05转写段的实际说话人身份待人工核定，事件记录未给出核定结果。",
+    "非拍摄时段的设备接触与管理安排无记录，待客户补充说明后才能评估'仅本人在管'的声称。"
+  ]
+}

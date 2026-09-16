@@ -1,0 +1,62 @@
+{
+  "chipRowRect": {
+    "h": 52,
+    "y": 246
+  },
+  "chips": [
+    {
+      "h": 23,
+      "text": "政策 · 已确认"
+    },
+    {
+      "h": 23,
+      "text": "信审 · 已通过"
+    },
+    {
+      "h": 23,
+      "text": "商务 · 已结清"
+    },
+    {
+      "h": 23,
+      "text": "资产 · 已结清"
+    }
+  ],
+  "detailsStates": [
+    {
+      "label": "证据（5）与本地拍照",
+      "open": false
+    },
+    {
+      "label": "项目沟通与历史问答（2 问）",
+      "open": false
+    },
+    {
+      "label": "演示设置（技术详情 · 合成演示",
+      "open": false
+    }
+  ],
+  "dockRect": {
+    "h": 304,
+    "y": 364
+  },
+  "headerTitle": "请实控人现场说明设备现状与清单差异",
+  "noHScroll": true,
+  "questionDuplicated": {
+    "inHeader": true,
+    "inSection": true
+  },
+  "scrollRect": {
+    "h": 311,
+    "y": 53
+  },
+  "sectionCount": 3,
+  "sectionLabels": [
+    "当前关键问题",
+    "四域提示（业务侧·合成演示）",
+    "视频与连接状态"
+  ],
+  "viewport": {
+    "h": 667,
+    "w": 375
+  }
+}

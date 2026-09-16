@@ -1,0 +1,12 @@
+{
+  "Status": "PASS",
+  "CheckedAt": "2026-09-05T12:21:41.2242553+08:00",
+  "Documents": 36,
+  "LocalLinks": 119,
+  "BackupHashesVerified": 31,
+  "RelocatedTargetsPresent": 17,
+  "DependencyArchiveSHA256Verified": true,
+  "CodeTestsRunThisCheckpoint": false,
+  "Scope": "Current navigation links and backup integrity; history documents and legacy runtime links are not rewritten or asserted runnable.",
+  "Failures": []
+}

@@ -1,0 +1,50 @@
+{
+  "version": "b-contract-stub@0.2.0(对齐A CONTRACT v1.0)",
+  "state": {
+    "goals": [
+      [
+        "g1",
+        {
+          "version": 1,
+          "status": "leased",
+          "stale": false,
+          "executorKind": "agent",
+          "projectId": "p1",
+          "goalKey": "model_review",
+          "inputVersions": {
+            "factVersion": "1",
+            "ruleVersion": "1"
+          },
+          "goalId": "g1",
+          "role": "credit",
+          "fencingSeq": 1,
+          "assignment": {
+            "goalId": "g1",
+            "assignee": "c1",
+            "fencingToken": 1,
+            "leaseUntil": "2026-09-15T20:19:46.089Z",
+            "claimedAt": "2026-09-15T20:18:46.089Z"
+          }
+        }
+      ]
+    ],
+    "receipts": [],
+    "humanRequests": [],
+    "events": [
+      {
+        "seq": 1,
+        "eventId": "ev-1",
+        "eventType": "GOAL_READY",
+        "goalId": "g1",
+        "at": "2026-09-15T20:18:46.086Z"
+      },
+      {
+        "seq": 2,
+        "eventId": "ev-2",
+        "eventType": "GOAL_CLAIMED",
+        "goalId": "g1",
+        "at": "2026-09-15T20:18:46.089Z"
+      }
+    ]
+  }
+}

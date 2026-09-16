@@ -1,0 +1,44 @@
+{
+  "suite": "g6_evidence_invalidation",
+  "results": [
+    {
+      "id": "D-19",
+      "title": "证据取代定向失效：命中链路失效/decided跳过/无关目标逐字节不变/历史保留",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 52,
+      "failures": [],
+      "ms": 1775,
+      "note": ""
+    },
+    {
+      "id": "D-19b",
+      "title": "v1.2非accepted命中路径：ready目标取代→invalidated→立即重绑回ready；下游随上游再验收恢复ready",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 31,
+      "failures": [],
+      "ms": 261,
+      "note": ""
+    },
+    {
+      "id": "D-20",
+      "title": "非法操作边界：取代不存在证据404；重复取代409 EVIDENCE_SUPERSEDED；未知goalKey拒绝",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 27,
+      "failures": [],
+      "ms": 278,
+      "note": ""
+    }
+  ],
+  "pass": 3,
+  "fail": 0,
+  "skip": 0,
+  "blocked": 0,
+  "totalAssertions": 110,
+  "runnerError": null
+}

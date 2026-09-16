@@ -1,0 +1,3734 @@
+
+> sites-project@4.0.0-dev.0 test
+> node --experimental-strip-types --test --experimental-test-isolation=none ./test/*.test.mjs
+
+(node:21548) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# Subtest: case POST routes parse JSON with the bounded reader
+ok 1 - case POST routes parse JSON with the bounded reader
+  ---
+  duration_ms: 519.7682
+  type: 'test'
+  ...
+# Subtest: bounded reader failures map to stable HTTP statuses
+ok 2 - bounded reader failures map to stable HTTP statuses
+  ---
+  duration_ms: 4.0004
+  type: 'test'
+  ...
+# Subtest: decision flow lock maps to conflict without exposing internals
+ok 3 - decision flow lock maps to conflict without exposing internals
+  ---
+  duration_ms: 4.4196
+  type: 'test'
+  ...
+# Subtest: accepts all six event types with monotonic sequences and ISO timestamps
+ok 4 - accepts all six event types with monotonic sequences and ISO timestamps
+  ---
+  duration_ms: 6.3427
+  type: 'test'
+  ...
+# Subtest: enforces actor shape and authority constraints
+ok 5 - enforces actor shape and authority constraints
+  ---
+  duration_ms: 4.9171
+  type: 'test'
+  ...
+# Subtest: follows the frozen validation priority
+ok 6 - follows the frozen validation priority
+  ---
+  duration_ms: 3.8556
+  type: 'test'
+  ...
+# Subtest: same event id and normalized payload replays, while conflicts and failures do not advance
+ok 7 - same event id and normalized payload replays, while conflicts and failures do not advance
+  ---
+  duration_ms: 3.7974
+  type: 'test'
+  ...
+# Subtest: normalizes whitespace and key order for exact event replay
+ok 8 - normalizes whitespace and key order for exact event replay
+  ---
+  duration_ms: 3.1611
+  type: 'test'
+  ...
+# Subtest: every canonical identity field conflicts independently without advancing sequence
+ok 9 - every canonical identity field conflicts independently without advancing sequence
+  ---
+  duration_ms: 6.1006
+  type: 'test'
+  ...
+# Subtest: conflicts compare contextVersion presence and failures do not advance sequence
+ok 10 - conflicts compare contextVersion presence and failures do not advance sequence
+  ---
+  duration_ms: 4.2516
+  type: 'test'
+  ...
+# Subtest: paginates in ascending sequence order with exact boundaries
+ok 11 - paginates in ascending sequence order with exact boundaries
+  ---
+  duration_ms: 4.5122
+  type: 'test'
+  ...
+# Subtest: clones inputs and outputs and resists nested mutation
+ok 12 - clones inputs and outputs and resists nested mutation
+  ---
+  duration_ms: 5.2931
+  type: 'test'
+  ...
+# Subtest: rejects prototype-dangerous keys, symbols, accessors, and non-string values
+ok 13 - rejects prototype-dangerous keys, symbols, accessors, and non-string values
+  ---
+  duration_ms: 4.7419
+  type: 'test'
+  ...
+# Subtest: reset clears events and restarts sequences from one
+ok 14 - reset clears events and restarts sequences from one
+  ---
+  duration_ms: 2.9015
+  type: 'test'
+  ...
+# Subtest: public operations are synchronous and non-Promise
+ok 15 - public operations are synchronous and non-Promise
+  ---
+  duration_ms: 3.967
+  type: 'test'
+  ...
+# Subtest: backend authority integration
+    # Subtest: bootstrap creates one authority event and four same-version candidate runs
+    ok 1 - bootstrap creates one authority event and four same-version candidate runs
+      ---
+      duration_ms: 9.0316
+      type: 'test'
+      ...
+    # Subtest: canonical evidence appends one evidence event and one four-run batch; replay is exact
+    ok 2 - canonical evidence appends one evidence event and one four-run batch; replay is exact
+      ---
+      duration_ms: 4.2283
+      type: 'test'
+      ...
+    # Subtest: fact confirmation advances context once and appends fact plus stage-run events once
+    ok 3 - fact confirmation advances context once and appends fact plus stage-run events once
+      ---
+      duration_ms: 8.8434
+      type: 'test'
+      ...
+    # Subtest: human decision records one named authority event and replay does not duplicate it
+    ok 4 - human decision records one named authority event and replay does not duplicate it
+      ---
+      duration_ms: 3.4406
+      type: 'test'
+      ...
+    # Subtest: candidate chat records received and answer events with zero model authority
+    ok 5 - candidate chat records received and answer events with zero model authority
+      ---
+      duration_ms: 4.2353
+      type: 'test'
+      ...
+    1..5
+ok 16 - backend authority integration
+  ---
+  duration_ms: 30.2244
+  type: 'suite'
+  ...
+# Subtest: body timeout cancels and releases when cleanup never settles
+ok 17 - body timeout cancels and releases when cleanup never settles
+  ---
+  duration_ms: 58.3299
+  type: 'test'
+  ...
+# Subtest: body timeout cancels and releases when cleanup rejects
+ok 18 - body timeout cancels and releases when cleanup rejects
+  ---
+  duration_ms: 26.1479
+  type: 'test'
+  ...
+# Subtest: a rejected reader read propagates and releases its lock
+ok 19 - a rejected reader read propagates and releases its lock
+  ---
+  duration_ms: 4.2249
+  type: 'test'
+  ...
+# Subtest: completed/active flows accept gates while locked flows fail closed
+ok 20 - completed/active flows accept gates while locked flows fail closed
+  ---
+  duration_ms: 6.7484
+  type: 'test'
+  ...
+# Subtest: recordHumanDecision is synchronous and returns a non-Promise receipt
+ok 21 - recordHumanDecision is synchronous and returns a non-Promise receipt
+  ---
+  duration_ms: 2.8707
+  type: 'test'
+  ...
+# Subtest: validation priority is fixed: CASE_NOT_FOUND → … → IDEMPOTENCY_CONFLICT
+ok 22 - validation priority is fixed: CASE_NOT_FOUND → … → IDEMPOTENCY_CONFLICT
+  ---
+  duration_ms: 3.408
+  type: 'test'
+  ...
+# Subtest: success receipt has exact fields, correct gateId, status and sequence
+ok 23 - success receipt has exact fields, correct gateId, status and sequence
+  ---
+  duration_ms: 2.6958
+  type: 'test'
+  ...
+# Subtest: actor/requestId are trimmed and whitespace-only fails closed
+ok 24 - actor/requestId are trimmed and whitespace-only fails closed
+  ---
+  duration_ms: 3.8501
+  type: 'test'
+  ...
+# Subtest: same requestId + same normalized payload replays identically; receiptId does not advance
+ok 25 - same requestId + same normalized payload replays identically; receiptId does not advance
+  ---
+  duration_ms: 2.7096
+  type: 'test'
+  ...
+# Subtest: same requestId + different payload throws IDEMPOTENCY_CONFLICT and does not write
+ok 26 - same requestId + different payload throws IDEMPOTENCY_CONFLICT and does not write
+  ---
+  duration_ms: 3.0612
+  type: 'test'
+  ...
+# Subtest: 8 synchronous repeated calls share one receipt and do not duplicate
+ok 27 - 8 synchronous repeated calls share one receipt and do not duplicate
+  ---
+  duration_ms: 2.9121
+  type: 'test'
+  ...
+# Subtest: latest and list reads return deep clones; mutation does not pollute runtime
+ok 28 - latest and list reads return deep clones; mutation does not pollute runtime
+  ---
+  duration_ms: 6.5336
+  type: 'test'
+  ...
+# Subtest: resetDecisionRuntime fully clears receipts and restarts sequence from decision-0001
+ok 29 - resetDecisionRuntime fully clears receipts and restarts sequence from decision-0001
+  ---
+  duration_ms: 2.9397
+  type: 'test'
+  ...
+# Subtest: failures do not write receipts and do not advance the sequence
+ok 30 - failures do not write receipts and do not advance the sequence
+  ---
+  duration_ms: 3.4917
+  type: 'test'
+  ...
+# Subtest: one canonical evidence advances one context version shared by all four stage runs
+ok 31 - one canonical evidence advances one context version shared by all four stage runs
+  ---
+  duration_ms: 6.5638
+  type: 'test'
+  ...
+# Subtest: same request replays exactly and x8 calls create only one event/version
+ok 32 - same request replays exactly and x8 calls create only one event/version
+  ---
+  duration_ms: 21.4766
+  type: 'test'
+  ...
+# Subtest: same request with different payload conflicts and does not advance version
+ok 33 - same request with different payload conflicts and does not advance version
+  ---
+  duration_ms: 5.5704
+  type: 'test'
+  ...
+# Subtest: invalid and injected failure paths fail closed without version advancement
+ok 34 - invalid and injected failure paths fail closed without version advancement
+  ---
+  duration_ms: 5.3226
+  type: 'test'
+  ...
+# Subtest: projection reads independent deep clones of evidence receipt and stage runs
+ok 35 - projection reads independent deep clones of evidence receipt and stage runs
+  ---
+  duration_ms: 5.0745
+  type: 'test'
+  ...
+# Subtest: same evidence id with a new request replays the canonical receipt without advancing context
+ok 36 - same evidence id with a new request replays the canonical receipt without advancing context
+  ---
+  duration_ms: 7.7342
+  type: 'test'
+  ...
+# Subtest: same evidence id with different payload conflicts without advancing context
+ok 37 - same evidence id with different payload conflicts without advancing context
+  ---
+  duration_ms: 5.5225
+  type: 'test'
+  ...
+# Subtest: evidence runtime ignores own prototype-shaped keys and polluting fields
+ok 38 - evidence runtime ignores own prototype-shaped keys and polluting fields
+  ---
+  duration_ms: 6.9065
+  type: 'test'
+  ...
+# Subtest: canonical idempotency survives a long in-process sequence without reaccepting an old evidence id
+ok 39 - canonical idempotency survives a long in-process sequence without reaccepting an old evidence id
+  ---
+  duration_ms: 32.3496
+  type: 'test'
+  ...
+# Subtest: workspace keys are exactly the frozen twenty flow ids and old policy ids are absent
+ok 40 - workspace keys are exactly the frozen twenty flow ids and old policy ids are absent
+  ---
+  duration_ms: 2.9293
+  type: 'test'
+  ...
+# Subtest: twenty workspace ids, business types and visualization types are unique
+ok 41 - twenty workspace ids, business types and visualization types are unique
+  ---
+  duration_ms: 2.8342
+  type: 'test'
+  ...
+# Subtest: every workspace is complete and graph references are valid
+ok 42 - every workspace is complete and graph references are valid
+  ---
+  duration_ms: 4.0936
+  type: 'test'
+  ...
+# Subtest: five pages in each stage do not share matrix or graph objects or serialized content
+ok 43 - five pages in each stage do not share matrix or graph objects or serialized content
+  ---
+  duration_ms: 3.7897
+  type: 'test'
+  ...
+# Subtest: policy five pages implement the new material, rules, quant, prereview and update semantics
+ok 44 - policy five pages implement the new material, rules, quant, prereview and update semantics
+  ---
+  duration_ms: 3.0073
+  type: 'test'
+  ...
+# Subtest: matrix data is business-specific and not a five-flow mapping
+ok 45 - matrix data is business-specific and not a five-flow mapping
+  ---
+  duration_ms: 3.7166
+  type: 'test'
+  ...
+# Subtest: serialized workspaces contain no credential or live/production claim
+ok 46 - serialized workspaces contain no credential or live/production claim
+  ---
+  duration_ms: 3.9948
+  type: 'test'
+  ...
+# Subtest: builds runtime rows from actual local projection and focuses the highest-risk task
+ok 47 - builds runtime rows from actual local projection and focuses the highest-risk task
+  ---
+  duration_ms: 4.0579
+  type: 'test'
+  ...
+# Subtest: uses 未提供 instead of inventing missing owner and status labels
+ok 48 - uses 未提供 instead of inventing missing owner and status labels
+  ---
+  duration_ms: 4.5504
+  type: 'test'
+  ...
+# Subtest: keeps scenario values explicit and does not fabricate actual or forecast SLA
+ok 49 - keeps scenario values explicit and does not fabricate actual or forecast SLA
+  ---
+  duration_ms: 8.1058
+  type: 'test'
+  ...
+# Subtest: returns unknown exception counts when no complete runtime work-item set exists
+ok 50 - returns unknown exception counts when no complete runtime work-item set exists
+  ---
+  duration_ms: 5.0435
+  type: 'test'
+  ...
+# Subtest: locks the compact shell, 80/20 split, three modes and four-chart ceiling
+ok 51 - locks the compact shell, 80/20 split, three modes and four-chart ceiling
+  ---
+  duration_ms: 6.6015
+  type: 'test'
+  ...
+(node:21548) ExperimentalWarning: The MockTimers API is an experimental feature and might change at any time
+# Subtest: V4 management root is a multi-case organization overview
+ok 52 - V4 management root is a multi-case organization overview
+  ---
+  duration_ms: 15.4332
+  type: 'test'
+  ...
+# Subtest: declared oversized response fails closed, is cancelled, and unlocks its body
+ok 53 - declared oversized response fails closed, is cancelled, and unlocks its body
+  ---
+  duration_ms: 4.7985
+  type: 'test'
+  ...
+# Subtest: chunked oversized response fails closed, is cancelled, and unlocks its body
+ok 54 - chunked oversized response fails closed, is cancelled, and unlocks its body
+  ---
+  duration_ms: 3.5176
+  type: 'test'
+  ...
+# Subtest: normal response below the cap still returns trimmed answer and model
+ok 55 - normal response below the cap still returns trimmed answer and model
+  ---
+  duration_ms: 4.447
+  type: 'test'
+  ...
+# Subtest: missing product credential fails closed without attempting network
+ok 56 - missing product credential fails closed without attempting network
+  ---
+  duration_ms: 2.8963
+  type: 'test'
+  ...
+# Subtest: live adapter trims non-empty answer and does not retain caller context mutation
+ok 57 - live adapter trims non-empty answer and does not retain caller context mutation
+  ---
+  duration_ms: 2.9798
+  type: 'test'
+  ...
+# Subtest: non-2xx responses map 504 to timeout and other statuses to failure
+ok 58 - non-2xx responses map 504 to timeout and other statuses to failure
+  ---
+  duration_ms: 3.1013
+  type: 'test'
+  ...
+# Subtest: invalid JSON and empty content fail closed as adapter failures
+ok 59 - invalid JSON and empty content fail closed as adapter failures
+  ---
+  duration_ms: 4.1422
+  type: 'test'
+  ...
+# Subtest: timeout aborts the request and clears its timer
+ok 60 - timeout aborts the request and clears its timer
+  ---
+  duration_ms: 4.2398
+  type: 'test'
+  ...
+# Subtest: a completed request clears its timeout resource
+ok 61 - a completed request clears its timeout resource
+  ---
+  duration_ms: 3.2845
+  type: 'test'
+  ...
+# Subtest: the deadline remains active while a successful response body is still pending
+ok 62 - the deadline remains active while a successful response body is still pending
+  ---
+  duration_ms: 2.9477
+  type: 'test'
+  ...
+# Subtest: messages route keeps object/string validation and stable fail-closed mapping
+ok 63 - messages route keeps object/string validation and stable fail-closed mapping
+  ---
+  duration_ms: 4.8676
+  type: 'test'
+  ...
+# Subtest: bounded JSON reader rejects declared and chunked oversized bodies before parsing
+ok 64 - bounded JSON reader rejects declared and chunked oversized bodies before parsing
+  ---
+  duration_ms: 3.7219
+  type: 'test'
+  ...
+# Subtest: oversized chunked body rejects promptly when cancellation never settles and releases its lock
+ok 65 - oversized chunked body rejects promptly when cancellation never settles and releases its lock
+  ---
+  duration_ms: 2.8389
+  type: 'test'
+  ...
+# Subtest: declared oversized body cancellation cannot delay or replace the 413 error
+ok 66 - declared oversized body cancellation cannot delay or replace the 413 error
+  ---
+  duration_ms: 3.1637
+  type: 'test'
+  ...
+# Subtest: bounded JSON reader preserves normal JSON, invalid JSON and 600-character messages
+ok 67 - bounded JSON reader preserves normal JSON, invalid JSON and 600-character messages
+  ---
+  duration_ms: 4.1332
+  type: 'test'
+  ...
+# Subtest: derives the frozen four-stage and twenty-flow projection
+ok 68 - derives the frozen four-stage and twenty-flow projection
+  ---
+  duration_ms: 14.2931
+  type: 'test'
+  ...
+# Subtest: derives completed, optional active, and locked states for all counts
+ok 69 - derives completed, optional active, and locked states for all counts
+  ---
+  duration_ms: 3.6898
+  type: 'test'
+  ...
+# Subtest: keeps every stage preparation aligned with its own count and current flow
+ok 70 - keeps every stage preparation aligned with its own count and current flow
+  ---
+  duration_ms: 2.8103
+  type: 'test'
+  ...
+# Subtest: returns synchronously and does not return a Promise
+ok 71 - returns synchronously and does not return a Promise
+  ---
+  duration_ms: 2.3287
+  type: 'test'
+  ...
+# Subtest: rejects invalid context versions before stage-count and count validation
+ok 72 - rejects invalid context versions before stage-count and count validation
+  ---
+  duration_ms: 3.147
+  type: 'test'
+  ...
+# Subtest: reads contextVersion exactly once before validation and normalization
+ok 73 - reads contextVersion exactly once before validation and normalization
+  ---
+  duration_ms: 2.827
+  type: 'test'
+  ...
+# Subtest: rejects invalid stage-count containers and exact stage keys before count validation
+ok 74 - rejects invalid stage-count containers and exact stage keys before count validation
+  ---
+  duration_ms: 3.235
+  type: 'test'
+  ...
+# Subtest: rejects invalid completed step counts after valid stage keys are confirmed
+ok 75 - rejects invalid completed step counts after valid stage keys are confirmed
+  ---
+  duration_ms: 3.8193
+  type: 'test'
+  ...
+# Subtest: isolates every call and exported constants from nested mutation
+ok 76 - isolates every call and exported constants from nested mutation
+  ---
+  duration_ms: 3.2133
+  type: 'test'
+  ...
+# Subtest: projection exposes shared context, strict preparation order and separate authority
+ok 77 - projection exposes shared context, strict preparation order and separate authority
+  ---
+  duration_ms: 5.4093
+  type: 'test'
+  ...
+# Subtest: server Context Packet includes shared version and rejects mixed stage-flow content
+ok 78 - server Context Packet includes shared version and rejects mixed stage-flow content
+  ---
+  duration_ms: 3.2997
+  type: 'test'
+  ...
+# Subtest: server Context Packet arrays are isolated from caller mutation
+ok 79 - server Context Packet arrays are isolated from caller mutation
+  ---
+  duration_ms: 4.8712
+  type: 'test'
+  ...
+# Subtest: chat is contextual, idempotent, concurrent and fail closed
+ok 80 - chat is contextual, idempotent, concurrent and fail closed
+  ---
+  duration_ms: 7.6527
+  type: 'test'
+  ...
+# Subtest: formal facts require named confirmation and projection reads server state
+ok 81 - formal facts require named confirmation and projection reads server state
+  ---
+  duration_ms: 20.9481
+  type: 'test'
+  ...
+# Subtest: UI source implements exact grid, six progress tones, graph interaction and receipt isolation
+ok 82 - UI source implements exact grid, six progress tones, graph interaction and receipt isolation
+  ---
+  duration_ms: 12.704
+  type: 'test'
+  ...
+# Subtest: records all twenty frozen stage/count variants from the shared projection
+ok 83 - records all twenty frozen stage/count variants from the shared projection
+  ---
+  duration_ms: 5.2985
+  type: 'test'
+  ...
+# Subtest: atomically records four same-version stage runs in frozen order
+ok 84 - atomically records four same-version stage runs in frozen order
+  ---
+  duration_ms: 3.2074
+  type: 'test'
+  ...
+# Subtest: exact normalized payload replay returns clones without appending
+ok 85 - exact normalized payload replay returns clones without appending
+  ---
+  duration_ms: 2.3984
+  type: 'test'
+  ...
+# Subtest: same version with different payload conflicts and failure does not write
+ok 86 - same version with different payload conflicts and failure does not write
+  ---
+  duration_ms: 3.1068
+  type: 'test'
+  ...
+# Subtest: validates context and source normalization boundaries with priority
+ok 87 - validates context and source normalization boundaries with priority
+  ---
+  duration_ms: 2.5369
+  type: 'test'
+  ...
+# Subtest: requires exact input and stage-count keys, including symbol and prototype extras
+ok 88 - requires exact input and stage-count keys, including symbol and prototype extras
+  ---
+  duration_ms: 2.4527
+  type: 'test'
+  ...
+# Subtest: all reads are deep clones and input or output mutation cannot pollute the ledger
+ok 89 - all reads are deep clones and input or output mutation cannot pollute the ledger
+  ---
+  duration_ms: 3.03
+  type: 'test'
+  ...
+# Subtest: reset completely clears the append-only ledger
+ok 90 - reset completely clears the append-only ledger
+  ---
+  duration_ms: 2.3934
+  type: 'test'
+  ...
+# Subtest: record, read, list, and reset are synchronous and not Promises
+ok 91 - record, read, list, and reset are synchronous and not Promises
+  ---
+  duration_ms: 3.2946
+  type: 'test'
+  ...
+# Subtest: Evidence staging is idempotent and does not advance Context
+ok 92 - Evidence staging is idempotent and does not advance Context
+  ---
+  duration_ms: 4.6104
+  type: 'test'
+  ...
+# Subtest: requires an external workstep and validates formal Gate schema
+ok 93 - requires an external workstep and validates formal Gate schema
+  ---
+  duration_ms: 7.009
+  type: 'test'
+  ...
+# Subtest: uses the latest professional Gate decision for commencement
+ok 94 - uses the latest professional Gate decision for commencement
+  ---
+  duration_ms: 6.0261
+  type: 'test'
+  ...
+# Subtest: runs T1/T2/T3, preserves stale history and reaches formal commencement
+ok 95 - runs T1/T2/T3, preserves stale history and reaches formal commencement
+  ---
+  duration_ms: 6.5908
+  type: 'test'
+  ...
+# Subtest: fails closed for T3 missing supplier, cross-professional Gate and incomplete commencement refs
+ok 96 - fails closed for T3 missing supplier, cross-professional Gate and incomplete commencement refs
+  ---
+  duration_ms: 3.419
+  type: 'test'
+  ...
+# Subtest: reset starts a new epoch and removes the previous run state
+ok 97 - reset starts a new epoch and removes the previous run state
+  ---
+  duration_ms: 2.6483
+  type: 'test'
+  ...
+# Subtest: creates the leadership session and loads case plus portfolio projections in parallel
+ok 98 - creates the leadership session and loads case plus portfolio projections in parallel
+  ---
+  duration_ms: 8.3878
+  type: 'test'
+  ...
+# Subtest: posts only the real V3 message contract and reloads the thread after success
+ok 99 - posts only the real V3 message contract and reloads the thread after success
+  ---
+  duration_ms: 4.303
+  type: 'test'
+  ...
+# Subtest: fails closed when a 2xx case projection is not the internal leadership read model
+ok 100 - fails closed when a 2xx case projection is not the internal leadership read model
+  ---
+  duration_ms: 3.2519
+  type: 'test'
+  ...
+# Subtest: rejects case and portfolio projections from different runtime snapshots
+    # Subtest: runtime epoch mismatch
+    ok 1 - runtime epoch mismatch
+      ---
+      duration_ms: 3.2944
+      type: 'test'
+      ...
+    # Subtest: context version mismatch
+    ok 2 - context version mismatch
+      ---
+      duration_ms: 3.378
+      type: 'test'
+      ...
+    # Subtest: focus case mismatch
+    ok 3 - focus case mismatch
+      ---
+      duration_ms: 13.5474
+      type: 'test'
+      ...
+    1..3
+ok 101 - rejects case and portfolio projections from different runtime snapshots
+  ---
+  duration_ms: 23.0971
+  type: 'test'
+  ...
+# Subtest: rejects malformed nested collaboration and KPI provenance fields
+    # Subtest: collaboration objective is incomplete
+    ok 1 - collaboration objective is incomplete
+      ---
+      duration_ms: 3.4099
+      type: 'test'
+      ...
+    # Subtest: quarter KPI omits provenance
+    ok 2 - quarter KPI omits provenance
+      ---
+      duration_ms: 3.7284
+      type: 'test'
+      ...
+    # Subtest: KPI window has invalid coverage status
+    ok 3 - KPI window has invalid coverage status
+      ---
+      duration_ms: 3.4336
+      type: 'test'
+      ...
+    1..3
+ok 102 - rejects malformed nested collaboration and KPI provenance fields
+  ---
+  duration_ms: 13.9486
+  type: 'test'
+  ...
+# Subtest: derives message capability from allowedActions before visible process scope
+    # Subtest: backend denial is preserved
+    ok 1 - backend denial is preserved
+      ---
+      duration_ms: 3.5778
+      type: 'test'
+      ...
+    # Subtest: stale action binding disables send
+    ok 2 - stale action binding disables send
+      ---
+      duration_ms: 3.3067
+      type: 'test'
+      ...
+    # Subtest: visible credit without chat action stays disabled
+    ok 3 - visible credit without chat action stays disabled
+      ---
+      duration_ms: 3.2228
+      type: 'test'
+      ...
+    1..3
+ok 103 - derives message capability from allowedActions before visible process scope
+  ---
+  duration_ms: 12.8851
+  type: 'test'
+  ...
+# Subtest: surfaces backend error code, status and request id without fallback success
+ok 104 - surfaces backend error code, status and request id without fallback success
+  ---
+  duration_ms: 2.7685
+  type: 'test'
+  ...
+# Subtest: turns a non-JSON non-2xx response into a structured client failure
+ok 105 - turns a non-JSON non-2xx response into a structured client failure
+  ---
+  duration_ms: 2.6355
+  type: 'test'
+  ...
+# Subtest: rejects a malformed successful message response without reloading projections
+ok 106 - rejects a malformed successful message response without reloading projections
+  ---
+  duration_ms: 3.2755
+  type: 'test'
+  ...
+# Subtest: rejects a successful message event that is absent from the reloaded thread
+ok 107 - rejects a successful message event that is absent from the reloaded thread
+  ---
+  duration_ms: 3.955
+  type: 'test'
+  ...
+# Subtest: reuses a caller-owned requestId after post-success reload failure without creating another Event
+ok 108 - reuses a caller-owned requestId after post-success reload failure without creating another Event
+  ---
+  duration_ms: 30.3853
+  type: 'test'
+  ...
+# Subtest: integrates with the real V3 session and Back read models without synthesizing an Agent answer
+ok 109 - integrates with the real V3 session and Back read models without synthesizing an Agent answer
+  ---
+  duration_ms: 19.9769
+  type: 'test'
+  ...
+# Subtest: rejects empty messages before mutation
+ok 110 - rejects empty messages before mutation
+  ---
+  duration_ms: 2.9305
+  type: 'test'
+  ...
+# Subtest: every legacy demo reset executes a fresh persisted reset operation
+ok 111 - every legacy demo reset executes a fresh persisted reset operation
+  ---
+  duration_ms: 13.6633
+  type: 'test'
+  ...
+# Subtest: creates server-owned canonical demo sessions and rejects unknown sessions
+ok 112 - creates server-owned canonical demo sessions and rejects unknown sessions
+  ---
+  duration_ms: 6.1948
+  type: 'test'
+  ...
+# Subtest: derives different same-case projections and typed action capabilities
+ok 113 - derives different same-case projections and typed action capabilities
+  ---
+  duration_ms: 9.1079
+  type: 'test'
+  ...
+# Subtest: projects the internal five-thread collaboration read model without authority side effects
+ok 114 - projects the internal five-thread collaboration read model without authority side effects
+  ---
+  duration_ms: 9.5861
+  type: 'test'
+  ...
+# Subtest: keeps external projection invitation-scoped and background cases sparse
+ok 115 - keeps external projection invitation-scoped and background cases sparse
+  ---
+  duration_ms: 8.7005
+  type: 'test'
+  ...
+# Subtest: returns role-scoped Portfolio, Context history and Receipt detail
+ok 116 - returns role-scoped Portfolio, Context history and Receipt detail
+  ---
+  duration_ms: 12.6253
+  type: 'test'
+  ...
+# Subtest: binds Portfolio KPI provenance to the commencement Receipt without changing Context
+ok 117 - binds Portfolio KPI provenance to the commencement Receipt without changing Context
+  ---
+  duration_ms: 243.8928
+  type: 'test'
+  ...
+# Subtest: freezes the fixed Golden Scenario identity and five process routes
+ok 118 - freezes the fixed Golden Scenario identity and five process routes
+  ---
+  duration_ms: 2.662
+  type: 'test'
+  ...
+# Subtest: keeps one Golden Case and four independent sparse background cases
+ok 119 - keeps one Golden Case and four independent sparse background cases
+  ---
+  duration_ms: 2.7953
+  type: 'test'
+  ...
+# Subtest: freezes T1/T2/T3 principals, one-commit batching and credit regression
+ok 120 - freezes T1/T2/T3 principals, one-commit batching and credit regression
+  ---
+  duration_ms: 2.4926
+  type: 'test'
+  ...
+# Subtest: returns isolated mutable baseline snapshots without polluting constants
+ok 121 - returns isolated mutable baseline snapshots without polluting constants
+  ---
+  duration_ms: 2.6373
+  type: 'test'
+  ...
+# Subtest: @JW reply is a non-persistent candidate with shared chat provenance
+ok 122 - @JW reply is a non-persistent candidate with shared chat provenance
+  ---
+  duration_ms: 3.0158
+  type: 'test'
+  ...
+# Subtest: replays an idempotent request and rejects a conflicting payload
+ok 123 - replays an idempotent request and rejects a conflicting payload
+  ---
+  duration_ms: 2.591
+  type: 'test'
+  ...
+# Subtest: returns a retryable busy contract for a different request on the same Case
+ok 124 - returns a retryable busy contract for a different request on the same Case
+  ---
+  duration_ms: 2.8285
+  type: 'test'
+  ...
+# Subtest: allows the same requestId to retry after a transient context error
+ok 125 - allows the same requestId to retry after a transient context error
+  ---
+  duration_ms: 2.5778
+  type: 'test'
+  ...
+# Subtest: rejects missing @JW and authority-bearing shared entries before producing a candidate
+ok 126 - rejects missing @JW and authority-bearing shared entries before producing a candidate
+  ---
+  duration_ms: 2.5039
+  type: 'test'
+  ...
+# Subtest: builds a deterministic System Runtime graph with complete node and edge references
+ok 127 - builds a deterministic System Runtime graph with complete node and edge references
+  ---
+  duration_ms: 14.959
+  type: 'test'
+  ...
+# Subtest: uses explicit throughput and SLA definitions without merging actual, forecast and scenario
+ok 128 - uses explicit throughput and SLA definitions without merging actual, forecast and scenario
+  ---
+  duration_ms: 3.0695
+  type: 'test'
+  ...
+# Subtest: gates the human takeover donut on denominator completeness
+ok 129 - gates the human takeover donut on denominator completeness
+  ---
+  duration_ms: 3.5453
+  type: 'test'
+  ...
+# Subtest: separates event, proposal, decision and task authority sources
+ok 130 - separates event, proposal, decision and task authority sources
+  ---
+  duration_ms: 2.9176
+  type: 'test'
+  ...
+# Subtest: fails closed for missing metrics instead of fabricating zero or success
+ok 131 - fails closed for missing metrics instead of fabricating zero or success
+  ---
+  duration_ms: 2.5273
+  type: 'test'
+  ...
+# Subtest: does not project the golden Case collaboration tasks into a different focused Case
+ok 132 - does not project the golden Case collaboration tasks into a different focused Case
+  ---
+  duration_ms: 3.0476
+  type: 'test'
+  ...
+# Subtest: consumes the shared local runtime through the typed adapter without writing it
+ok 133 - consumes the shared local runtime through the typed adapter without writing it
+  ---
+  duration_ms: 5.8354
+  type: 'test'
+  ...
+# Subtest: leadership defaults to Portfolio and drills into division and Case with provenance
+ok 134 - leadership defaults to Portfolio and drills into division and Case with provenance
+  ---
+  duration_ms: 24.8422
+  type: 'test'
+  ...
+# Subtest: publishes the nine-entry and four-family shared shell contract
+ok 135 - publishes the nine-entry and four-family shared shell contract
+  ---
+  duration_ms: 3.0749
+  type: 'test'
+  ...
+# Subtest: freezes eight role projections without reviving equal-weight role tabs
+ok 136 - freezes eight role projections without reviving equal-weight role tabs
+  ---
+  duration_ms: 2.4621
+  type: 'test'
+  ...
+# Subtest: keeps the professional quadrant positions and professional-only path fixed
+ok 137 - keeps the professional quadrant positions and professional-only path fixed
+  ---
+  duration_ms: 3.76
+  type: 'test'
+  ...
+# Subtest: does not invent zero progress when a professional projection is missing
+ok 138 - does not invent zero progress when a professional projection is missing
+  ---
+  duration_ms: 3.8633
+  type: 'test'
+  ...
+# Subtest: derives quadrant bands only from backend process projections
+ok 139 - derives quadrant bands only from backend process projections
+  ---
+  duration_ms: 2.5543
+  type: 'test'
+  ...
+# Subtest: caps every value mode at four charts
+ok 140 - caps every value mode at four charts
+  ---
+  duration_ms: 2.8474
+  type: 'test'
+  ...
+# Subtest: keeps the shared header and main/chat split inside the frozen desktop contract
+ok 141 - keeps the shared header and main/chat split inside the frozen desktop contract
+  ---
+  duration_ms: 10.6869
+  type: 'test'
+  ...
+# Subtest: keeps page-specific titles and entry tabs out of the generic shell contract
+ok 142 - keeps page-specific titles and entry tabs out of the generic shell contract
+  ---
+  duration_ms: 4.7375
+  type: 'test'
+  ...
+# Subtest: projects deterministic Opportunity-grain models only from shared SQLite fixture IDs
+ok 143 - projects deterministic Opportunity-grain models only from shared SQLite fixture IDs
+  ---
+  duration_ms: 7.8475
+  type: 'test'
+  ...
+# Subtest: keeps graph edges consistent and does not invent customer or supplier relationships
+ok 144 - keeps graph edges consistent and does not invent customer or supplier relationships
+  ---
+  duration_ms: 5.0423
+  type: 'test'
+  ...
+# Subtest: keeps absent material completeness unavailable instead of converting it to zero
+ok 145 - keeps absent material completeness unavailable instead of converting it to zero
+  ---
+  duration_ms: 5.4425
+  type: 'test'
+  ...
+# Subtest: allows six business orchestration actions but denies professional review and Gate
+ok 146 - allows six business orchestration actions but denies professional review and Gate
+  ---
+  duration_ms: 4.7604
+  type: 'test'
+  ...
+# Subtest: persists shared chat and shared JW/professional replies only as candidates with authority none
+ok 147 - persists shared chat and shared JW/professional replies only as candidates with authority none
+  ---
+  duration_ms: 7.3186
+  type: 'test'
+  ...
+# Subtest: preserves shared idempotent replay and rejects same requestId with a different payload
+ok 148 - preserves shared idempotent replay and rejects same requestId with a different payload
+  ---
+  duration_ms: 6.9
+  type: 'test'
+  ...
+# Subtest: fails closed for background writes, missing input, unknown IDs and invalid shared results
+ok 149 - fails closed for background writes, missing input, unknown IDs and invalid shared results
+  ---
+  duration_ms: 14.4932
+  type: 'test'
+  ...
+# Subtest: uses the shared loading/ready/empty/error union without leaking data into failure states
+ok 150 - uses the shared loading/ready/empty/error union without leaking data into failure states
+  ---
+  duration_ms: 3.145
+  type: 'test'
+  ...
+# Subtest: loads the dedicated Opportunity read model with one Golden Case and four summaries
+ok 151 - loads the dedicated Opportunity read model with one Golden Case and four summaries
+  ---
+  duration_ms: 4.0512
+  type: 'test'
+  ...
+# Subtest: posts to the dedicated Opportunity chat and reconciles a non-formal authority-none candidate
+ok 152 - posts to the dedicated Opportunity chat and reconciles a non-formal authority-none candidate
+  ---
+  duration_ms: 3.5681
+  type: 'test'
+  ...
+# Subtest: fails closed when the shared scenario does not contain 4–6 background summaries
+ok 153 - fails closed when the shared scenario does not contain 4–6 background summaries
+  ---
+  duration_ms: 3.1169
+  type: 'test'
+  ...
+# Subtest: surface contract keeps three modes, explicit missing data, candidate authority, and the 80/20 adapter
+ok 154 - surface contract keeps three modes, explicit missing data, candidate authority, and the 80/20 adapter
+  ---
+  duration_ms: 14.8874
+  type: 'test'
+  ...
+# Subtest: nine formal entries consume the one generic SharedSurfaceShell contract
+ok 155 - nine formal entries consume the one generic SharedSurfaceShell contract
+  ---
+  duration_ms: 4.9207
+  type: 'test'
+  ...
+# Subtest: Opportunity, Insight and Workbench share canonical SQLite messages, candidates and receipts
+ok 156 - Opportunity, Insight and Workbench share canonical SQLite messages, candidates and receipts
+  ---
+  duration_ms: 4.0316
+  type: 'test'
+  ...
+# Subtest: V3 P4 canonical SQLite kernel
+    # Subtest: keeps authority, shared Context and Workbench references on one persisted epoch
+    ok 1 - keeps authority, shared Context and Workbench references on one persisted epoch
+      ---
+      duration_ms: 85.136
+      type: 'test'
+      ...
+    # Subtest: enforces the Human Gate Evidence lineage matrix and cross-Case isolation
+    ok 2 - enforces the Human Gate Evidence lineage matrix and cross-Case isolation
+      ---
+      duration_ms: 87.3106
+      type: 'test'
+      ...
+    # Subtest: singleflights eight concurrent same-key candidate requests
+    ok 3 - singleflights eight concurrent same-key candidate requests
+      ---
+      duration_ms: 38.3312
+      type: 'test'
+      ...
+    1..3
+ok 157 - V3 P4 canonical SQLite kernel
+  ---
+  duration_ms: 210.98
+  type: 'suite'
+  ...
+# Subtest: V3 P4 SQLite hardening
+    # Subtest: reads Case readOnly and division from SQLite after fixture seeding
+    ok 1 - reads Case readOnly and division from SQLite after fixture seeding
+      ---
+      duration_ms: 22.415
+      type: 'test'
+      ...
+    # Subtest: authorizes both reset routes from server session only and ignores body role claims
+    ok 2 - authorizes both reset routes from server session only and ignores body role claims
+      ---
+      duration_ms: 24.8834
+      type: 'test'
+      ...
+    # Subtest: projects external shared chat to invitation scope and hides formal Human Gate receipts
+    ok 3 - projects external shared chat to invitation scope and hides formal Human Gate receipts
+      ---
+      duration_ms: 80.9969
+      type: 'test'
+      ...
+    # Subtest: migrates an older fixture, records the ledger, and rejects unknown future schemas
+    ok 4 - migrates an older fixture, records the ledger, and rejects unknown future schemas
+      ---
+      duration_ms: 30.7679
+      type: 'test'
+      ...
+    # Subtest: bounds lock waits and normalizes SQLite busy as retryable
+    ok 5 - bounds lock waits and normalizes SQLite busy as retryable
+      ---
+      duration_ms: 367.017
+      type: 'test'
+      ...
+    # Subtest: shares sessions across isolated SQLite owners and fails closed for expired or mismatched records
+    ok 6 - shares sessions across isolated SQLite owners and fails closed for expired or mismatched records
+      ---
+      duration_ms: 22.7761
+      type: 'test'
+      ...
+    # Subtest: resolves a session created by a separate route-like Node process after restart
+    ok 7 - resolves a session created by a separate route-like Node process after restart
+      ---
+      duration_ms: 275.5993
+      type: 'test'
+      ...
+    # Subtest: rejects an external session whose persisted invitation escapes the Golden Case
+    ok 8 - rejects an external session whose persisted invitation escapes the Golden Case
+      ---
+      duration_ms: 18.359
+      type: 'test'
+      ...
+    # Subtest: keeps server-resolved collaboration-manager authorization across Demo Reset
+    ok 9 - keeps server-resolved collaboration-manager authorization across Demo Reset
+      ---
+      duration_ms: 8.5876
+      type: 'test'
+      ...
+    # Subtest: keeps genuinely missing progress null and displays 未提供
+    ok 10 - keeps genuinely missing progress null and displays 未提供
+      ---
+      duration_ms: 3.3513
+      type: 'test'
+      ...
+    1..10
+ok 158 - V3 P4 SQLite hardening
+  ---
+  duration_ms: 855.2207
+  type: 'suite'
+  ...
+# Subtest: normalizes the legacy collaboration alias without returning shared policy arrays
+ok 159 - normalizes the legacy collaboration alias without returning shared policy arrays
+  ---
+  duration_ms: 2.4035
+  type: 'test'
+  ...
+# Subtest: separates management action, business confirmation and professional gates
+ok 160 - separates management action, business confirmation and professional gates
+  ---
+  duration_ms: 2.3575
+  type: 'test'
+  ...
+# Subtest: allows each risk principal to sign only its own professional gate
+ok 161 - allows each risk principal to sign only its own professional gate
+  ---
+  duration_ms: 2.9644
+  type: 'test'
+  ...
+# Subtest: restricts commencement to the commercial principal and process
+ok 162 - restricts commencement to the commercial principal and process
+  ---
+  duration_ms: 2.7465
+  type: 'test'
+  ...
+# Subtest: fails closed for role mismatch, background writes and external invitation errors
+ok 163 - fails closed for role mismatch, background writes and external invitation errors
+  ---
+  duration_ms: 2.8377
+  type: 'test'
+  ...
+# Subtest: shared, collaboration and value APIs stay inside the shared SQLite runtime contract
+ok 164 - shared, collaboration and value APIs stay inside the shared SQLite runtime contract
+  ---
+  duration_ms: 4.1589
+  type: 'test'
+  ...
+# Subtest: freezes eight Role Projections and keeps business outside professional Gate authority
+ok 165 - freezes eight Role Projections and keeps business outside professional Gate authority
+  ---
+  duration_ms: 2.5769
+  type: 'test'
+  ...
+# Subtest: separates continuous backend progress from coarse frontend quarter thresholds
+ok 166 - separates continuous backend progress from coarse frontend quarter thresholds
+  ---
+  duration_ms: 2.3702
+  type: 'test'
+  ...
+# Subtest: freezes loading, ready, empty, error and explicit missing-data shapes
+ok 167 - freezes loading, ready, empty, error and explicit missing-data shapes
+  ---
+  duration_ms: 2.3219
+  type: 'test'
+  ...
+# Subtest: persists human messages, events, candidate replies and non-formal receipts across restart
+ok 168 - persists human messages, events, candidate replies and non-formal receipts across restart
+  ---
+  duration_ms: 28.2889
+  type: 'test'
+  ...
+# Subtest: exposes busy/error route states and retries without duplicating the human message
+ok 169 - exposes busy/error route states and retries without duplicating the human message
+  ---
+  duration_ms: 22.1309
+  type: 'test'
+  ...
+# Subtest: Demo Reset is explicit, reproducible and idempotent while keeping one Golden plus four background Cases
+ok 170 - Demo Reset is explicit, reproducible and idempotent while keeping one Golden plus four background Cases
+  ---
+  duration_ms: 35.2777
+  type: 'test'
+  ...
+# Subtest: drills Portfolio to division and Case while background Cases stay read-only
+ok 171 - drills Portfolio to division and Case while background Cases stay read-only
+  ---
+  duration_ms: 18.8663
+  type: 'test'
+  ...
+# Subtest: rejects non-Evidence receipts before a professional Human Gate
+ok 172 - rejects non-Evidence receipts before a professional Human Gate
+  ---
+  duration_ms: 20.0378
+  type: 'test'
+  ...
+# Subtest: uses FinancingLeasingCase as the only exported business item type
+ok 173 - uses FinancingLeasingCase as the only exported business item type
+  ---
+  duration_ms: 2.8397
+  type: 'test'
+  ...
+# Subtest: keeps one golden case and at least four independent read-only background cases
+ok 174 - keeps one golden case and at least four independent read-only background cases
+  ---
+  duration_ms: 2.4384
+  type: 'test'
+  ...
+# Subtest: creates different same-case projections for every role without changing context identity
+ok 175 - creates different same-case projections for every role without changing context identity
+  ---
+  duration_ms: 3.2058
+  type: 'test'
+  ...
+# Subtest: gives opportunity and credit identical primary/heavy weight and does not equate the other lines
+ok 176 - gives opportunity and credit identical primary/heavy weight and does not equate the other lines
+  ---
+  duration_ms: 2.707
+  type: 'test'
+  ...
+# Subtest: keeps exactly five neutral configurable slots on every process thread
+ok 177 - keeps exactly five neutral configurable slots on every process thread
+  ---
+  duration_ms: 2.6035
+  type: 'test'
+  ...
+# Subtest: keeps commencement band, lifecycle status, and percentage absence independent
+ok 178 - keeps commencement band, lifecycle status, and percentage absence independent
+  ---
+  duration_ms: 2.8933
+  type: 'test'
+  ...
+# Subtest: separates collaboration management from business and professional authority
+ok 179 - separates collaboration management from business and professional authority
+  ---
+  duration_ms: 2.7817
+  type: 'test'
+  ...
+# Subtest: gives all four risk accounts five-thread visibility but only their own gate authority
+ok 180 - gives all four risk accounts five-thread visibility but only their own gate authority
+  ---
+  duration_ms: 3.1678
+  type: 'test'
+  ...
+# Subtest: scopes customer and supplier projections to one invited external workstep
+ok 181 - scopes customer and supplier projections to one invited external workstep
+  ---
+  duration_ms: 2.6326
+  type: 'test'
+  ...
+# Subtest: preserves the frozen five-part AI route and keeps authority on the backend
+ok 182 - preserves the frozen five-part AI route and keeps authority on the backend
+  ---
+  duration_ms: 2.3054
+  type: 'test'
+  ...
+# Subtest: fails closed on invalid identifiers, empty versions, and empty tasks
+ok 183 - fails closed on invalid identifiers, empty versions, and empty tasks
+  ---
+  duration_ms: 3.8476
+  type: 'test'
+  ...
+# Subtest: isolates exported data and function results from nested mutation
+ok 184 - isolates exported data and function results from nested mutation
+  ---
+  duration_ms: 2.7362
+  type: 'test'
+  ...
+# Subtest: normalizes the legacy leadership principal to the canonical collaboration manager
+ok 185 - normalizes the legacy leadership principal to the canonical collaboration manager
+  ---
+  duration_ms: 2.8294
+  type: 'test'
+  ...
+# Subtest: projects the commenced background case with a full commencement band
+ok 186 - projects the commenced background case with a full commencement band
+  ---
+  duration_ms: 2.5273
+  type: 'test'
+  ...
+# Subtest: gives business collaboration across five routes without professional gate signing
+ok 187 - gives business collaboration across five routes without professional gate signing
+  ---
+  duration_ms: 3.0098
+  type: 'test'
+  ...
+# Subtest: scopes each risk principal to its own professional gate while preserving five-route visibility
+ok 188 - scopes each risk principal to its own professional gate while preserving five-route visibility
+  ---
+  duration_ms: 3.2618
+  type: 'test'
+  ...
+# Subtest: keeps external collaboration invitation-scoped and outside human gates
+ok 189 - keeps external collaboration invitation-scoped and outside human gates
+  ---
+  duration_ms: 2.6099
+  type: 'test'
+  ...
+# Subtest: continues to isolate returned projections and cases from seed mutation
+ok 190 - continues to isolate returned projections and cases from seed mutation
+  ---
+  duration_ms: 3.1017
+  type: 'test'
+  ...
+# Subtest: V3 Case Workbench contract
+    # Subtest: exposes one deterministic read route and one action route for each of the five entries
+    ok 1 - exposes one deterministic read route and one action route for each of the five entries
+      ---
+      duration_ms: 9.625
+      type: 'test'
+      ...
+    # Subtest: returns one read model for all five entries and changes only default perspective
+    ok 2 - returns one read model for all five entries and changes only default perspective
+      ---
+      duration_ms: 3.6493
+      type: 'test'
+      ...
+    # Subtest: allows only the six frozen business actions and records them as authority-none routes
+    ok 3 - allows only the six frozen business actions and records them as authority-none routes
+      ---
+      duration_ms: 2.8916
+      type: 'test'
+      ...
+    # Subtest: enforces named professional RBAC and separates Evidence request from Human Gate
+    ok 4 - enforces named professional RBAC and separates Evidence request from Human Gate
+      ---
+      duration_ms: 2.9982
+      type: 'test'
+      ...
+    # Subtest: keeps background actions and stale Context fail closed with zero writes
+    ok 5 - keeps background actions and stale Context fail closed with zero writes
+      ---
+      duration_ms: 3.0459
+      type: 'test'
+      ...
+    # Subtest: classifies shared busy/unavailable errors as retryable without retrying inside the service
+    ok 6 - classifies shared busy/unavailable errors as retryable without retrying inside the service
+      ---
+      duration_ms: 2.5457
+      type: 'test'
+      ...
+    1..6
+ok 191 - V3 Case Workbench contract
+  ---
+  duration_ms: 25.0036
+  type: 'suite'
+  ...
+# Subtest: all five frontend perspectives map to canonical Workbench read and command routes
+ok 192 - all five frontend perspectives map to canonical Workbench read and command routes
+  ---
+  duration_ms: 2.8929
+  type: 'test'
+  ...
+# Subtest: read consumes canonical DTO with the selected server session
+ok 193 - read consumes canonical DTO with the selected server session
+  ---
+  duration_ms: 2.5089
+  type: 'test'
+  ...
+# Subtest: authority action posts command DTO and preserves server result
+ok 194 - authority action posts command DTO and preserves server result
+  ---
+  duration_ms: 2.8701
+  type: 'test'
+  ...
+# Subtest: page uses visible pending/error/success states and server-projected external chat
+ok 195 - page uses visible pending/error/success states and server-projected external chat
+  ---
+  duration_ms: 3.1402
+  type: 'test'
+  ...
+# Subtest: /business H1 remains business identity in every mode
+ok 196 - /business H1 remains business identity in every mode
+  ---
+  duration_ms: 2.4259
+  type: 'test'
+  ...
+# Subtest: V3 Case Workbench shared-runtime integration
+    # Subtest: shares Case/chat identity and provides idempotent coordination routing
+    ok 1 - shares Case/chat identity and provides idempotent coordination routing
+      ---
+      duration_ms: 34.1743
+      type: 'test'
+      ...
+    # Subtest: binds a named professional reject to T3 Context and Receipt while keeping model authority none
+    ok 2 - binds a named professional reject to T3 Context and Receipt while keeping model authority none
+      ---
+      duration_ms: 437.0673
+      type: 'test'
+      ...
+    1..2
+ok 197 - V3 Case Workbench shared-runtime integration
+  ---
+  duration_ms: 471.4741
+  type: 'suite'
+  ...
+# Subtest: five routes keep stable page identity and one Workbench adapter
+ok 198 - five routes keep stable page identity and one Workbench adapter
+  ---
+  duration_ms: 8.398
+  type: 'test'
+  ...
+# Subtest: server quarter thresholds become coarse levels and null remains unknown
+ok 199 - server quarter thresholds become coarse levels and null remains unknown
+  ---
+  duration_ms: 5.6516
+  type: 'test'
+  ...
+# Subtest: path status keeps unknown distinct from not started
+ok 200 - path status keeps unknown distinct from not started
+  ---
+  duration_ms: 5.5079
+  type: 'test'
+  ...
+# Subtest: role and action labels preserve authority boundaries
+ok 201 - role and action labels preserve authority boundaries
+  ---
+  duration_ms: 5.617
+  type: 'test'
+  ...
+# Subtest: Workbench runtime has no static truth or visible quadrant percentages
+ok 202 - Workbench runtime has no static truth or visible quadrant percentages
+  ---
+  duration_ms: 6.6009
+  type: 'test'
+  ...
+# Subtest: V3 Case Workbench projection
+    # Subtest: maps the four professional quadrants exactly
+    ok 1 - maps the four professional quadrants exactly
+      ---
+      duration_ms: 6.6027
+      type: 'test'
+      ...
+    # Subtest: rolls up out-of-order and partial steps without enforcing sequence
+    ok 2 - rolls up out-of-order and partial steps without enforcing sequence
+      ---
+      duration_ms: 5.1458
+      type: 'test'
+      ...
+    # Subtest: keeps completion, status, result and Authority separate at 100% reject
+    ok 3 - keeps completion, status, result and Authority separate at 100% reject
+      ---
+      duration_ms: 4.9937
+      type: 'test'
+      ...
+    # Subtest: fails closed for missing background data instead of inventing zero-valued results
+    ok 4 - fails closed for missing background data instead of inventing zero-valued results
+      ---
+      duration_ms: 5.29
+      type: 'test'
+      ...
+    # Subtest: emits only the five frozen quarter thresholds
+    ok 5 - emits only the five frozen quarter thresholds
+      ---
+      duration_ms: 5.3624
+      type: 'test'
+      ...
+    1..5
+ok 203 - V3 Case Workbench projection
+  ---
+  duration_ms: 27.9612
+  type: 'suite'
+  ...
+# Subtest: controller gate: a role assignment scope must cover the current resource
+ok 204 - controller gate: a role assignment scope must cover the current resource
+  ---
+  duration_ms: 8.3682
+  type: 'test'
+  ...
+# Subtest: controller gate: external invitation mismatch is rejected at resource scope priority
+ok 205 - controller gate: external invitation mismatch is rejected at resource scope priority
+  ---
+  duration_ms: 5.4541
+  type: 'test'
+  ...
+# Subtest: controller gate: malformed action names fail closed before policy matching
+ok 206 - controller gate: malformed action names fail closed before policy matching
+  ---
+  duration_ms: 5.4578
+  type: 'test'
+  ...
+# Subtest: controller gate: matching identifiers use ordinal deterministic ordering
+ok 207 - controller gate: matching identifiers use ordinal deterministic ordering
+  ---
+  duration_ms: 5.8501
+  type: 'test'
+  ...
+# Subtest: role assignment alone never grants management or professional authority
+ok 208 - role assignment alone never grants management or professional authority
+  ---
+  duration_ms: 4.6847
+  type: 'test'
+  ...
+# Subtest: invalid role assignments fail closed before scope, deny or grant evaluation
+ok 209 - invalid role assignments fail closed before scope, deny or grant evaluation
+  ---
+  duration_ms: 5.906
+  type: 'test'
+  ...
+# Subtest: an exact observe grant can cover an organization subtree
+ok 210 - an exact observe grant can cover an organization subtree
+  ---
+  duration_ms: 5.2938
+  type: 'test'
+  ...
+# Subtest: action and resource compatibility is fail-closed before deny or grant evaluation
+ok 211 - action and resource compatibility is fail-closed before deny or grant evaluation
+  ---
+  duration_ms: 7.4257
+  type: 'test'
+  ...
+# Subtest: explicit deny has priority over grants, stale versions and role assignments
+ok 212 - explicit deny has priority over grants, stale versions and role assignments
+  ---
+  duration_ms: 6.4971
+  type: 'test'
+  ...
+# Subtest: professional grants authorize only the exact professional action
+ok 213 - professional grants authorize only the exact professional action
+  ---
+  duration_ms: 6.2157
+  type: 'test'
+  ...
+# Subtest: prepare actions require an exact Case resource grant and fresh Context
+ok 214 - prepare actions require an exact Case resource grant and fresh Context
+  ---
+  duration_ms: 7.428
+  type: 'test'
+  ...
+# Subtest: capability can prepare drafts but remains hard-denied for formal or governance actions
+ok 215 - capability can prepare drafts but remains hard-denied for formal or governance actions
+  ---
+  duration_ms: 6.7943
+  type: 'test'
+  ...
+# Subtest: technical governance authority remains orthogonal to Case professional decisions
+ok 216 - technical governance authority remains orthogonal to Case professional decisions
+  ---
+  duration_ms: 5.7476
+  type: 'test'
+  ...
+# Subtest: external actor is isolated to an exact invitation and Case for observe or prepare only
+ok 217 - external actor is isolated to an exact invitation and Case for observe or prepare only
+  ---
+  duration_ms: 6.2918
+  type: 'test'
+  ...
+# Subtest: prepare, management, professional and execution Case actions require fresh Context
+ok 218 - prepare, management, professional and execution Case actions require fresh Context
+  ---
+  duration_ms: 4.8171
+  type: 'test'
+  ...
+# Subtest: stale Context has priority over stale policy after an exact grant matches
+ok 219 - stale Context has priority over stale policy after an exact grant matches
+  ---
+  duration_ms: 5.5929
+  type: 'test'
+  ...
+# Subtest: authorized_rule and system_service remain unknown even when an ordinary grant matches
+ok 220 - authorized_rule and system_service remain unknown even when an ordinary grant matches
+  ---
+  duration_ms: 7.2454
+  type: 'test'
+  ...
+# Subtest: invalid actor identity has the highest priority and all outputs are deterministic deep clones
+ok 221 - invalid actor identity has the highest priority and all outputs are deterministic deep clones
+  ---
+  duration_ms: 5.6749
+  type: 'test'
+  ...
+# Subtest: actor identity shape invariants reject conflicting invitations and malformed organization paths
+ok 222 - actor identity shape invariants reject conflicting invitations and malformed organization paths
+  ---
+  duration_ms: 5.0882
+  type: 'test'
+  ...
+# Subtest: controller: an active projection with impossible lifecycle depth is rejected as unverified
+ok 223 - controller: an active projection with impossible lifecycle depth is rejected as unverified
+  ---
+  duration_ms: 9.0194
+  type: 'test'
+  ...
+# Subtest: exact active, fresh, in-scope and evidence-complete request is eligible with bound identity
+ok 224 - exact active, fresh, in-scope and evidence-complete request is eligible with bound identity
+  ---
+  duration_ms: 18.4536
+  type: 'test'
+  ...
+# Subtest: fixed priority pairs keep every earlier failure ahead of later failures
+ok 225 - fixed priority pairs keep every earlier failure ahead of later failures
+  ---
+  duration_ms: 10.2295
+  type: 'test'
+  ...
+# Subtest: invalid reducer projections, corrupt snapshots and fake active claims remain unknown
+ok 226 - invalid reducer projections, corrupt snapshots and fake active claims remain unknown
+  ---
+  duration_ms: 7.1768
+  type: 'test'
+  ...
+# Subtest: lifecycle depth must be reachable under reducer transitions before admission
+ok 227 - lifecycle depth must be reachable under reducer transitions before admission
+  ---
+  duration_ms: 8.0139
+  type: 'test'
+  ...
+# Subtest: stale governance and Case context or capability identity mismatches are distinct
+ok 228 - stale governance and Case context or capability identity mismatches are distinct
+  ---
+  duration_ms: 5.8952
+  type: 'test'
+  ...
+# Subtest: suspended, inactive, rolled-back and retired states map to frozen denied outcomes
+ok 229 - suspended, inactive, rolled-back and retired states map to frozen denied outcomes
+  ---
+  duration_ms: 16.1617
+  type: 'test'
+  ...
+# Subtest: organization scope allows equality and descendants but denies siblings and ancestors
+ok 230 - organization scope allows equality and descendants but denies siblings and ancestors
+  ---
+  duration_ms: 5.7404
+  type: 'test'
+  ...
+# Subtest: typed support mismatches are independently ineligible in stage, mode, path order
+ok 231 - typed support mismatches are independently ineligible in stage, mode, path order
+  ---
+  duration_ms: 5.2336
+  type: 'test'
+  ...
+# Subtest: missing evidence uses canonical set difference and output denial waits for evidence
+ok 232 - missing evidence uses canonical set difference and output denial waits for evidence
+  ---
+  duration_ms: 7.0759
+  type: 'test'
+  ...
+# Subtest: request and nested data shapes reject extras, symbols, accessors and coercion
+ok 233 - request and nested data shapes reject extras, symbols, accessors and coercion
+  ---
+  duration_ms: 6.4833
+  type: 'test'
+  ...
+# Subtest: request opaque values normalize but typed enums stay exact and corrupt projections are not repaired
+ok 234 - request opaque values normalize but typed enums stay exact and corrupt projections are not repaired
+  ---
+  duration_ms: 6.4208
+  type: 'test'
+  ...
+# Subtest: decisions are deterministic deep clones and input or output mutation cannot leak
+ok 235 - decisions are deterministic deep clones and input or output mutation cannot leak
+  ---
+  duration_ms: 5.5856
+  type: 'test'
+  ...
+# Subtest: malformed values never throw and return one synchronous deterministic null binding
+ok 236 - malformed values never throw and return one synchronous deterministic null binding
+  ---
+  duration_ms: 3.736
+  type: 'test'
+  ...
+# Subtest: controller: opaque identifiers and scope segments are trimmed before replay comparison
+ok 237 - controller: opaque identifiers and scope segments are trimmed before replay comparison
+  ---
+  duration_ms: 3.813
+  type: 'test'
+  ...
+# Subtest: controller: duplicate event ids are detected after canonical trimming
+ok 238 - controller: duplicate event ids are detected after canonical trimming
+  ---
+  duration_ms: 3.3797
+  type: 'test'
+  ...
+# Subtest: full replay rebuilds exact active identity, scope, snapshots and lineage
+ok 239 - full replay rebuilds exact active identity, scope, snapshots and lineage
+  ---
+  duration_ms: 4.7579
+  type: 'test'
+  ...
+# Subtest: opaque identifiers are trimmed before storage, lineage and duplicate comparison
+ok 240 - opaque identifiers are trimmed before storage, lineage and duplicate comparison
+  ---
+  duration_ms: 4.9406
+  type: 'test'
+  ...
+# Subtest: suspend/resume, rollback from active or suspended, and retirement preserve lineage
+ok 241 - suspend/resume, rollback from active or suspended, and retirement preserve lineage
+  ---
+  duration_ms: 4.3479
+  type: 'test'
+  ...
+# Subtest: duplicate event, non-contiguous version, identity and scope mismatches fail closed
+ok 242 - duplicate event, non-contiguous version, identity and scope mismatches fail closed
+  ---
+  duration_ms: 3.1893
+  type: 'test'
+  ...
+# Subtest: every unsupported lifecycle transition and repeated registration is rejected
+ok 243 - every unsupported lifecycle transition and repeated registration is rejected
+  ---
+  duration_ms: 7.7441
+  type: 'test'
+  ...
+# Subtest: approval, release and rollback lineage mismatches are rejected
+ok 244 - approval, release and rollback lineage mismatches are rejected
+  ---
+  duration_ms: 4.556
+  type: 'test'
+  ...
+# Subtest: exact event shapes reject extra, non-enumerable, symbol, accessor and dangerous keys
+ok 245 - exact event shapes reject extra, non-enumerable, symbol, accessor and dangerous keys
+  ---
+  duration_ms: 3.4871
+  type: 'test'
+  ...
+# Subtest: numeric coercion and empty or whitespace identifiers and paths are malformed
+ok 246 - numeric coercion and empty or whitespace identifiers and paths are malformed
+  ---
+  duration_ms: 3.82
+  type: 'test'
+  ...
+# Subtest: registered snapshots bind identity, normalize opaque evidence and enforce output boundary
+ok 247 - registered snapshots bind identity, normalize opaque evidence and enforce output boundary
+  ---
+  duration_ms: 3.6646
+  type: 'test'
+  ...
+# Subtest: replay is deterministic and input/output nested data are defensively isolated
+ok 248 - replay is deterministic and input/output nested data are defensively isolated
+  ---
+  duration_ms: 3.588
+  type: 'test'
+  ...
+# Subtest: empty or corrupt history returns one deterministic invalid projection and cannot be repaired later
+ok 249 - empty or corrupt history returns one deterministic invalid projection and cannot be repaired later
+  ---
+  duration_ms: 3.6229
+  type: 'test'
+  ...
+# Subtest: controller: exact shape rejects non-enumerable, symbol and dangerous own keys
+ok 250 - controller: exact shape rejects non-enumerable, symbol and dangerous own keys
+  ---
+  duration_ms: 4.5299
+  type: 'test'
+  ...
+# Subtest: controller: input, admission, list, get and snapshot never share nested references
+ok 251 - controller: input, admission, list, get and snapshot never share nested references
+  ---
+  duration_ms: 5.3468
+  type: 'test'
+  ...
+# Subtest: controller: invalid nested extras and numeric coercion fail closed
+ok 252 - controller: invalid nested extras and numeric coercion fail closed
+  ---
+  duration_ms: 3.8249
+  type: 'test'
+  ...
+# Subtest: admits an exact active manifest while preserving the non-authoritative output boundary
+ok 253 - admits an exact active manifest while preserving the non-authoritative output boundary
+  ---
+  duration_ms: 4.1562
+  type: 'test'
+  ...
+# Subtest: fails closed when a capability claims authority or canonical receipt writes
+ok 254 - fails closed when a capability claims authority or canonical receipt writes
+  ---
+  duration_ms: 3.7091
+  type: 'test'
+  ...
+# Subtest: admits only shadow or active versions with approval and rollback evidence
+ok 255 - admits only shadow or active versions with approval and rollback evidence
+  ---
+  duration_ms: 3.3981
+  type: 'test'
+  ...
+# Subtest: validates exact manifest shape and bounded execution/evaluation fields
+ok 256 - validates exact manifest shape and bounded execution/evaluation fields
+  ---
+  duration_ms: 4.4462
+  type: 'test'
+  ...
+# Subtest: registry rejects duplicate capability versions and returns stable cloned projections
+ok 257 - registry rejects duplicate capability versions and returns stable cloned projections
+  ---
+  duration_ms: 5.7055
+  type: 'test'
+  ...
+# Subtest: V4-C-03/D-01/D-02/R-07: freezes the first live cell and keeps the 3x2 classification matrix orthogonal
+ok 258 - V4-C-03/D-01/D-02/R-07: freezes the first live cell and keeps the 3x2 classification matrix orthogonal
+  ---
+  duration_ms: 5.0773
+  type: 'test'
+  ...
+# Subtest: V4-D-03: new_return preserves the joint_business_credit_site constraint
+ok 259 - V4-D-03: new_return preserves the joint_business_credit_site constraint
+  ---
+  duration_ms: 13.9348
+  type: 'test'
+  ...
+# Subtest: V4-D-04/D-05: rule and human credit approval never advance commercial, asset or commencement
+ok 260 - V4-D-04/D-05: rule and human credit approval never advance commercial, asset or commencement
+  ---
+  duration_ms: 5.4549
+  type: 'test'
+  ...
+# Subtest: V4-D-06/D-07: return, reject and veto have distinct terminality and attempt lineage
+ok 261 - V4-D-06/D-07: return, reject and veto have distinct terminality and attempt lineage
+  ---
+  duration_ms: 4.9697
+  type: 'test'
+  ...
+# Subtest: V4-A-01/A-04: candidate authority is always none and cannot create formal success
+ok 262 - V4-A-01/A-04: candidate authority is always none and cannot create formal success
+  ---
+  duration_ms: 3.5553
+  type: 'test'
+  ...
+# Subtest: V4-A-02: authorized_rule fails closed unless version, scope, approval and rollback are complete
+ok 263 - V4-A-02: authorized_rule fails closed unless version, scope, approval and rollback are complete
+  ---
+  duration_ms: 4.3768
+  type: 'test'
+  ...
+# Subtest: V4-A-03/A-06: confirmed_human requires a named Actor and an injectable policy without a hard-coded role matrix
+ok 264 - V4-A-03/A-06: confirmed_human requires a named Actor and an injectable policy without a hard-coded role matrix
+  ---
+  duration_ms: 4.5471
+  type: 'test'
+  ...
+# Subtest: V4-A-05: denied, failure, timeout, unknown and stale Context all fail closed
+ok 265 - V4-A-05: denied, failure, timeout, unknown and stale Context all fail closed
+  ---
+  duration_ms: 4.7385
+  type: 'test'
+  ...
+# Subtest: V4 evolve surface is a compatibility redirect to /\#governance
+ok 266 - V4 evolve surface is a compatibility redirect to /\#governance
+  ---
+  duration_ms: 27.5089
+  type: 'test'
+  ...
+# Subtest: controller: lookalike error codes on unexpected exceptions never bypass 503 fail-closed mapping
+ok 267 - controller: lookalike error codes on unexpected exceptions never bypass 503 fail-closed mapping
+  ---
+  duration_ms: 4.8916
+  type: 'test'
+  ...
+# Subtest: both allowed GET routes return exact data envelopes with matching canonical identity
+ok 268 - both allowed GET routes return exact data envelopes with matching canonical identity
+  ---
+  duration_ms: 8.8828
+  type: 'test'
+  ...
+# Subtest: session header is required, singular and mapped to stable authentication or denial statuses
+ok 269 - session header is required, singular and mapped to stable authentication or denial statuses
+  ---
+  duration_ms: 7.472
+  type: 'test'
+  ...
+# Subtest: query extras and duplicate scopeId are rejected before service output
+ok 270 - query extras and duplicate scopeId are rejected before service output
+  ---
+  duration_ms: 7.8812
+  type: 'test'
+  ...
+# Subtest: encoded and trimmed identifiers are deterministic while unknown resources remain 404
+ok 271 - encoded and trimmed identifiers are deterministic while unknown resources remain 404
+  ---
+  duration_ms: 6.9036
+  type: 'test'
+  ...
+# Subtest: service and unexpected failures map to non-leaking 503 projection errors
+ok 272 - service and unexpected failures map to non-leaking 503 projection errors
+  ---
+  duration_ms: 5.7364
+  type: 'test'
+  ...
+# Subtest: repeated GET responses are deterministic defensive JSON with no body access or writes
+ok 273 - repeated GET responses are deterministic defensive JSON with no body access or writes
+  ---
+  duration_ms: 6.5146
+  type: 'test'
+  ...
+# Subtest: route modules expose GET only among HTTP method exports
+ok 274 - route modules expose GET only among HTTP method exports
+  ---
+  duration_ms: 3.9964
+  type: 'test'
+  ...
+# Subtest: controller: inherited object keys are never resolved as server sessions
+ok 275 - controller: inherited object keys are never resolved as server sessions
+  ---
+  duration_ms: 3.1018
+  type: 'test'
+  ...
+# Subtest: allowed Case and management sessions return exact DTOs with one canonical identity
+ok 276 - allowed Case and management sessions return exact DTOs with one canonical identity
+  ---
+  duration_ms: 5.0153
+  type: 'test'
+  ...
+# Subtest: server-resolved Authority denies role-only, explicit-deny, out-of-scope and wrong-surface sessions
+ok 277 - server-resolved Authority denies role-only, explicit-deny, out-of-scope and wrong-surface sessions
+  ---
+  duration_ms: 5.3303
+  type: 'test'
+  ...
+# Subtest: invalid input, session and resource lookup follow one deterministic error priority
+ok 278 - invalid input, session and resource lookup follow one deterministic error priority
+  ---
+  duration_ms: 4.9953
+  type: 'test'
+  ...
+# Subtest: caller cannot inject Actor, grant, policy, scope or projection fields
+ok 279 - caller cannot inject Actor, grant, policy, scope or projection fields
+  ---
+  duration_ms: 4.3007
+  type: 'test'
+  ...
+# Subtest: capability summary is replayed and admitted without Routing, execution or Receipt side effects
+ok 280 - capability summary is replayed and admitted without Routing, execution or Receipt side effects
+  ---
+  duration_ms: 4.6463
+  type: 'test'
+  ...
+# Subtest: reads are synchronous, deterministic, zero-write and return defensive deep clones
+ok 281 - reads are synchronous, deterministic, zero-write and return defensive deep clones
+  ---
+  duration_ms: 5.6318
+  type: 'test'
+  ...
+# Subtest: all projected collection fields use stable ordinal sorting
+ok 282 - all projected collection fields use stable ordinal sorting
+  ---
+  duration_ms: 4.0714
+  type: 'test'
+  ...
+# Subtest: exact input shape rejects missing, coercion, symbols, non-enumerable and dangerous keys
+ok 283 - exact input shape rejects missing, coercion, symbols, non-enumerable and dangerous keys
+  ---
+  duration_ms: 3.7075
+  type: 'test'
+  ...
+# Subtest: internal Case identity drift and corrupt Governance fail closed without partial DTO
+ok 284 - internal Case identity drift and corrupt Governance fail closed without partial DTO
+  ---
+  duration_ms: 4.5885
+  type: 'test'
+  ...
+# Subtest: canonical Node test entry disables child-process isolation
+ok 285 - canonical Node test entry disables child-process isolation
+  ---
+  duration_ms: 7.7702
+  type: 'test'
+  ...
+# Subtest: semantic enum tokens are exact and cannot be normalized into valid Candidate authority
+ok 286 - semantic enum tokens are exact and cannot be normalized into valid Candidate authority
+  ---
+  duration_ms: 5.4497
+  type: 'test'
+  ...
+# Subtest: formal authority tokens and destination stage must be exact canonical literals
+ok 287 - formal authority tokens and destination stage must be exact canonical literals
+  ---
+  duration_ms: 5.5289
+  type: 'test'
+  ...
+# Subtest: golden path rebuilds exact credit decision and handoff without completing downstream stages
+ok 288 - golden path rebuilds exact credit decision and handoff without completing downstream stages
+  ---
+  duration_ms: 5.6342
+  type: 'test'
+  ...
+# Subtest: supplement keeps the Attempt, resubmits to a new Context and requires a new candidate and Gate
+ok 289 - supplement keeps the Attempt, resubmits to a new Context and requires a new candidate and Gate
+  ---
+  duration_ms: 6.0802
+  type: 'test'
+  ...
+# Subtest: supplement resubmission accepts only Evidence Receipts appended after the supplement request
+ok 290 - supplement resubmission accepts only Evidence Receipts appended after the supplement request
+  ---
+  duration_ms: 4.1651
+  type: 'test'
+  ...
+# Subtest: reject then new Attempt preserves root and selected Evidence lineage while clearing old formal state
+ok 291 - reject then new Attempt preserves root and selected Evidence lineage while clearing old formal state
+  ---
+  duration_ms: 5.0737
+  type: 'test'
+  ...
+# Subtest: final veto is terminal and blocks both new Attempt and handoff
+ok 292 - final veto is terminal and blocks both new Attempt and handoff
+  ---
+  duration_ms: 4.6869
+  type: 'test'
+  ...
+# Subtest: Candidate provenance is exact, authority remains none and stale input fails closed
+ok 293 - Candidate provenance is exact, authority remains none and stale input fails closed
+  ---
+  duration_ms: 15.6536
+  type: 'test'
+  ...
+# Subtest: named Human Gate never routes a capability as required actor
+ok 294 - named Human Gate never routes a capability as required actor
+  ---
+  duration_ms: 6.4824
+  type: 'test'
+  ...
+# Subtest: every formal disposition enforces named_human, allowed outcome and exact Gate actor
+ok 295 - every formal disposition enforces named_human, allowed outcome and exact Gate actor
+  ---
+  duration_ms: 6.1024
+  type: 'test'
+  ...
+# Subtest: unsupported transitions fail before provenance, authority or receipt interpretation
+ok 296 - unsupported transitions fail before provenance, authority or receipt interpretation
+  ---
+  duration_ms: 6.2828
+  type: 'test'
+  ...
+# Subtest: duplicate Evidence identity and canonical receipt reuse fail with zero partial state
+ok 297 - duplicate Evidence identity and canonical receipt reuse fail with zero partial state
+  ---
+  duration_ms: 4.695
+  type: 'test'
+  ...
+# Subtest: receipt and handoff lineage must match the accepted Human Decision exactly
+ok 298 - receipt and handoff lineage must match the accepted Human Decision exactly
+  ---
+  duration_ms: 4.96
+  type: 'test'
+  ...
+# Subtest: duplicate event, sequence and Case/Attempt/Context/organization drift follow fixed priority
+ok 299 - duplicate event, sequence and Case/Attempt/Context/organization drift follow fixed priority
+  ---
+  duration_ms: 3.9096
+  type: 'test'
+  ...
+# Subtest: new Attempt identity and inherited Evidence require exact root, previous and subset lineage
+ok 300 - new Attempt identity and inherited Evidence require exact root, previous and subset lineage
+  ---
+  duration_ms: 5.1709
+  type: 'test'
+  ...
+# Subtest: exact data shapes reject extras, symbols, accessors, non-enumerable and dangerous keys
+ok 301 - exact data shapes reject extras, symbols, accessors, non-enumerable and dangerous keys
+  ---
+  duration_ms: 4.2829
+  type: 'test'
+  ...
+# Subtest: numeric coercion, whitespace fields and canonical list duplicates are malformed
+ok 302 - numeric coercion, whitespace fields and canonical list duplicates are malformed
+  ---
+  duration_ms: 4.6832
+  type: 'test'
+  ...
+# Subtest: canonical opaque identifiers are trimmed while path order and immutable classification are retained
+ok 303 - canonical opaque identifiers are trimmed while path order and immutable classification are retained
+  ---
+  duration_ms: 5.3756
+  type: 'test'
+  ...
+# Subtest: replay is synchronous, deterministic, defensive and never mutates event history
+ok 304 - replay is synchronous, deterministic, defensive and never mutates event history
+  ---
+  duration_ms: 5.8344
+  type: 'test'
+  ...
+# Subtest: empty and corrupt histories are deterministic invalid and cannot be repaired later
+ok 305 - empty and corrupt histories are deterministic invalid and cannot be repaired later
+  ---
+  duration_ms: 5.66
+  type: 'test'
+  ...
+# Subtest: controller R1: missing and non-human assignee identities fail closed with zero writes
+ok 306 - controller R1: missing and non-human assignee identities fail closed with zero writes
+  ---
+  duration_ms: 14.3945
+  type: 'test'
+  ...
+# Subtest: controller R1: internal and Case-bound external humans are valid Gate assignees
+ok 307 - controller R1: internal and Case-bound external humans are valid Gate assignees
+  ---
+  duration_ms: 9.5733
+  type: 'test'
+  ...
+# Subtest: controller R1: canonical duplicate Actor, Session and Case keys fail construction closed
+ok 308 - controller R1: canonical duplicate Actor, Session and Case keys fail construction closed
+  ---
+  duration_ms: 5.4921
+  type: 'test'
+  ...
+# Subtest: controller R1: blank Actor, Session and Case construction keys are invalid seeds
+ok 309 - controller R1: blank Actor, Session and Case construction keys are invalid seeds
+  ---
+  duration_ms: 5.1881
+  type: 'test'
+  ...
+# Subtest: controller R1: transaction Actor Map and returned identities are defensively isolated
+ok 310 - controller R1: transaction Actor Map and returned identities are defensively isolated
+  ---
+  duration_ms: 11.5616
+  type: 'test'
+  ...
+# Subtest: controller 03A: named Human credit decision atomically binds Event, stored Receipt, projection and replay
+ok 311 - controller 03A: named Human credit decision atomically binds Event, stored Receipt, projection and replay
+  ---
+  duration_ms: 19.6072
+  type: 'test'
+  ...
+# Subtest: controller 03A: authority and active Gate checks fail closed before a Decision Receipt exists
+ok 312 - controller 03A: authority and active Gate checks fail closed before a Decision Receipt exists
+  ---
+  duration_ms: 10.9769
+  type: 'test'
+  ...
+# Subtest: controller 03A: stale, malformed rationale, no Gate and transaction failure are zero-write
+ok 313 - controller 03A: stale, malformed rationale, no Gate and transaction failure are zero-write
+  ---
+  duration_ms: 14.8734
+  type: 'test'
+  ...
+# Subtest: controller 03A: stored Decision Receipt and response are defensive clones
+ok 314 - controller 03A: stored Decision Receipt and response are defensive clones
+  ---
+  duration_ms: 8.8892
+  type: 'test'
+  ...
+# Subtest: controller R1: Decision lineage is checked against stored canonical Evidence, Candidate and active assignment artifacts
+ok 315 - controller R1: Decision lineage is checked against stored canonical Evidence, Candidate and active assignment artifacts
+  ---
+  duration_ms: 4.4666
+  type: 'test'
+  ...
+# Subtest: controller R1: focused public chain does not raw-seed an accepted Candidate/Gate and covers receipt drift
+ok 316 - controller R1: focused public chain does not raw-seed an accepted Candidate/Gate and covers receipt drift
+  ---
+  duration_ms: 4.6301
+  type: 'test'
+  ...
+# Subtest: submit_credit_decision commits Event, canonical Receipt, Projection and idempotency atomically
+ok 317 - submit_credit_decision commits Event, canonical Receipt, Projection and idempotency atomically
+  ---
+  duration_ms: 8.9517
+  type: 'test'
+  ...
+# Subtest: submit_credit_decision rejects missing or duplicate canonical lineage and active assignment drift with zero writes
+ok 318 - submit_credit_decision rejects missing or duplicate canonical lineage and active assignment drift with zero writes
+  ---
+  duration_ms: 20.1131
+  type: 'test'
+  ...
+# Subtest: submit_credit_decision canonicalizes bounded rationale and rejects hostile exact payload shapes
+ok 319 - submit_credit_decision canonicalizes bounded rationale and rejects hostile exact payload shapes
+  ---
+  duration_ms: 20.3711
+  type: 'test'
+  ...
+# Subtest: submit_credit_decision enforces exact command shape and frozen authority priority
+ok 320 - submit_credit_decision enforces exact command shape and frozen authority priority
+  ---
+  duration_ms: 7.2433
+  type: 'test'
+  ...
+# Subtest: submit_credit_decision freezes authority, stale Context and pending Gate priority with zero writes
+ok 321 - submit_credit_decision freezes authority, stale Context and pending Gate priority with zero writes
+  ---
+  duration_ms: 14.8262
+  type: 'test'
+  ...
+# Subtest: submit_credit_decision fails closed for actor mismatch and transaction failure
+ok 322 - submit_credit_decision fails closed for actor mismatch and transaction failure
+  ---
+  duration_ms: 7.6537
+  type: 'test'
+  ...
+# Subtest: submit_credit_decision rejects same idempotency key with different canonical payload
+ok 323 - submit_credit_decision rejects same idempotency key with different canonical payload
+  ---
+  duration_ms: 10.3867
+  type: 'test'
+  ...
+# Subtest: submit_credit_decision generated identities avoid store collisions and all public results are defensive synchronous clones
+ok 324 - submit_credit_decision generated identities avoid store collisions and all public results are defensive synchronous clones
+  ---
+  duration_ms: 8.3087
+  type: 'test'
+  ...
+# Subtest: server-generated ContextVersion never reuses any historical Context identity
+ok 325 - server-generated ContextVersion never reuses any historical Context identity
+  ---
+  duration_ms: 4.4434
+  type: 'test'
+  ...
+# Subtest: golden accept_evidence atomically binds Event, Evidence Receipt, command Receipt and projection
+ok 326 - golden accept_evidence atomically binds Event, Evidence Receipt, command Receipt and projection
+  ---
+  duration_ms: 4.0697
+  type: 'test'
+  ...
+# Subtest: exact bounded input rejects semantic drift and caller-supplied authority or canonical fields
+ok 327 - exact bounded input rejects semantic drift and caller-supplied authority or canonical fields
+  ---
+  duration_ms: 12.6014
+  type: 'test'
+  ...
+# Subtest: opaque identifiers trim canonically while semantic operation remains exact
+ok 328 - opaque identifiers trim canonically while semantic operation remains exact
+  ---
+  duration_ms: 5.6474
+  type: 'test'
+  ...
+# Subtest: prototype-shaped session and idempotency keys use Map semantics safely
+ok 329 - prototype-shaped session and idempotency keys use Map semantics safely
+  ---
+  duration_ms: 4.5129
+  type: 'test'
+  ...
+# Subtest: missing session has priority over Case and missing Case remains zero-write
+ok 330 - missing session has priority over Case and missing Case remains zero-write
+  ---
+  duration_ms: 4.486
+  type: 'test'
+  ...
+# Subtest: corrupt stored history is never repaired and produces no Receipt or idempotency state
+ok 331 - corrupt stored history is never repaired and produces no Receipt or idempotency state
+  ---
+  duration_ms: 4.3907
+  type: 'test'
+  ...
+# Subtest: role-only, explicit deny, out-of-scope and stale-policy sessions fail Authority closed
+ok 332 - role-only, explicit deny, out-of-scope and stale-policy sessions fail Authority closed
+  ---
+  duration_ms: 5.7701
+  type: 'test'
+  ...
+# Subtest: authorized_rule and system_service authority remain unknown even with a matching grant
+ok 333 - authorized_rule and system_service authority remain unknown even with a matching grant
+  ---
+  duration_ms: 4.9786
+  type: 'test'
+  ...
+# Subtest: Authority denial has priority over stale command Context and allowed stale Context is distinct
+ok 334 - Authority denial has priority over stale command Context and allowed stale Context is distinct
+  ---
+  duration_ms: 4.6155
+  type: 'test'
+  ...
+# Subtest: same scoped key and hash replays the original result before stale Context or Authority
+ok 335 - same scoped key and hash replays the original result before stale Context or Authority
+  ---
+  duration_ms: 4.7968
+  type: 'test'
+  ...
+# Subtest: same scoped key with a different canonical request hash conflicts before stale Context
+ok 336 - same scoped key with a different canonical request hash conflicts before stale Context
+  ---
+  duration_ms: 5.2142
+  type: 'test'
+  ...
+# Subtest: eight synchronous re-entrant calls produce one Event, one Receipt and one idempotency record
+ok 337 - eight synchronous re-entrant calls produce one Event, one Receipt and one idempotency record
+  ---
+  duration_ms: 4.6418
+  type: 'test'
+  ...
+# Subtest: injected pre-commit transaction failure leaves zero partial writes and does not reserve idempotency
+ok 338 - injected pre-commit transaction failure leaves zero partial writes and does not reserve idempotency
+  ---
+  duration_ms: 4.6959
+  type: 'test'
+  ...
+# Subtest: input, result, seed and store reads are defensively isolated
+ok 339 - input, result, seed and store reads are defensively isolated
+  ---
+  duration_ms: 4.5332
+  type: 'test'
+  ...
+# Subtest: golden record_candidate atomically records verified Candidate and pending named Human Gate
+ok 340 - golden record_candidate atomically records verified Candidate and pending named Human Gate
+  ---
+  duration_ms: 5.1609
+  type: 'test'
+  ...
+# Subtest: record_candidate generated IDs avoid complete historical and server-store identity state
+ok 341 - record_candidate generated IDs avoid complete historical and server-store identity state
+  ---
+  duration_ms: 4.7938
+  type: 'test'
+  ...
+# Subtest: record_candidate exact input rejects caller authority, provenance and canonical identity injection
+ok 342 - record_candidate exact input rejects caller authority, provenance and canonical identity injection
+  ---
+  duration_ms: 4.6723
+  type: 'test'
+  ...
+# Subtest: record_candidate rejects wrong binding, authority/output drift and unaccepted Evidence provenance
+ok 343 - record_candidate rejects wrong binding, authority/output drift and unaccepted Evidence provenance
+  ---
+  duration_ms: 9.9643
+  type: 'test'
+  ...
+# Subtest: record_candidate independently rebuilds Governance and maps Admission outcomes fail closed
+ok 344 - record_candidate independently rebuilds Governance and maps Admission outcomes fail closed
+  ---
+  duration_ms: 12.235
+  type: 'test'
+  ...
+# Subtest: record_candidate requires an exact named Human Gate assignment distinct from Candidate authority
+ok 345 - record_candidate requires an exact named Human Gate assignment distinct from Candidate authority
+  ---
+  duration_ms: 8.6121
+  type: 'test'
+  ...
+# Subtest: record_candidate idempotency replays after state advance and conflicts across operation or ref
+ok 346 - record_candidate idempotency replays after state advance and conflicts across operation or ref
+  ---
+  duration_ms: 8.7861
+  type: 'test'
+  ...
+# Subtest: record_candidate Authority and stale priority remain before server Candidate resolution
+ok 347 - record_candidate Authority and stale priority remain before server Candidate resolution
+  ---
+  duration_ms: 5.6361
+  type: 'test'
+  ...
+# Subtest: record_candidate transaction failure leaves both Events, Receipt, Gate and idempotency zero-write
+ok 348 - record_candidate transaction failure leaves both Events, Receipt, Gate and idempotency zero-write
+  ---
+  duration_ms: 4.8121
+  type: 'test'
+  ...
+# Subtest: record_candidate construction, transaction, output and prototype-key state are isolated
+ok 349 - record_candidate construction, transaction, output and prototype-key state are isolated
+  ---
+  duration_ms: 4.7225
+  type: 'test'
+  ...
+# Subtest: server construction rejects duplicate canonical Candidate, Governance and assignment keys
+ok 350 - server construction rejects duplicate canonical Candidate, Governance and assignment keys
+  ---
+  duration_ms: 4.0067
+  type: 'test'
+  ...
+# Subtest: /work/screen 三个文件存在，页面是纯 client 页（不适用 route segment 缓存机制）
+ok 351 - /work/screen 三个文件存在，页面是纯 client 页（不适用 route segment 缓存机制）
+  ---
+  duration_ms: 19.2367
+  type: 'test'
+  ...
+# Subtest: 数据流：默认 demo caseId + URL query 校验回落 + EventSource 订阅 + 500ms 节流重取
+ok 352 - 数据流：默认 demo caseId + URL query 校验回落 + EventSource 订阅 + 500ms 节流重取
+  ---
+  duration_ms: 4.3193
+  type: 'test'
+  ...
+# Subtest: 四域泳道：固定序 policy/credit/commerce/asset 渲染循环 + 状态三通道
+ok 353 - 四域泳道：固定序 policy/credit/commerce/asset 渲染循环 + 状态三通道
+  ---
+  duration_ms: 3.7711
+  type: 'test'
+  ...
+# Subtest: awaiting_gate 最醒目（专用高亮类 + 黄色 + 脉冲），状态色语义映射齐备
+ok 354 - awaiting_gate 最醒目（专用高亮类 + 黄色 + 脉冲），状态色语义映射齐备
+  ---
+  duration_ms: 4.3072
+  type: 'test'
+  ...
+# Subtest: 大字号约束：标题字号下限 ≥64px、正文下限 ≥28px（CSS 变量）
+ok 355 - 大字号约束：标题字号下限 ≥64px、正文下限 ≥28px（CSS 变量）
+  ---
+  duration_ms: 4.9084
+  type: 'test'
+  ...
+# Subtest: openGates 大字区：「等待 <角色> 决定」高亮 + Receipt 流水 + 贡献计数
+ok 356 - openGates 大字区：「等待 <角色> 决定」高亮 + Receipt 流水 + 贡献计数
+  ---
+  duration_ms: 5.8133
+  type: 'test'
+  ...
+# Subtest: 免责声明 + rev + 案例名渲染，全部来自 Projection 真实字段
+ok 357 - 免责声明 + rev + 案例名渲染，全部来自 Projection 真实字段
+  ---
+  duration_ms: 5.6079
+  type: 'test'
+  ...
+# Subtest: 断线容错：fetch 失败显示「等待连接」不清空画面；EventSource onerror 容忍自动重连
+ok 358 - 断线容错：fetch 失败显示「等待连接」不清空画面；EventSource onerror 容忍自动重连
+  ---
+  duration_ms: 3.9604
+  type: 'test'
+  ...
+# Subtest: v2 五类核验视图：五分类固定序 + 缺省 claimed 归类 + 计数大数字渲染逻辑存在
+ok 359 - v2 五类核验视图：五分类固定序 + 缺省 claimed 归类 + 计数大数字渲染逻辑存在
+  ---
+  duration_ms: 4.7597
+  type: 'test'
+  ...
+# Subtest: v2 下钻列表：evidenceId + title + sourceType 小标，六类来源映射齐备
+ok 360 - v2 下钻列表：evidenceId + title + sourceType 小标，六类来源映射齐备
+  ---
+  duration_ms: 4.6368
+  type: 'test'
+  ...
+# Subtest: v2 警示通道：contradicted / stale 专属警示类（红色 + data-verification 双通道）
+ok 361 - v2 警示通道：contradicted / stale 专属警示类（红色 + data-verification 双通道）
+  ---
+  duration_ms: 12.6845
+  type: 'test'
+  ...
+# Subtest: v2 Risk Thread 面板：riskThreadKey + 关联 evidence/workItem/gate 计数 + lastSeq，行视觉区分
+ok 362 - v2 Risk Thread 面板：riskThreadKey + 关联 evidence/workItem/gate 计数 + lastSeq，行视觉区分
+  ---
+  duration_ms: 5.5962
+  type: 'test'
+  ...
+# Subtest: v2 Context 徽章：Context v{major}.{minor} · {status}，三态配色，缺省不渲染
+ok 363 - v2 Context 徽章：Context v{major}.{minor} · {status}，三态配色，缺省不渲染
+  ---
+  duration_ms: 4.1943
+  type: 'test'
+  ...
+# Subtest: v2 优雅降级：新字段全部可选，缺失分支渲染「暂无数据」，形状 gate 不新增必填
+ok 364 - v2 优雅降级：新字段全部可选，缺失分支渲染「暂无数据」，形状 gate 不新增必填
+  ---
+  duration_ms: 4.8377
+  type: 'test'
+  ...
+# Subtest: v2 新 css 类齐备：核验面板/五分类组/下钻/Risk Thread/下排布局/Context 徽章/窄屏退化
+ok 365 - v2 新 css 类齐备：核验面板/五分类组/下钻/Risk Thread/下排布局/Context 徽章/窄屏退化
+  ---
+  duration_ms: 4.6123
+  type: 'test'
+  ...
+# Subtest: /work 不再以静态 fixture 为 truth：DEMO_WORK_PROJECTION 与旧执行壳断开引用
+ok 366 - /work 不再以静态 fixture 为 truth：DEMO_WORK_PROJECTION 与旧执行壳断开引用
+  ---
+  duration_ms: 4.8216
+  type: 'test'
+  ...
+# Subtest: 工作台状态只来自真实 /api/v4life API，命令遵守幂等纪律
+ok 367 - 工作台状态只来自真实 /api/v4life API，命令遵守幂等纪律
+  ---
+  duration_ms: 5.157
+  type: 'test'
+  ...
+# Subtest: 五角色共用同一 responsive 系统，移动端为「看板 / 事项 / 协同」重排
+ok 368 - 五角色共用同一 responsive 系统，移动端为「看板 / 事项 / 协同」重排
+  ---
+  duration_ms: 4.4996
+  type: 'test'
+  ...
+# Subtest: authority 边界：Chat 为未连接模型的协同框架，Gate 只归匹配的具名角色
+ok 369 - authority 边界：Chat 为未连接模型的协同框架，Gate 只归匹配的具名角色
+  ---
+  duration_ms: 5.2454
+  type: 'test'
+  ...
+# Subtest: demo reset 只服务合成 Case 并在生产环境失败关闭
+ok 370 - demo reset 只服务合成 Case 并在生产环境失败关闭
+  ---
+  duration_ms: 4.3
+  type: 'test'
+  ...
+# Subtest: 加载/错误/过期状态原语存在且不伪造成功
+ok 371 - 加载/错误/过期状态原语存在且不伪造成功
+  ---
+  duration_ms: 6.2428
+  type: 'test'
+  ...
+# Subtest: journal 记录：evidence/work/decision 命令接受后 journal 按顺序各有一条 accepted 记录
+ok 372 - journal 记录：evidence/work/decision 命令接受后 journal 按顺序各有一条 accepted 记录
+  ---
+  duration_ms: 16.2352
+  type: 'test'
+  ...
+# Subtest: 核心验收：重启（同 seed + 同 eventLog + 同 journal）后重发同 commandId 同载荷命令 → replayed
+ok 373 - 核心验收：重启（同 seed + 同 eventLog + 同 journal）后重发同 commandId 同载荷命令 → replayed
+  ---
+  duration_ms: 12.4513
+  type: 'test'
+  ...
+# Subtest: 无 journal 引擎行为不变：重启后重发 work 命令仍是 §15.1 失败关闭边界（VERSION_CONFLICT）
+ok 374 - 无 journal 引擎行为不变：重启后重发 work 命令仍是 §15.1 失败关闭边界（VERSION_CONFLICT）
+  ---
+  duration_ms: 9.0293
+  type: 'test'
+  ...
+# Subtest: journal.append 抛错 → 命令整体失败关闭（不伪造成功）
+ok 375 - journal.append 抛错 → 命令整体失败关闭（不伪造成功）
+  ---
+  duration_ms: 6.7651
+  type: 'test'
+  ...
+# Subtest: options 校验：commandJournal 缺 append/loadAll 函数 → INVALID_ENGINE_INPUT（失败关闭）
+ok 376 - options 校验：commandJournal 缺 append/loadAll 函数 → INVALID_ENGINE_INPUT（失败关闭）
+  ---
+  duration_ms: 4.9043
+  type: 'test'
+  ...
+# Subtest: 损坏行失败关闭：journal 文件出现非法 JSON 行 → loadAll 与引擎构造均 INVALID_ENGINE_INPUT
+ok 377 - 损坏行失败关闭：journal 文件出现非法 JSON 行 → loadAll 与引擎构造均 INVALID_ENGINE_INPUT
+  ---
+  duration_ms: 9.567
+  type: 'test'
+  ...
+# Subtest: 损坏行失败关闭：合法 JSON 但缺字段的行同样 INVALID_ENGINE_INPUT
+ok 378 - 损坏行失败关闭：合法 JSON 但缺字段的行同样 INVALID_ENGINE_INPUT
+  ---
+  duration_ms: 9.3765
+  type: 'test'
+  ...
+# Subtest: caseId 路径穿越拒绝：非法 caseId → INVALID_ENGINE_INPUT
+ok 379 - caseId 路径穿越拒绝：非法 caseId → INVALID_ENGINE_INPUT
+  ---
+  duration_ms: 4.6185
+  type: 'test'
+  ...
+# Subtest: 成对清盘：eventLog.clear + journal.clear 后新引擎回到种子初态，旧命令记录不复活
+ok 380 - 成对清盘：eventLog.clear + journal.clear 后新引擎回到种子初态，旧命令记录不复活
+  ---
+  duration_ms: 9.0219
+  type: 'test'
+  ...
+# Subtest: GET events/stream：200 且 content-type / cache-control 头正确
+ok 381 - GET events/stream：200 且 content-type / cache-control 头正确
+  ---
+  duration_ms: 6.744
+  type: 'test'
+  ...
+# Subtest: GET events/stream：未注册 caseId → 404 CASE_NOT_FOUND JSON（不开始流）
+ok 382 - GET events/stream：未注册 caseId → 404 CASE_NOT_FOUND JSON（不开始流）
+  ---
+  duration_ms: 3.2555
+  type: 'test'
+  ...
+# Subtest: GET events/stream：非法 afterSeq → 400 INVALID_ENGINE_INPUT JSON
+ok 383 - GET events/stream：非法 afterSeq → 400 INVALID_ENGINE_INPUT JSON
+  ---
+  duration_ms: 5.3425
+  type: 'test'
+  ...
+# Subtest: GET events/stream：连接即逐条回放既有事件帧（id/data 完整、seq 单调连续）
+ok 384 - GET events/stream：连接即逐条回放既有事件帧（id/data 完整、seq 单调连续）
+  ---
+  duration_ms: 6.5001
+  type: 'test'
+  ...
+# Subtest: GET events/stream：afterSeq 续传只回放该序号之后的帧
+ok 385 - GET events/stream：afterSeq 续传只回放该序号之后的帧
+  ---
+  duration_ms: 315.9571
+  type: 'test'
+  ...
+# Subtest: GET events/stream：连接后向引擎 append evidence，新事件帧在 500ms 轮询窗口内到达
+ok 386 - GET events/stream：连接后向引擎 append evidence，新事件帧在 500ms 轮询窗口内到达
+  ---
+  duration_ms: 510.9666
+  type: 'test'
+  ...
+# Subtest: GET events/stream：request.signal abort 后流终止（最终 read 得 done），测试进程可正常退出
+ok 387 - GET events/stream：request.signal abort 后流终止（最终 read 得 done），测试进程可正常退出
+  ---
+  duration_ms: 9.1719
+  type: 'test'
+  ...
+# Subtest: §14.1｜Projection.actors 存在、顺序与内容同 seed 名册（5 个角色）
+ok 388 - §14.1｜Projection.actors 存在、顺序与内容同 seed 名册（5 个角色）
+  ---
+  duration_ms: 5.2192
+  type: 'test'
+  ...
+# Subtest: §14.1｜actors 深克隆：篡改返回值不影响引擎与后续读取
+ok 389 - §14.1｜actors 深克隆：篡改返回值不影响引擎与后续读取
+  ---
+  duration_ms: 4.098
+  type: 'test'
+  ...
+# Subtest: §14.1｜未知 actorId 仍 ACTOR_NOT_FOUND：actors 名册不扩大 authority 空间
+ok 390 - §14.1｜未知 actorId 仍 ACTOR_NOT_FOUND：actors 名册不扩大 authority 空间
+  ---
+  duration_ms: 2.7701
+  type: 'test'
+  ...
+# Subtest: §14.2｜初态：WI-B2/WI-A2 双重等待（receipt 未决且前置 workitem 未完成）保持 blocked
+ok 391 - §14.2｜初态：WI-B2/WI-A2 双重等待（receipt 未决且前置 workitem 未完成）保持 blocked
+  ---
+  duration_ms: 4.8053
+  type: 'test'
+  ...
+# Subtest: §14.2｜扩展 happy path：PG-1 → CG-1 → BG-1 → AG-1 逐级 Receipt，WI-B2/WI-A2 由既有依赖机制自动启动
+ok 392 - §14.2｜扩展 happy path：PG-1 → CG-1 → BG-1 → AG-1 逐级 Receipt，WI-B2/WI-A2 由既有依赖机制自动启动
+  ---
+  duration_ms: 7.6813
+  type: 'test'
+  ...
+# Subtest: §14.2｜否决传播：PG-1 rejected → WI-C3 stopped_dependency；WI-B2/WI-A2 保持 blocked；WI-B1/WI-A1 贡献保留
+ok 393 - §14.2｜否决传播：PG-1 rejected → WI-C3 stopped_dependency；WI-B2/WI-A2 保持 blocked；WI-B1/WI-A1 贡献保留
+  ---
+  duration_ms: 5.5268
+  type: 'test'
+  ...
+# Subtest: §14.2｜replay 等价：全链路事件 rebuildProjection 与 getProjection deepEqual（忽略 generatedAt），actors 一致
+ok 394 - §14.2｜replay 等价：全链路事件 rebuildProjection 与 getProjection deepEqual（忽略 generatedAt），actors 一致
+  ---
+  duration_ms: 6.7476
+  type: 'test'
+  ...
+# Subtest: 空目录：loadAll → []、exportSnapshot → null、listCaseIds → []，读操作不创建文件
+ok 395 - 空目录：loadAll → []、exportSnapshot → null、listCaseIds → []，读操作不创建文件
+  ---
+  duration_ms: 10.4139
+  type: 'test'
+  ...
+# Subtest: append/loadAll 往返一致；读取与快照均为深克隆；新实例从文件恢复并按实际 lastSeq 续写
+ok 396 - append/loadAll 往返一致；读取与快照均为深克隆；新实例从文件恢复并按实际 lastSeq 续写
+  ---
+  duration_ms: 9.343
+  type: 'test'
+  ...
+# Subtest: SEQ_CONFLICT：过期/超前 expectedLastSeq 返回冲突且文件字节级不变；内存计数与文件行数分歧时以文件为准
+ok 397 - SEQ_CONFLICT：过期/超前 expectedLastSeq 返回冲突且文件字节级不变；内存计数与文件行数分歧时以文件为准
+  ---
+  duration_ms: 7.1209
+  type: 'test'
+  ...
+# Subtest: 损坏行失败关闭：非 JSON 行 / 形状非法行 → INVALID_ENGINE_INPUT，detail 含行号；append 同样被挡
+ok 398 - 损坏行失败关闭：非 JSON 行 / 形状非法行 → INVALID_ENGINE_INPUT，detail 含行号；append 同样被挡
+  ---
+  duration_ms: 7.7272
+  type: 'test'
+  ...
+# Subtest: clear：删除文件后 loadAll → []；重复 clear / clear 不存在的 case 静默；之后可从 0 重放
+ok 399 - clear：删除文件后 loadAll → []；重复 clear / clear 不存在的 case 静默；之后可从 0 重放
+  ---
+  duration_ms: 5.263
+  type: 'test'
+  ...
+# Subtest: importSnapshot：整文件覆写往返；seq 违反从 1 连续拒绝且不覆写；import 后可按 lastSeq 续写
+ok 400 - importSnapshot：整文件覆写往返；seq 违反从 1 连续拒绝且不覆写；import 后可按 lastSeq 续写
+  ---
+  duration_ms: 8.1099
+  type: 'test'
+  ...
+# Subtest: 非法 caseId（空串、.、..、路径分隔符、非法字符）全入口 INVALID_ENGINE_INPUT，且不留文件
+ok 401 - 非法 caseId（空串、.、..、路径分隔符、非法字符）全入口 INVALID_ENGINE_INPUT，且不留文件
+  ---
+  duration_ms: 4.6757
+  type: 'test'
+  ...
+# Subtest: append 批内 seq 不连续 / 事件形状非法 / expectedLastSeq 与 options 非法 → INVALID_ENGINE_INPUT 且不写文件
+ok 402 - append 批内 seq 不连续 / 事件形状非法 / expectedLastSeq 与 options 非法 → INVALID_ENGINE_INPUT 且不写文件
+  ---
+  duration_ms: 5.0399
+  type: 'test'
+  ...
+# Subtest: cleanup: 移除全部临时目录
+ok 403 - cleanup: 移除全部临时目录
+  ---
+  duration_ms: 9.3145
+  type: 'test'
+  ...
+# Subtest: 加固｜appendEvidence：journal 故障 → 原错误上抛，事件恰好提交一次，同进程重发 → replayed
+ok 404 - 加固｜appendEvidence：journal 故障 → 原错误上抛，事件恰好提交一次，同进程重发 → replayed
+  ---
+  duration_ms: 5.285
+  type: 'test'
+  ...
+# Subtest: 加固｜recordDecision：journal 故障（第 3 次 append）→ 失败关闭，重发 → replayed，Receipt 恰好 1 条
+ok 405 - 加固｜recordDecision：journal 故障（第 3 次 append）→ 失败关闭，重发 → replayed，Receipt 恰好 1 条
+  ---
+  duration_ms: 6.4926
+  type: 'test'
+  ...
+# Subtest: 加固｜崩溃窗口重启：缺失 journal 记录的 decision 重发 → GATE_ALREADY_DECIDED（不重复 Receipt、不重复事件）；已入 journal 的命令照常 replayed
+ok 406 - 加固｜崩溃窗口重启：缺失 journal 记录的 decision 重发 → GATE_ALREADY_DECIDED（不重复 Receipt、不重复事件）；已入 journal 的命令照常 replayed
+  ---
+  duration_ms: 22.7406
+  type: 'test'
+  ...
+# Subtest: 加固｜崩溃窗口重启：缺失 journal 记录的 evidence 重发 → evidenceId 自然键 replayed（无重复事件）
+ok 407 - 加固｜崩溃窗口重启：缺失 journal 记录的 evidence 重发 → evidenceId 自然键 replayed（无重复事件）
+  ---
+  duration_ms: 8.2771
+  type: 'test'
+  ...
+# Subtest: 加固｜journal 记录 rev 超前事件流（账本被截断/错配）→ 引擎构造 INVALID_ENGINE_INPUT，不伪造幂等恢复
+ok 408 - 加固｜journal 记录 rev 超前事件流（账本被截断/错配）→ 引擎构造 INVALID_ENGINE_INPUT，不伪造幂等恢复
+  ---
+  duration_ms: 7.8651
+  type: 'test'
+  ...
+# Subtest: 加固｜rev 守卫精确性：journal rev 恰好等于事件流长度 → 合法；超过 1 → 失败关闭
+ok 409 - 加固｜rev 守卫精确性：journal rev 恰好等于事件流长度 → 合法；超过 1 → 失败关闭
+  ---
+  duration_ms: 8.0599
+  type: 'test'
+  ...
+# Subtest: 加固｜对照：合法成对账本（journal rev ≤ 事件流长度）构造成功且幂等恢复
+ok 410 - 加固｜对照：合法成对账本（journal rev ≤ 事件流长度）构造成功且幂等恢复
+  ---
+  duration_ms: 6.8916
+  type: 'test'
+  ...
+# Subtest: 种子 fixture 符合契约 §11＋§14.2：demo caseId、5 个 Actor、8 个工作项（含 WI-B2/WI-A2 承接链）、4 个 Gate（含 BG-1/AG-1）、初始 evidence tags 恰为 business_license
+ok 411 - 种子 fixture 符合契约 §11＋§14.2：demo caseId、5 个 Actor、8 个工作项（含 WI-B2/WI-A2 承接链）、4 个 Gate（含 BG-1/AG-1）、初始 evidence tags 恰为 business_license
+  ---
+  duration_ms: 3.4498
+  type: 'test'
+  ...
+# Subtest: 核心证明点①｜初始 upstream_context 到达即三域并行启动，其余工作项保持 blocked
+ok 412 - 核心证明点①｜初始 upstream_context 到达即三域并行启动，其余工作项保持 blocked
+  ---
+  duration_ms: 3.8815
+  type: 'test'
+  ...
+# Subtest: 核心证明点②｜硬等待：WI-C1/WI-C2 已完成且 PG-1 未决时，WI-C3 仍 blocked
+ok 413 - 核心证明点②｜硬等待：WI-C1/WI-C2 已完成且 PG-1 未决时，WI-C3 仍 blocked
+  ---
+  duration_ms: 4.7515
+  type: 'test'
+  ...
+# Subtest: 核心证明点③｜PG-1 rejected：WI-C3 stopped_dependency、已完成贡献保留、无依赖工作不受影响、Receipt 留痕
+ok 414 - 核心证明点③｜PG-1 rejected：WI-C3 stopped_dependency、已完成贡献保留、无依赖工作不受影响、Receipt 留痕
+  ---
+  duration_ms: 5.645
+  type: 'test'
+  ...
+# Subtest: 核心证明点④｜PG-1 approved → WI-C3 启动 → submitWork → CG-1 approved → completed
+ok 415 - 核心证明点④｜PG-1 approved → WI-C3 启动 → submitWork → CG-1 approved → completed
+  ---
+  duration_ms: 4.3379
+  type: 'test'
+  ...
+# Subtest: 幂等｜同 commandId 同载荷重放 appendEvidence：status=replayed、事件总数不变、rev 为原接受时的 rev
+ok 416 - 幂等｜同 commandId 同载荷重放 appendEvidence：status=replayed、事件总数不变、rev 为原接受时的 rev
+  ---
+  duration_ms: 4.0337
+  type: 'test'
+  ...
+# Subtest: 幂等｜同 commandId 重放 submitWork 与 recordDecision：replayed 且幂等优先于状态检查
+ok 417 - 幂等｜同 commandId 重放 submitWork 与 recordDecision：replayed 且幂等优先于状态检查
+  ---
+  duration_ms: 3.9825
+  type: 'test'
+  ...
+# Subtest: 幂等｜同 commandId 异载荷 → IDEMPOTENCY_CONFLICT，失败关闭不产生事件
+ok 418 - 幂等｜同 commandId 异载荷 → IDEMPOTENCY_CONFLICT，失败关闭不产生事件
+  ---
+  duration_ms: 4.7751
+  type: 'test'
+  ...
+# Subtest: 幂等｜同 evidenceId 异载荷（不同 commandId）→ EVIDENCE_CONFLICT，失败关闭不产生事件
+ok 419 - 幂等｜同 evidenceId 异载荷（不同 commandId）→ EVIDENCE_CONFLICT，失败关闭不产生事件
+  ---
+  duration_ms: 3.2286
+  type: 'test'
+  ...
+# Subtest: 版本｜过期 expectedRev → VERSION_CONFLICT 且失败关闭；正确 expectedRev 接受且 rev 与事件总数一致
+ok 420 - 版本｜过期 expectedRev → VERSION_CONFLICT 且失败关闭；正确 expectedRev 接受且 rev 与事件总数一致
+  ---
+  duration_ms: 3.5109
+  type: 'test'
+  ...
+# Subtest: Candidate｜R2 初始必触发：upstream_context 缺 due_diligence_report → missing_document 面向 WI-C1
+ok 421 - Candidate｜R2 初始必触发：upstream_context 缺 due_diligence_report → missing_document 面向 WI-C1
+  ---
+  duration_ms: 3.1233
+  type: 'test'
+  ...
+# Subtest: Candidate｜R1 仅在财务+合同齐备后触发：basis 顺序与 dedupeKey 符合 §5
+ok 422 - Candidate｜R1 仅在财务+合同齐备后触发：basis 顺序与 dedupeKey 符合 §5
+  ---
+  duration_ms: 3.7187
+  type: 'test'
+  ...
+# Subtest: Candidate 去重｜重复提交同类证据不重复发（同 commandId 重放零新事件零新 Candidate）
+ok 423 - Candidate 去重｜重复提交同类证据不重复发（同 commandId 重放零新事件零新 Candidate）
+  ---
+  duration_ms: 3.9752
+  type: 'test'
+  ...
+# Subtest: Candidate 不越权｜authority 恒为 none，工作项状态只按 Evidence 依赖规则变化
+ok 424 - Candidate 不越权｜authority 恒为 none，工作项状态只按 Evidence 依赖规则变化
+  ---
+  duration_ms: 4.5543
+  type: 'test'
+  ...
+# Subtest: 退回重做｜PG-1 returned → receipt 为 null、WI-P1 回 in_progress → 重新提交 Gate 重开 → 再批准产生新 Receipt → WI-C3 启动
+ok 425 - 退回重做｜PG-1 returned → receipt 为 null、WI-P1 回 in_progress → 重新提交 Gate 重开 → 再批准产生新 Receipt → WI-C3 启动
+  ---
+  duration_ms: 6.1043
+  type: 'test'
+  ...
+# Subtest: 深克隆｜修改 getProjection() 返回对象不影响引擎后续状态
+ok 426 - 深克隆｜修改 getProjection() 返回对象不影响引擎后续状态
+  ---
+  duration_ms: 3.9755
+  type: 'test'
+  ...
+# Subtest: getEvents 分页｜seq 连续单调、limit 截断、hasMore、afterSeq 与默认 limit
+ok 427 - getEvents 分页｜seq 连续单调、limit 截断、hasMore、afterSeq 与默认 limit
+  ---
+  duration_ms: 3.2454
+  type: 'test'
+  ...
+# Subtest: 时钟注入｜options.now 单调生效：事件、证据与 Receipt 时间戳全部来自注入时钟
+ok 428 - 时钟注入｜options.now 单调生效：事件、证据与 Receipt 时间戳全部来自注入时钟
+  ---
+  duration_ms: 3.5532
+  type: 'test'
+  ...
+# Subtest: event log append: expectedLastSeq 命中成功、过期返回 SEQ_CONFLICT 且不部分写入、seq 严格单调
+ok 429 - event log append: expectedLastSeq 命中成功、过期返回 SEQ_CONFLICT 且不部分写入、seq 严格单调
+  ---
+  duration_ms: 3.1513
+  type: 'test'
+  ...
+# Subtest: event log snapshots: export/import 往返 deepEqual，快照与读取均为深克隆
+ok 430 - event log snapshots: export/import 往返 deepEqual，快照与读取均为深克隆
+  ---
+  duration_ms: 10.2064
+  type: 'test'
+  ...
+# Subtest: event log importSnapshot: 跳号/重复/不从 1/非法载荷 一律 INVALID_ENGINE_INPUT 拒绝
+ok 431 - event log importSnapshot: 跳号/重复/不从 1/非法载荷 一律 INVALID_ENGINE_INPUT 拒绝
+  ---
+  duration_ms: 4.4827
+  type: 'test'
+  ...
+# Subtest: rebuildProjection: 全事件类型序列折叠出契约 §8 Projection（状态/receipts/contributions/candidates/rev）
+ok 432 - rebuildProjection: 全事件类型序列折叠出契约 §8 Projection（状态/receipts/contributions/candidates/rev）
+  ---
+  duration_ms: 5.0237
+  type: 'test'
+  ...
+# Subtest: rebuildProjection: PG-1 rejected → WI-C3 stopped_dependency，贡献保留，无关域不受影响
+ok 433 - rebuildProjection: PG-1 rejected → WI-C3 stopped_dependency，贡献保留，无关域不受影响
+  ---
+  duration_ms: 3.9908
+  type: 'test'
+  ...
+# Subtest: rebuildProjection: returned → gate 回 pending、linked item 回 in_progress；重做轮可再开再批
+ok 434 - rebuildProjection: returned → gate 回 pending、linked item 回 in_progress；重做轮可再开再批
+  ---
+  duration_ms: 3.0809
+  type: 'test'
+  ...
+# Subtest: rebuildProjection: 输出与输入深克隆隔离（改事件不改投影，改投影不复算污染）
+ok 435 - rebuildProjection: 输出与输入深克隆隔离（改事件不改投影，改投影不复算污染）
+  ---
+  duration_ms: 4.2082
+  type: 'test'
+  ...
+# Subtest: rebuildProjection fail-closed: 未知类型/未知字段/缺失字段/seq 断裂/非法配对 一律 INVALID_ENGINE_INPUT
+ok 436 - rebuildProjection fail-closed: 未知类型/未知字段/缺失字段/seq 断裂/非法配对 一律 INVALID_ENGINE_INPUT
+  ---
+  duration_ms: 4.9997
+  type: 'test'
+  ...
+# Subtest: engine equivalence: rebuildProjection(seed, engine.getEvents(0,500).events) deepEqual engine.getProjection()（忽略 generatedAt）
+ok 437 - engine equivalence: rebuildProjection(seed, engine.getEvents(0,500).events) deepEqual engine.getProjection()（忽略 generatedAt）
+  ---
+  duration_ms: 4.286
+  type: 'test'
+  ...
+# Subtest: engine + eventLog: 快照 import 进新 log 后 createV4LifeEngine(seed,{eventLog}) 折叠等价，且新追加写入 log
+ok 438 - engine + eventLog: 快照 import 进新 log 后 createV4LifeEngine(seed,{eventLog}) 折叠等价，且新追加写入 log
+  ---
+  duration_ms: 6.6636
+  type: 'test'
+  ...
+# Subtest: GET projection：demo case 返回 200 Projection，no-store
+ok 439 - GET projection：demo case 返回 200 Projection，no-store
+  ---
+  duration_ms: 4.7261
+  type: 'test'
+  ...
+# Subtest: GET projection：未知 caseId 返回 404 CASE_NOT_FOUND
+ok 440 - GET projection：未知 caseId 返回 404 CASE_NOT_FOUND
+  ---
+  duration_ms: 3.2487
+  type: 'test'
+  ...
+# Subtest: POST evidence：accepted 201（含 startedWorkItemIds）→ 同 commandId 同载荷重放 200 replayed 且事件数不变
+ok 441 - POST evidence：accepted 201（含 startedWorkItemIds）→ 同 commandId 同载荷重放 200 replayed 且事件数不变
+  ---
+  duration_ms: 5.3945
+  type: 'test'
+  ...
+# Subtest: POST evidence：同 commandId 异载荷 → 409 IDEMPOTENCY_CONFLICT
+ok 442 - POST evidence：同 commandId 异载荷 → 409 IDEMPOTENCY_CONFLICT
+  ---
+  duration_ms: 3.7992
+  type: 'test'
+  ...
+# Subtest: POST evidence：同 evidenceId 异载荷（新 commandId）→ 409 EVIDENCE_CONFLICT
+ok 443 - POST evidence：同 evidenceId 异载荷（新 commandId）→ 409 EVIDENCE_CONFLICT
+  ---
+  duration_ms: 3.8158
+  type: 'test'
+  ...
+# Subtest: POST evidence：过期 expectedRev → 409 VERSION_CONFLICT
+ok 444 - POST evidence：过期 expectedRev → 409 VERSION_CONFLICT
+  ---
+  duration_ms: 3.1259
+  type: 'test'
+  ...
+# Subtest: POST evidence：缺字段 / 坏 tags / 超长 / 非法 amountCny / 坏 expectedRev → 400
+ok 445 - POST evidence：缺字段 / 坏 tags / 超长 / 非法 amountCny / 坏 expectedRev → 400
+  ---
+  duration_ms: 4.8325
+  type: 'test'
+  ...
+# Subtest: POST evidence：非法 JSON body → 400 INVALID_JSON（防护对齐：显式区分 body 损坏与字段缺失）
+ok 446 - POST evidence：非法 JSON body → 400 INVALID_JSON（防护对齐：显式区分 body 损坏与字段缺失）
+  ---
+  duration_ms: 3.2748
+  type: 'test'
+  ...
+# Subtest: POST evidence：未知 caseId → 404 CASE_NOT_FOUND
+ok 447 - POST evidence：未知 caseId → 404 CASE_NOT_FOUND
+  ---
+  duration_ms: 3.0482
+  type: 'test'
+  ...
+# Subtest: POST work：正常提交 200，无 Gate 项完成
+ok 448 - POST work：正常提交 200，无 Gate 项完成
+  ---
+  duration_ms: 3.8304
+  type: 'test'
+  ...
+# Subtest: POST work：角色不符 → 403 ROLE_MISMATCH
+ok 449 - POST work：角色不符 → 403 ROLE_MISMATCH
+  ---
+  duration_ms: 3.4701
+  type: 'test'
+  ...
+# Subtest: POST work：blocked 项提交 → 409 WORK_ITEM_NOT_ACTIVE
+ok 450 - POST work：blocked 项提交 → 409 WORK_ITEM_NOT_ACTIVE
+  ---
+  duration_ms: 3.8938
+  type: 'test'
+  ...
+# Subtest: POST work：未知工作项 → 404 WORK_ITEM_NOT_FOUND
+ok 451 - POST work：未知工作项 → 404 WORK_ITEM_NOT_FOUND
+  ---
+  duration_ms: 15.2272
+  type: 'test'
+  ...
+# Subtest: POST work：缺字段 → 400 INVALID_ENGINE_INPUT
+ok 452 - POST work：缺字段 → 400 INVALID_ENGINE_INPUT
+  ---
+  duration_ms: 3.7189
+  type: 'test'
+  ...
+# Subtest: POST decisions：Gate 未开 → 409 GATE_NOT_OPEN
+ok 453 - POST decisions：Gate 未开 → 409 GATE_NOT_OPEN
+  ---
+  duration_ms: 3.8348
+  type: 'test'
+  ...
+# Subtest: POST decisions：角色不符 403 → approved 201 含 Receipt → 重复决定 409 GATE_ALREADY_DECIDED
+ok 454 - POST decisions：角色不符 403 → approved 201 含 Receipt → 重复决定 409 GATE_ALREADY_DECIDED
+  ---
+  duration_ms: 4.7766
+  type: 'test'
+  ...
+# Subtest: POST decisions：returned → 201 且 receipt=null、不发 Receipt、Gate 回到 pending、工作项回到 in_progress
+ok 455 - POST decisions：returned → 201 且 receipt=null、不发 Receipt、Gate 回到 pending、工作项回到 in_progress
+  ---
+  duration_ms: 3.5334
+  type: 'test'
+  ...
+# Subtest: POST decisions：非法 outcome / 缺字段 → 400 INVALID_ENGINE_INPUT
+ok 456 - POST decisions：非法 outcome / 缺字段 → 400 INVALID_ENGINE_INPUT
+  ---
+  duration_ms: 4.6032
+  type: 'test'
+  ...
+# Subtest: GET events：afterSeq/limit 分页正确，hasMore 与 nextSeq 语义正确
+ok 457 - GET events：afterSeq/limit 分页正确，hasMore 与 nextSeq 语义正确
+  ---
+  duration_ms: 4.0713
+  type: 'test'
+  ...
+# Subtest: GET events：非法 afterSeq / limit → 400 INVALID_ENGINE_INPUT
+ok 458 - GET events：非法 afterSeq / limit → 400 INVALID_ENGINE_INPUT
+  ---
+  duration_ms: 4.5815
+  type: 'test'
+  ...
+# Subtest: injectV4LifeEngine：可替换运行时引擎实例，路由读到替换后的状态
+ok 459 - injectV4LifeEngine：可替换运行时引擎实例，路由读到替换后的状态
+  ---
+  duration_ms: 5.0153
+  type: 'test'
+  ...
+# Subtest: POST evidence：声明 body 超过 1MB → 413 REQUEST_BODY_TOO_LARGE
+ok 460 - POST evidence：声明 body 超过 1MB → 413 REQUEST_BODY_TOO_LARGE
+  ---
+  duration_ms: 4.9804
+  type: 'test'
+  ...
+# Subtest: POST evidence：chunked 无声明 body 超限 → 413（流式累计上限，不依赖 Content-Length）
+ok 461 - POST evidence：chunked 无声明 body 超限 → 413（流式累计上限，不依赖 Content-Length）
+  ---
+  duration_ms: 3.3158
+  type: 'test'
+  ...
+# Subtest: 越权｜recordDecision：PG-1 用非 policy 角色决定 → ROLE_MISMATCH，失败关闭不产生事件
+ok 462 - 越权｜recordDecision：PG-1 用非 policy 角色决定 → ROLE_MISMATCH，失败关闭不产生事件
+  ---
+  duration_ms: 4.1124
+  type: 'test'
+  ...
+# Subtest: 越权｜recordDecision：CG-1 用非 credit 角色（policy/business）决定 → ROLE_MISMATCH
+ok 463 - 越权｜recordDecision：CG-1 用非 credit 角色（policy/business）决定 → ROLE_MISMATCH
+  ---
+  duration_ms: 3.3173
+  type: 'test'
+  ...
+# Subtest: 越权｜submitWork：WI-P1/WI-C1/WI-C2/WI-B1/WI-A1 各至少一条非 assignedRole 提交 → ROLE_MISMATCH
+ok 464 - 越权｜submitWork：WI-P1/WI-C1/WI-C2/WI-B1/WI-A1 各至少一条非 assignedRole 提交 → ROLE_MISMATCH
+  ---
+  duration_ms: 4.8451
+  type: 'test'
+  ...
+# Subtest: 越权｜submitWork：WI-C3 由非 credit 角色提交 → ROLE_MISMATCH
+ok 465 - 越权｜submitWork：WI-C3 由非 credit 角色提交 → ROLE_MISMATCH
+  ---
+  duration_ms: 3.1253
+  type: 'test'
+  ...
+# Subtest: 越权｜未知 actorId → ACTOR_NOT_FOUND；字段校验先于 Actor 校验（INVALID_ENGINE_INPUT 优先）
+ok 466 - 越权｜未知 actorId → ACTOR_NOT_FOUND；字段校验先于 Actor 校验（INVALID_ENGINE_INPUT 优先）
+  ---
+  duration_ms: 5.9789
+  type: 'test'
+  ...
+# Subtest: 乱序｜blocked 工作项直接 submitWork → WORK_ITEM_NOT_ACTIVE（WI-C3/WI-C2/WI-B1）
+ok 467 - 乱序｜blocked 工作项直接 submitWork → WORK_ITEM_NOT_ACTIVE（WI-C3/WI-C2/WI-B1）
+  ---
+  duration_ms: 4.1509
+  type: 'test'
+  ...
+# Subtest: 乱序｜Gate 未开（linked item 未提交）时决定 → GATE_NOT_OPEN（PG-1/CG-1）
+ok 468 - 乱序｜Gate 未开（linked item 未提交）时决定 → GATE_NOT_OPEN（PG-1/CG-1）
+  ---
+  duration_ms: 3.9356
+  type: 'test'
+  ...
+# Subtest: 乱序｜Gate 已 decided 后重复决定 → GATE_ALREADY_DECIDED
+ok 469 - 乱序｜Gate 已 decided 后重复决定 → GATE_ALREADY_DECIDED
+  ---
+  duration_ms: 3.1766
+  type: 'test'
+  ...
+# Subtest: 幂等｜同 commandId 双发 appendEvidence → 第二条 replayed，事件总数不变，rev 为原接受时 rev
+ok 470 - 幂等｜同 commandId 双发 appendEvidence → 第二条 replayed，事件总数不变，rev 为原接受时 rev
+  ---
+  duration_ms: 2.5782
+  type: 'test'
+  ...
+# Subtest: 幂等｜同 commandId 双发 submitWork → replayed，事件总数不变
+ok 471 - 幂等｜同 commandId 双发 submitWork → replayed，事件总数不变
+  ---
+  duration_ms: 3.2001
+  type: 'test'
+  ...
+# Subtest: 幂等｜同 commandId 双发 recordDecision → replayed 且 Receipt 一致，幂等优先于 GATE_ALREADY_DECIDED
+ok 472 - 幂等｜同 commandId 双发 recordDecision → replayed 且 Receipt 一致，幂等优先于 GATE_ALREADY_DECIDED
+  ---
+  duration_ms: 3.1345
+  type: 'test'
+  ...
+# Subtest: 同键异载荷｜同 evidenceId + 异 payload（不同 commandId）→ EVIDENCE_CONFLICT
+ok 473 - 同键异载荷｜同 evidenceId + 异 payload（不同 commandId）→ EVIDENCE_CONFLICT
+  ---
+  duration_ms: 3.4405
+  type: 'test'
+  ...
+# Subtest: 同键异载荷｜同 commandId + 异 payload → IDEMPOTENCY_CONFLICT（append 与 submit 两条路径）
+ok 474 - 同键异载荷｜同 commandId + 异 payload → IDEMPOTENCY_CONFLICT（append 与 submit 两条路径）
+  ---
+  duration_ms: 2.9132
+  type: 'test'
+  ...
+# Subtest: 并发｜两命令携带同一 expectedRev：第一条接受后第二条 → VERSION_CONFLICT，失败后可恢复推进
+ok 475 - 并发｜两命令携带同一 expectedRev：第一条接受后第二条 → VERSION_CONFLICT，失败后可恢复推进
+  ---
+  duration_ms: 3.0675
+  type: 'test'
+  ...
+# Subtest: 缺失依赖｜WI-C3 在 PG-1 未批准前任何尝试都不可推进：状态保持 blocked，提交一律 409
+ok 476 - 缺失依赖｜WI-C3 在 PG-1 未批准前任何尝试都不可推进：状态保持 blocked，提交一律 409
+  ---
+  duration_ms: 3.6915
+  type: 'test'
+  ...
+# Subtest: 否决级联｜PG-1 rejected → WI-C3 stopped_dependency；贡献/Evidence/Candidate 全保留；事件只增不删；WI-B1/WI-A1 不受影响
+ok 477 - 否决级联｜PG-1 rejected → WI-C3 stopped_dependency；贡献/Evidence/Candidate 全保留；事件只增不删；WI-B1/WI-A1 不受影响
+  ---
+  duration_ms: 4.951
+  type: 'test'
+  ...
+# Subtest: 退回重做｜PG-1 returned 不发 Receipt → WI-P1 回 in_progress → 重提交再批准产生新 Receipt → WI-C3 才启动
+ok 478 - 退回重做｜PG-1 returned 不发 Receipt → WI-P1 回 in_progress → 重提交再批准产生新 Receipt → WI-C3 才启动
+  ---
+  duration_ms: 4.5867
+  type: 'test'
+  ...
+# Subtest: Candidate 不越权｜R1/R2 触发后无任何 workItem 状态因 Candidate 变化；authority 全部 none
+ok 479 - Candidate 不越权｜R1/R2 触发后无任何 workItem 状态因 Candidate 变化；authority 全部 none
+  ---
+  duration_ms: 3.6709
+  type: 'test'
+  ...
+# Subtest: Candidate 不越权｜引擎无 Candidate 驱动正式状态的入口（记录性断言：frozen API surface §7）
+ok 480 - Candidate 不越权｜引擎无 Candidate 驱动正式状态的入口（记录性断言：frozen API surface §7）
+  ---
+  duration_ms: 2.8355
+  type: 'test'
+  ...
+# Subtest: 事件重放｜全量导出 rebuildProjection(seed, events) 与 getProjection() deepEqual（忽略 generatedAt）
+ok 481 - 事件重放｜全量导出 rebuildProjection(seed, events) 与 getProjection() deepEqual（忽略 generatedAt）
+  ---
+  duration_ms: 4.5341
+  type: 'test'
+  ...
+# Subtest: 事件分页｜afterSeq 超出末尾 → 空数组 hasMore=false；limit 截断正确；默认 limit 返回全量余量
+ok 482 - 事件分页｜afterSeq 超出末尾 → 空数组 hasMore=false；limit 截断正确；默认 limit 返回全量余量
+  ---
+  duration_ms: 3.2639
+  type: 'test'
+  ...
+# Subtest: 深克隆｜Projection/Events 返回深克隆：外部变异不得污染引擎内部状态
+ok 483 - 深克隆｜Projection/Events 返回深克隆：外部变异不得污染引擎内部状态
+  ---
+  duration_ms: 3.4847
+  type: 'test'
+  ...
+# Subtest: HTTP｜健康路径：fixture 全链路经 Route Handler 至 CG-1 approved，事件分页可完整走通
+ok 484 - HTTP｜健康路径：fixture 全链路经 Route Handler 至 CG-1 approved，事件分页可完整走通
+  ---
+  duration_ms: 7.0748
+  type: 'test'
+  ...
+# Subtest: HTTP｜幂等重放一致性：同 commandId 双发 → 201/200 replayed，事件与 Projection 不变
+ok 485 - HTTP｜幂等重放一致性：同 commandId 双发 → 201/200 replayed，事件与 Projection 不变
+  ---
+  duration_ms: 7.949
+  type: 'test'
+  ...
+# Subtest: HTTP｜失败矩阵：404/400/403/409 全类别，错误 envelope 统一 {error: CODE}
+ok 486 - HTTP｜失败矩阵：404/400/403/409 全类别，错误 envelope 统一 {error: CODE}
+  ---
+  duration_ms: 7.1873
+  type: 'test'
+  ...
+# Subtest: HTTP｜事件分页参数：limit 截断正确、afterSeq 越界返回空数组 hasMore=false
+ok 487 - HTTP｜事件分页参数：limit 截断正确、afterSeq 越界返回空数组 hasMore=false
+  ---
+  duration_ms: 5.3451
+  type: 'test'
+  ...
+# Subtest: P1 隔离｜默认（无 options）五个 candidate 命令失败关闭：INVALID_ENGINE_INPUT + detail，事件与 rev 不变
+ok 488 - P1 隔离｜默认（无 options）五个 candidate 命令失败关闭：INVALID_ENGINE_INPUT + detail，事件与 rev 不变
+  ---
+  duration_ms: 3.5797
+  type: 'test'
+  ...
+# Subtest: P1 隔离｜strict 投影：context 为 NONE 空窗口（无种子隐含批次），riskThreads 空且 P0 形状不变
+ok 489 - P1 隔离｜strict 投影：context 为 NONE 空窗口（无种子隐含批次），riskThreads 空且 P0 形状不变
+  ---
+  duration_ms: 2.8164
+  type: 'test'
+  ...
+# Subtest: P1 隔离｜options.p1CandidateSemantics 非法值 → 构造即 INVALID_ENGINE_INPUT
+ok 490 - P1 隔离｜options.p1CandidateSemantics 非法值 → 构造即 INVALID_ENGINE_INPUT
+  ---
+  duration_ms: 2.582
+  type: 'test'
+  ...
+# Subtest: P1 隔离｜strict 仍接受 Evidence §5 扩展字段与 riskThreadKey 折叠，append 恒置 claimed
+ok 491 - P1 隔离｜strict 仍接受 Evidence §5 扩展字段与 riskThreadKey 折叠，append 恒置 claimed
+  ---
+  duration_ms: 4.3285
+  type: 'test'
+  ...
+# Subtest: P1 隔离｜strict refold/rebuild 等价：P0-only 流在默认 off 下与在线投影 deepEqual（忽略 generatedAt）
+ok 492 - P1 隔离｜strict refold/rebuild 等价：P0-only 流在默认 off 下与在线投影 deepEqual（忽略 generatedAt）
+  ---
+  duration_ms: 3.8282
+  type: 'test'
+  ...
+# Subtest: P1 隔离｜历史 verification 事件可重放进 strict 引擎（通用事件层）；含收集窗口事件的流失败关闭
+ok 493 - P1 隔离｜历史 verification 事件可重放进 strict 引擎（通用事件层）；含收集窗口事件的流失败关闭
+  ---
+  duration_ms: 3.4078
+  type: 'test'
+  ...
+# Subtest: P1 隔离｜journal 中历史 candidate 命令在 strict 引擎上仍 replayed（幂等跨模式）
+ok 494 - P1 隔离｜journal 中历史 candidate 命令在 strict 引擎上仍 replayed（幂等跨模式）
+  ---
+  duration_ms: 3.1443
+  type: 'test'
+  ...
+# Subtest: P1 隔离｜demo 显式 opt-in：种子隐含批次存在、candidate 命令可用（对照 strict）
+ok 495 - P1 隔离｜demo 显式 opt-in：种子隐含批次存在、candidate 命令可用（对照 strict）
+  ---
+  duration_ms: 2.6787
+  type: 'test'
+  ...
+# Subtest: P1｜appendEvidence 注入扩展字段：verificationStatus 恒置 claimed，扩展字段进 Projection
+ok 496 - P1｜appendEvidence 注入扩展字段：verificationStatus 恒置 claimed，扩展字段进 Projection
+  ---
+  duration_ms: 2.7623
+  type: 'test'
+  ...
+# Subtest: P1｜changeVerification 全链路：claimed→verified→contradicted，事件载荷携带 from/to/reason
+ok 497 - P1｜changeVerification 全链路：claimed→verified→contradicted，事件载荷携带 from/to/reason
+  ---
+  duration_ms: 3.5202
+  type: 'test'
+  ...
+# Subtest: P1｜业务不得自核验（ROLE_MISMATCH）＋ 未知 actor/evidence 与非法目标状态失败关闭
+ok 498 - P1｜业务不得自核验（ROLE_MISMATCH）＋ 未知 actor/evidence 与非法目标状态失败关闭
+  ---
+  duration_ms: 15.5309
+  type: 'test'
+  ...
+# Subtest: P1｜changeVerification 幂等与冲突：同 commandId 同载荷 replayed、异载荷 IDEMPOTENCY_CONFLICT、旧 rev VERSION_CONFLICT
+ok 499 - P1｜changeVerification 幂等与冲突：同 commandId 同载荷 replayed、异载荷 IDEMPOTENCY_CONFLICT、旧 rev VERSION_CONFLICT
+  ---
+  duration_ms: 4.3222
+  type: 'test'
+  ...
+# Subtest: P1｜扩展字段校验失败关闭：confidence 仅 model_derived、ISO 时间格式、subjectRefs 上限、verificationStatus 不接受客户端传入
+ok 500 - P1｜扩展字段校验失败关闭：confidence 仅 model_derived、ISO 时间格式、subjectRefs 上限、verificationStatus 不接受客户端传入
+  ---
+  duration_ms: 3.5025
+  type: 'test'
+  ...
+# Subtest: P1｜旧数据兼容：无新字段的老命令照常，Evidence 保持 P0 形状，核验命令仍可作用于旧 Evidence（from=claimed）
+ok 501 - P1｜旧数据兼容：无新字段的老命令照常，Evidence 保持 P0 形状，核验命令仍可作用于旧 Evidence（from=claimed）
+  ---
+  duration_ms: 8.8195
+  type: 'test'
+  ...
+# Subtest: P1｜种子隐含批次：初始化即 batch major=1 SEALED（openedAt=sealedAt=初始化事件 at）
+ok 502 - P1｜种子隐含批次：初始化即 batch major=1 SEALED（openedAt=sealedAt=初始化事件 at）
+  ---
+  duration_ms: 3.6157
+  type: 'test'
+  ...
+# Subtest: P1｜批次窗口全生命周期：open→append×2→stabilize→seal→seal 后 append 409→再 open major+1
+ok 503 - P1｜批次窗口全生命周期：open→append×2→stabilize→seal→seal 后 append 409→再 open major+1
+  ---
+  duration_ms: 5.0922
+  type: 'test'
+  ...
+# Subtest: P1｜窗口命令幂等：同 commandId 同载荷 replayed；stabilize/seal 同 commandId 异命令 IDEMPOTENCY_CONFLICT
+ok 504 - P1｜窗口命令幂等：同 commandId 同载荷 replayed；stabilize/seal 同 commandId 异命令 IDEMPOTENCY_CONFLICT
+  ---
+  duration_ms: 3.2163
+  type: 'test'
+  ...
+# Subtest: P1｜Risk Thread 折叠：seed workItem 进线程，Evidence 按 key 折叠，lastSeq 取关联对象最大事件序
+ok 505 - P1｜Risk Thread 折叠：seed workItem 进线程，Evidence 按 key 折叠，lastSeq 取关联对象最大事件序
+  ---
+  duration_ms: 4.8826
+  type: 'test'
+  ...
+# Subtest: P1｜重放等价：全场景事件 rebuildProjection 与 getProjection 除 generatedAt 外 deepEqual（含 riskThreadKey seed）
+ok 506 - P1｜重放等价：全场景事件 rebuildProjection 与 getProjection 除 generatedAt 外 deepEqual（含 riskThreadKey seed）
+  ---
+  duration_ms: 5.3286
+  type: 'test'
+  ...
+# Subtest: P1｜refold 等价：注入 eventLog 的第二只引擎折叠同一事件流后投影 deepEqual
+ok 507 - P1｜refold 等价：注入 eventLog 的第二只引擎折叠同一事件流后投影 deepEqual
+  ---
+  duration_ms: 5.1149
+  type: 'test'
+  ...
+# Subtest: P1｜向后兼容：全新 demo 引擎初始化事件数不变、无新增事件、projection 新增字段为种子缺省值
+ok 508 - P1｜向后兼容：全新 demo 引擎初始化事件数不变、无新增事件、projection 新增字段为种子缺省值
+  ---
+  duration_ms: 3.5312
+  type: 'test'
+  ...
+# Subtest: P1｜向后兼容：老命令全链路（append→submit→decision）行为不变
+ok 509 - P1｜向后兼容：老命令全链路（append→submit→decision）行为不变
+  ---
+  duration_ms: 3.3233
+  type: 'test'
+  ...
+# Subtest: P1｜commandJournal 记录 verification/context_batch 类别；重启后同 commandId 重发 → replayed
+ok 510 - P1｜commandJournal 记录 verification/context_batch 类别；重启后同 commandId 重发 → replayed
+  ---
+  duration_ms: 9.0664
+  type: 'test'
+  ...
+# Subtest: P1｜parseChangeVerificationBody：合法 body 通过；claimed/缺字段/非法值 → INVALID_ENGINE_INPUT
+ok 511 - P1｜parseChangeVerificationBody：合法 body 通过；claimed/缺字段/非法值 → INVALID_ENGINE_INPUT
+  ---
+  duration_ms: 2.7895
+  type: 'test'
+  ...
+# Subtest: 持久化端到端：重启（新引擎从同一文件账本 refold）后 rev 与 Projection 完全恢复
+ok 512 - 持久化端到端：重启（新引擎从同一文件账本 refold）后 rev 与 Projection 完全恢复
+  ---
+  duration_ms: 5.8606
+  type: 'test'
+  ...
+# Subtest: 持久化边界：重启后 commandId 幂等缓存不保留，evidenceId 自然键兜底 → 同载荷重发不产生重复事件
+ok 513 - 持久化边界：重启后 commandId 幂等缓存不保留，evidenceId 自然键兜底 → 同载荷重发不产生重复事件
+  ---
+  duration_ms: 5.9704
+  type: 'test'
+  ...
+# Subtest: 持久化 reset 语义：clear 后新引擎回到种子初态，旧事件不复活
+ok 514 - 持久化 reset 语义：clear 后新引擎回到种子初态，旧事件不复活
+  ---
+  duration_ms: 6.1439
+  type: 'test'
+  ...
+# Subtest: POST demo/reset：200 status=reset，projection 回到初始 rev/事件数，receipts 清空，WI-P1/WI-C1/WI-A1 回 in_progress
+ok 515 - POST demo/reset：200 status=reset，projection 回到初始 rev/事件数，receipts 清空，WI-P1/WI-C1/WI-A1 回 in_progress
+  ---
+  duration_ms: 5.4444
+  type: 'test'
+  ...
+# Subtest: GET demo/reset → 405 Method Not Allowed（reset 仅接受 POST）
+ok 516 - GET demo/reset → 405 Method Not Allowed（reset 仅接受 POST）
+  ---
+  duration_ms: 2.7667
+  type: 'test'
+  ...
+# Subtest: POST demo/reset：旧引擎被丢弃——reset 后用旧 projection 的 rev 经路由写命令 → 409 VERSION_CONFLICT
+ok 517 - POST demo/reset：旧引擎被丢弃——reset 后用旧 projection 的 rev 经路由写命令 → 409 VERSION_CONFLICT
+  ---
+  duration_ms: 5.2555
+  type: 'test'
+  ...
+# Subtest: POST demo/reset：caseId 与 demo 不匹配 → 404 CASE_NOT_FOUND，且不重建引擎
+ok 518 - POST demo/reset：caseId 与 demo 不匹配 → 404 CASE_NOT_FOUND，且不重建引擎
+  ---
+  duration_ms: 3.2694
+  type: 'test'
+  ...
+# Subtest: POST demo/reset：NODE_ENV=production 失败关闭 → 404 CASE_NOT_FOUND（finally 恢复原值）
+ok 519 - POST demo/reset：NODE_ENV=production 失败关闭 → 404 CASE_NOT_FOUND（finally 恢复原值）
+  ---
+  duration_ms: 3.5037
+  type: 'test'
+  ...
+# Subtest: POST demo/reset：不影响其他已注册引擎（other-case 实例与可读性保持）
+ok 520 - POST demo/reset：不影响其他已注册引擎（other-case 实例与可读性保持）
+  ---
+  duration_ms: 3.1417
+  type: 'test'
+  ...
+# Subtest: POST reset：非法 JSON body 走宽容模式 → 仍按省略语义重置成功
+ok 521 - POST reset：非法 JSON body 走宽容模式 → 仍按省略语义重置成功
+  ---
+  duration_ms: 3.2194
+  type: 'test'
+  ...
+# Subtest: POST reset：超大 body 即使宽容模式也 413（资源守卫不放宽）
+ok 522 - POST reset：超大 body 即使宽容模式也 413（资源守卫不放宽）
+  ---
+  duration_ms: 3.3596
+  type: 'test'
+  ...
+# Subtest: POST verification：合法核验 → 201 accepted，rev 恰 +1，投影核验状态更新，事件流新增一条 EVIDENCE_VERIFICATION_CHANGED（actor=核验人）
+ok 523 - POST verification：合法核验 → 201 accepted，rev 恰 +1，投影核验状态更新，事件流新增一条 EVIDENCE_VERIFICATION_CHANGED（actor=核验人）
+  ---
+  duration_ms: 3.9455
+  type: 'test'
+  ...
+# Subtest: POST verification：同 commandId 同载荷重发 → 200 replayed，rev 与事件数不变（不重复事件）
+ok 524 - POST verification：同 commandId 同载荷重发 → 200 replayed，rev 与事件数不变（不重复事件）
+  ---
+  duration_ms: 3.3621
+  type: 'test'
+  ...
+# Subtest: POST verification：同 commandId 异载荷（篡改 reason）→ 409 IDEMPOTENCY_CONFLICT
+ok 525 - POST verification：同 commandId 异载荷（篡改 reason）→ 409 IDEMPOTENCY_CONFLICT
+  ---
+  duration_ms: 3.2963
+  type: 'test'
+  ...
+# Subtest: POST verification：旧 expectedRev（新 commandId）→ 409 VERSION_CONFLICT，状态不变
+ok 526 - POST verification：旧 expectedRev（新 commandId）→ 409 VERSION_CONFLICT，状态不变
+  ---
+  duration_ms: 2.9544
+  type: 'test'
+  ...
+# Subtest: POST verification：business 演员核验 → 403 ROLE_MISMATCH；未知演员 → 400 ACTOR_NOT_FOUND
+ok 527 - POST verification：business 演员核验 → 403 ROLE_MISMATCH；未知演员 → 400 ACTOR_NOT_FOUND
+  ---
+  duration_ms: 4.9217
+  type: 'test'
+  ...
+# Subtest: POST verification：verificationStatus=claimed/excellent、reason 缺失/空串/空白、缺 commandId → 400 INVALID_ENGINE_INPUT
+ok 528 - POST verification：verificationStatus=claimed/excellent、reason 缺失/空串/空白、缺 commandId → 400 INVALID_ENGINE_INPUT
+  ---
+  duration_ms: 6.0066
+  type: 'test'
+  ...
+# Subtest: POST verification：不存在的 evidenceId → 404 EVIDENCE_NOT_FOUND（rev 不变）
+ok 529 - POST verification：不存在的 evidenceId → 404 EVIDENCE_NOT_FOUND（rev 不变）
+  ---
+  duration_ms: 2.7991
+  type: 'test'
+  ...
+# Subtest: POST verification：非 demo caseId（other-case）→ 404 CASE_NOT_FOUND，且 demo 状态不变
+ok 530 - POST verification：非 demo caseId（other-case）→ 404 CASE_NOT_FOUND，且 demo 状态不变
+  ---
+  duration_ms: 2.7924
+  type: 'test'
+  ...
+# Subtest: POST verification：NODE_ENV=production 失败关闭 → 404 CASE_NOT_FOUND 且状态不变（finally 恢复环境变量）
+ok 531 - POST verification：NODE_ENV=production 失败关闭 → 404 CASE_NOT_FOUND 且状态不变（finally 恢复环境变量）
+  ---
+  duration_ms: 3.0505
+  type: 'test'
+  ...
+# Subtest: POST verification：默认 strict 引擎（p1CandidateSemantics 未开启）注入 demo caseId → 400 INVALID_ENGINE_INPUT 且 rev/投影不变（G1 闸门）
+ok 532 - POST verification：默认 strict 引擎（p1CandidateSemantics 未开启）注入 demo caseId → 400 INVALID_ENGINE_INPUT 且 rev/投影不变（G1 闸门）
+  ---
+  duration_ms: 7.5667
+  type: 'test'
+  ...
+# Subtest: pending store：save→新实例 load 原载荷七字段逐字段一致；envelope version 恰为 1；key 恰为冻结值且不写多余键
+ok 533 - pending store：save→新实例 load 原载荷七字段逐字段一致；envelope version 恰为 1；key 恰为冻结值且不写多余键
+  ---
+  duration_ms: 5.1366
+  type: 'test'
+  ...
+# Subtest: 先存后发：面板发送路径 save 先于 fetch 且 save 结果先校验；store 文件零网络语义
+ok 534 - 先存后发：面板发送路径 save 先于 fetch 且 save 结果先校验；store 文件零网络语义
+  ---
+  duration_ms: 29.81
+  type: 'test'
+  ...
+# Subtest: 读写清除异常：统一 failure reason、绝不向调用方抛出；clear_failure 时记录仍在
+ok 535 - 读写清除异常：统一 failure reason、绝不向调用方抛出；clear_failure 时记录仍在
+  ---
+  duration_ms: 3.3818
+  type: 'test'
+  ...
+# Subtest: 坏 JSON/版本/形状：corrupt / unsupported_version / invalid_shape 不产出命令，损坏记录逐字节不被改写
+ok 536 - 坏 JSON/版本/形状：corrupt / unsupported_version / invalid_shape 不产出命令，损坏记录逐字节不被改写
+  ---
+  duration_ms: 3.0842
+  type: 'test'
+  ...
+# Subtest: stale 身份：store 恢复的命令（绑定 X/Y）对当前 W/Z → stale 且禁组装；切回 X/Y 恢复 match
+ok 537 - stale 身份：store 恢复的命令（绑定 X/Y）对当前 W/Z → stale 且禁组装；切回 X/Y 恢复 match
+  ---
+  duration_ms: 13.2466
+  type: 'test'
+  ...
+# Subtest: SSR：storage 为 null/undefined → 全操作 unavailable 不抛；三文件模块顶层无裸 window 访问
+ok 538 - SSR：storage 为 null/undefined → 全操作 unavailable 不抛；三文件模块顶层无裸 window 访问
+  ---
+  duration_ms: 6.2325
+  type: 'test'
+  ...
+# Subtest: hydrate 恰一次：load 仅 WorkShell 一处且在 effect/guard 内；面板不自持 hydration；恢复经唯一 owner state 写入
+ok 539 - hydrate 恰一次：load 仅 WorkShell 一处且在 effect/guard 内；面板不自持 hydration；恢复经唯一 owner state 写入
+  ---
+  duration_ms: 4.1287
+  type: 'test'
+  ...
+# Subtest: store 严格形状：envelope/command 额外键、全空格字符串、reason 2000/2001 边界（save 与 load 同一校验）
+ok 540 - store 严格形状：envelope/command 额外键、全空格字符串、reason 2000/2001 边界（save 与 load 同一校验）
+  ---
+  duration_ms: 3.737
+  type: 'test'
+  ...
+# Subtest: clear 带 commandId 绑定：异 id → id_mismatch 且记录逐字节保留；同 id → ok 且移除；空存储 ok；损坏记录 fail-closed 不变
+ok 541 - clear 带 commandId 绑定：异 id → id_mismatch 且记录逐字节保留；同 id → ok 且移除；空存储 ok；损坏记录 fail-closed 不变
+  ---
+  duration_ms: 2.4529
+  type: 'test'
+  ...
+# Subtest: 面板终结分支：storage clear 以自身 commandId 为参调用；父状态置空前有 commandId 同源校验
+ok 542 - 面板终结分支：storage clear 以自身 commandId 为参调用；父状态置空前有 commandId 同源校验
+  ---
+  duration_ms: 3.923
+  type: 'test'
+  ...
+# Subtest: 共享单一 in-flight 锁：恰一个 in-flight useState、元素定义处接线、面板门控含 !inFlight、finally 释放、reset 门控同时引用两 state
+ok 543 - 共享单一 in-flight 锁：恰一个 in-flight useState、元素定义处接线、面板门控含 !inFlight、finally 释放、reset 门控同时引用两 state
+  ---
+  duration_ms: 4.9088
+  type: 'test'
+  ...
+# Subtest: VerificationPanel.tsx 存在且具名导出 VerificationPanel，props 契约含 caseId/actorId/projection/onRefresh
+ok 544 - VerificationPanel.tsx 存在且具名导出 VerificationPanel，props 契约含 caseId/actorId/projection/onRefresh
+  ---
+  duration_ms: 3.2462
+  type: 'test'
+  ...
+# Subtest: 面板含精确标注「合成演示 / 候选岗位语义，非正式审批」；除该标注外不含「审批/Receipt/批准/否决」字样
+ok 545 - 面板含精确标注「合成演示 / 候选岗位语义，非正式审批」；除该标注外不含「审批/Receipt/批准/否决」字样
+  ---
+  duration_ms: 3.2089
+  type: 'test'
+  ...
+# Subtest: POST 端点指向 /api/v4life/cases/${caseId}/verification，且 verificationStatus 目标枚举不含 claimed
+ok 546 - POST 端点指向 /api/v4life/cases/${caseId}/verification，且 verificationStatus 目标枚举不含 claimed
+  ---
+  duration_ms: 3.6043
+  type: 'test'
+  ...
+# Subtest: 理由必填：存在理由判空守卫与提交禁用态（理由为空时禁用/不发起 fetch）
+ok 547 - 理由必填：存在理由判空守卫与提交禁用态（理由为空时禁用/不发起 fetch）
+  ---
+  duration_ms: 4.8379
+  type: 'test'
+  ...
+# Subtest: 重试复用同一 commandId：存在可识别重试路径，不得调用命令编号生成器、不得组装新命令字面量
+ok 548 - 重试复用同一 commandId：存在可识别重试路径，不得调用命令编号生成器、不得组装新命令字面量
+  ---
+  duration_ms: 5.0899
+  type: 'test'
+  ...
+# Subtest: 409 VERSION_CONFLICT 分支：调用 onRefresh，且该分支不得自动重发 POST（无 fetch、无端点字符串）
+ok 549 - 409 VERSION_CONFLICT 分支：调用 onRefresh，且该分支不得自动重发 POST（无 fetch、无端点字符串）
+  ---
+  duration_ms: 3.636
+  type: 'test'
+  ...
+# Subtest: verification.module.css 存在且所有颜色均为灰阶（hex/rgb 通道 r≈g≈b 容差 8；hsl 饱和度 0；无彩色关键字）
+ok 550 - verification.module.css 存在且所有颜色均为灰阶（hex/rgb 通道 r≈g≈b 容差 8；hsl 饱和度 0；无彩色关键字）
+  ---
+  duration_ms: 4.9825
+  type: 'test'
+  ...
+# Subtest: WorkShell.tsx 导入并渲染 VerificationPanel，JSX 挂点传入 caseId/actorId/projection/onRefresh
+ok 551 - WorkShell.tsx 导入并渲染 VerificationPanel，JSX 挂点传入 caseId/actorId/projection/onRefresh
+  ---
+  duration_ms: 3.8272
+  type: 'test'
+  ...
+# Subtest: 纯逻辑区标记存在且 START 在 END 之前，区间非空
+ok 552 - 纯逻辑区标记存在且 START 在 END 之前，区间非空
+  ---
+  duration_ms: 6.9925
+  type: 'test'
+  ...
+# Subtest: 纯逻辑区可被 --experimental-strip-types 动态加载执行（真实执行交付源码）
+ok 553 - 纯逻辑区可被 --experimental-strip-types 动态加载执行（真实执行交付源码）
+  ---
+  duration_ms: 6.8805
+  type: 'test'
+  ...
+# Subtest: parseVerificationOutcome 行为矩阵：绑定校验、非 JSON/缺绑定/坏 rev/5xx 一律 unknown、4xx 精确映射
+ok 554 - parseVerificationOutcome 行为矩阵：绑定校验、非 JSON/缺绑定/坏 rev/5xx 一律 unknown、4xx 精确映射
+  ---
+  duration_ms: 7.0656
+  type: 'test'
+  ...
+# Subtest: canComposeCommand：unknownCommand=null 可组装；非 null（结果未知）禁止组装新命令
+ok 555 - canComposeCommand：unknownCommand=null 可组装；非 null（结果未知）禁止组装新命令
+  ---
+  duration_ms: 6.4611
+  type: 'test'
+  ...
+# Subtest: 未决命令绑定判定：command 与当前 caseId/actorId 一致可重试；caseId 或 actorId 不一致 → stale
+ok 556 - 未决命令绑定判定：command 与当前 caseId/actorId 一致可重试；caseId 或 actorId 不一致 → stale
+  ---
+  duration_ms: 6.8718
+  type: 'test'
+  ...
+# Subtest: WorkShell 未决命令单一持有：<VerificationPanel> 元素单定义、两处挂载引用、父级唯一未决 state、定义处受控传参
+ok 557 - WorkShell 未决命令单一持有：<VerificationPanel> 元素单定义、两处挂载引用、父级唯一未决 state、定义处受控传参
+  ---
+  duration_ms: 4.307
+  type: 'test'
+  ...
+# Subtest: VerificationPanel 受控化：pendingCommand/onPendingCommandChange 以 props 进入（别名解构可），无本地未决 state，写入仅经 prop 通道，放弃入口移除
+ok 558 - VerificationPanel 受控化：pendingCommand/onPendingCommandChange 以 props 进入（别名解构可），无本地未决 state，写入仅经 prop 通道，放弃入口移除
+  ---
+  duration_ms: 4.2267
+  type: 'test'
+  ...
+# Subtest: 双端切换不得绕过未决保护：共享未决 P 时两端均禁组装、原端 match 可重试、异端 stale 禁重试、回原绑定恢复、重试载荷逐字段一致
+ok 559 - 双端切换不得绕过未决保护：共享未决 P 时两端均禁组装、原端 match 可重试、异端 stale 禁重试、回原绑定恢复、重试载荷逐字段一致
+  ---
+  duration_ms: 7.0204
+  type: 'test'
+  ...
+# Subtest: 恢复接线：effect 内禁止自动发送；未决清空只允许发生在明确结果（accepted/replayed/version_conflict/rejected）之后
+ok 560 - 恢复接线：effect 内禁止自动发送；未决清空只允许发生在明确结果（accepted/replayed/version_conflict/rejected）之后
+  ---
+  duration_ms: 3.7885
+  type: 'test'
+  ...
+# Subtest: selectors 基础：caseMeta/actor/workItem/gate/列表在种子初始态派生正确
+ok 561 - selectors 基础：caseMeta/actor/workItem/gate/列表在种子初始态派生正确
+  ---
+  duration_ms: 2.9488
+  type: 'test'
+  ...
+# Subtest: selectDomainViews 初始态：四域固定序、actor 映射、nextItemId 与汇总等待原因
+ok 562 - selectDomainViews 初始态：四域固定序、actor 映射、nextItemId 与汇总等待原因
+  ---
+  duration_ms: 2.8019
+  type: 'test'
+  ...
+# Subtest: selectSupplementRequests 初始态：blocked 缺证映射 financial/contract，R2 Candidate 映射 supplement
+ok 563 - selectSupplementRequests 初始态：blocked 缺证映射 financial/contract，R2 Candidate 映射 supplement
+  ---
+  duration_ms: 3.1432
+  type: 'test'
+  ...
+# Subtest: waitingReasonOf 分档：blocked 逐条列缺项；in_progress 可提交
+ok 564 - waitingReasonOf 分档：blocked 逐条列缺项；in_progress 可提交
+  ---
+  duration_ms: 3.0656
+  type: 'test'
+  ...
+# Subtest: canSubmitWork/canDecide 初始态：允许与禁止分支（角色/状态/未知角色）
+ok 565 - canSubmitWork/canDecide 初始态：允许与禁止分支（角色/状态/未知角色）
+  ---
+  duration_ms: 2.7345
+  type: 'test'
+  ...
+# Subtest: 驱动到 PG-1 open：openGate/nextItemId/awaiting_gate 理由/补件收敛/canDecide 允许与角色禁止
+ok 566 - 驱动到 PG-1 open：openGate/nextItemId/awaiting_gate 理由/补件收敛/canDecide 允许与角色禁止
+  ---
+  duration_ms: 3.7942
+  type: 'test'
+  ...
+# Subtest: PG-1 rejected：stopped_dependency 理由指明被否决 Gate，Receipt 入账且贡献保留
+ok 567 - PG-1 rejected：stopped_dependency 理由指明被否决 Gate，Receipt 入账且贡献保留
+  ---
+  duration_ms: 3.1576
+  type: 'test'
+  ...
+# Subtest: happy path 到 CG-1/BG-1：Receipt 启动下游承接链，completed/decided 分支理由正确
+ok 568 - happy path 到 CG-1/BG-1：Receipt 启动下游承接链，completed/decided 分支理由正确
+  ---
+  duration_ms: 3.8361
+  type: 'test'
+  ...
+# Subtest: DOMAIN_LABELS 契约与域视图标签一致（防 W2 硬编码第二副本）
+ok 569 - DOMAIN_LABELS 契约与域视图标签一致（防 W2 硬编码第二副本）
+  ---
+  duration_ms: 2.3461
+  type: 'test'
+  ...
+# Subtest: client fetchProjection/fetchEvents：读取真实路由的 Projection 与事件分页
+ok 570 - client fetchProjection/fetchEvents：读取真实路由的 Projection 与事件分页
+  ---
+  duration_ms: 4.8009
+  type: 'test'
+  ...
+# Subtest: client 错误映射：404 CASE_NOT_FOUND / 网络异常 NETWORK_ERROR(0) / 未配置 actorId 失败关闭
+ok 571 - client 错误映射：404 CASE_NOT_FOUND / 网络异常 NETWORK_ERROR(0) / 未配置 actorId 失败关闭
+  ---
+  duration_ms: 3.4584
+  type: 'test'
+  ...
+# Subtest: client submitEvidence：accepted 201（含 startedWorkItemIds）→ 同证据同载荷自然键重放 replayed
+ok 572 - client submitEvidence：accepted 201（含 startedWorkItemIds）→ 同证据同载荷自然键重放 replayed
+  ---
+  duration_ms: 9.0784
+  type: 'test'
+  ...
+# Subtest: client 各类错误码：400 INVALID/EVIDENCE_INVALID、403 ROLE_MISMATCH、404 WORK_ITEM_NOT_FOUND
+ok 573 - client 各类错误码：400 INVALID/EVIDENCE_INVALID、403 ROLE_MISMATCH、404 WORK_ITEM_NOT_FOUND
+  ---
+  duration_ms: 5.0987
+  type: 'test'
+  ...
+# Subtest: client 409 VERSION_CONFLICT：保留 exact code，且不自动重试、不进入 retry 通道
+ok 574 - client 409 VERSION_CONFLICT：保留 exact code，且不自动重试、不进入 retry 通道
+  ---
+  duration_ms: 3.4626
+  type: 'test'
+  ...
+# Subtest: client 409 EVIDENCE_CONFLICT：同 evidenceId 异载荷（新 commandId）
+ok 575 - client 409 EVIDENCE_CONFLICT：同 evidenceId 异载荷（新 commandId）
+  ---
+  duration_ms: 3.266
+  type: 'test'
+  ...
+# Subtest: client 409 IDEMPOTENCY_CONFLICT：同 commandId 异载荷（桩改写 commandId 模拟）
+ok 576 - client 409 IDEMPOTENCY_CONFLICT：同 commandId 异载荷（桩改写 commandId 模拟）
+  ---
+  duration_ms: 3.442
+  type: 'test'
+  ...
+# Subtest: client retryLast：响应丢失后复用同 commandId 同 payload 重发，服务端幂等返回 replayed
+ok 577 - client retryLast：响应丢失后复用同 commandId 同 payload 重发，服务端幂等返回 replayed
+  ---
+  duration_ms: 3.4895
+  type: 'test'
+  ...
+# Subtest: client resetDemo：重建演示引擎并返回全新 canonical Projection
+ok 578 - client resetDemo：重建演示引擎并返回全新 canonical Projection
+  ---
+  duration_ms: 3.8094
+  type: 'test'
+  ...
+1..578
+# tests 612
+# suites 6
+# pass 612
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7039.2103

@@ -1,0 +1,43 @@
+PASS=37 FAIL=1 BLOCKED=2 UNIQUE_IDS=41 LATEST_RUN_ASSERTIONS=1025
+
+blocked  D-25     assert=   4 run=evidence\final-full-0400 BLOCKED: A契约v1.0/B未发布成本限额接口——无法黑盒断言限额行为；留门待B t
+blocked  D-27p    assert=   2 run=evidence\final-full-0400 BLOCKED: D-27端到端需B worker（unknown零盲重发是B执行器行为）；
+crash    g6_evidence_invalidation.test.mjs assert=   0 run=evidence\r10-g6 套件崩溃 exit=0
+fail     D-25e    assert=  24 run=evidence\d25e-diag 
+pass     D-01     assert=  44 run=evidence\final-full-0400 
+pass     D-02     assert=  59 run=evidence\final-full-0400 
+pass     D-03     assert=   6 run=evidence\final-full-0400 
+pass     D-05     assert=  23 run=evidence\final-full-0400 
+pass     D-06     assert=  23 run=evidence\final-full-0400 
+pass     D-07     assert=  26 run=evidence\final-full-0400 
+pass     D-08     assert=  39 run=evidence\final-full-0400 
+pass     D-09     assert=  26 run=evidence\final-full-0400 
+pass     D-10     assert=  27 run=evidence\final-full-0400 
+pass     D-10b    assert=  21 run=evidence\final-full-0400 
+pass     D-11     assert=  25 run=evidence\final-full-0400 
+pass     D-12     assert=  16 run=evidence\final-full-0400 
+pass     D-12b    assert=  15 run=evidence\final-full-0400 
+pass     D-13     assert=  35 run=evidence\final-full-0400 
+pass     D-14     assert=  30 run=evidence\final-full-0400 
+pass     D-15     assert=   2 run=evidence\final-full-0400 
+pass     D-16     assert=  43 run=evidence\final-full-0400 
+pass     D-17     assert=  24 run=evidence\final-full-0400 
+pass     D-18     assert=  23 run=evidence\final-full-0400 
+pass     D-19     assert=  33 run=evidence\r34-g6v13 
+pass     D-19b    assert=  32 run=evidence\r34-g6v13 
+pass     D-19c    assert=  57 run=evidence\r35-g6c 
+pass     D-19d    assert=  72 run=evidence\r34-g6v13 
+pass     D-20     assert=  26 run=evidence\r34-g6v13 
+pass     D-21     assert=  38 run=evidence\final-full-0400 
+pass     D-22     assert=  33 run=evidence\final-full-0400 
+pass     D-23     assert=  19 run=evidence\final-full-0400 
+pass     D-23b    assert=   4 run=evidence\final-full-0400 
+pass     D-24     assert=  29 run=evidence\final-full-0400 
+pass     D-25a    assert=  33 run=evidence\d25-r10 
+pass     D-25b    assert=  14 run=evidence\d25-final 
+pass     D-25c    assert=  13 run=evidence\d25-final 
+pass     D-25d    assert=  11 run=evidence\d25-final 
+pass     D-26     assert=  26 run=evidence\final-full-0400 
+pass     D-27b    assert=  28 run=evidence\retest-def03-r4 
+pass     D-28     assert=   7 run=evidence\d28-manifest-r1 
+pass     D-29     assert=  13 run=evidence\d29-clean-r2 

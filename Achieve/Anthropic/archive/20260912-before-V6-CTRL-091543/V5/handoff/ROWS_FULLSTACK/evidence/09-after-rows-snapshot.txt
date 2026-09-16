@@ -1,0 +1,12 @@
+# ROWS 收尾快照（2026-09-12，Gate 完成后，只读）
+HEAD: 63c41c3db138215d40470098d80c405f2a6fd679
+porcelain_count: 87
+--- v5-preview 相关 ---
+?? .v5-preview-data-recovery-test/
+?? .v5-preview-data/
+?? app/api/v5-preview/
+?? app/v5-preview/
+?? lib/v5-preview/
+?? test/v5-preview-http.test.mjs
+?? test/v5-preview-recovery.test.mjs
+?? test/v5-preview.test.mjs

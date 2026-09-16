@@ -1,0 +1,345 @@
+// V6 NIGHT_SIMPLIFY · 固定演示主线测试（A 路；数据采用 C 路 A 形状 22 步表）。
+// 覆盖：步骤表自洽（签名唯一、后继存在、决定点恰 3 分支、s00=approval 种子、终点=settled 种子）；
+// 服务层真实执行（隔离数据目录）：advance 全链、决定点门、三分支确定性、幂等重放、
+// 版本门、步骤门（防双击跳步）、free 模式诚实降级、与既有 notes 兼容共存。
+// REPAIR evening 追加：当前步=稳定游标（storyCursor.stepId，@1 签名回退/迁移/悬空指因）、
+// notes 不再使演示脱离路线、seed 情景切换重定位游标；共享尽调事实链路见
+// test/v5-preview-shared-facts.test.mjs（两文件须分开单独运行：V5_PREVIEW_DATA_DIR 各自隔离）。
+// 运行：node --experimental-strip-types --test --experimental-test-isolation=none test/v5-preview-demo-story.test.mjs
+
+import assert from 'node:assert/strict';
+import test, { after } from 'node:test';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
+// 隔离数据目录：store.ts 在每次调用时读取 V5_PREVIEW_DATA_DIR（见 store.ts getV5PreviewDataDir）。
+const dataDir = mkdtempSync(join(tmpdir(), 'jw-story-test-'));
+process.env.V5_PREVIEW_DATA_DIR = dataDir;
+
+const { DEMO_STORY_STEPS, DEMO_STORY_START_STEP_ID, locateStepIdBySignature } = await import('../lib/v5-preview/demo-story-data.ts');
+const { createSeedOverview, submitNote } = await import('../lib/v5-preview/service.ts');
+const { DemoStoryError, getStoryState, runStoryCommand } = await import('../lib/v5-preview/demo-story-service.ts');
+const { overviewSignature, storyStepSignature } = await import('../lib/v5-preview/demo-story-types.ts');
+const storeMod = await import('../lib/v5-preview/store.ts');
+
+after(() => {
+  try { rmSync(dataDir, { recursive: true, force: true }); } catch { /* 临时目录清理失败不影响判定 */ }
+});
+
+// REPAIR evening：与 seedScenario 同语义——重置后按签名重定位稳定游标（@2 形状；
+// stepId=null 的情景 = 自由态诚实降级）。
+function resetStoreTo(overview) {
+  const stepId = locateStepIdBySignature(overview);
+  storeMod.writeV5StoreState({
+    overview,
+    idempotency: new storeMod.V5IdempotencyTable(),
+    storyCursor: stepId === null ? null : { stepId, updatedAt: new Date().toISOString() },
+    sharedDemo: { sessionId: null },
+  });
+}
+
+const byId = new Map(DEMO_STORY_STEPS.map((s) => [s.stepId, s]));
+const DD_DECISION = 's09-dd-07';
+const SG_DECISION = 's15-sg-02';
+
+let walkSeq = 0;
+/** 顺序推进到目标步（决定点停）；返回 {version}。 */
+function walkTo(targetStepId, startVersion) {
+  let v = startVersion;
+  let stepId = getStoryState().step.stepId;
+  let guard = 0;
+  while (stepId !== targetStepId) {
+    guard += 1;
+    assert.ok(guard <= DEMO_STORY_STEPS.length + 3, `walkTo 死循环防护：${stepId} → ${targetStepId}`);
+    const cur = byId.get(stepId);
+    if (cur.decision !== undefined) throw new Error(`walkTo 途中遇到决定点 ${stepId}，需 decide 方可通过`);
+    const res = runStoryCommand({ action: 'advance', requestId: `walk-${walkSeq++}`, expectedVersion: v, fromStepId: stepId });
+    v = res.overview.version;
+    stepId = res.step.stepId;
+  }
+  return v;
+}
+
+// ---------- 1) 步骤表自洽 ----------
+
+test('步骤表：s00 签名 == approval 种子；终点步签名 == settled 种子（重新开始=既有 seed 的前提）', () => {
+  const s00 = DEMO_STORY_STEPS[0];
+  const terminal = DEMO_STORY_STEPS[DEMO_STORY_STEPS.length - 1];
+  assert.equal(
+    storyStepSignature(s00),
+    overviewSignature(createSeedOverview('approval', '2026-01-01T00:00:00.000Z')),
+    's00 必须等于 approval 种子（重新开始复用 demo/seed）',
+  );
+  assert.equal(terminal.scenario, 'settled', '终点步必须切换到已结清情景');
+  assert.equal(
+    storyStepSignature(terminal),
+    overviewSignature(createSeedOverview('settled', '2026-01-01T00:00:00.000Z')),
+    '终点必须等于 settled 种子（与既有已结清情景签名一致）',
+  );
+});
+
+test('步骤表：签名两两唯一；每步恰 4 域；决定点恰 3 分支且后继存在；消息长度合规', () => {
+  const sigs = new Set(DEMO_STORY_STEPS.map((s) => storyStepSignature(s)));
+  assert.equal(sigs.size, DEMO_STORY_STEPS.length, '每步内容签名必须唯一（消息不参与签名）');
+  for (const step of DEMO_STORY_STEPS) {
+    assert.equal(step.domains.length, 4, `${step.stepId} 必须恰 4 域`);
+    assert.deepEqual(step.domains.map((d) => d.domainId), ['policy', 'credit', 'commerce', 'asset']);
+    if (step.decision !== undefined) {
+      // C 机制对齐（续轮）：首判断点（s09/s15）恰 3 分支；再判断点（s12/s17）仅 confirm/correct
+      // ——「退回仅一次」，消除 D-03 残留的无限补证循环。
+      const expected =
+        step.decision.options.length === 3
+          ? ['confirm', 'correct', 'return']
+          : step.stepId === 's17-sg-02b'
+            ? ['confirm']
+            : ['confirm', 'correct'];
+      assert.deepEqual(
+        step.decision.options.map((o) => o.kind),
+        expected,
+        `${step.stepId} 决定分支必须为 ${expected.join('/')}`,
+      );
+      for (const o of step.decision.options) {
+        assert.ok(
+          DEMO_STORY_STEPS.some((s) => s.stepId === o.nextStepId),
+          `${step.stepId} 的后继 ${o.nextStepId} 必须存在`,
+        );
+      }
+    }
+    for (const m of step.messages) {
+      assert.ok(m.text.length > 0 && m.text.length <= 2000, `${step.stepId} 消息长度合规`);
+    }
+  }
+});
+
+test('步骤表：不存在前提的域不提前完成（信审在签约复核确认前不绿；商务核算未配置不虚绿；资产域终态前不绿）', () => {
+  const greenDomains = (step) => step.domains.filter((d) => d.judgmentStatus === 'green').map((d) => d.domainId);
+  for (const step of DEMO_STORY_STEPS) {
+    const idx = DEMO_STORY_STEPS.indexOf(step);
+    const afterSigning = idx >= DEMO_STORY_STEPS.indexOf(byId.get('s18-sg-03'));
+    if (!afterSigning) {
+      assert.ok(!greenDomains(step).includes('credit'), `${step.stepId} 信审不得在签约人工复核确认前提前绿`);
+    }
+    const beforeTerminal = idx < DEMO_STORY_STEPS.length - 1;
+    if (beforeTerminal) {
+      assert.ok(!greenDomains(step).includes('commerce'), `${step.stepId} 商务不得在终点前虚绿（经济性核算未配置）`);
+      assert.ok(!greenDomains(step).includes('asset'), `${step.stepId} 资产不得在终点前虚绿`);
+    }
+  }
+  // 五阶段全覆盖（商机→预审→尽调→签约→租后）。
+  const stageSet = new Set(DEMO_STORY_STEPS.map((s) => s.stageIndex));
+  assert.deepEqual([...stageSet].sort(), [0, 1, 2, 3, 4], '五阶段必须全部出现');
+});
+
+// ---------- 2) 服务层真实执行（隔离数据目录） ----------
+
+test('服务层：GET 初始 = story 模式起点；自动推进链落在人工动作/决定步；决定点拦截 advance', () => {
+  resetStoreTo(createSeedOverview('approval'));
+
+  let st = getStoryState();
+  assert.equal(st.mode, 'story');
+  assert.equal(st.step.stepId, DEMO_STORY_START_STEP_ID);
+  assert.equal(st.step.decision, null);
+
+  // s00 推进：常规自动步 s01、s02 连续应用，停在人工动作步 s03（发起远程尽调）。
+  let v = st.version;
+  let res = runStoryCommand({ action: 'advance', requestId: 'ra-1', expectedVersion: v, fromStepId: DEMO_STORY_START_STEP_ID });
+  v = res.overview.version;
+  assert.equal(res.step.stepId, 's03-dd-01', '自动链停在人动作步 s03');
+  assert.equal(v, st.version + 3, '链式推进版本按应用步数递增');
+  assert.ok(res.overview.messages.some((m) => m.text.includes('预审')), '链上各步预设消息均入流');
+
+  // s03 推进：s04 自动，停在人工动作步 s05（财务/生产现场补充）。
+  res = runStoryCommand({ action: 'advance', requestId: 'ra-2', expectedVersion: v, fromStepId: 's03-dd-01' });
+  v = res.overview.version;
+  assert.equal(res.step.stepId, 's05-dd-03');
+
+  // s05 推进：s06–s08 自动（并行组）+ s09 决定点应用后停止。
+  res = runStoryCommand({ action: 'advance', requestId: 'ra-3', expectedVersion: v, fromStepId: 's05-dd-03' });
+  v = res.overview.version;
+  assert.equal(res.step.stepId, DD_DECISION);
+  assert.equal(res.step.awaitingDecision, true);
+  assert.ok(res.overview.messages.some((m) => m.text.includes('四项并行补充已完成')), '并行组汇合消息如实入流');
+
+  assert.throws(
+    () => runStoryCommand({ action: 'advance', requestId: 'ra-4', expectedVersion: v, fromStepId: DD_DECISION }),
+    (e) => e instanceof DemoStoryError && e.code === 'STORY_DECISION_REQUIRED',
+  );
+  assert.equal(getStoryState().step.stepId, DD_DECISION, '决定点不因被拒的 advance 而推进');
+});
+
+test('服务层：尽调决定三分支（return→s10→链至s12 再判断 / confirm→s13）；纠正附注留档；退回仅一次', () => {
+  let st = getStoryState();
+  assert.equal(st.step.stepId, DD_DECISION);
+
+  // return → s10（决定路径不自动链，人动作保持独立点击边界）。
+  let v = st.version;
+  let res = runStoryCommand({ action: 'decide', requestId: 'rd-1', expectedVersion: v, fromStepId: DD_DECISION, decision: 'return' });
+  v = res.overview.version;
+  assert.equal(res.step.stepId, 's10-dd-rt-1');
+
+  // s10 推进：s11 自动，停在 s12 再判断点（confirm/correct，无 return = 退回仅一次）。
+  res = runStoryCommand({ action: 'advance', requestId: 'rd-2', expectedVersion: v, fromStepId: 's10-dd-rt-1' });
+  v = res.overview.version;
+  assert.equal(res.step.stepId, 's12-dd-07b');
+  assert.equal(res.step.awaitingDecision, true);
+  assert.deepEqual(
+    getStoryState().step.decision.options.map((o) => o.kind),
+    ['confirm', 'correct'],
+    '再判断点不再提供退回（有限路径）',
+  );
+
+  // 再判断 correct（附补充说明留档）→ s13。
+  res = runStoryCommand({ action: 'decide', requestId: 'rd-4', expectedVersion: v, fromStepId: 's12-dd-07b', decision: 'correct', note: '补充说明：以客户书面时点更正为准（测试）' });
+  v = res.overview.version;
+  assert.equal(res.step.stepId, 's13-dd-08');
+  assert.ok(res.overview.messages.some((m) => m.text.includes('客户书面时点更正')), '纠正补充说明必须留档');
+
+  // 回到尽调决定点验证 confirm 直达 s13。
+  resetStoreTo(createSeedOverview('approval'));
+  v = walkTo(DD_DECISION, getStoryState().version);
+  res = runStoryCommand({ action: 'decide', requestId: 'rd-5', expectedVersion: v, fromStepId: DD_DECISION, decision: 'confirm' });
+  assert.equal(res.step.stepId, 's13-dd-08', '确认直达尽调完成');
+});
+
+test('服务层：幂等重放与 REQUEST_MISMATCH；双击防跳步（旧 fromStepId → STORY_STEP_CHANGED）', () => {
+  const st = getStoryState();
+  assert.equal(st.step.stepId, 's13-dd-08');
+  let v = st.version;
+  const first = runStoryCommand({ action: 'advance', requestId: 'ri-1', expectedVersion: v, fromStepId: 's13-dd-08' });
+  assert.equal(first.step.stepId, 's15-sg-02', 's14 自动 + s15 决定点应用后停止');
+  assert.notEqual(first.replayed, true);
+
+  const replay = runStoryCommand({ action: 'advance', requestId: 'ri-1', expectedVersion: v, fromStepId: 's13-dd-08' });
+  assert.equal(replay.replayed, true);
+  assert.equal(replay.overview.version, first.overview.version, '重放不重复推进');
+
+  assert.throws(
+    () => runStoryCommand({ action: 'advance', requestId: 'ri-1', expectedVersion: v, fromStepId: 's14-sg-01' }),
+    (e) => e instanceof DemoStoryError && e.code === 'REQUEST_MISMATCH',
+  );
+
+  assert.throws(
+    () => runStoryCommand({ action: 'advance', requestId: 'ri-2', expectedVersion: first.overview.version, fromStepId: 's13-dd-08' }),
+    (e) => e instanceof DemoStoryError && e.code === 'STORY_STEP_CHANGED',
+  );
+});
+
+test('服务层：版本门（过期 expectedVersion → VERSION_CONFLICT 带 serverVersion）', () => {
+  const st = getStoryState();
+  assert.throws(
+    () => runStoryCommand({ action: 'advance', requestId: 'rv-1', expectedVersion: 1, fromStepId: st.step.stepId }),
+    (e) => e instanceof DemoStoryError && e.code === 'VERSION_CONFLICT' && e.serverVersion === st.version,
+  );
+});
+
+test('服务层：签约决定走完到终点（已结清）；终点 advance 拒绝；非法 decision 拒绝', () => {
+  let st = getStoryState();
+  assert.equal(st.step.stepId, 's15-sg-02');
+  let v = st.version;
+
+  // 签约 return → s16（人动作独立点击）→ 推进链至 s17 再复核（confirm/correct）→ confirm → s18。
+  let res = runStoryCommand({ action: 'decide', requestId: 'rf-1', expectedVersion: v, fromStepId: SG_DECISION, decision: 'return' });
+  v = res.overview.version;
+  assert.equal(res.step.stepId, 's16-sg-rt');
+  res = runStoryCommand({ action: 'advance', requestId: 'rf-2', expectedVersion: v, fromStepId: 's16-sg-rt' });
+  v = res.overview.version;
+  assert.equal(res.step.stepId, 's17-sg-02b');
+  assert.deepEqual(
+    getStoryState().step.decision.options.map((o) => o.kind),
+    ['confirm'],
+    '签约再复核仅提供确认（C 机制 SG-02B；与提示文本一致，D-07）',
+  );
+  res = runStoryCommand({ action: 'decide', requestId: 'rf-3', expectedVersion: v, fromStepId: 's17-sg-02b', decision: 'confirm' });
+  v = res.overview.version;
+  assert.equal(res.step.stepId, 's18-sg-03');
+
+  // s18 推进：s19–s21 自动链直达终点（已结清）。
+  res = runStoryCommand({ action: 'advance', requestId: 'rf-4', expectedVersion: v, fromStepId: 's18-sg-03' });
+  v = res.overview.version;
+  assert.equal(res.step.stepId, 's21-pr-03');
+  assert.equal(res.overview.scenario, 'settled');
+  assert.equal(res.overview.todo, null);
+
+  assert.throws(
+    () => runStoryCommand({ action: 'advance', requestId: 'rf-7', expectedVersion: v, fromStepId: 's21-pr-03' }),
+    (e) => e instanceof DemoStoryError && e.code === 'STORY_STEP_CHANGED',
+  );
+  st = getStoryState();
+  assert.equal(st.step.stepId, 's21-pr-03');
+  assert.equal(st.step.stepIndex, st.step.stepsTotal - 1);
+
+  assert.throws(
+    () => runStoryCommand({ action: 'decide', requestId: 'rf-8', expectedVersion: v, fromStepId: 's21-pr-03', decision: 'confirm' }),
+    (e) => e instanceof DemoStoryError && e.code === 'STORY_STEP_CHANGED',
+  );
+});
+
+test('服务层（REPAIR）：当前步=稳定游标——notes 改变待办状态不再使演示脱离路线', () => {
+  resetStoreTo(createSeedOverview('approval'));
+  const st = getStoryState();
+  assert.equal(st.mode, 'story');
+  const noteRes = submitNote({
+    requestId: 'rn-1',
+    expectedVersion: st.version,
+    todoId: 'todo-device-list',
+    text: '设备清单已补充（测试）',
+    actorRole: 'business',
+  });
+  assert.equal(noteRes.ok, true, '既有 notes 通道在 story 数据上正常可用');
+  // REPAIR 契约变更：待办状态/展示文案变化不再破坏演示定位（COMMON：当前步用稳定标识记录，
+  // 避免展示文案变化导致 free）。notes 保留游标与专属会话指针。
+  const after = getStoryState();
+  assert.equal(after.mode, 'story', 'notes 后仍在固定路线（稳定游标定位）');
+  assert.equal(after.step.stepId, DEMO_STORY_START_STEP_ID);
+  assert.equal(after.version, st.version + 1, 'notes 版本门照常递增');
+});
+
+test('服务层（REPAIR）：@1 无游标旧文件回退签名定位；签名脱离 → free 诚实降级；游标悬空 → free 带指因', async () => {
+  const { createHash } = await import('node:crypto');
+  // 模拟 @1 旧文件（schema @1、无游标/会话块）：内容 = approval 种子（签名可定位）。
+  const seed = createSeedOverview('approval');
+  const legacy = { schema: 'v5-preview-rows-store@1', overview: seed, idempotency: [] };
+  const { writeFileSync, readFileSync } = await import('node:fs');
+  const { getV5PreviewStoreFilePath } = await import('../lib/v5-preview/store.ts');
+  writeFileSync(getV5PreviewStoreFilePath(), `${JSON.stringify(legacy, null, 2)}
+`, 'utf8');
+  const st = getStoryState();
+  assert.equal(st.mode, 'story', '@1 旧文件按签名回退定位');
+  assert.equal(st.step.stepId, DEMO_STORY_START_STEP_ID);
+  // GET 迁移：旧文件首次定位后回填游标（schema 升 @2）。
+  const raw = readFileSync(getV5PreviewStoreFilePath(), 'utf8');
+  assert.ok(raw.includes('v5-preview-rows-store@2'), 'GET 迁移写回 @2 schema');
+  assert.ok(raw.includes('"stepId"'), 'GET 迁移回填 storyCursor.stepId');
+
+  // 签名脱离（无游标 + 内容不可定位）→ free 诚实降级（回退路径保留）。
+  const drifted = structuredClone(seed);
+  drifted.todo = { ...drifted.todo, status: '待复核' };
+  const legacy2 = { schema: 'v5-preview-rows-store@1', overview: drifted, idempotency: [] };
+  writeFileSync(getV5PreviewStoreFilePath(), `${JSON.stringify(legacy2, null, 2)}
+`, 'utf8');
+  const freed = getStoryState();
+  assert.equal(freed.mode, 'free', '@1 无游标 + 签名脱离 → free（回退语义不变）');
+  assert.equal(freed.step, null);
+  assert.ok(typeof freed.freeNotice === 'string' && freed.freeNotice.includes('重新开始'));
+
+  // 游标悬空（指向不存在的步）→ free 带明确指因，不静默重置。
+  const drifted2 = { schema: 'v5-preview-rows-store@2', overview: seed, idempotency: [], storyCursor: { stepId: 'sXX-not-exist', updatedAt: '2026-09-14T00:00:00.000Z' }, sharedDemo: { sessionId: null } };
+  writeFileSync(getV5PreviewStoreFilePath(), `${JSON.stringify(drifted2, null, 2)}
+`, 'utf8');
+  const dangling = getStoryState();
+  assert.equal(dangling.mode, 'free');
+  assert.ok(String(dangling.freeNotice).includes('指针'), '悬空游标 free 提示指因');
+  void createHash;
+});
+
+test('服务层（REPAIR）：seed 情景切换重定位游标——approval→起点、settled→终态步（已结清无待办 notes 拒绝保留）', () => {
+  resetStoreTo(createSeedOverview('settled'));
+  assert.throws(
+    () => submitNote({ requestId: 'rn-2', expectedVersion: getStoryState().version, todoId: 'todo-device-list', text: 'x', actorRole: 'business' }),
+    (e) => e.code === 'NO_OPEN_TODO',
+  );
+  const settledState = getStoryState();
+  assert.equal(settledState.mode, 'story');
+  assert.equal(settledState.step.stepId, 's21-pr-03');
+});

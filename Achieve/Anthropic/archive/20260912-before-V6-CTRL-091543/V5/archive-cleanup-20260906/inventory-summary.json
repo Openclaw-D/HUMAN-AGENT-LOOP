@@ -1,0 +1,264 @@
+{
+  "files": 181875,
+  "bytes": 16523424964,
+  "groups": {
+    "Compare-Material-Archive-20260814/preflight-runtime-20260814.db": [
+      1,
+      60887040
+    ],
+    "Compare-Material-Archive-20260814/native-material-packs": [
+      1537,
+      1200098334
+    ],
+    "Compare-Material-Archive-20260814/p5-contact-sheets": [
+      12,
+      29712894
+    ],
+    "Compare-Material-Archive-20260814/p5-materials": [
+      565,
+      640804560
+    ],
+    "Compare-Material-Archive-20260814/source-originals-20260814": [
+      2114,
+      1870615788
+    ],
+    "git-verification/signal-council-V1-20260814-061500": [
+      369,
+      46315458
+    ],
+    "P5-Core-Scope-20260812/Compare": [
+      82,
+      13510238
+    ],
+    "P5-Core-Scope-20260812/eval-temporary": [
+      1,
+      128671
+    ],
+    "P5-Core-Scope-20260812/metadata-originals": [
+      3,
+      9249556
+    ],
+    "P5-Core-Scope-20260812/p5-final-gate": [
+      2,
+      327376
+    ],
+    "P5-Core-Scope-20260812/root-legacy-tracked": [
+      115,
+      2078627
+    ],
+    "P5-Core-Scope-20260812/Show": [
+      38,
+      74710738
+    ],
+    "TAG-sources-20260821/JW": [
+      47133,
+      3519106806
+    ],
+    "TAG-sources-20260821/Lease": [
+      74404,
+      5396002607
+    ],
+    "TAG-sources-20260821/Material": [
+      9,
+      748369252
+    ],
+    "TAG-sources-20260821/Race": [
+      76,
+      226668470
+    ],
+    "TAG-sources-20260821/Stars": [
+      1360,
+      109215343
+    ],
+    "TAG-sources-20260821/TQ": [
+      21366,
+      448848586
+    ],
+    "TAG-sources-20260821/Unity": [
+      32688,
+      2126774620
+    ]
+  },
+  "links": [
+    "TAG-sources-20260821\\Race\\.ppt-build-jianwei-v2\\node_modules",
+    "TAG-sources-20260821\\Race\\.ppt-build-jianwei-v4\\node_modules"
+  ],
+  "largest": [
+    {
+      "path": "TAG-sources-20260821/Lease/History/Historical-Projects/TIANQU/Deliverables/TIANQUV5_60s_1440p60_FINAL.mp4",
+      "size": 192465849,
+      "mtime_ns": 1784229938870780500
+    },
+    {
+      "path": "TAG-sources-20260821/Material/record/40调研新疆纺织新客织云等9项文件/39调研新疆纺织新客泰岳.mp3",
+      "size": 135451584,
+      "mtime_ns": 1786595980112251200
+    },
+    {
+      "path": "TAG-sources-20260821/Lease/EYE Unity/Library/PackageCache/com.unity.burst@6bb9aca3ef38/.Runtime/libburst-llvm-19.dylib",
+      "size": 133826272,
+      "mtime_ns": 1774629624000000000
+    },
+    {
+      "path": "TAG-sources-20260821/Lease/EYE Unity V3/Library/PackageCache/com.unity.burst@6bb9aca3ef38/.Runtime/libburst-llvm-19.dylib",
+      "size": 133826272,
+      "mtime_ns": 1774629624000000000
+    },
+    {
+      "path": "TAG-sources-20260821/Unity/Library/PackageCache/com.unity.burst@6bb9aca3ef38/.Runtime/libburst-llvm-19.dylib",
+      "size": 133826272,
+      "mtime_ns": 1774629624000000000
+    },
+    {
+      "path": "TAG-sources-20260821/Material/record/40调研新疆纺织新客织云等9项文件/36调研华美达代理振和.mp3",
+      "size": 126622080,
+      "mtime_ns": 1786595883058343500
+    },
+    {
+      "path": "TAG-sources-20260821/Material/record/40调研新疆纺织新客织云等9项文件/37调研新疆邦德睿雨.mp3",
+      "size": 107272512,
+      "mtime_ns": 1786595888545394700
+    },
+    {
+      "path": "TAG-sources-20260821/JW/Front/node_modules/@next/swc-win32-x64-msvc/next-swc.win32-x64-msvc.node",
+      "size": 106052608,
+      "mtime_ns": 1785896844573971900
+    },
+    {
+      "path": "TAG-sources-20260821/Material/record/40调研新疆纺织新客织云等9项文件/40调研新疆纺织新客织云.mp3",
+      "size": 103392000,
+      "mtime_ns": 1786595952424742400
+    },
+    {
+      "path": "TAG-sources-20260821/Material/record/40调研新疆纺织新客织云等9项文件/33调研新疆纺织卓朗存客饭局.mp3",
+      "size": 99660672,
+      "mtime_ns": 1786595829678191500
+    },
+    {
+      "path": "TAG-sources-20260821/JW/Compare/Front/node_modules/@cloudflare/workerd-windows-64/bin/workerd.exe",
+      "size": 89875456,
+      "mtime_ns": 1786162552189870500
+    },
+    {
+      "path": "TAG-sources-20260821/JW/Front/node_modules/@cloudflare/workerd-windows-64/bin/workerd.exe",
+      "size": 89875456,
+      "mtime_ns": 1785896844470747300
+    },
+    {
+      "path": "TAG-sources-20260821/TQ/sites-app/node_modules/@cloudflare/workerd-windows-64/bin/workerd.exe",
+      "size": 89875456,
+      "mtime_ns": 1785944350610786000
+    },
+    {
+      "path": "TAG-sources-20260821/Lease/EYE Unity/Library/PackageCache/com.unity.burst@6bb9aca3ef38/.Runtime/hostmac/dsymutil",
+      "size": 85812032,
+      "mtime_ns": 1774629624000000000
+    },
+    {
+      "path": "TAG-sources-20260821/Lease/EYE Unity V3/Library/PackageCache/com.unity.burst@6bb9aca3ef38/.Runtime/hostmac/dsymutil",
+      "size": 85812032,
+      "mtime_ns": 1774629624000000000
+    },
+    {
+      "path": "TAG-sources-20260821/Unity/Library/PackageCache/com.unity.burst@6bb9aca3ef38/.Runtime/hostmac/dsymutil",
+      "size": 85812032,
+      "mtime_ns": 1774629624000000000
+    },
+    {
+      "path": "TAG-sources-20260821/Lease/EYE Unity/Library/PackageCache/com.unity.burst@6bb9aca3ef38/.Runtime/libburst-llvm-10.dylib",
+      "size": 77174640,
+      "mtime_ns": 1774629624000000000
+    },
+    {
+      "path": "TAG-sources-20260821/Lease/EYE Unity V3/Library/PackageCache/com.unity.burst@6bb9aca3ef38/.Runtime/libburst-llvm-10.dylib",
+      "size": 77174640,
+      "mtime_ns": 1774629624000000000
+    },
+    {
+      "path": "TAG-sources-20260821/Unity/Library/PackageCache/com.unity.burst@6bb9aca3ef38/.Runtime/libburst-llvm-10.dylib",
+      "size": 77174640,
+      "mtime_ns": 1774629624000000000
+    },
+    {
+      "path": "TAG-sources-20260821/Lease/EYE Unity/Library/PackageCache/com.unity.burst@6bb9aca3ef38/.Runtime/libburst-llvm-19.so",
+      "size": 74034504,
+      "mtime_ns": 1774629624000000000
+    },
+    {
+      "path": "TAG-sources-20260821/Lease/EYE Unity V3/Library/PackageCache/com.unity.burst@6bb9aca3ef38/.Runtime/libburst-llvm-19.so",
+      "size": 74034504,
+      "mtime_ns": 1774629624000000000
+    },
+    {
+      "path": "TAG-sources-20260821/Unity/Library/PackageCache/com.unity.burst@6bb9aca3ef38/.Runtime/libburst-llvm-19.so",
+      "size": 74034504,
+      "mtime_ns": 1774629624000000000
+    }
+  ],
+  "protected": [
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/019fd645-7448-7792-ae09-2b23da402d09/c9f4d33c-3301-4ac7-8c9d-bf5d2dd9387a/1-Photo-1.jpg",
+      "size": 57079,
+      "mtime_ns": 1786006880759022900
+    },
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/019fd645-7448-7792-ae09-2b23da402d09/c9f4d33c-3301-4ac7-8c9d-bf5d2dd9387a/2-Photo-2.jpg",
+      "size": 60160,
+      "mtime_ns": 1786006882394350500
+    },
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/019fd645-7448-7792-ae09-2b23da402d09/c9f4d33c-3301-4ac7-8c9d-bf5d2dd9387a/3-Photo-3.jpg",
+      "size": 63335,
+      "mtime_ns": 1786006883916505400
+    },
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/019fd645-7448-7792-ae09-2b23da402d09/c9f4d33c-3301-4ac7-8c9d-bf5d2dd9387a/4-Photo-4.jpg",
+      "size": 56812,
+      "mtime_ns": 1786006885353201500
+    },
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/019fdcd9-0e44-71b1-98a9-8003e9157a7b/51b91241-4200-49a4-8350-76a442259d98/1-Photo-1.jpg",
+      "size": 74892,
+      "mtime_ns": 1786119249617501400
+    },
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/019fefc2-875b-7441-9c57-de6b4455a98e/8a95cdbc-9aa0-453c-80f5-ab4c486e82f4/1-Photo-1.jpg",
+      "size": 129314,
+      "mtime_ns": 1786507148435347000
+    },
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/019ff6b8-9826-7c82-8132-c4095a3989bb/8dfdf13b-5ed6-4c8f-be59-a1ec2f669539/1-Photo-1.jpg",
+      "size": 54547,
+      "mtime_ns": 1786590186518613800
+    },
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/019ff6b8-9826-7c82-8132-c4095a3989bb/b771f187-832c-4bc9-8fe8-b497f2a008fc/1-Photo-1.jpg",
+      "size": 48503,
+      "mtime_ns": 1786589999753111800
+    },
+    {
+      "path": "TAG-sources-20260821/JW/.codex-remote-attachments/01a0104a-8fd5-75d0-8a25-c7be5ae8fd2e/4487e008-4d5a-477a-bd4c-307e8954953b/1-Photo-1.jpg",
+      "size": 60777,
+      "mtime_ns": 1787053258078019300
+    },
+    {
+      "path": "TAG-sources-20260821/Stars/.codex-remote-attachments/019fcd4f-5629-7480-a500-a0afcef27dda/fb0880df-e875-431d-8724-2643cacada81/1-Photo-1.jpg",
+      "size": 52429,
+      "mtime_ns": 1786020647508056300
+    },
+    {
+      "path": "TAG-sources-20260821/Stars/.codex-remote-attachments/019fcd4f-5629-7480-a500-a0afcef27dda/fb0880df-e875-431d-8724-2643cacada81/2-Photo-2.jpg",
+      "size": 47374,
+      "mtime_ns": 1786020648949376400
+    },
+    {
+      "path": "TAG-sources-20260821/Stars/.codex-remote-attachments/019fcd4f-5629-7480-a500-a0afcef27dda/fb0880df-e875-431d-8724-2643cacada81/3-Photo-3.jpg",
+      "size": 47338,
+      "mtime_ns": 1786020650245972500
+    }
+  ],
+  "potential_secrets": [
+    "TAG-sources-20260821/JW/Back/.venv/Lib/site-packages/certifi/cacert.pem",
+    "TAG-sources-20260821/JW/Back/.venv/Lib/site-packages/pip/_vendor/certifi/cacert.pem"
+  ]
+}

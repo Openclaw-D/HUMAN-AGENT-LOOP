@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "v3-d2-wave-one",
+  "maxConcurrency": 2,
+  "maxStageReviewUnits": 16,
+  "stopOnAnyLaneFailure": true,
+  "controllerTimeoutSeconds": 1200,
+  "evidenceDirectory": "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/.glm53-v3-d2-wave1/wave-evidence",
+  "stages": [
+    {
+      "id": "independent-foundations",
+      "lanes": [
+        "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/.glm53-v3-d2-wave1/lane-shell-manifest.json",
+        "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/.glm53-v3-d2-wave1/lane-scenario-manifest.json"
+      ]
+    }
+  ]
+}

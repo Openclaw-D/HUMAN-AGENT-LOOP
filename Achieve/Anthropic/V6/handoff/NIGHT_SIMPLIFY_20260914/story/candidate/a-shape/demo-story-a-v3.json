@@ -1,0 +1,2535 @@
+{
+  "schema": "jw-demo-story-a@1",
+  "version": 3,
+  "base": "product demo-story-data.ts@2026-09-14T08:10",
+  "stepsTotal": 23,
+  "steps": [
+    {
+      "stepId": "s00-opp-01",
+      "stageIndex": 0,
+      "stageLabel": "商机",
+      "scenarioLabel": "演示项目 · 审批推进中",
+      "progressLabel": "审批推进中",
+      "title": "商机登记",
+      "hint": "演示开始后按「开始推进」自动完成",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "已确认",
+          "summary": "适用条件已确认（合成）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待补充",
+          "summary": "补充设备清单后继续核验（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "current",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "gray",
+          "judgmentText": "准备中",
+          "summary": "合同要素同步准备（合成；无正式前序被绕过）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "pending",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "gray",
+          "judgmentText": "待启动",
+          "summary": "起租后持续管理至结清（合成）"
+        }
+      ],
+      "todo": {
+        "id": "todo-device-list",
+        "title": "补充设备清单",
+        "detail": "资料更新后，同步相关专业判断；提交后信审转入待复核（合成演示）。",
+        "status": "待补充",
+        "relatedDomain": "credit"
+      },
+      "messages": [
+        {
+          "id": "msg-seed-approval-1",
+          "fromKind": "system",
+          "fromName": "系统",
+          "text": "合成演示项目已初始化：本页全部为合成数据，不执行正式审批。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "演示情景"
+          ]
+        },
+        {
+          "id": "msg-seed-approval-2",
+          "fromKind": "domain",
+          "fromName": "信审 · 张信审（合成）",
+          "text": "请补充设备清单，资料更新后我们同步推进专业判断。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "合成判断"
+          ]
+        }
+      ],
+      "evidenceRefs": [
+        "M1-DOC-01 v1"
+      ]
+    },
+    {
+      "stepId": "s01-pre-01",
+      "stageIndex": 1,
+      "stageLabel": "预审",
+      "scenarioLabel": "固定演示 · 预审",
+      "progressLabel": "预审材料挂接完成",
+      "title": "预审材料挂接",
+      "hint": "商机登记完成后自动",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "适用条件已确认",
+          "summary": "演示类目核对通过（合成规则）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "current",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待补充",
+          "summary": "设备清单等材料挂接后核验（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "pending",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "gray",
+          "judgmentText": "未开始",
+          "summary": "条件框架待预审后同步（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "pending",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "gray",
+          "judgmentText": "未开始",
+          "summary": "未到该域工作（合成）"
+        }
+      ],
+      "todo": null,
+      "messages": [
+        {
+          "id": "s01-pre-01-m0",
+          "fromKind": "system",
+          "fromName": "系统",
+          "text": "挂接演示材料：设备清单（M1-DOC-02 v1）、买卖合同要素页（M1-DOC-03 v1）、现场巡检画面记录（M1-DOC-04 v1，观察范围仅拍摄当时可见区域）、电费记录摘录（M1-DOC-05 v1）。均为标注的合成演示夹具。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "演示情景"
+          ]
+        }
+      ],
+      "evidenceRefs": [
+        "M1-DOC-02 v1",
+        "M1-DOC-03 v1",
+        "M1-DOC-04 v1",
+        "M1-DOC-05 v1"
+      ]
+    },
+    {
+      "stepId": "s02-pre-02",
+      "stageIndex": 1,
+      "stageLabel": "预审",
+      "scenarioLabel": "固定演示 · 预审",
+      "progressLabel": "预审通过",
+      "title": "预审核对通过（演示规则自动）",
+      "hint": "材料挂接完成后自动核对",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "适用条件已确认",
+          "summary": "演示类目核对通过（合成规则）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "材料齐备",
+          "summary": "材料齐备，待尽调核验（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "current",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "gray",
+          "judgmentText": "准备中",
+          "summary": "条件框架准备（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "pending",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "gray",
+          "judgmentText": "未开始",
+          "summary": "未到该域工作（合成）"
+        }
+      ],
+      "todo": null,
+      "messages": [
+        {
+          "id": "s02-pre-02-m0",
+          "fromKind": "system",
+          "fromName": "系统",
+          "text": "演示材料类目齐备（合成演示规则，仅覆盖已挂接的演示夹具，不代表公司必需资料制度），预审通过；可发起远程尽调。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "演示情景"
+          ]
+        }
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "stepId": "s03-dd-01",
+      "stageIndex": 2,
+      "stageLabel": "尽调",
+      "scenarioLabel": "固定演示 · 尽调",
+      "progressLabel": "远程尽调发起",
+      "title": "发起远程尽调访谈",
+      "hint": "业务点击「发起远程尽调」（人工动作：确立我方远程参与边界，不由系统代发起）",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "适用条件已确认",
+          "summary": "权属合规要点待尽调核对（合成）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "一致性核验中",
+          "summary": "远程访谈与资料比对开始（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "current",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "gray",
+          "judgmentText": "准备中",
+          "summary": "条件框架准备（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "pending",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "gray",
+          "judgmentText": "未开始",
+          "summary": "未到该域工作（合成）"
+        }
+      ],
+      "todo": {
+        "id": "todo-s03-dd-01",
+        "title": "发起远程尽调访谈",
+        "detail": "业务点击「发起远程尽调」（人工动作：确立我方远程参与边界，不由系统代发起）",
+        "status": "待补充",
+        "relatedDomain": "credit"
+      },
+      "messages": [
+        {
+          "id": "s03-dd-01-m0",
+          "fromKind": "business",
+          "fromName": "业务 · （合成）",
+          "text": "发起远程尽调：实控人在经营现场，我方远程参与；财务、生产人员在现场或实时入会。业务端以视频访谈为主，四域提示与内部交流分列。（合成演示设定，不开启真实摄像头、不录音录像）",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "项目沟通"
+          ]
+        }
+      ],
+      "evidenceRefs": [],
+      "holdForHuman": true
+    },
+    {
+      "stepId": "s04-dd-02",
+      "stageIndex": 2,
+      "stageLabel": "尽调",
+      "scenarioLabel": "固定演示 · 尽调",
+      "progressLabel": "尽调访谈中·疑点已标记",
+      "title": "现场问答与系统标疑",
+      "hint": "访谈发起后自动记录并比对",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "适用条件已确认",
+          "summary": "权属链条为补证事项（合成提示）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "疑点待澄清",
+          "summary": "产能口径矛盾已标记，双侧来源绑定（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "current",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "gray",
+          "judgmentText": "准备中",
+          "summary": "成数口径待核算（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "current",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "gray",
+          "judgmentText": "观察中",
+          "summary": "巡检差异待资产意见（合成）"
+        }
+      ],
+      "todo": null,
+      "messages": [
+        {
+          "id": "s04-dd-02-m0",
+          "fromKind": "business",
+          "fromName": "客户实控人（业务代录·合成）",
+          "text": "现场问答（M1-DOC-08 v1，合成）：「最近半年订单减少，目前大约一半产能在跑。」",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "补充说明"
+          ]
+        },
+        {
+          "id": "s04-dd-02-m1",
+          "fromKind": "system",
+          "fromName": "系统",
+          "text": "系统比对疑点 DD-DOUBT-1（产能口径，合成演示规则）：首次沟通纪要载「设备基本满负荷运转，订单排到三个月之后」（M1-DOC-01 v1）与现场问答「约一半产能在跑」（M1-DOC-08 v1）相互矛盾；「满负荷」声称与电费记录（M1-DOC-05 v1，近6个月月均约4.1万kWh）存在张力。两处陈述已双侧绑定来源，不判定哪次为真。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "演示情景"
+          ]
+        },
+        {
+          "id": "s04-dd-02-m2",
+          "fromKind": "domain",
+          "fromName": "信审模型（模拟）",
+          "text": "建议向客户澄清：请提供排产/订单记录与产量台账，以客观材料核对产能口径。（模拟输出，authority=none；不判定陈述真伪，不给出批准/否决/额度/价格建议）",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "合成判断"
+          ]
+        }
+      ],
+      "evidenceRefs": [
+        "M1-DOC-08 v1",
+        "M1-DOC-01 v1",
+        "M1-DOC-05 v1"
+      ]
+    },
+    {
+      "stepId": "s05-dd-03",
+      "stageIndex": 2,
+      "stageLabel": "尽调",
+      "scenarioLabel": "固定演示 · 尽调",
+      "progressLabel": "财务/生产现场补充与客户时点说明",
+      "title": "财务/生产现场补充与客户时点说明",
+      "hint": "业务录入现场补充（与 DD-04/DD-05/DD-06 并行，任意顺序）",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "适用条件已确认",
+          "summary": "权属链条为补证事项（合成提示）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "补充说明入档",
+          "summary": "财务/现场补充与时点说明已记录（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "current",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "gray",
+          "judgmentText": "准备中",
+          "summary": "成数口径待核算（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "current",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "gray",
+          "judgmentText": "观察中",
+          "summary": "巡检差异待资产意见（合成）"
+        }
+      ],
+      "todo": {
+        "id": "todo-s05-dd-03",
+        "title": "财务/生产现场补充与客户时点说明",
+        "detail": "业务录入现场补充（与 DD-04/DD-05/DD-06 并行，任意顺序）",
+        "status": "待补充",
+        "relatedDomain": "credit"
+      },
+      "messages": [
+        {
+          "id": "s05-dd-03-m0",
+          "fromKind": "business",
+          "fromName": "业务 · （合成）",
+          "text": "财务人员（现场）补充：电费与产量台账初核口径已记录，正式台账待客户内部整理后补交；月均用电约4.1万kWh与产线当前实际排产一致。（合成演示陈述，未经书面台账核实）",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "项目沟通"
+          ]
+        },
+        {
+          "id": "s05-dd-03-m1",
+          "fromKind": "business",
+          "fromName": "客户实控人（业务代录·合成）",
+          "text": "客户就购买时点口径补充（M1-DOC-06 v1，合成）：2021年11月与厂方签订购协议并付定金，主机2021年3月出厂；2022年5月正式签买卖合同、6月付清尾款、7月到厂安装。「2021年购入」系从签订订购协议起算；订购协议、定金收据和尾款付款凭证可以补交。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "补充说明"
+          ]
+        }
+      ],
+      "evidenceRefs": [
+        "M1-DOC-06 v1",
+        "M1-DOC-05 v1"
+      ],
+      "holdForHuman": true
+    },
+    {
+      "stepId": "s06-dd-04",
+      "stageIndex": 2,
+      "stageLabel": "尽调",
+      "scenarioLabel": "固定演示 · 尽调",
+      "progressLabel": "资产岗复检建议",
+      "title": "资产岗复检建议",
+      "hint": "疑点标记后自动发出（专业域必要参与，非每步发言）",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "适用条件已确认",
+          "summary": "权属链条为补证事项（合成提示）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "补充说明入档",
+          "summary": "财务/现场补充与时点说明已记录（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "current",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "gray",
+          "judgmentText": "准备中",
+          "summary": "成数口径待核算（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "复检建议待人工",
+          "summary": "投前复检与租后关注建议已发出（合成）"
+        }
+      ],
+      "todo": null,
+      "messages": [
+        {
+          "id": "s06-dd-04-m0",
+          "fromKind": "domain",
+          "fromName": "资产 · 资产岗（合成）",
+          "text": "巡检观察（M1-DOC-04 v1，仅当时可见区域：导轨局部锈蚀痕迹、液压站油路可见渗漏痕迹）与「几乎全新」声称存在差异；建议投前安排设备复检，并在租后巡检中提高对该设备的关注频次。是否安排由人工决定，不构成对设备整体状况的认定。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "合成判断"
+          ]
+        }
+      ],
+      "evidenceRefs": [
+        "M1-DOC-04 v1"
+      ]
+    },
+    {
+      "stepId": "s07-dd-05",
+      "stageIndex": 2,
+      "stageLabel": "尽调",
+      "scenarioLabel": "固定演示 · 尽调",
+      "progressLabel": "政策岗权属链条提示",
+      "title": "政策岗权属链条提示",
+      "hint": "疑点标记后自动发出（专业域必要参与）",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "适用条件已确认",
+          "summary": "权属链条一致性已列为补证事项（合成提示）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "补充说明入档",
+          "summary": "财务/现场补充与时点说明已记录（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "current",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "gray",
+          "judgmentText": "准备中",
+          "summary": "成数口径待核算（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "复检建议待人工",
+          "summary": "投前复检与租后关注建议已发出（合成）"
+        }
+      ],
+      "todo": null,
+      "messages": [
+        {
+          "id": "s07-dd-05-m0",
+          "fromKind": "domain",
+          "fromName": "政策 · 政策岗（合成）",
+          "text": "售后回租需继续核对权属与登记合规：订购协议（2021）、买卖合同（2022-05）、发票、付款凭证的权属链条一致性是本单关键补证事项；补齐前不形成倾向性意见。（合成演示提示，非制度全文）",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "合成判断"
+          ]
+        }
+      ],
+      "evidenceRefs": [
+        "M1-DOC-03 v1",
+        "M1-DOC-06 v1"
+      ]
+    },
+    {
+      "stepId": "s08-dd-06",
+      "stageIndex": 2,
+      "stageLabel": "尽调",
+      "scenarioLabel": "固定演示 · 尽调",
+      "progressLabel": "商务岗成数口径提示",
+      "title": "商务岗成数口径提示",
+      "hint": "疑点标记后自动发出（专业域必要参与）",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "适用条件已确认",
+          "summary": "权属链条一致性已列为补证事项（合成提示）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "补充说明入档",
+          "summary": "财务/现场补充与时点说明已记录（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待经济性核算",
+          "summary": "成数口径待核算（未配置；不填默认值，合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "复检建议待人工",
+          "summary": "投前复检与租后关注建议已发出（合成）"
+        }
+      ],
+      "todo": null,
+      "messages": [
+        {
+          "id": "s08-dd-06-m0",
+          "fromKind": "domain",
+          "fromName": "商务 · 商务岗（合成）",
+          "text": "融资380万元对应客户申报入账原值520万元；成数口径待经济性核算（当前未配置），不填默认值、不建议价格。（合成演示）",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "合成判断"
+          ]
+        }
+      ],
+      "evidenceRefs": [
+        "M1-DOC-02 v1",
+        "M1-DOC-03 v1"
+      ]
+    },
+    {
+      "stepId": "s09-dd-07",
+      "stageIndex": 2,
+      "stageLabel": "尽调",
+      "scenarioLabel": "固定演示 · 尽调",
+      "progressLabel": "疑点人工处理（确认/纠正/退回）",
+      "title": "疑点人工处理（确认/纠正/退回）",
+      "hint": "并行四项全部完成后暂停等待人工；不可被自动推进越过",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "适用条件已确认",
+          "summary": "权属链条补证事项随单流转（合成）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "人工决定待作出",
+          "summary": "疑点 DD-DOUBT-1：确认/纠正/退回（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待经济性核算",
+          "summary": "成数口径待核算（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "复检建议待人工",
+          "summary": "复检安排待人工决定（合成）"
+        }
+      ],
+      "todo": {
+        "id": "todo-s09-dd-07",
+        "title": "人工决定：疑点人工处理（确认/纠正/退回）",
+        "detail": "四项并行补充已完成，疑点 DD-DOUBT-1（产能口径矛盾：M1-DOC-01 v1「基本满负荷」 vs M1-DOC-08 v1「约一半产能」）等待人工处理。自动推进在此暂停：本节点必须由信审复核人决定，模型意见不能替代。",
+        "status": "待复核",
+        "relatedDomain": "credit"
+      },
+      "messages": [
+        {
+          "id": "s09-dd-07-m0",
+          "fromKind": "system",
+          "fromName": "系统",
+          "text": "四项并行补充已完成，疑点 DD-DOUBT-1（产能口径矛盾：M1-DOC-01 v1「基本满负荷」 vs M1-DOC-08 v1「约一半产能」）等待人工处理。自动推进在此暂停：本节点必须由信审复核人决定，模型意见不能替代。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "演示情景"
+          ]
+        }
+      ],
+      "evidenceRefs": [
+        "M1-DOC-01 v1",
+        "M1-DOC-08 v1"
+      ],
+      "decision": {
+        "prompt": "四项并行补充已完成，疑点 DD-DOUBT-1（产能口径矛盾：M1-DOC-01 v1「基本满负荷」 vs M1-DOC-08 v1「约一半产能」）等待人工处理。自动推进在此暂停：本节点必须由信审复核人决定，模型意见不能替代。",
+        "options": [
+          {
+            "kind": "confirm",
+            "label": "确认：现有记录无误，疑点保留为待澄清项（以客观材料补证后闭环）",
+            "nextStepId": "s13-dd-08"
+          },
+          {
+            "kind": "correct",
+            "label": "纠正：更正记录笔误——纪要「年产值约450万元」应为「月产值约450万元」",
+            "nextStepId": "s13c-dd-08-correct"
+          },
+          {
+            "kind": "return",
+            "label": "退回：尽调退回补充——要求客户提供排产/订单/台账记录",
+            "nextStepId": "s10-dd-rt-1"
+          }
+        ]
+      }
+    },
+    {
+      "stepId": "s10-dd-rt-1",
+      "stageIndex": 2,
+      "stageLabel": "尽调",
+      "scenarioLabel": "固定演示 · 尽调",
+      "progressLabel": "客户补交材料挂接（退回补充）",
+      "title": "客户补交材料挂接（退回补充）",
+      "hint": "DD-07 决定为「退回」后可用",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "适用条件已确认",
+          "summary": "权属链条补证事项随单流转（合成）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "red",
+          "judgmentText": "尽调退回补充中",
+          "summary": "补交材料挂接中；尽调未通过（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待经济性核算",
+          "summary": "成数口径待核算（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "复检建议待人工",
+          "summary": "复检安排待人工决定（合成）"
+        }
+      ],
+      "todo": {
+        "id": "todo-s10-dd-rt-1",
+        "title": "客户补交材料挂接（退回补充）",
+        "detail": "DD-07 决定为「退回」后可用",
+        "status": "待补充",
+        "relatedDomain": "credit"
+      },
+      "messages": [
+        {
+          "id": "s10-dd-rt-1-m0",
+          "fromKind": "business",
+          "fromName": "业务 · （合成）",
+          "text": "客户已补交排产与订单记录摘录（M1-DOC-09 v1，合成演示材料）。尽调处于退回补充状态，尚未通过；对应阶段不显示为完成。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "项目沟通"
+          ]
+        }
+      ],
+      "evidenceRefs": [
+        "M1-DOC-09 v1"
+      ],
+      "holdForHuman": true
+    },
+    {
+      "stepId": "s11-dd-rt-2",
+      "stageIndex": 2,
+      "stageLabel": "尽调",
+      "scenarioLabel": "固定演示 · 尽调",
+      "progressLabel": "补充材料复核（系统）",
+      "title": "补充材料复核（系统）",
+      "hint": "补交材料挂接后自动复核",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "适用条件已确认",
+          "summary": "权属链条补证事项随单流转（合成）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "red",
+          "judgmentText": "退回补充已复核",
+          "summary": "待重新人工判断（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待经济性核算",
+          "summary": "成数口径待核算（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "复检建议待人工",
+          "summary": "复检安排待人工决定（合成）"
+        }
+      ],
+      "todo": null,
+      "messages": [
+        {
+          "id": "s11-dd-rt-2-m0",
+          "fromKind": "system",
+          "fromName": "系统",
+          "text": "补充材料已挂接并复核（合成演示规则：仅核对材料挂接与类目，不核实真伪）；疑点 DD-DOUBT-1 重新提交人工判断。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "演示情景"
+          ]
+        }
+      ],
+      "evidenceRefs": [
+        "M1-DOC-09 v1"
+      ]
+    },
+    {
+      "stepId": "s12-dd-07b",
+      "stageIndex": 2,
+      "stageLabel": "尽调",
+      "scenarioLabel": "固定演示 · 尽调",
+      "progressLabel": "疑点重新判断（补充后）",
+      "title": "疑点重新判断（补充后）",
+      "hint": "退回补充复核完成后暂停等待人工；不可被自动推进越过",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "适用条件已确认",
+          "summary": "权属链条补证事项随单流转（合成）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "red",
+          "judgmentText": "重新判断待作出",
+          "summary": "补充后：确认/纠正/再次退回（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待经济性核算",
+          "summary": "成数口径待核算（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "复检建议待人工",
+          "summary": "复检安排待人工决定（合成）"
+        }
+      ],
+      "todo": {
+        "id": "todo-s12-dd-07b",
+        "title": "人工决定：疑点重新判断（补充后）",
+        "detail": "补充后重新判断：本演示内退回仅一次，本节点不再提供退回选项；仅可确认或纠正。引用证据请以当前有效版本为准（如已更正，M1-DOC-01 有效版本为 v2）。",
+        "status": "待复核",
+        "relatedDomain": "credit"
+      },
+      "messages": [
+        {
+          "id": "s12-dd-07b-m0",
+          "fromKind": "system",
+          "fromName": "系统",
+          "text": "补充后重新判断：本演示内退回仅一次，本节点不再提供退回选项；仅可确认或纠正。引用证据请以当前有效版本为准（如已更正，M1-DOC-01 有效版本为 v2）。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "演示情景"
+          ]
+        }
+      ],
+      "evidenceRefs": [],
+      "decision": {
+        "prompt": "补充后重新判断：本演示内退回仅一次，本节点不再提供退回选项；仅可确认或纠正。引用证据请以当前有效版本为准（如已更正，M1-DOC-01 有效版本为 v2）。",
+        "options": [
+          {
+            "kind": "confirm",
+            "label": "确认：疑点处理完毕（待澄清项挂账闭环清单）",
+            "nextStepId": "s13-dd-08"
+          },
+          {
+            "kind": "correct",
+            "label": "纠正：如仍发现记录错误，更正并作废基于旧版本的意见",
+            "nextStepId": "s13c-dd-08-correct"
+          }
+        ]
+      }
+    },
+    {
+      "stepId": "s13-dd-08",
+      "stageIndex": 2,
+      "stageLabel": "尽调",
+      "scenarioLabel": "固定演示 · 尽调",
+      "progressLabel": "尽调完成（待核实事项随单流转）",
+      "title": "尽调结论汇总（信审）",
+      "hint": "判断节点闭环（确认或纠正）后自动汇总",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "权属提示已记录",
+          "summary": "补证事项清单随单流转（合成）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "current",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待核实事项挂账",
+          "summary": "尽调汇总无正式审批结论（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待经济性核算",
+          "summary": "成数口径未配置（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待投前复检",
+          "summary": "复检建议已记录（合成）"
+        }
+      ],
+      "todo": null,
+      "messages": [
+        {
+          "id": "s13-dd-08-m0",
+          "fromKind": "domain",
+          "fromName": "信审 · 信审岗（合成）",
+          "text": "尽调汇总（合成演示，无正式审批结论）：①购买时点口径不一致=待补证（订购协议/定金收据/付款凭证）；②产能口径=待台账核实；如人工已更正记录口径，以更正后口径为准，基于旧口径的分析已作废留档（见上方决定留档）；③满负荷/一半产能矛盾=待客观材料（排产、订单、台账）澄清；④设备状况=待投前复检。全部为待核实事项，随单流转至签约前人工复核。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "合成判断"
+          ]
+        }
+      ],
+      "evidenceRefs": [],
+      "nextStepId": "s14-sg-01"
+    },
+    {
+      "stepId": "s13c-dd-08-correct",
+      "stageIndex": 2,
+      "stageLabel": "尽调",
+      "scenarioLabel": "固定演示 · 尽调",
+      "progressLabel": "疑点处理：人工更正已记录",
+      "title": "人工更正记录（M1-DOC-07）",
+      "hint": "纠正决定的效果应用步：更正留档与证据升版可见，随后推进进入签约准备",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "权属提示已记录",
+          "summary": "补证事项清单随单流转（合成）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "current",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "更正已记录·待台账核实",
+          "summary": "M1-DOC-01 已升版 v2；基于「年产值」口径的分析已作废（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待经济性核算",
+          "summary": "成数口径未配置（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待投前复检",
+          "summary": "复检建议已记录（合成）"
+        }
+      ],
+      "todo": {
+        "id": "todo-s13c-dd-08-correct",
+        "title": "人工更正已记录：进入签约准备",
+        "detail": "纠正决定已留档（M1-DOC-01 v1→v2，旧口径分析作废）；推进后进入签约准备。（合成演示）",
+        "status": "待补充",
+        "relatedDomain": "credit"
+      },
+      "messages": [
+        {
+          "id": "s13c-dd-08-correct-m0",
+          "fromKind": "domain",
+          "fromName": "信审复核人（人工·合成）",
+          "text": "人工更正记录（M1-DOC-07 v1，合成）：经与客户财务人员核对，纪要「年产值约450万元」系业务记录笔误，更正为「月产值约450万元」；M1-DOC-01 升版为 v2（v1 仅留档追溯、不再作为有效引用），基于「年产值」口径的产能-能耗匹配分析作废。疑点 DD-DOUBT-1 中「满负荷 vs 一半产能」矛盾仍待客观材料澄清。（人工决定·纠正，合成演示）",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "补充说明"
+          ]
+        }
+      ],
+      "evidenceRefs": [
+        "M1-DOC-01 v2（更正后有效版本）",
+        "M1-DOC-07 v1（更正记录）"
+      ],
+      "nextStepId": "s14-sg-01"
+    },
+    {
+      "stepId": "s14-sg-01",
+      "stageIndex": 3,
+      "stageLabel": "签约",
+      "scenarioLabel": "固定演示 · 签约",
+      "progressLabel": "签约准备中",
+      "title": "签约准备",
+      "hint": "尽调汇总后自动",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "权属提示已记录",
+          "summary": "补证事项清单随单流转（合成）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "current",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "签约前复核待人工",
+          "summary": "待核实事项逐项核对（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待经济性核算",
+          "summary": "成数口径未配置（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待投前复检",
+          "summary": "复检建议已记录（合成）"
+        }
+      ],
+      "todo": null,
+      "messages": [
+        {
+          "id": "s14-sg-01-m0",
+          "fromKind": "system",
+          "fromName": "系统",
+          "text": "进入签约准备（演示）。待核实事项清单随单流转：签约前人工复核必须逐项核对，本节点为制度必需的人工决定，不由模型自信替代。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "演示情景"
+          ]
+        }
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "stepId": "s15-sg-02",
+      "stageIndex": 3,
+      "stageLabel": "签约",
+      "scenarioLabel": "固定演示 · 签约",
+      "progressLabel": "签约前人工复核",
+      "title": "签约前人工复核",
+      "hint": "签约准备后暂停等待人工；不可被自动推进越过",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "权属提示已记录",
+          "summary": "补证事项清单随单流转（合成）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "current",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "签约前复核待人工",
+          "summary": "待核实事项逐项核对（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待经济性核算",
+          "summary": "成数口径未配置（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待投前复检",
+          "summary": "复检建议已记录（合成）"
+        }
+      ],
+      "todo": {
+        "id": "todo-s15-sg-02",
+        "title": "人工决定：签约前人工复核",
+        "detail": "签约前人工复核：对待核实事项清单（时点补证、产能台账、矛盾澄清、设备复检）逐项核对。本节点是流程内必需的人工决定：自动推进在此暂停，模型输出不能替代确认。",
+        "status": "待复核",
+        "relatedDomain": "credit"
+      },
+      "messages": [
+        {
+          "id": "s15-sg-02-m0",
+          "fromKind": "system",
+          "fromName": "系统",
+          "text": "签约前人工复核：对待核实事项清单（时点补证、产能台账、矛盾澄清、设备复检）逐项核对。本节点是流程内必需的人工决定：自动推进在此暂停，模型输出不能替代确认。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "演示情景"
+          ]
+        }
+      ],
+      "evidenceRefs": [],
+      "decision": {
+        "prompt": "签约前人工复核：对待核实事项清单（时点补证、产能台账、矛盾澄清、设备复检）逐项核对。本节点是流程内必需的人工决定：自动推进在此暂停，模型输出不能替代确认。",
+        "options": [
+          {
+            "kind": "confirm",
+            "label": "确认：待核实事项已逐项核对，同意进入签约（演示）",
+            "nextStepId": "s18-sg-03"
+          },
+          {
+            "kind": "correct",
+            "label": "纠正：按人工意见修订条款（转商务补充后重新复核）",
+            "nextStepId": "s16-sg-rt"
+          },
+          {
+            "kind": "return",
+            "label": "退回：某待核实事项未闭环，退回更新尽调汇总后重试",
+            "nextStepId": "s16-sg-rt"
+          }
+        ]
+      }
+    },
+    {
+      "stepId": "s16-sg-rt",
+      "stageIndex": 3,
+      "stageLabel": "签约",
+      "scenarioLabel": "固定演示 · 签约",
+      "progressLabel": "签约退回补充（演示）",
+      "title": "商务复核与条款修订：按人工纠正/退回意见更新",
+      "hint": "SG-02 决定为「纠正/退回」后可用；更新后重新进入人工复核",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "权属提示已记录",
+          "summary": "补证事项清单随单流转（合成）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "red",
+          "judgmentText": "签约退回补充中",
+          "summary": "补充说明更新中；签约未通过（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待经济性核算",
+          "summary": "成数口径未配置（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待投前复检",
+          "summary": "复检建议已记录（合成）"
+        }
+      ],
+      "todo": {
+        "id": "todo-s16-sg-rt",
+        "title": "签约退回补充（演示）",
+        "detail": "SG-02 决定为「退回」后可用",
+        "status": "待补充",
+        "relatedDomain": "credit"
+      },
+      "messages": [
+        {
+          "id": "s16-sg-rt-m0",
+          "fromKind": "business",
+          "fromName": "业务 · （合成）",
+          "text": "签约复核人工意见已记录（纠正/退回）：相关域补充说明与条款修订进行中（合成演示；未闭环事项为「产能台账待核实」）。签约阶段不显示为完成；更新完成后进入重新复核。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "项目沟通"
+          ]
+        }
+      ],
+      "evidenceRefs": [],
+      "holdForHuman": true
+    },
+    {
+      "stepId": "s17-sg-02b",
+      "stageIndex": 3,
+      "stageLabel": "签约",
+      "scenarioLabel": "固定演示 · 签约",
+      "progressLabel": "签约前人工复核（补充后）",
+      "title": "签约前人工复核（补充后）",
+      "hint": "退回补充完成后暂停等待人工；不可被自动推进越过",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "权属提示已记录",
+          "summary": "补证事项清单随单流转（合成）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "current",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "red",
+          "judgmentText": "重新复核待作出",
+          "summary": "补充后确认（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待经济性核算",
+          "summary": "成数口径未配置（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "pending",
+            "pending",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "待投前复检",
+          "summary": "复检建议已记录（合成）"
+        }
+      ],
+      "todo": {
+        "id": "todo-s17-sg-02b",
+        "title": "人工决定：签约前人工复核（补充后）",
+        "detail": "补充后重新复核：本演示内签约退回仅一次，本节点仅提供确认选项。",
+        "status": "待复核",
+        "relatedDomain": "credit"
+      },
+      "messages": [
+        {
+          "id": "s17-sg-02b-m0",
+          "fromKind": "system",
+          "fromName": "系统",
+          "text": "补充后重新复核：本演示内签约退回仅一次，本节点仅提供确认选项。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "演示情景"
+          ]
+        }
+      ],
+      "evidenceRefs": [],
+      "decision": {
+        "prompt": "补充后重新复核：本演示内签约退回仅一次，本节点仅提供确认选项。",
+        "options": [
+          {
+            "kind": "confirm",
+            "label": "确认：补充说明已核对，同意进入签约（演示）",
+            "nextStepId": "s18-sg-03"
+          }
+        ]
+      }
+    },
+    {
+      "stepId": "s18-sg-03",
+      "stageIndex": 3,
+      "stageLabel": "签约",
+      "scenarioLabel": "固定演示 · 签约",
+      "progressLabel": "签约完成（演示）",
+      "title": "签约完成（演示）",
+      "hint": "签约前人工复核确认后自动",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "权属提示已记录",
+          "summary": "补证事项转入租后清单（合成）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "签约复核已确认",
+          "summary": "逐项核对确认（合成；台账补证仍以单据为准）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "current",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "核算未配置",
+          "summary": "经济性核算未配置（如实保留，合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "current",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "起租准备",
+          "summary": "复检/关注安排转入租后（合成）"
+        }
+      ],
+      "todo": null,
+      "messages": [
+        {
+          "id": "s18-sg-03-m0",
+          "fromKind": "system",
+          "fromName": "系统",
+          "text": "签约完成（合成演示；不发生真实合同、放款或登记行为）。待核实事项转入租后关注清单。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "演示情景"
+          ]
+        }
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "stepId": "s19-pr-01",
+      "stageIndex": 4,
+      "stageLabel": "租后",
+      "scenarioLabel": "固定演示 · 租后",
+      "progressLabel": "起租（演示）",
+      "title": "起租与租后关注安排",
+      "hint": "签约完成后自动",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "已确认",
+          "summary": "权属链条提示闭环（合成）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "已通过",
+          "summary": "签约复核确认（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "current",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "核算未配置",
+          "summary": "经济性核算未配置（如实保留，合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "current",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "观察中",
+          "summary": "对该设备提高巡检关注频次（合成）"
+        }
+      ],
+      "todo": null,
+      "messages": [
+        {
+          "id": "s19-pr-01-m0",
+          "fromKind": "domain",
+          "fromName": "资产 · 资产岗（合成）",
+          "text": "已起租（演示）：按资产岗建议对该生产线提高巡检关注频次；投前复检建议转入租后执行清单。（合成演示）",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "合成判断"
+          ]
+        }
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "stepId": "s20-pr-02",
+      "stageIndex": 4,
+      "stageLabel": "租后",
+      "scenarioLabel": "固定演示 · 租后",
+      "progressLabel": "租后管理中",
+      "title": "租后巡检记录",
+      "hint": "起租后自动",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "已确认",
+          "summary": "权属链条提示闭环（合成）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "已通过",
+          "summary": "签约复核确认（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "current",
+            "pending"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "核算未配置",
+          "summary": "经济性核算未配置（如实保留，合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "current"
+          ],
+          "judgmentStatus": "yellow",
+          "judgmentText": "巡检记录已登记",
+          "summary": "巡检发现为合成设定（合成）"
+        }
+      ],
+      "todo": null,
+      "messages": [
+        {
+          "id": "s20-pr-02-m0",
+          "fromKind": "system",
+          "fromName": "系统",
+          "text": "租后巡检记录已登记（合成演示；巡检发现为合成设定，不代表设备实际状况）。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "演示情景"
+          ]
+        }
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "stepId": "s21-pr-03",
+      "stageIndex": 4,
+      "stageLabel": "租后",
+      "scenarioLabel": "固定演示 · 租后",
+      "progressLabel": "已结清（演示）",
+      "title": "已结清（演示终态）",
+      "hint": "租后巡检后自动",
+      "domains": [
+        {
+          "domainId": "policy",
+          "name": "政策",
+          "segmentLabels": [
+            "适用条件",
+            "灰区识别",
+            "例外路径",
+            "准出意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "已确认",
+          "summary": "适用条件已确认（合成）"
+        },
+        {
+          "domainId": "credit",
+          "name": "信审",
+          "segmentLabels": [
+            "材料齐备性",
+            "一致性核验",
+            "偿付覆盖",
+            "信审意见"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "已通过",
+          "summary": "信审核验已通过（合成）"
+        },
+        {
+          "domainId": "commerce",
+          "name": "商务",
+          "segmentLabels": [
+            "条件框架",
+            "价格要素",
+            "期限要素",
+            "起租条件"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "已结清",
+          "summary": "商务条款已履行完毕（合成）"
+        },
+        {
+          "domainId": "asset",
+          "name": "资产",
+          "segmentLabels": [
+            "标的确认",
+            "权属核验",
+            "交付与起租",
+            "巡检与结清"
+          ],
+          "segments": [
+            "done",
+            "done",
+            "done",
+            "done"
+          ],
+          "judgmentStatus": "green",
+          "judgmentText": "已结清",
+          "summary": "资产管理流程已结束（合成）"
+        }
+      ],
+      "todo": null,
+      "messages": [
+        {
+          "id": "s21-pr-03-m0",
+          "fromKind": "system",
+          "fromName": "系统",
+          "text": "项目已结清（演示终态）。点击「重新开始」仅重置本演示状态（由 demo-story.json 派生），不影响产品会话或任何真实业务数据。",
+          "at": "2026-09-14T01:00:00.000Z",
+          "marks": [
+            "演示情景"
+          ]
+        }
+      ],
+      "evidenceRefs": [],
+      "scenario": "settled"
+    }
+  ]
+}

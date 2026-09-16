@@ -1,0 +1,103 @@
+{
+  "schema": "jw-eval-candidate@1",
+  "candidateId": "independent-CASE-A",
+  "caseId": "CASE-A",
+  "variantId": null,
+  "inputPackVersion": "case-A v1",
+  "respondent": {
+    "kind": "hand_written_reference_answer",
+    "note": "人工撰写的独立参考答案，非任何真实模型输出；用于示范期望格式并作为评估工具的positive control"
+  },
+  "findings": [
+    {
+      "findingId": "F-A-01",
+      "type": "gap",
+      "statement": "财务摘要为企业自编的未审计数据，营收、净利、负债率与应收集中度均未经第三方核验。",
+      "evidenceRefs": [{ "sourceId": "A-DOC-02", "version": 1 }]
+    },
+    {
+      "findingId": "F-A-02",
+      "type": "gap",
+      "statement": "银行流水仅覆盖合成银行A单一账户；财务负责人提到的一般户基本不走账但流水未提供，回款全貌未覆盖。",
+      "evidenceRefs": [
+        { "sourceId": "A-DOC-05", "version": 1 },
+        { "sourceId": "A-QA-01", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-A-03",
+      "type": "gap",
+      "statement": "实控人现场状态为on_site_declared（自报在经营现场），本轮画面尚不足以按依据升级为已确认；后续仍需按约定方式核验。",
+      "evidenceRefs": [{ "sourceId": "A-VIS-01", "version": 1 }]
+    },
+    {
+      "findingId": "F-A-04",
+      "type": "gap",
+      "statement": "经济性核算口径与输入均未确认（租金是否含增值税/保险、留购价、资金成本、预期信用损失等），现阶段无法完成核算，不得以默认参数补齐。",
+      "evidenceRefs": [{ "sourceId": "A-SUP-01", "version": 1 }]
+    },
+    {
+      "findingId": "F-A-05",
+      "type": "note",
+      "statement": "交叉核对：设备清单A-DOC-03、采购发票A-DOC-04与现场铭牌描述A-VIS-02的设备编号及出厂年份相互一致；产能与流水规模同量级。资料相对一致，未发现关键矛盾。",
+      "evidenceRefs": [
+        { "sourceId": "A-DOC-03", "version": 1 },
+        { "sourceId": "A-DOC-04", "version": 1 },
+        { "sourceId": "A-VIS-02", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-A-06",
+      "type": "note",
+      "statement": "产能利用率约75%、订单排产等为现场口头答复，属客户声称；画面可佐证设备在运转，但利用率数字本身未经核实。",
+      "evidenceRefs": [{ "sourceId": "A-QA-01", "version": 1 }]
+    }
+  ],
+  "questions": [
+    {
+      "questionId": "Q-A-01",
+      "text": "请补充2025年10月设备年度保养单，并说明维保是否有完整台账？",
+      "evidenceRefs": [{ "sourceId": "A-QA-01", "version": 1 }]
+    },
+    {
+      "questionId": "Q-A-02",
+      "text": "应收账款前五名占比61%、最大单一客户28%：请说明最大客户的合作年限、结算账期与当前应收余额？",
+      "evidenceRefs": [{ "sourceId": "A-DOC-02", "version": 1 }]
+    },
+    {
+      "questionId": "Q-A-03",
+      "text": "请补充一般户流水及开户清单，确认是否存在未提供的账户？",
+      "evidenceRefs": [{ "sourceId": "A-DOC-05", "version": 1 }]
+    },
+    {
+      "questionId": "Q-A-04",
+      "text": "现场状态确认安排：下一次远程会议按哪些画面与动作核实实控人位置，方可将on_site_declared升级为已确认？",
+      "evidenceRefs": [{ "sourceId": "A-VIS-01", "version": 1 }]
+    }
+  ],
+  "conclusions": [
+    {
+      "conclusionId": "C-A-01",
+      "kind": "summary",
+      "statement": "案例A资料内部一致性较好：三处独立来源的设备编号与年份互相对应，流水规模与营收同量级。主要未决点是未审计财务、单一账户流水、现场状态未确认与经济性口径未出。"
+    },
+    {
+      "conclusionId": "C-A-02",
+      "kind": "risk_note",
+      "statement": "应收集中（前五名61%）与客户口头数据未核实是当前主要不确定项；在补充核实前不形成任何倾向性判断。"
+    },
+    {
+      "conclusionId": "C-A-03",
+      "kind": "clarification_needed",
+      "statement": "需要客户补充：保养单、一般户流水、最大客户往来说明；经济性输入由我方商务与风控确认口径后再议。"
+    },
+    {
+      "conclusionId": "C-A-04",
+      "kind": "next_step",
+      "statement": "按Q-A-01至Q-A-04收集补充材料；缺口闭合情况由人工复核后决定是否进入下一轮。"
+    }
+  ],
+  "unresolved": [
+    "产能利用率75%为口头数据，无法在现有材料内核实"
+  ]
+}

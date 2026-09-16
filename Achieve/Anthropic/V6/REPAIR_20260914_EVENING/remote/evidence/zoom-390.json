@@ -1,0 +1,20 @@
+{
+  "zoom_0.8": {
+    "innerWidth": 390,
+    "scrollWidth": 375,
+    "scrollX": 0,
+    "zoom": "0.8"
+  },
+  "zoom_1": {
+    "innerWidth": 390,
+    "scrollWidth": 375,
+    "scrollX": 0,
+    "zoom": "1"
+  },
+  "zoom_1.25": {
+    "innerWidth": 390,
+    "scrollWidth": 375,
+    "scrollX": 0,
+    "zoom": "1.25"
+  }
+}

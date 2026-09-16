@@ -1,0 +1,294 @@
+{
+  "schema": "v5-preview-rows-store@1",
+  "overview": {
+    "projectId": "JW-2026-018",
+    "customerName": "远山精密制造",
+    "projectCode": "JW-2026-018",
+    "projectName": "新客回租 · JW-2026-018",
+    "scenario": "approval",
+    "scenarioLabel": "演示项目 · 审批推进中",
+    "version": 46,
+    "updatedAt": "2026-09-12T14:21:37.755Z",
+    "overall": {
+      "progressLabel": "审批推进中",
+      "description": "政策已确认；信审待复核；商务准备中；资产待启动（合成演示；总项目以资产管理流程结束为终点，不使用数字总进度）"
+    },
+    "domains": [
+      {
+        "domainId": "policy",
+        "name": "政策",
+        "segmentLabels": [
+          "适用条件",
+          "灰区识别",
+          "例外路径",
+          "准出意见"
+        ],
+        "segments": [
+          "done",
+          "done",
+          "done",
+          "done"
+        ],
+        "judgmentStatus": "green",
+        "judgmentText": "已确认",
+        "summary": "适用条件已确认（合成）"
+      },
+      {
+        "domainId": "credit",
+        "name": "信审",
+        "segmentLabels": [
+          "材料齐备性",
+          "一致性核验",
+          "偿付覆盖",
+          "信审意见"
+        ],
+        "segments": [
+          "done",
+          "done",
+          "pending",
+          "pending"
+        ],
+        "judgmentStatus": "yellow",
+        "judgmentText": "待复核",
+        "summary": "补充设备清单后继续核验（合成）"
+      },
+      {
+        "domainId": "commerce",
+        "name": "商务",
+        "segmentLabels": [
+          "条件框架",
+          "价格要素",
+          "期限要素",
+          "起租条件"
+        ],
+        "segments": [
+          "current",
+          "pending",
+          "pending",
+          "pending"
+        ],
+        "judgmentStatus": "gray",
+        "judgmentText": "准备中",
+        "summary": "合同要素同步准备（合成；无正式前序被绕过）"
+      },
+      {
+        "domainId": "asset",
+        "name": "资产",
+        "segmentLabels": [
+          "标的确认",
+          "权属核验",
+          "交付与起租",
+          "巡检与结清"
+        ],
+        "segments": [
+          "pending",
+          "pending",
+          "pending",
+          "pending"
+        ],
+        "judgmentStatus": "gray",
+        "judgmentText": "待启动",
+        "summary": "起租后持续管理至结清（合成）"
+      }
+    ],
+    "todo": {
+      "id": "todo-device-list",
+      "title": "补充设备清单",
+      "detail": "资料更新后，同步相关专业判断；提交后信审转入待复核（合成演示）。",
+      "status": "待复核",
+      "relatedDomain": "credit"
+    },
+    "messages": [
+      {
+        "id": "msg-seed-approval-1",
+        "fromKind": "system",
+        "fromName": "系统",
+        "text": "合成演示项目已初始化：本页全部为合成数据，不执行正式审批。",
+        "at": "2026-09-12T14:21:37.706Z",
+        "marks": [
+          "演示情景"
+        ]
+      },
+      {
+        "id": "msg-seed-approval-2",
+        "fromKind": "domain",
+        "fromName": "信审 · 张信审（合成）",
+        "text": "请补充设备清单，资料更新后我们同步推进专业判断。",
+        "at": "2026-09-12T14:21:37.706Z",
+        "marks": [
+          "合成判断"
+        ]
+      },
+      {
+        "id": "msg-note-rw1-confirm-note-r2b",
+        "fromKind": "business",
+        "fromName": "业务（演示身份）",
+        "text": "rework1 HTTP：确认重放语义（合成）。",
+        "at": "2026-09-12T14:21:37.755Z",
+        "marks": [
+          "补充说明"
+        ]
+      },
+      {
+        "id": "msg-note-sys-rw1-confirm-note-r2b",
+        "fromKind": "system",
+        "fromName": "系统",
+        "text": "已记录补充说明：相关域判断转入待复核（合成演示，不执行正式审批）。",
+        "at": "2026-09-12T14:21:37.755Z",
+        "marks": [
+          "演示情景"
+        ]
+      }
+    ]
+  },
+  "idempotency": [
+    {
+      "requestId": "rw1-confirm-note-r2b",
+      "hash": "a0e9ce9ad7c4017ccde1fbdbd84fb47e492f03f066b6785928ad66729e0b887e",
+      "response": {
+        "ok": true,
+        "overview": {
+          "projectId": "JW-2026-018",
+          "customerName": "远山精密制造",
+          "projectCode": "JW-2026-018",
+          "projectName": "新客回租 · JW-2026-018",
+          "scenario": "approval",
+          "scenarioLabel": "演示项目 · 审批推进中",
+          "version": 46,
+          "updatedAt": "2026-09-12T14:21:37.755Z",
+          "overall": {
+            "progressLabel": "审批推进中",
+            "description": "政策已确认；信审待复核；商务准备中；资产待启动（合成演示；总项目以资产管理流程结束为终点，不使用数字总进度）"
+          },
+          "domains": [
+            {
+              "domainId": "policy",
+              "name": "政策",
+              "segmentLabels": [
+                "适用条件",
+                "灰区识别",
+                "例外路径",
+                "准出意见"
+              ],
+              "segments": [
+                "done",
+                "done",
+                "done",
+                "done"
+              ],
+              "judgmentStatus": "green",
+              "judgmentText": "已确认",
+              "summary": "适用条件已确认（合成）"
+            },
+            {
+              "domainId": "credit",
+              "name": "信审",
+              "segmentLabels": [
+                "材料齐备性",
+                "一致性核验",
+                "偿付覆盖",
+                "信审意见"
+              ],
+              "segments": [
+                "done",
+                "done",
+                "pending",
+                "pending"
+              ],
+              "judgmentStatus": "yellow",
+              "judgmentText": "待复核",
+              "summary": "补充设备清单后继续核验（合成）"
+            },
+            {
+              "domainId": "commerce",
+              "name": "商务",
+              "segmentLabels": [
+                "条件框架",
+                "价格要素",
+                "期限要素",
+                "起租条件"
+              ],
+              "segments": [
+                "current",
+                "pending",
+                "pending",
+                "pending"
+              ],
+              "judgmentStatus": "gray",
+              "judgmentText": "准备中",
+              "summary": "合同要素同步准备（合成；无正式前序被绕过）"
+            },
+            {
+              "domainId": "asset",
+              "name": "资产",
+              "segmentLabels": [
+                "标的确认",
+                "权属核验",
+                "交付与起租",
+                "巡检与结清"
+              ],
+              "segments": [
+                "pending",
+                "pending",
+                "pending",
+                "pending"
+              ],
+              "judgmentStatus": "gray",
+              "judgmentText": "待启动",
+              "summary": "起租后持续管理至结清（合成）"
+            }
+          ],
+          "todo": {
+            "id": "todo-device-list",
+            "title": "补充设备清单",
+            "detail": "资料更新后，同步相关专业判断；提交后信审转入待复核（合成演示）。",
+            "status": "待复核",
+            "relatedDomain": "credit"
+          },
+          "messages": [
+            {
+              "id": "msg-seed-approval-1",
+              "fromKind": "system",
+              "fromName": "系统",
+              "text": "合成演示项目已初始化：本页全部为合成数据，不执行正式审批。",
+              "at": "2026-09-12T14:21:37.706Z",
+              "marks": [
+                "演示情景"
+              ]
+            },
+            {
+              "id": "msg-seed-approval-2",
+              "fromKind": "domain",
+              "fromName": "信审 · 张信审（合成）",
+              "text": "请补充设备清单，资料更新后我们同步推进专业判断。",
+              "at": "2026-09-12T14:21:37.706Z",
+              "marks": [
+                "合成判断"
+              ]
+            },
+            {
+              "id": "msg-note-rw1-confirm-note-r2b",
+              "fromKind": "business",
+              "fromName": "业务（演示身份）",
+              "text": "rework1 HTTP：确认重放语义（合成）。",
+              "at": "2026-09-12T14:21:37.755Z",
+              "marks": [
+                "补充说明"
+              ]
+            },
+            {
+              "id": "msg-note-sys-rw1-confirm-note-r2b",
+              "fromKind": "system",
+              "fromName": "系统",
+              "text": "已记录补充说明：相关域判断转入待复核（合成演示，不执行正式审批）。",
+              "at": "2026-09-12T14:21:37.755Z",
+              "marks": [
+                "演示情景"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

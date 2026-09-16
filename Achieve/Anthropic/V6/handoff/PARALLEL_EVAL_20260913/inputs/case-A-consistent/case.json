@@ -1,0 +1,194 @@
+{
+  "schema": "jw-eval-case@1",
+  "caseId": "CASE-A",
+  "caseVersion": 1,
+  "caseName": "合成案例A｜辰力精密传动（资料相对一致）",
+  "fictitious": true,
+  "meta": {
+    "industry": "通用设备零部件制造（合成设定）",
+    "location": "华东某工业园区（合成地名）",
+    "requestedStructure": {
+      "kind": "设备融资租赁（拟议中，未审批）",
+      "targetAssets": "2台立式加工中心（合成设备）",
+      "amountCny": 6800000,
+      "termMonths": 36,
+      "note": "金额与期限仅用于资料一致性测试，不是公司政策阈值，不预设任何审批结果"
+    },
+    "session": {
+      "mode": "远程视频尽调（合成设定）",
+      "onSiteRequirement": "实控人须在经营现场，财务负责人、生产负责人在现场或实时入会",
+      "actualConnection": "本案例仅为文字与自制测试图形，未接入任何真实会议"
+    },
+    "disclaimers": [
+      "全部企业、人物、设备、编号、金额均为匿名合成，不影射任何真实公司或个人",
+      "本案例是未来真实授权资料的替代测试材料，不声称用户已提供三套资料",
+      "案例不预设正式审批结果"
+    ],
+    "observationRule": "未观察到不等于不存在：画面与材料范围之外的情况一律记为未知，不得推定为无"
+  },
+  "participants": [
+    { "role": "实控人", "alias": "甲先生（合成人物）", "presence": "on_site_declared", "note": "自报在经营现场车间办公室；本轮依据尚不足以升级为 on_site_confirmed" },
+    { "role": "财务负责人", "alias": "乙女士（合成人物）", "presence": "live_only", "note": "实时入会" },
+    { "role": "生产负责人", "alias": "丙先生（合成人物）", "presence": "on_site_declared", "note": "自报与实控人同在车间" },
+    { "role": "我方业务岗", "alias": "业务协调（逻辑角色）", "presence": "host", "note": "逻辑角色，不等于真实参会人数" },
+    { "role": "我方信审/资产/政策/商务/见微", "alias": "领域逻辑角色", "presence": "observer", "note": "六个逻辑Agent不等于六位参会人" }
+  ],
+  "stages": [
+    {
+      "stageId": "S1",
+      "name": "首次沟通纪要",
+      "date": "2026-08-28",
+      "sources": [
+        {
+          "sourceId": "A-FC-01",
+          "version": 1,
+          "sourceType": "meeting_minutes",
+          "title": "首次电话沟通纪要（业务岗记录）",
+          "facts": [
+            { "factId": "A-FC-01-F1", "text": "实控人自述企业成立于2013年，专注风电偏航变桨减速器精密零部件加工，员工58人。", "status": "claimed" },
+            { "factId": "A-FC-01-F2", "text": "实控人自述2025年度营业收入约9,400万元。", "status": "claimed" },
+            { "factId": "A-FC-01-F3", "text": "拟租赁标的为2台VMC-1060立式加工中心（设备编号CL-VMC-0081、CL-VMC-0082，实控人口述），2021年购入，用于风电零件精加工工序。", "status": "claimed" },
+            { "factId": "A-FC-01-F4", "text": "实控人自述两台设备购置发票齐全，平时由设备厂商做年度保养。", "status": "claimed" },
+            { "factId": "A-FC-01-F5", "text": "主要结算银行为合成银行A支行一家；实控人表示其他银行基本不用。", "status": "claimed" }
+          ]
+        }
+      ]
+    },
+    {
+      "stageId": "S2",
+      "name": "书面材料摘录",
+      "date": "2026-09-02",
+      "sources": [
+        {
+          "sourceId": "A-DOC-01",
+          "version": 1,
+          "sourceType": "written_document",
+          "title": "营业执照摘录（合成）",
+          "facts": [
+            { "factId": "A-DOC-01-F1", "text": "企业名称：辰力精密传动有限公司（合成名称）；成立日期2013-05-16；注册资本1,200万元；统一社会信用代码为合成号码91xx0000MAxxxxxxXA。", "status": "verified", "verifiedBy": "合成环境中已对照公开登记公示记录核对，仅在本合成案例内成立" },
+            { "factId": "A-DOC-01-F2", "text": "经营范围含通用零部件制造、机械加工（摘录）。", "status": "recorded" }
+          ]
+        },
+        {
+          "sourceId": "A-DOC-02",
+          "version": 1,
+          "sourceType": "written_document",
+          "title": "近三年财务摘要（企业自编，未审计）",
+          "facts": [
+            { "factId": "A-DOC-02-F1", "text": "营业收入：2023年8,652万元；2024年9,187万元；2025年9,418.6万元。", "status": "recorded", "note": "企业自编未审计数据" },
+            { "factId": "A-DOC-02-F2", "text": "净利润：2023年612万元；2024年704万元；2025年781万元。", "status": "recorded", "note": "企业自编未审计数据" },
+            { "factId": "A-DOC-02-F3", "text": "资产负债率：2025年6月末52.3%。", "status": "recorded" },
+            { "factId": "A-DOC-02-F4", "text": "应收账款前五名客户合计占比61%，其中最大单一客户占比28%。", "status": "recorded", "note": "企业自编未审计数据" }
+          ]
+        },
+        {
+          "sourceId": "A-DOC-03",
+          "version": 1,
+          "sourceType": "written_document",
+          "title": "设备清单（企业盖章版摘录）",
+          "facts": [
+            { "factId": "A-DOC-03-F1", "text": "VMC-1060立式加工中心，企业设备编号CL-VMC-0081，制造商为合成机床厂甲，出厂年份2021，2021-06购入，原值238万元。", "status": "recorded" },
+            { "factId": "A-DOC-03-F2", "text": "VMC-1060立式加工中心，企业设备编号CL-VMC-0082，制造商为合成机床厂甲，出厂年份2021，2021-06购入，原值238万元。", "status": "recorded" },
+            { "factId": "A-DOC-03-F3", "text": "另有普通铣床1台（2024年购入，编号CL-XC-0103，不在本次拟租赁范围）。", "status": "recorded" }
+          ]
+        },
+        {
+          "sourceId": "A-DOC-04",
+          "version": 1,
+          "sourceType": "written_document",
+          "title": "设备采购发票摘录（2张）",
+          "facts": [
+            { "factId": "A-DOC-04-F1", "text": "增值税发票（合成）：购VMC-1060立式加工中心一台，金额238万元，开票日期2021-06-18，票面记载规格与企业设备编号CL-VMC-0081对应。", "status": "recorded" },
+            { "factId": "A-DOC-04-F2", "text": "增值税发票（合成）：购VMC-1060立式加工中心一台，金额238万元，开票日期2021-06-18，票面记载规格与企业设备编号CL-VMC-0082对应。", "status": "recorded" }
+          ]
+        },
+        {
+          "sourceId": "A-DOC-05",
+          "version": 1,
+          "sourceType": "written_document",
+          "title": "银行流水摘要（合成银行A支行，2025-09至2026-08共12个月）",
+          "facts": [
+            { "factId": "A-DOC-05-F1", "text": "该账户12个月贷方累计约8,900万元，月度波动与财务摘要营收规模同量级；回款对手集中于5家客户（合成客户代号K1–K5）。", "status": "recorded", "note": "仅覆盖单一银行单一账户" }
+          ]
+        },
+        {
+          "sourceId": "A-DOC-06",
+          "version": 1,
+          "sourceType": "written_document",
+          "title": "排污许可证摘录（合成）",
+          "facts": [
+            { "factId": "A-DOC-06-F1", "text": "排污许可登记类别的回执复印件，载明有效期至2027-03。", "status": "recorded", "note": "许可类别与适用性由政策岗判断，本包不做结论" }
+          ]
+        }
+      ]
+    },
+    {
+      "stageId": "S3",
+      "name": "现场画面（远程会议中客户设备端照片的文字描述与自制测试图形）",
+      "date": "2026-09-10",
+      "sources": [
+        {
+          "sourceId": "A-VIS-01",
+          "version": 1,
+          "sourceType": "onsite_visual",
+          "title": "车间全景（客户设备端拍摄，文字描述）",
+          "capture": { "capturedBy": "客户方生产负责人手机（合成设定）", "capturedAt": "2026-09-10 10:12", "receivedAt": "2026-09-10 10:14", "note": "关键证据应由客户设备端清晰拍摄获得；接收端低清截图不作为原照片替代" },
+          "facts": [
+            { "factId": "A-VIS-01-F1", "text": "画面范围内可见两台立式加工中心并列运行，主轴均有切削动作；画面范围内未观察到第三台同型设备。", "status": "observed", "observationScope": "仅限本画面取景范围；范围外车间区域未入镜" },
+            { "factId": "A-VIS-01-F2", "text": "两台设备侧面分别挂有企业设备编号牌，可辨识为CL-VMC-0081与CL-VMC-0082。", "status": "observed", "observationScope": "仅限本画面取景范围" },
+            { "factId": "A-VIS-01-F3", "text": "实控人甲先生在画面中位于车间办公室门口，背景为车间；生产负责人丙先生持手机拍摄。", "status": "observed", "observationScope": "画面可佐证其当时位于车间，但尚不足以单独确证'经营现场'的完整核验，现场状态维持on_site_declared" }
+          ],
+          "asset": { "path": "assets/site-panorama-A.svg", "note": "自制测试图形，示意构图，非真实照片" }
+        },
+        {
+          "sourceId": "A-VIS-02",
+          "version": 1,
+          "sourceType": "onsite_visual",
+          "title": "设备铭牌特写×2（客户设备端拍摄，文字描述）",
+          "capture": { "capturedBy": "客户方生产负责人手机（合成设定）", "capturedAt": "2026-09-10 10:16", "receivedAt": "2026-09-10 10:17" },
+          "facts": [
+            { "factId": "A-VIS-02-F1", "text": "铭牌1：制造商合成机床厂甲；型号VMC-1060；出厂编号JM-2021-0447；出厂年份2021。铭牌旁设备编号牌CL-VMC-0081。", "status": "observed" },
+            { "factId": "A-VIS-02-F2", "text": "铭牌2：制造商合成机床厂甲；型号VMC-1060；出厂编号JM-2021-0448；出厂年份2021。铭牌旁设备编号牌CL-VMC-0082。", "status": "observed" }
+          ],
+          "asset": { "path": "assets/nameplate-A-VIS-02.svg", "note": "自制测试图形，示意铭牌内容" }
+        }
+      ]
+    },
+    {
+      "stageId": "S4",
+      "name": "现场问答（远程会议内记录）",
+      "date": "2026-09-10",
+      "sources": [
+        {
+          "sourceId": "A-QA-01",
+          "version": 1,
+          "sourceType": "onsite_qa",
+          "title": "现场问答纪要",
+          "facts": [
+            { "factId": "A-QA-01-F1", "text": "问：当前产能利用率？答（生产负责人，现场）：约75%，风电订单排到年底。", "status": "claimed", "note": "被访人自述，未核实" },
+            { "factId": "A-QA-01-F2", "text": "问：设备维保如何安排？答（生产负责人，现场）：每年由厂商做一次年度保养，去年10月做过，有保养单。", "status": "claimed", "note": "保养单未提供，待补充" },
+            { "factId": "A-QA-01-F3", "text": "问：两台设备折旧年限？答（财务负责人，实时入会）：会计上按10年折旧，2021年7月起提。", "status": "claimed", "note": "与设备清单购入时间一致，仍属自述口径" },
+            { "factId": "A-QA-01-F4", "text": "问：除合成银行A外是否有其他账户？答（财务负责人）：基本户之外有一个一般户基本不走账，可以提供。", "status": "claimed", "note": "一般户流水未提供" }
+          ]
+        }
+      ]
+    },
+    {
+      "stageId": "S5",
+      "name": "补充材料",
+      "date": "2026-09-11",
+      "sources": [
+        {
+          "sourceId": "A-SUP-01",
+          "version": 1,
+          "sourceType": "supplement",
+          "title": "商务条款备忘（我方商务岗内部记录，未审批）",
+          "facts": [
+            { "factId": "A-SUP-01-F1", "text": "商务岗拟按金额680万元、期限36个月与客户初步接触；租金报价口径（是否含增值税、保险、留购价）尚未确认。", "status": "recorded", "note": "内部备忘，不构成任何审批或承诺" },
+            { "factId": "A-SUP-01-F2", "text": "经济性核算所需输入（资金成本、预期信用损失、运营成本等）尚未配置，无法完成核算。", "status": "recorded" }
+          ]
+        }
+      ]
+    }
+  ]
+}

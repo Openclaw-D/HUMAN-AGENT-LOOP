@@ -1,0 +1,146 @@
+{
+  "planVersion": "1.0.0",
+  "contractRef": "A CONTRACT v0.1",
+  "templateRef": {
+    "templateId": "goal-template-commercial-leasing-v1",
+    "note": "A 落库后以实际 templateId 回填实例化"
+  },
+  "caseId": "L3-injection-new-rough-statements",
+  "steps": [
+    {
+      "step": "createProject",
+      "templateId": "goal-template-commercial-leasing-v1",
+      "name": "L3-injection-new-rough-statements"
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 1,
+      "evidenceId": "L3-ev-statements",
+      "version": 1,
+      "payload": {
+        "kind": "monthly_operating_cash_flow",
+        "content": {
+          "indicator": "monthly_operating_cash_flow",
+          "caliber": "报表口径·租金前",
+          "grade": "unverified",
+          "value": 95,
+          "note": "客户自报报表月收入 95 万元，无审计、科目粗糙（合成）。"
+        }
+      }
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 1,
+      "evidenceId": "L3-ev-flow",
+      "version": 1,
+      "payload": {
+        "kind": "monthly_operating_cash_flow",
+        "content": {
+          "indicator": "monthly_operating_cash_flow",
+          "caliber": "经营现金流·租金后",
+          "grade": "source_supported",
+          "value": 69,
+          "note": "对公流水3个月整理：月均经营现金流（租金后）69 万元（合成）。"
+        }
+      }
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 1,
+      "evidenceId": "L3-ev-quote",
+      "version": 1,
+      "payload": {
+        "kind": "monthly_debt_service",
+        "content": {
+          "indicator": "monthly_debt_service",
+          "caliber": "月度租金+利息",
+          "grade": "confirmed",
+          "value": 60,
+          "note": "报价月租金+利息 60 万元（合成）。"
+        }
+      }
+    },
+    {
+      "step": "createHumanRequest",
+      "turn": 1,
+      "payload": {
+        "kind": "clarification",
+        "question": "能否补6个月流水与设备验收单？",
+        "requestedRole": "business",
+        "requiredEvidenceKinds": []
+      }
+    },
+    {
+      "step": "createHumanRequest",
+      "turn": 1,
+      "payload": {
+        "kind": "clarification",
+        "question": "报表口径能否与流水对账说明？",
+        "requestedRole": "business",
+        "requiredEvidenceKinds": []
+      }
+    },
+    {
+      "step": "submitEvidence",
+      "turn": 2,
+      "evidenceId": "L3-ev-accept",
+      "version": 1,
+      "payload": {
+        "kind": "equipment_ownership_status",
+        "content": {
+          "indicator": "equipment_ownership_status",
+          "caliber": "验收单+购货合同",
+          "grade": "confirmed",
+          "value": null,
+          "note": "设备验收单签署，购货合同与发票一致（合成）。"
+        }
+      }
+    },
+    {
+      "step": "supersedeEvidence",
+      "turn": 2,
+      "targetEvidenceId": "L3-ev-statements",
+      "targetVersion": 1,
+      "successorLabel": "L3-ev-flow@2",
+      "payload": {
+        "content": {
+          "indicator": "monthly_operating_cash_flow",
+          "caliber": "经营现金流·租金后",
+          "grade": "source_supported",
+          "value": 81,
+          "note": "对公流水6个月整理（修订）：月均经营现金流（租金后）81 万元（合成）。"
+        }
+      }
+    },
+    {
+      "step": "supersedeEvidence",
+      "turn": 2,
+      "targetEvidenceId": "L3-ev-flow",
+      "targetVersion": 1,
+      "successorLabel": "L3-ev-flow@2",
+      "payload": {
+        "content": {
+          "indicator": "monthly_operating_cash_flow",
+          "caliber": "经营现金流·租金后",
+          "grade": "source_supported",
+          "value": 81,
+          "note": "对公流水6个月整理（修订）：月均经营现金流（租金后）81 万元（合成）。"
+        }
+      }
+    },
+    {
+      "step": "createHumanRequest",
+      "turn": 2,
+      "payload": {
+        "kind": "clarification",
+        "question": "年度旺月现金流是否需要补充说明？",
+        "requestedRole": "business",
+        "requiredEvidenceKinds": []
+      }
+    }
+  ],
+  "stepCount": 10,
+  "divergences": [
+    "跨 id 取代投影：L3-ev-statements@1 的失效由取代者 L3-ev-flow@2 内容执行 supersede（A 新实体）实现"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "#cursor": {
+    "eventSeq": 555
+  },
+  "v7d-b25-d25-1:g-mu38h8ap-42230d2fe338:c1-1789510721293": {
+    "status": "submitted",
+    "goalId": "g-mu38h8ap-42230d2fe338",
+    "fencingToken": 1,
+    "startedAt": "2026-09-15T22:18:41.399Z",
+    "leaseUntil": "2026-09-15T22:18:49.388Z",
+    "claimedAt": "2026-09-15T22:18:41.293Z",
+    "outcomeState": "failed",
+    "aGoalVersion": 4,
+    "at": "2026-09-15T22:18:41.490Z"
+  }
+}

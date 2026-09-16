@@ -1,0 +1,146 @@
+{
+  "run": "r34-g6v13",
+  "startedUtc": "r34-g6v13",
+  "endedUtc": "2026-09-15T20:13:58.440Z",
+  "suites": [
+    {
+      "file": "g6_evidence_invalidation.test.mjs",
+      "exitCode": 1,
+      "crashed": false,
+      "res": {
+        "suite": "g6_evidence_invalidation",
+        "results": [
+          {
+            "id": "D-19",
+            "title": "v1.3两节点：accepted目标stale投影+下游传递可见+状态不变+历史保留",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 33,
+            "failures": [],
+            "ms": 1609,
+            "note": ""
+          },
+          {
+            "id": "D-19b",
+            "title": "v1.3非accepted命中路径：ready目标取代→invalidated→立即重绑回ready；下游随上游再验收恢复ready",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 32,
+            "failures": [],
+            "ms": 352,
+            "note": ""
+          },
+          {
+            "id": "D-19c",
+            "title": "v1.3三级链传递stale：root输入取代→root/middle/leaf全部stale可见，状态全部不变",
+            "severity": "P0",
+            "owner": "A",
+            "state": "fail",
+            "assertions": 57,
+            "failures": [
+              {
+                "msg": "除stale字段外leaf投影逐字节不变（无多余重算副作用）",
+                "detail": "{\"actual\":\"{\\\"ok\\\":true,\\\"goal\\\":{\\\"goalId\\\":\\\"g-mu340u4b-1c5114ff98d4\\\",\\\"projectId\\\":\\\"p-mu340u2k-9ece6e855b29\\\",\\\"goalKey\\\":\\\"review\\\",\\\"title\\\":\\\"复核\\\",\\\"responsibleRole\\\":\\\"business\\\",\\\"executorKind\\\":\\\"agent\\\",\\\"acceptanceRole\\\":\\\"approver\\\",\\\"decisionRole\\\":\\\"approver\\\",\\\"params\\\":{},\\\"dependsOn\\\":[\\\"g-mu340u56-6fa59e5f5938\\\"],\\\"inputEvidenceKinds\\\":[],\\\"inputEvidence\\\":[],\\\"inputHash\\\":\\\"7899018b779dc01e828cb509f29850274d42ded71dde3fb86332aebb1079d2a9\\\",\\\"status\\\":\\\"ready\\\",\\\"version\\\":2,…"
+              }
+            ],
+            "ms": 538,
+            "note": ""
+          },
+          {
+            "id": "D-19d",
+            "title": "v1.3复核门：stale目标accept/decide被409 UPSTREAM_STALE拦截（含staleRoots）→staleReviewAck放行→decided历史不改写",
+            "severity": "P0",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 72,
+            "failures": [],
+            "ms": 916,
+            "note": ""
+          },
+          {
+            "id": "D-20",
+            "title": "非法操作边界：取代不存在证据404；重复取代409 EVIDENCE_SUPERSEDED；未知goalKey拒绝",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 26,
+            "failures": [],
+            "ms": 249,
+            "note": ""
+          }
+        ],
+        "pass": 4,
+        "fail": 1,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 220,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    }
+  ],
+  "totals": {
+    "suites": 1,
+    "crashed": 0,
+    "pass": 4,
+    "fail": 1,
+    "skip": 0,
+    "blocked": 0,
+    "totalAssertions": 220
+  },
+  "flat": [
+    {
+      "id": "D-19",
+      "title": "v1.3两节点：accepted目标stale投影+下游传递可见+状态不变+历史保留",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 33,
+      "ms": 1609
+    },
+    {
+      "id": "D-19b",
+      "title": "v1.3非accepted命中路径：ready目标取代→invalidated→立即重绑回ready；下游随上游再验收恢复ready",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 32,
+      "ms": 352
+    },
+    {
+      "id": "D-19c",
+      "title": "v1.3三级链传递stale：root输入取代→root/middle/leaf全部stale可见，状态全部不变",
+      "severity": "P0",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 57,
+      "ms": 538,
+      "failures": [
+        {
+          "msg": "除stale字段外leaf投影逐字节不变（无多余重算副作用）",
+          "detail": "{\"actual\":\"{\\\"ok\\\":true,\\\"goal\\\":{\\\"goalId\\\":\\\"g-mu340u4b-1c5114ff98d4\\\",\\\"projectId\\\":\\\"p-mu340u2k-9ece6e855b29\\\",\\\"goalKey\\\":\\\"review\\\",\\\"title\\\":\\\"复核\\\",\\\"responsibleRole\\\":\\\"business\\\",\\\"executorKind\\\":\\\"agent\\\",\\\"acceptanceRole\\\":\\\"approver\\\",\\\"decisionRole\\\":\\\"approver\\\",\\\"params\\\":{},\\\"dependsOn\\\":[\\\"g-mu340u56-6fa59e5f5938\\\"],\\\"inputEvidenceKinds\\\":[],\\\"inputEvidence\\\":[],\\\"inputHash\\\":\\\"7899018b779dc01e828cb509f29850274d42ded71dde3fb86332aebb1079d2a9\\\",\\\"status\\\":\\\"ready\\\",\\\"version\\\":2,…"
+        }
+      ]
+    },
+    {
+      "id": "D-19d",
+      "title": "v1.3复核门：stale目标accept/decide被409 UPSTREAM_STALE拦截（含staleRoots）→staleReviewAck放行→decided历史不改写",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 72,
+      "ms": 916
+    },
+    {
+      "id": "D-20",
+      "title": "非法操作边界：取代不存在证据404；重复取代409 EVIDENCE_SUPERSEDED；未知goalKey拒绝",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 26,
+      "ms": 249
+    }
+  ]
+}

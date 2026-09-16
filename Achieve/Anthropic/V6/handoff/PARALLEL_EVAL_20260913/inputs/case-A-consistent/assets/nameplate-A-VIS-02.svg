@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+  <rect x="0" y="0" width="640" height="360" fill="#eceae4"/>
+  <rect x="0" y="0" width="640" height="34" fill="#8a6d1a"/>
+  <text x="320" y="23" font-family="sans-serif" font-size="16" fill="#ffffff" text-anchor="middle" font-weight="bold">合成测试证据·自制测试图形（非真实照片）｜CASE-A A-VIS-02 v1 铭牌示意</text>
+  <rect x="40" y="80" width="260" height="200" fill="#d9d4c8" stroke="#5a5348" stroke-width="3"/>
+  <text x="170" y="112" font-family="sans-serif" font-size="15" fill="#222" text-anchor="middle" font-weight="bold">合成机床厂甲</text>
+  <text x="170" y="142" font-family="sans-serif" font-size="14" fill="#222" text-anchor="middle">型号 VMC-1060</text>
+  <text x="170" y="172" font-family="sans-serif" font-size="14" fill="#222" text-anchor="middle">出厂编号 JM-2021-0447</text>
+  <text x="170" y="202" font-family="sans-serif" font-size="14" fill="#222" text-anchor="middle">出厂年份 2021</text>
+  <text x="170" y="252" font-family="sans-serif" font-size="12" fill="#666" text-anchor="middle">旁挂编号牌：CL-VMC-0081</text>
+  <rect x="340" y="80" width="260" height="200" fill="#d9d4c8" stroke="#5a5348" stroke-width="3"/>
+  <text x="470" y="112" font-family="sans-serif" font-size="15" fill="#222" text-anchor="middle" font-weight="bold">合成机床厂甲</text>
+  <text x="470" y="142" font-family="sans-serif" font-size="14" fill="#222" text-anchor="middle">型号 VMC-1060</text>
+  <text x="470" y="172" font-family="sans-serif" font-size="14" fill="#222" text-anchor="middle">出厂编号 JM-2021-0448</text>
+  <text x="470" y="202" font-family="sans-serif" font-size="14" fill="#222" text-anchor="middle">出厂年份 2021</text>
+  <text x="470" y="252" font-family="sans-serif" font-size="12" fill="#666" text-anchor="middle">旁挂编号牌：CL-VMC-0082</text>
+</svg>

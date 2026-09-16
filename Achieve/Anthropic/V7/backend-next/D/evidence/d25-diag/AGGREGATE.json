@@ -1,0 +1,74 @@
+{
+  "run": "d25-diag",
+  "startedUtc": "d25-diag",
+  "endedUtc": "2026-09-15T21:51:51.003Z",
+  "suites": [
+    {
+      "file": "g8_gateway.test.mjs",
+      "exitCode": 1,
+      "crashed": false,
+      "res": {
+        "suite": "g8_gateway",
+        "results": [
+          {
+            "id": "D-25a",
+            "title": "跨进程并发预算门：预算1/1，3 worker同抢3目标→恰1次mock调用，其余诚实失败",
+            "severity": "P0",
+            "owner": "B",
+            "state": "fail",
+            "assertions": 33,
+            "failures": [
+              {
+                "msg": "并发预算门：恰1次模型调用（预算1/1，跨进程不绕过）",
+                "detail": "{\"actual\":6,\"expected\":1}"
+              },
+              {
+                "msg": "恰1个目标到candidate_ready",
+                "detail": "{\"actual\":3,\"expected\":1}"
+              }
+            ],
+            "ms": 28915,
+            "note": ""
+          }
+        ],
+        "pass": 0,
+        "fail": 1,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 33,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    }
+  ],
+  "totals": {
+    "suites": 1,
+    "crashed": 0,
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "blocked": 0,
+    "totalAssertions": 33
+  },
+  "flat": [
+    {
+      "id": "D-25a",
+      "title": "跨进程并发预算门：预算1/1，3 worker同抢3目标→恰1次mock调用，其余诚实失败",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 33,
+      "ms": 28915,
+      "failures": [
+        {
+          "msg": "并发预算门：恰1次模型调用（预算1/1，跨进程不绕过）",
+          "detail": "{\"actual\":6,\"expected\":1}"
+        },
+        {
+          "msg": "恰1个目标到candidate_ready",
+          "detail": "{\"actual\":3,\"expected\":1}"
+        }
+      ]
+    }
+  ]
+}

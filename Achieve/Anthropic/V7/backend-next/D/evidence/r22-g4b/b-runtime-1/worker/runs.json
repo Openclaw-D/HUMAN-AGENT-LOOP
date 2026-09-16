@@ -1,0 +1,13 @@
+{
+  "#cursor": {
+    "eventSeq": 244
+  },
+  "v7d-b-worker:g-mu32r6pj-40487660f330:c1-1789501106394": {
+    "status": "running",
+    "goalId": "g-mu32r6pj-40487660f330",
+    "fencingToken": 1,
+    "startedAt": "2026-09-15T19:38:26.439Z",
+    "leaseUntil": "2026-09-15T19:38:56.427Z",
+    "claimedAt": "2026-09-15T19:38:26.394Z"
+  }
+}

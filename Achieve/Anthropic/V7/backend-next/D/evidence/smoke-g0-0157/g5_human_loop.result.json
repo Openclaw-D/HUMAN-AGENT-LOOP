@@ -1,0 +1,44 @@
+{
+  "suite": "g5_human_loop",
+  "results": [
+    {
+      "id": "D-16",
+      "title": "人工缺证等待：waiting_human不冻结无关目标；回应后恢复",
+      "severity": "P1",
+      "owner": "A",
+      "state": "blocked",
+      "assertions": 0,
+      "failures": [],
+      "ms": 1677,
+      "note": "BLOCKED: A/dist/index.js 尚未产出（A路实现未到可运行版本）"
+    },
+    {
+      "id": "D-17",
+      "title": "人工待办跨重启持久：杀API重启后待办在、可回应生效",
+      "severity": "P1",
+      "owner": "A",
+      "state": "blocked",
+      "assertions": 0,
+      "failures": [],
+      "ms": 278,
+      "note": "BLOCKED: A/dist/index.js 尚未产出（A路实现未到可运行版本）"
+    },
+    {
+      "id": "D-18",
+      "title": "越权回应/验收拒绝：非requestedRole与不可信凭据均403且零状态变化",
+      "severity": "P1",
+      "owner": "A",
+      "state": "blocked",
+      "assertions": 0,
+      "failures": [],
+      "ms": 278,
+      "note": "BLOCKED: A/dist/index.js 尚未产出（A路实现未到可运行版本）"
+    }
+  ],
+  "pass": 0,
+  "fail": 0,
+  "skip": 0,
+  "blocked": 3,
+  "totalAssertions": 0,
+  "runnerError": null
+}

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "checkpointId": "cp2-handler-03a-named-credit-decision",
+  "status": "preflight_passed",
+  "model": "glm-5.3-flash",
+  "effort": "high",
+  "sandboxMode": "workspace-write",
+  "trustedDangerFullAccess": false,
+  "dangerFullAccessReason": "",
+  "promptUtf8Bytes": 6368,
+  "promptSha256": "36C19D99F037B274944678516ECD92F06DAE1766ADDC259242277715FB75CC20",
+  "runnerVersion": "flash-runner/2026-09-01.2",
+  "runnerConcurrencyCeiling": 4
+}

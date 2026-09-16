@@ -1,0 +1,49 @@
+{
+  "version": "b-contract-stub@0.2.0(对齐A CONTRACT v1.0)",
+  "state": {
+    "goals": [
+      [
+        "g1",
+        {
+          "version": 2,
+          "status": "ready",
+          "stale": false,
+          "executorKind": "agent",
+          "projectId": "p1",
+          "goalKey": "model_review",
+          "inputVersions": {
+            "factVersion": "1",
+            "ruleVersion": "1"
+          },
+          "goalId": "g1",
+          "role": "credit"
+        }
+      ]
+    ],
+    "receipts": [],
+    "humanRequests": [],
+    "events": [
+      {
+        "seq": 1,
+        "eventId": "ev-1",
+        "eventType": "GOAL_READY",
+        "goalId": "g1",
+        "at": "2026-09-15T20:22:04.907Z"
+      },
+      {
+        "seq": 2,
+        "eventId": "ev-2",
+        "eventType": "GOAL_CLAIMED",
+        "goalId": "g1",
+        "at": "2026-09-15T20:22:04.911Z"
+      },
+      {
+        "seq": 3,
+        "eventId": "ev-3",
+        "eventType": "GOAL_READY",
+        "goalId": "g1",
+        "at": "2026-09-15T20:22:05.849Z"
+      }
+    ]
+  }
+}

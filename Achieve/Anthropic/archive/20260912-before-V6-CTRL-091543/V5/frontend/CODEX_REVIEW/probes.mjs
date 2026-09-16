@@ -1,0 +1,23 @@
+import fs from 'node:fs';
+import {pathToFileURL} from 'node:url';
+import {tmpdir} from 'node:os';
+import path from 'node:path';
+const source=fs.readFileSync('jianwei-v3/site/app/v5-preview/preview-state.tsx','utf8');
+const a='// ---------- V5-PREVIEW-PURE-LOGIC-START ----------', b='// ---------- V5-PREVIEW-PURE-LOGIC-END ----------';
+const dir=fs.mkdtempSync(path.join(tmpdir(),'f0-review-'));
+const file=path.join(dir,'logic.ts'); fs.writeFileSync(file,source.split(a)[1].split(b)[0]);
+const l=await import(pathToFileURL(file).href);
+const bad={version:1,domains:{},loop:{},messages:[],nextId:0};
+const parsed=l.parsePreviewState(JSON.stringify(bad));
+console.log('malformed_storage_accepted', parsed!==null);
+try { console.log(parsed.domains.credit.status); } catch(e){console.log('render_access_error',e.message);}
+let s=l.initialPreviewState();
+console.log('initial_role',s.role);
+s=l.previewReducer(s,{type:'send-supplement-request',text:'test'});
+console.log('business_issued_credit_request',s.loop.stage,s.messages.at(-1).fromName);
+s=l.previewReducer(s,{type:'send-business-response',text:'reply'});
+s=l.previewReducer(s,{type:'continue-credit'});
+console.log('business_completed_credit_action',s.loop.stage);
+console.log('overview_blocks_stale',JSON.stringify(s.domains.credit.blocks));
+console.log('overview_status',s.domains.credit.status);
+fs.rmSync(file); fs.rmdirSync(dir);

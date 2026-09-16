@@ -1,0 +1,15 @@
+== 真实 store 冒烟：命令可用性（当前会话无事件记录，结果不构成可判轨迹，不入 main-export） ==
+已导出 C:\Users\22673\Desktop\Anthropic\V6\handoff\R4_EVAL_20260913\evidence-r4\runtime\real-store-smoke-trajectory.json（timeline=0 条，todos=0 项）
+exit=0
+  - meta.source=product_export 的轨迹必须来自 MAIN 导出目录（main-export/ 或 MAIN exports/trajectories/）
+  - session.generation 必须为>=1整数
+replay exit=2
+
+== R2/R3 回归 ==
+selftest-r2（工具 v2.0.0）｜通过 109/109
+R2 exit=0
+replay selftest（工具 v1.0.0）｜通过 32/32
+R3 exit=0
+== 修正后重放真实store导出（schema兼容产品gen0） ==
+[schema/用法失败] 轨迹 schema 校验失败 real-store-smoke-trajectory.json:
+  - meta.source=product_export 的轨迹必须来自 MAIN 导出目录（main-export/ 或 MAIN exports/trajectories/）

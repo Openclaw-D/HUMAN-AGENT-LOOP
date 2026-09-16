@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Mockup 03 · 大屏 Canonical Projection</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:"Microsoft YaHei","PingFang SC",sans-serif; }
+  body { width:1920px; height:1080px; background:#0a1428; color:#eaf1fb; overflow:hidden; display:flex; flex-direction:column; }
+  .top { padding:22px 36px 12px; display:flex; align-items:baseline; gap:22px; }
+  .top h1 { font-size:34px; font-weight:800; }
+  .top .sub { font-size:18px; color:#8fa8cc; }
+  .top .dis { margin-left:auto; font-size:13px; color:#5d7398; }
+  .headline { margin:6px 36px 0; background:#132a4d; border:2px solid #e0913d; border-radius:14px; padding:16px 26px; display:flex; align-items:center; gap:20px; }
+  .headline .pulse { width:16px; height:16px; border-radius:99px; background:#e0913d; box-shadow:0 0 18px #e0913d; }
+  .headline .t1 { font-size:30px; font-weight:800; color:#ffd9a8; }
+  .headline .t2 { font-size:19px; color:#c8d6ea; }
+  .lanes { flex:1; display:flex; gap:20px; padding:20px 36px; }
+  .lane { flex:1; background:#0f2140; border-radius:16px; border-top:8px solid; padding:18px 20px; display:flex; flex-direction:column; }
+  .lane.policy { border-color:#4f8ef7; }
+  .lane.credit { border-color:#39b98a; }
+  .lane.commerce { border-color:#e0b13d; }
+  .lane.asset { border-color:#7a5af5; }
+  .lane h2 { font-size:30px; font-weight:800; display:flex; align-items:center; gap:12px; }
+  .lane h2 .en { font-size:14px; color:#6d86ab; font-weight:400; }
+  .item { background:#132a4d; border-radius:12px; padding:14px 16px; margin-top:14px; }
+  .item .it { font-size:20px; font-weight:700; line-height:1.35; }
+  .item .is { font-size:14px; color:#9db2d2; margin-top:6px; line-height:1.5; }
+  .chip { display:inline-block; font-size:15px; font-weight:800; padding:4px 14px; border-radius:99px; margin-top:10px; }
+  .run { background:#173e73; color:#9cc4ff; }
+  .wait { background:#4a2f10; color:#ffc98a; }
+  .done { background:#123d2b; color:#7fe0b6; }
+  .stop { background:#43160e; color:#ff9d8a; }
+  .dep-arrow { text-align:center; font-size:15px; color:#5d7398; margin-top:8px; }
+  .right { width:430px; display:flex; flex-direction:column; gap:18px; }
+  .rbox { background:#0f2140; border-radius:16px; padding:18px 22px; }
+  .rbox h3 { font-size:20px; color:#8fa8cc; font-weight:700; margin-bottom:10px; }
+  .risk { border:2px solid #a03426; background:#2a1210; }
+  .risk h3 { color:#ff9d8a; }
+  .risk p { font-size:16px; line-height:1.55; color:#f2c4ba; }
+  .risk .tiny { font-size:12px; color:#b3705f; margin-top:8px; }
+  .feed { flex:1; overflow:hidden; }
+  .feed .row { display:flex; gap:12px; padding:9px 0; border-bottom:1px solid #17305a; font-size:15px; color:#c8d6ea; align-items:baseline; }
+  .feed .row .who { color:#7fe0b6; font-weight:700; white-space:nowrap; }
+  .feed .row .tm { margin-left:auto; color:#5d7398; font-size:13px; white-space:nowrap; }
+  .ticker { height:64px; background:#0d1c37; display:flex; align-items:center; padding:0 36px; gap:16px; }
+  .ticker .lbl { font-size:15px; font-weight:800; color:#e0913d; white-space:nowrap; }
+  .ticker .msg { font-size:17px; color:#9db2d2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+</style>
+</head>
+<body>
+  <div class="top">
+    <h1>见微 V4 · 四域协同大屏</h1>
+    <span class="sub">某四足机器人科技企业 · 500 万 · 合成演示案例</span>
+    <span class="dis">同一权威状态 · 手机 / 桌面 / 大屏同步 ｜ 追加式事件账本 seq #47</span>
+  </div>
+
+  <div class="headline">
+    <span class="pulse"></span>
+    <span class="t1">当前等待：政策准入 Gate PG-1</span>
+    <span class="t2">必经角色 李审（政策）· 批准 / 退回 / 否决 均产生可验证 Receipt 并留痕</span>
+  </div>
+
+  <div class="lanes">
+    <div class="lane policy">
+      <h2>政策 <span class="en">POLICY</span></h2>
+      <div class="item"><div class="it">WI-P1 政策准入初核</div><div class="is">李审 · 依据 3 份 Evidence</div><span class="chip wait">⏳ 等待 Gate 决定</span></div>
+      <div class="dep-arrow">↓ PG-1 Receipt</div>
+      <div class="item"><div class="it"> Gate：政策准入 PG-1</div><div class="is">否决 → 仅停止真正依赖的工作<br>贡献保留 · 非标走例外报批</div></div>
+    </div>
+    <div class="lane credit">
+      <h2>信审 <span class="en">CREDIT</span></h2>
+      <div class="item"><div class="it">WI-C1 完整性核验</div><div class="is">张审 · 已完成 ✓ 贡献已保留</div><span class="chip done">✓ 完成</span></div>
+      <div class="item"><div class="it">WI-C2 偿付交叉核验</div><div class="is">张审 · 已完成 ✓ 贡献已保留</div><span class="chip done">✓ 完成</span></div>
+      <div class="item"><div class="it">WI-C3 正式信审意见</div><div class="is">硬等待：PG-1 Receipt ＋ C1 ＋ C2<br>政策未决 → 不打扰信审</div><span class="chip stop">⛔ 依赖等待</span></div>
+    </div>
+    <div class="lane commerce">
+      <h2>商务 <span class="en">COMMERCE</span></h2>
+      <div class="item"><div class="it">WI-B1 方案制式核对</div><div class="is">王经理 · 线性制式工作<br>与政策流程无依赖，不受阻塞</div><span class="chip done">✓ 完成</span></div>
+    </div>
+    <div class="lane asset">
+      <h2>资产 <span class="en">ASSET</span></h2>
+      <div class="item"><div class="it">WI-A1 历史资产表现反馈</div><div class="is">周工 · 贷后经验前移为 Evidence<br>反馈政策/信审 · 不改变审批顺序</div><span class="chip done">✓ 已反馈</span></div>
+    </div>
+
+    <div class="right">
+      <div class="rbox risk">
+        <h3>⚠ 跨材料矛盾（模型发现）</h3>
+        <p>合同金额 500 万 vs 财报"营收下滑"口径张力</p>
+        <div class="tiny">Candidate · authority=none · 仅供参考，正式结论由政策/信审岗位作出</div>
+      </div>
+      <div class="rbox feed">
+        <h3>实时协同流（留痕 · 可回放）</h3>
+        <div class="row"><span class="who">陈经理·业务</span> 提交合同草案 Evidence V1<span class="tm">14:06</span></div>
+        <div class="row"><span class="who">系统·规则</span> 发现跨材料矛盾 → 生成 Candidate<span class="tm">14:06</span></div>
+        <div class="row"><span class="who">周工·资产</span> 历史资产反馈送达政策/信审<span class="tm">14:12</span></div>
+        <div class="row"><span class="who">王经理·商务</span> 方案制式核对完成 · 贡献留痕<span class="tm">14:15</span></div>
+        <div class="row"><span class="who">张审·信审</span> C1/C2 完成 · 等待政策 Receipt<span class="tm">14:18</span></div>
+        <div class="row"><span class="who">李审·政策</span> 提交初核 → PG-1 Gate 打开<span class="tm">14:20</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ticker">
+    <span class="lbl">权威事件账本</span>
+    <span class="msg">#47 GATE_OPENED PG-1 by actor-policy-li ｜ #46 WORK_ITEM_SUBMITTED WI-P1 ｜ #45 CONTRIBUTION_RECORDED WI-B1 ｜ #44 CANDIDATE_ISSUED contradiction …</span>
+  </div>
+</body>
+</html>

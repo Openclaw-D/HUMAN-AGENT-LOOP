@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "checkpointId": "cp2-handler-03a-r1",
+  "status": "preflight_passed",
+  "model": "glm-5.3-flash",
+  "effort": "high",
+  "sandboxMode": "workspace-write",
+  "trustedDangerFullAccess": false,
+  "dangerFullAccessReason": "",
+  "promptUtf8Bytes": 4312,
+  "promptSha256": "A5C3D9A0218FC78ED78C920A2222E737D8E13FAB3FFBB4A84A325BCAF05E35BD",
+  "runnerVersion": "flash-runner/2026-09-01.2",
+  "runnerConcurrencyCeiling": 4
+}

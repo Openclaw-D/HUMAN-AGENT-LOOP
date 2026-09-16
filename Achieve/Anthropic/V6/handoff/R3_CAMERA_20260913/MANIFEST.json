@@ -1,0 +1,326 @@
+{
+  "batch": "R3_CAMERA_20260913-B1",
+  "task": "相机能力进入手机访谈,验证全过程资源边界",
+  "taskEntry": "V6/ZCODE_R3_B_20260913.md",
+  "previousBatch": "R2_CAMERA_20260913（v0.2.0, 96/96, READY_FOR_REVIEW, 只读复用）",
+  "createdUtc": "2026-09-13T07:26:00+08:00",
+  "status": "READY_FOR_REVIEW",
+  "interfaceVersion": "0.3.0-r3-candidate",
+  "writer": "ZCode主agent + 原生Subagent SA-A(测试)/SA-B(契约映射);并发峰值2;每文件唯一writer",
+  "dependencies": "无第三方依赖(Node 22内置WebSocket + 浏览器原生API + Chrome/Edge headless)",
+  "repro": {
+    "test": "node test/run-r3.mjs",
+    "expected": "105 tests / 105 pass / 0 fail / exit 0(冻结证据 evidence/r3-tests-run.log;回归96=R2五文件经生成副本对R3控制器,契约9=新增)",
+    "headlessMatrix": "node tools/headless-shots.mjs",
+    "expectedMatrix": "11场景 failedChecks=0(evidence/headless-measure.json;截图物理尺寸=视口×3)",
+    "serveSample": "node tools/serve-standalone.mjs(127.0.0.1动态端口, Ctrl+C停止)",
+    "regenerateAsset": "node tools/make-synthetic-png.mjs(确定性)",
+    "environment": "node v22.23.1 / win32 10.0.26200 x64 / Git Bash + Chrome(headless CDP)"
+  },
+  "files": [
+    {
+      "path": "src/camera-controller.mjs",
+      "sha256": "5a2a0e9c6ab07d2cfc2a53aac20d70119258ab5cf41a1bab888cb5993bafb689",
+      "bytes": 29277,
+      "role": "控制器v0.3.0:R2全语义+discardPreview/getResourceCounters/buildResourceReceipt"
+    },
+    {
+      "path": "src/thumbnail.mjs",
+      "sha256": "8722747b7a560f73dcf72120accd658310419590df6ea0ad07fdad786c6f042e",
+      "bytes": 3572,
+      "role": "浏览器默认解码/缩略图(原样复用)"
+    },
+    {
+      "path": "src/standalone/index.html",
+      "sha256": "28e9312ff06147890d70c339a39102e9787566a9a68d924d94220ec33d98ef59",
+      "bytes": 6538,
+      "role": "测试壳(作废按钮/本机语义/收据导出位)"
+    },
+    {
+      "path": "src/standalone/standalone-main.mjs",
+      "sha256": "59e904045b1149670cd1e8e5f0eecfca419829b6615a5de977b085a3754022c3",
+      "bytes": 16271,
+      "role": "壳装配(auto序列/事件日志/上传探针/收据与测量导出)"
+    },
+    {
+      "path": "test/run-r3.mjs",
+      "sha256": "3a134686772aeeacfca3b90c06334731e371d12b97a871e8d0bfc6f3810d814c",
+      "bytes": 19034,
+      "role": "回归生成器+运行器(SA-A;双显式映射逐条计数)"
+    },
+    {
+      "path": "test/r3-contract.test.mjs",
+      "sha256": "4e6c0acc272a8badceb6f2fbd356ca9ebf797f9084769b46de99cee3fbdb3bf4",
+      "bytes": 30952,
+      "role": "新增契约测试9项(SA-A)"
+    },
+    {
+      "path": "test/regression-generated/adversarial.test.mjs",
+      "sha256": "c47e38ecc8bffe78c0063ce58fe090eb050b6c7bb8546aa3955744daf119d2fd",
+      "bytes": 33497,
+      "role": "生成回归副本(语义差异0)"
+    },
+    {
+      "path": "test/regression-generated/camera-controller.test.mjs",
+      "sha256": "64d3a8d92880cfd4c2ff29f991a363fd7948721b86d17cf607c350d620de9670",
+      "bytes": 39409,
+      "role": "生成回归副本(语义差异0)"
+    },
+    {
+      "path": "test/regression-generated/metadata-integrity.test.mjs",
+      "sha256": "91bfa928c5a5c0e89e4bc509c19fe70ee840ecee3f099b130685e67e174a297d",
+      "bytes": 22663,
+      "role": "生成回归副本(语义差异0)"
+    },
+    {
+      "path": "test/regression-generated/resource-tracking.test.mjs",
+      "sha256": "3ed0f7697aa009819dba5871399f37dfec93377e8446cb0a52d9da4e77be40ae",
+      "bytes": 33001,
+      "role": "生成回归副本(语义差异0)"
+    },
+    {
+      "path": "test/regression-generated/stress-loop.test.mjs",
+      "sha256": "f3a8b167150dd5a2d052e322f8b8af098825dcf413c9125f4b9355821bb54649",
+      "bytes": 26747,
+      "role": "生成回归副本(语义差异0;42×2轮对R3完整执行)"
+    },
+    {
+      "path": "tools/headless-shots.mjs",
+      "sha256": "b17a89601c23d4fcb1b238401c62e38d7131b140a1a24dc43465d6bb1313ebff",
+      "bytes": 9784,
+      "role": "CDP真仿真矩阵runner(主agent)"
+    },
+    {
+      "path": "tools/run-chrome.ps1",
+      "sha256": "57cc10b2418bd8c842e6b5b44f3edb6b727dbb02f8f921a3e9f42a7b2472b5fe",
+      "bytes": 1205,
+      "role": "Chrome headless驱动(ASCII)"
+    },
+    {
+      "path": "tools/serve-standalone.mjs",
+      "sha256": "bb8f8c1b27fa2da54c139fde92102eed1a3def47cac3b45f703875387e574671",
+      "bytes": 3101,
+      "role": "本地静态服务+收据回收端点(仅127.0.0.1/白名单)"
+    },
+    {
+      "path": "tools/make-synthetic-png.mjs",
+      "sha256": "3af86c40b6b5c967a50369f8e12db0af603493ecd99bf3be94903ed2aaf4168e",
+      "bytes": 2607,
+      "role": "确定性合成PNG生成器"
+    },
+    {
+      "path": "EVENT_RESOURCE_CONTRACT.md",
+      "sha256": "5e966d1a4344d07fbc0ab30be93ccff7f42a8d047ea9e231746034acbfaf6d23",
+      "bytes": 13073,
+      "role": "事件→资源状态表/作废契约/收据schema(SA-B)"
+    },
+    {
+      "path": "MAPPING.md",
+      "sha256": "6862624a4dde513f5ae4aa57005bd38bc15e4b236479ba760cbc03c05e6b9b95",
+      "bytes": 7604,
+      "role": "camera-panel最小替换映射+集成测试入口(SA-B)"
+    },
+    {
+      "path": "STATUS.md",
+      "sha256": "447db5eb1912799cb8990c17c72cbef5747a21f114a98b24ebc01d027f6dd1cd",
+      "bytes": 2181,
+      "role": "批次状态(接手口径;收束以MORNING_REPORT为准)"
+    },
+    {
+      "path": "REPORT.md",
+      "sha256": "41819a7ae3967b1b4e832702d7f96c29f8638f1afe14a843e720a686f7d7e193",
+      "bytes": 4264,
+      "role": "执行报告(顺序对照/修复/NOT TESTED)"
+    },
+    {
+      "path": "AGENT_LEDGER.md",
+      "sha256": "84f3508d39faddbe3f11e1fe148b87f5523a894dc67fb9df3fb97a2b14e4ed23",
+      "bytes": 2053,
+      "role": "Subagent台账(裁决记录/并发/资源)"
+    },
+    {
+      "path": "MORNING_REPORT.md",
+      "sha256": "7db463e51e53b6b1374172e90ec426a9631167c3afa13bc96326625f63f4f299",
+      "bytes": 3400,
+      "role": "09:00晨报(accepted/changes-required/deferred)"
+    },
+    {
+      "path": "screenshots/INDEX.md",
+      "sha256": "81797521dce2206bc7f9b7686ba71d3d794d19ea3e3dc8ec5daca1fee85153ba",
+      "bytes": 2617,
+      "role": "截图索引(真布局仿真声明)"
+    },
+    {
+      "path": "screenshots/r3-01-idle-402x874-dpr3.png",
+      "sha256": "0335c30d221530fae0c878906a1e288f8633660021c2a979738e55b79aae1085",
+      "bytes": 259661,
+      "role": "1206×2622物理(402×874@DPR3)"
+    },
+    {
+      "path": "screenshots/r3-02-preview-402x874-dpr3.png",
+      "sha256": "82272cc53bae9519779db3566ecbee33f217c597377458e4197a8de407923c01",
+      "bytes": 1313270,
+      "role": "原件预览渲染"
+    },
+    {
+      "path": "screenshots/r3-03-discard-contract-402x874-dpr3.png",
+      "sha256": "be035a4c179f7e4e6e5763308c5fa1ec4f01799beb49ac08dafcaf71f052b310",
+      "bytes": 1221146,
+      "role": "作废后idle(discard收据终态全零)"
+    },
+    {
+      "path": "screenshots/r3-04-requesting-cancel-exit-402x874.png",
+      "sha256": "95a5f36494e97a3d14aa2e13957b66948cb4483a5ee8e90189aa32771067edda",
+      "bytes": 259727,
+      "role": "请求中取消出路"
+    },
+    {
+      "path": "screenshots/r3-05-hangup-receipt-402x874.png",
+      "sha256": "ac485589da8c3043b2053453f9ef3a557dcfc79ed5ed539c6182e6f9addc52e6",
+      "bytes": 293388,
+      "role": "挂断收据场景"
+    },
+    {
+      "path": "screenshots/r3-06-denied-402x874.png",
+      "sha256": "1932af665eea9cb73f16cdc30d66904205e72baf70e3d72c309f730197fabff2",
+      "bytes": 297718,
+      "role": "拒绝不循环"
+    },
+    {
+      "path": "screenshots/r3-07-error-invalid-402x874.png",
+      "sha256": "7c8877d8e4709e6b0d6d90e63a4b8083f2f9364672ab1fc76d890444c7de8fd9",
+      "bytes": 274175,
+      "role": "非图片错误"
+    },
+    {
+      "path": "screenshots/r3-08-unsupported-picker-ok-402x874.png",
+      "sha256": "07930f19a9bd11318c9896c5b8e3b27d4b3299e6a97473b38de14dd403570680",
+      "bytes": 319335,
+      "role": "未配置选图不受阻"
+    },
+    {
+      "path": "screenshots/r3-09-long-notice-not-blocking-402x874.png",
+      "sha256": "c8ac26f447f0e380a91784c5043d78e765e2fe25deb7edbf5c099c13689fbea0",
+      "bytes": 429570,
+      "role": "超长提示不遮挡按钮(几何断言true)"
+    },
+    {
+      "path": "screenshots/r3-10-preview-390x844-real.png",
+      "sha256": "39e23242a16441ce39f0b1b74d32dc02d9c0acd1224fd2a573feb31122e2650f",
+      "bytes": 1188437,
+      "role": "390×844真实布局(1170×2532)"
+    },
+    {
+      "path": "screenshots/r3-11-preview-360x800-real.png",
+      "sha256": "528dcdaf3fdb69d74ed3257fb041c0362bd47a8cdf833e29a31eed4163812e78",
+      "bytes": 814451,
+      "role": "360×800真实布局(1080×2400)"
+    },
+    {
+      "path": "evidence/r3-tests-run.log",
+      "sha256": "a7639fb84b299c38b9da4167337cb7dc711c25107936998bb835f2f817098721",
+      "bytes": 31532,
+      "role": "105/105原始日志(含裁决说明/FINDINGS)"
+    },
+    {
+      "path": "evidence/regeneration-proof.json",
+      "sha256": "7ee7bccc93ab6deffef584e5fe284cbea073870b1dcb8b94e0794dd4fc5a4bb0",
+      "bytes": 3960,
+      "role": "生成副本证明(双映射计数/semanticDiffLines=0/coordinatorRuling)"
+    },
+    {
+      "path": "evidence/headless-measure.json",
+      "sha256": "58c7862b8a3bd4bac84ffdabfa7c1711e9aac3cc5c25f09d2e6ffd52d4b61f7c",
+      "bytes": 31110,
+      "role": "11场景测量+收据+checks(failedChecks=0)"
+    },
+    {
+      "path": "evidence/collected/r3-01-idle-402x874-dpr3.json",
+      "sha256": "333cc8924599faffd1a90206c5d3a2fce6892e4d10b268e494294dc107d083de",
+      "bytes": 886,
+      "role": "场景收据+测量"
+    },
+    {
+      "path": "evidence/collected/r3-02-preview-402x874-dpr3.json",
+      "sha256": "1a309739c618daf39819c6cd7922300356e05f3be683304e3141a97bf36241e2",
+      "bytes": 1032,
+      "role": "场景收据+测量"
+    },
+    {
+      "path": "evidence/collected/r3-03-discard-contract-402x874-dpr3.json",
+      "sha256": "0bf3a0dbb43c26b5c0330c075519dc6a12922b5ee93a50a5a2bf39e6411b1b83",
+      "bytes": 1307,
+      "role": "作废契约收据"
+    },
+    {
+      "path": "evidence/collected/r3-04-requesting-cancel-exit-402x874.json",
+      "sha256": "c38abfee988c45768d502ee36867b75d7b9bde10ce1909febfdef3baa47c285c",
+      "bytes": 1075,
+      "role": "场景收据+测量"
+    },
+    {
+      "path": "evidence/collected/r3-05-hangup-receipt-402x874.json",
+      "sha256": "9f5504d10dab6315bcd9431f0d6d2b6b310704441f12327fdc364c55b44ad474",
+      "bytes": 1276,
+      "role": "挂断收据(reason=hangup,终态全零)"
+    },
+    {
+      "path": "evidence/collected/r3-06-denied-402x874.json",
+      "sha256": "7af36897522cd1d44525f6aeeb98303df74ed56ce7871c81f2bd1d47992f5eb0",
+      "bytes": 1161,
+      "role": "拒绝收据"
+    },
+    {
+      "path": "evidence/collected/r3-07-error-invalid-402x874.json",
+      "sha256": "a7f724f1652b64e1762c70b08af5323a82067563a87807fc145cf4a5131ba5ca",
+      "bytes": 950,
+      "role": "错误态收据"
+    },
+    {
+      "path": "evidence/collected/r3-08-unsupported-picker-ok-402x874.json",
+      "sha256": "1936bcdaa6dc9aa9914cee2ab02f24b77aee12a86659e84edb07f561d5efca4a",
+      "bytes": 1048,
+      "role": "未配置态收据"
+    },
+    {
+      "path": "evidence/collected/r3-09-long-notice-not-blocking-402x874.json",
+      "sha256": "8b0ba18a17928116097f36d5c7d0322531c64fe37c51609e7c1e70dca7dd31f3",
+      "bytes": 1204,
+      "role": "长提示几何测量(notCoveringButtons=true)"
+    },
+    {
+      "path": "evidence/collected/r3-10-preview-390x844-real.json",
+      "sha256": "f5d384afcf92ae75b12058513178b97b76b546dcd4364cfb5f13129571530336",
+      "bytes": 1032,
+      "role": "390场景收据"
+    },
+    {
+      "path": "evidence/collected/r3-11-preview-360x800-real.json",
+      "sha256": "007afd36b9891aee7b517271abcbc95d098e78b011ad4b986a7b61ec59d8008a",
+      "bytes": 1032,
+      "role": "360场景收据"
+    },
+    {
+      "path": "evidence/assets/synthetic-800x1200.png",
+      "sha256": "9a78b6c7af8f73ff2454294ffc9e90dfa42edc514184243f5dabf255a0e99617",
+      "bytes": 2882143,
+      "role": "确定性合成PNG素材(与R2同源同hash)"
+    }
+  ],
+  "verification": {
+    "tests": "105/105通过(exit 0;回归96=R2语义零变更+4版本字面量显式映射,契约9新增)",
+    "headless": "11场景failedChecks=0;realLayoutViewport/realDpr3/物理尺寸/bodyFits全true;挂断与作废收据终态全零",
+    "resourceGuarantees": "麦克风0(micConstraintViolations恒0)/上传0(探针实测)/终结态live tracks与悬空URL为0/重复点击峰值流≤1(压力84步+契约6)",
+    "realDevice": "NOT TESTED(真机/真实硬件/软键盘/安全区/HTTPS部署)"
+  },
+  "knownLimitations": [
+    "IAB缩放仿真不满足真布局要求已弃用;本批headless用CDP真仿真(Chrome headless=new支持--screenshot但--dump-dom无输出,已改服务端collect路线)",
+    "single模式被acceptFile作废的capture保留残留流由closeStream/dispose释放(承R2语义,契约测试如实断言)",
+    "触摸指针事件实击未仿真(headless以DOM click驱动);真机清单NOT TESTED",
+    "上传/入库属下一Gate;provenance恒unverified;capturedAt恒null"
+  ],
+  "secrets": "none",
+  "modelCalls": 0,
+  "paidApiCalls": 0,
+  "cleanup": "Chrome/服务进程已关闭、临时profile已删、无残留监听;3321/3399/3311未触碰"
+}

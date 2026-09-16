@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "checkpointId": "cp1a-auth-00",
+  "status": "completed",
+  "runnerThrew": false,
+  "runnerFailureCategory": null,
+  "runnerTelemetry": {
+    "runnerVersion": "flash-runner/2026-09-01.1",
+    "wallMs": 163359,
+    "queueWaitMs": 6,
+    "promptSha256": "BB9CE69A0E8B704758B9C6D07BD9D08DB939390ED1408672851D9E05E60B3DF7",
+    "trustedDangerFullAccess": false,
+    "dangerFullAccessReason": ""
+  },
+  "evidence": {
+    "schemaVersion": 1,
+    "checkpointId": "cp1a-auth-00",
+    "disposition": "scope_rejected",
+    "stopScheduling": true,
+    "transport": {
+      "runnerStatus": "completed",
+      "terminal": "turn.completed",
+      "failureKind": null,
+      "providerErrorCount": 0,
+      "rateLimit": false,
+      "quota": false,
+      "authentication": false,
+      "sandboxDenial": false,
+      "network": false,
+      "usage": {
+        "input": 38743,
+        "cached": 21184,
+        "output": 6840,
+        "fresh": 17559
+      }
+    },
+    "execution": {
+      "scopeValid": false,
+      "commandCount": 2,
+      "acceptanceRuns": 1,
+      "changedFiles": [
+        "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\authority-policy.ts"
+      ],
+      "issues": [
+        "command-exit-nonzero:item_2"
+      ]
+    },
+    "controller": {
+      "status": "pending",
+      "exitCode": null
+    }
+  }
+}

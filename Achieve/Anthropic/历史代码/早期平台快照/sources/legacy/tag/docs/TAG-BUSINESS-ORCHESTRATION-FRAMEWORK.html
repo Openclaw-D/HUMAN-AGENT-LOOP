@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TAG 融资租赁业务中心协同框架</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #182235;
+      --muted: #667085;
+      --line: #d9e0ea;
+      --paper: #f7f9fc;
+      --panel: #ffffff;
+      --business: #2f8cff;
+      --business-soft: #e8f3ff;
+      --system: #f28a3b;
+      --system-soft: #fff0e4;
+      --intelligence: #35b974;
+      --intelligence-soft: #e7f8ee;
+      --risk: #e6659d;
+      --risk-soft: #fdebf3;
+      --accent: #2563eb;
+      --accent-soft: #e8efff;
+      --shadow: 0 24px 80px rgba(15, 23, 42, 0.24);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #0f172a;
+      font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .viewport {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .board-stage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 2560px;
+      height: 1440px;
+      transform: translate(-50%, -50%) scale(1);
+      transform-origin: center center;
+    }
+
+    .board {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 90% 0%, rgba(47, 140, 255, 0.08), transparent 30%),
+        var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 132px;
+      padding: 28px 46px 24px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .title-block h1 {
+      margin: 0;
+      font-size: 40px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .title-block p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 20px;
+    }
+
+    .status-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: var(--panel);
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .status::before {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      content: "";
+    }
+
+    .status.is-plan::before {
+      background: #f59e0b;
+    }
+
+    .content {
+      height: 1058px;
+      padding: 22px 42px 16px;
+    }
+
+    .object-axis {
+      display: grid;
+      grid-template-columns: 185px 1fr;
+      align-items: center;
+      min-height: 64px;
+      margin-bottom: 12px;
+    }
+
+    .axis-label {
+      color: var(--muted);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .object-track {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 22px;
+      counter-reset: object-step;
+    }
+
+    .object-step {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 54px;
+      padding: 8px 14px;
+      border-radius: 12px;
+      color: #334155;
+      background: #e8edf4;
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .object-step:not(:last-child)::after {
+      position: absolute;
+      right: -18px;
+      color: #8793a5;
+      content: "→";
+    }
+
+    .matrix {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+    }
+
+    .matrix-row {
+      display: grid;
+      grid-template-columns: 185px repeat(6, minmax(0, 1fr));
+    }
+
+    .matrix-row:not(:last-child) {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .matrix-head {
+      min-height: 74px;
+      background: #f2f5f9;
+    }
+
+    .corner,
+    .phase,
+    .role,
+    .cell {
+      min-width: 0;
+    }
+
+    .corner {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      color: var(--muted);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .phase {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+      padding: 10px 14px;
+      border-left: 1px solid var(--line);
+      text-align: center;
+    }
+
+    .phase strong {
+      font-size: 20px;
+    }
+
+    .phase small {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .lane {
+      min-height: 137px;
+    }
+
+    .role {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      padding: 18px 20px;
+      border-left: 8px solid var(--role);
+      background: var(--role-soft);
+    }
+
+    .role strong {
+      color: var(--role);
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .role span {
+      color: #475569;
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .cell {
+      display: flex;
+      align-items: stretch;
+      padding: 9px;
+      border-left: 1px solid var(--line);
+    }
+
+    .cell-content {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      justify-content: center;
+      gap: 7px;
+      min-width: 0;
+      padding: 12px 14px;
+      border-radius: 11px;
+      background: var(--role-soft);
+    }
+
+    .cell-content strong {
+      color: var(--role);
+      font-size: 16px;
+    }
+
+    .cell-content p {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.42;
+    }
+
+    .cell-content.is-key {
+      box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--role) 68%, transparent);
+    }
+
+    .business {
+      --role: var(--business);
+      --role-soft: var(--business-soft);
+    }
+
+    .system {
+      --role: var(--system);
+      --role-soft: var(--system-soft);
+    }
+
+    .intelligence {
+      --role: var(--intelligence);
+      --role-soft: var(--intelligence-soft);
+    }
+
+    .risk {
+      --role: var(--risk);
+      --role-soft: var(--risk-soft);
+    }
+
+    .loops {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .loop {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px 12px;
+      align-items: center;
+      padding: 13px 16px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: var(--panel);
+    }
+
+    .loop-label {
+      align-self: start;
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: #0f5eb8;
+      background: #dcedff;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .loop strong {
+      font-size: 16px;
+    }
+
+    .loop p {
+      grid-column: 2;
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .intelligence-chain {
+      display: grid;
+      grid-template-columns: 1fr 34px 1fr 34px 1fr 34px 0.8fr;
+      align-items: stretch;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .chain-step {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      min-width: 0;
+      padding: 14px 18px;
+      border-radius: 12px;
+      background: var(--intelligence-soft);
+    }
+
+    .chain-step small {
+      color: var(--intelligence);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .chain-step strong {
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .chain-arrow {
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 24px;
+    }
+
+    .authority {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 14px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .authority span {
+      padding: 9px 14px;
+      border-radius: 10px;
+      background: #e7ebf0;
+    }
+
+    .authority b {
+      color: var(--muted);
+      font-size: 21px;
+    }
+
+    .authority .final {
+      color: #fff;
+      background: var(--accent);
+    }
+
+    .event-panel {
+      height: 250px;
+      padding: 16px 42px 26px;
+      border-top: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .event-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 44px;
+    }
+
+    .event-head h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .event-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .event-tab {
+      padding: 8px 13px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      color: #334155;
+      background: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .event-tab:hover {
+      border-color: #9fb1ca;
+      background: #f3f6fa;
+    }
+
+    .event-tab:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.28);
+      outline-offset: 2px;
+    }
+
+    .event-tab[aria-pressed="true"] {
+      color: #fff;
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+
+    .event-detail {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .actor-detail {
+      min-width: 0;
+      padding: 13px 16px;
+      border-radius: 11px;
+      background: var(--role-soft);
+    }
+
+    .actor-detail strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--role);
+      font-size: 16px;
+    }
+
+    .actor-detail p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.38;
+    }
+
+    .footer-note {
+      position: absolute;
+      right: 42px;
+      bottom: 8px;
+      color: #8894a6;
+      font-size: 12px;
+    }
+
+    @media print {
+      html,
+      body {
+        overflow: visible;
+        background: #fff;
+      }
+
+      .viewport {
+        display: block;
+        width: 2560px;
+        height: 1440px;
+      }
+
+      .board-stage {
+        position: static;
+        transform: none !important;
+      }
+
+      .board {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="viewport" aria-label="2560×1440 设计画布">
+    <div class="board-stage" id="boardStage">
+      <main class="board" id="board">
+      <header class="topbar">
+        <div class="title-block">
+          <h1>TAG · 融资租赁业务中心协同框架</h1>
+          <p>业务主导自然场景，系统组织确定性工作，智能降低信息损耗，风控协同守护并作最终决定</p>
+        </div>
+        <div class="status-group" aria-label="框架状态">
+          <span class="status">2560 × 1440 · 16:9</span>
+          <span class="status">零第三方依赖</span>
+          <span class="status is-plan">设计框架 · 尚未实现</span>
+        </div>
+      </header>
+
+      <section class="content" aria-label="协同框架主体">
+        <div class="object-axis">
+          <span class="axis-label">判断对象如何演进</span>
+          <div class="object-track">
+            <span class="object-step">客户与业务需求</span>
+            <span class="object-step">项目材料与真实语境</span>
+            <span class="object-step">结构化项目状态</span>
+            <span class="object-step">智能判断建议</span>
+            <span class="object-step">共同关注的问题</span>
+            <span class="object-step">人类项目决定</span>
+          </div>
+        </div>
+
+        <div class="matrix" role="group" aria-label="横轴为六个阶段，纵轴为业务、系统、智能和风控">
+          <div class="matrix-row matrix-head">
+            <div class="corner">纵轴：角色与权限<br>横轴：阶段与事件</div>
+            <div class="phase"><strong>① 业务自然发生</strong><small>形成项目目标</small></div>
+            <div class="phase"><strong>② 材料进入项目</strong><small>形成共享上下文</small></div>
+            <div class="phase"><strong>③ 系统整理与初筛</strong><small>形成结构化状态</small></div>
+            <div class="phase"><strong>④ 智能理解与建议</strong><small>形成可解释建议</small></div>
+            <div class="phase"><strong>⑤ 业务—风控协作</strong><small>解决关键分歧</small></div>
+            <div class="phase"><strong>⑥ 决定与持续更新</strong><small>形成可追溯决定</small></div>
+          </div>
+
+          <div class="matrix-row lane business">
+            <div class="role">
+              <strong>业务</strong>
+              <span>项目主理人<br>可创建、提交、补充、回应<br>不能作风险审批决定</span>
+            </div>
+            <div class="cell"><div class="cell-content"><strong>从自然需求开始</strong><p>理解客户需求、交易目标与现实约束，形成业务方案。</p></div></div>
+            <div class="cell"><div class="cell-content is-key"><strong>材料与语境</strong><p>上传材料并解释其业务含义；任何时候都能直接提交风控。</p></div></div>
+            <div class="cell"><div class="cell-content"><strong>确认真实事实</strong><p>确认系统整理结果，纠正错误理解，补充必要说明。</p></div></div>
+            <div class="cell"><div class="cell-content"><strong>使用智能</strong><p>追问建议与理由，补充真实语境，选择下一项材料。</p></div></div>
+            <div class="cell"><div class="cell-content"><strong>围绕问题协作</strong><p>解释业务逻辑，回应关键分歧，继续补充有效信息。</p></div></div>
+            <div class="cell"><div class="cell-content"><strong>继续推进项目</strong><p>接收决定；通过后推进，沟通时完善，新情况触发再评估。</p></div></div>
+          </div>
+
+          <div class="matrix-row lane system">
+            <div class="role">
+              <strong>系统</strong>
+              <span>协作基础设施<br>可组织、计算、触发、等待<br>不能作最终决定</span>
+            </div>
+            <div class="cell"><div class="cell-content"><strong>建立项目空间</strong><p>创建唯一项目上下文，让所有角色围绕同一事实中心工作。</p></div></div>
+            <div class="cell"><div class="cell-content"><strong>汇入同一项目</strong><p>把材料、消息、任务和说明组织到同一个项目中。</p></div></div>
+            <div class="cell"><div class="cell-content is-key"><strong>确定性处理</strong><p>整理结构、计算固定指标、检查完整性并提示明显缺失。</p></div></div>
+            <div class="cell"><div class="cell-content"><strong>提供可靠输入</strong><p>向智能提供当前项目事实、基础计算结果和最新状态。</p></div></div>
+            <div class="cell"><div class="cell-content"><strong>协调协作节奏</strong><p>路由任务、提醒负责人、等待补充并同步最新进展。</p></div></div>
+            <div class="cell"><div class="cell-content"><strong>保持历史连续</strong><p>记录完整过程和决定；新情况开启新一轮，不覆盖原判断。</p></div></div>
+          </div>
+
+          <div class="matrix-row lane intelligence">
+            <div class="role">
+              <strong>智能</strong>
+              <span>判断增强层<br>可理解、比较、解释、建议<br>不能替代人类决定</span>
+            </div>
+            <div class="cell"><div class="cell-content"><strong>理解业务目标</strong><p>理解业务想完成什么，并协助梳理项目问题。</p></div></div>
+            <div class="cell"><div class="cell-content"><strong>读取新增变化</strong><p>阅读材料和业务说明，识别新信息与变化部分。</p></div></div>
+            <div class="cell"><div class="cell-content"><strong>发现判断难点</strong><p>结合系统结果，识别冲突、缺口、异常与不确定性。</p></div></div>
+            <div class="cell"><div class="cell-content is-key"><strong>形成判断建议</strong><p>输出摘要、风险解释、关键问题、建议、依据与未知项。</p></div></div>
+            <div class="cell"><div class="cell-content"><strong>持续更新解释</strong><p>随着补充信息变化，解释判断为何变化或保持不变。</p></div></div>
+            <div class="cell"><div class="cell-content"><strong>支持而不越权</strong><p>提供决策支持与结果复盘，永远不替风控确认结果。</p></div></div>
+          </div>
+
+          <div class="matrix-row lane risk">
+            <div class="role">
+              <strong>风控</strong>
+              <span>协同守护者<br>可审查、沟通、通过、否决<br>承担最终判断责任</span>
+            </div>
+            <div class="cell"><div class="cell-content"><strong>设定关注原则</strong><p>明确风险关注方向，但不介入业务每一个准备细节。</p></div></div>
+            <div class="cell"><div class="cell-content is-key"><strong>接受直接提交</strong><p>业务可随时提交；系统和智能不得增加新的强制门槛。</p></div></div>
+            <div class="cell"><div class="cell-content"><strong>减少重复检查</strong><p>先查看系统整理与初筛结果，把时间留给实质判断。</p></div></div>
+            <div class="cell"><div class="cell-content"><strong>聚焦关键判断</strong><p>审阅有实质影响的建议、依据和不确定性。</p></div></div>
+            <div class="cell"><div class="cell-content is-key"><strong>协同解决分歧</strong><p>围绕关键问题沟通，帮助项目变得更清楚、更可判断。</p></div></div>
+            <div class="cell"><div class="cell-content is-key"><strong>承担最终责任</strong><p>作出通过、沟通或否决，并说明决定理由。</p></div></div>
+          </div>
+        </div>
+
+        <div class="loops" aria-label="三个条件循环">
+          <article class="loop">
+            <span class="loop-label">循环 A · 自助完善</span>
+            <strong>业务 ↔ 系统／智能</strong>
+            <p>帮助业务整理和完善项目，但不是门槛；业务始终可以直接提交风控。</p>
+          </article>
+          <article class="loop">
+            <span class="loop-label">循环 B · 协同判断</span>
+            <strong>风控提问 → 业务补充 → 系统更新 → 智能重判 → 风控继续判断</strong>
+            <p>只有关键问题未解决时发生；目标是共同完成项目，而不是简单退回。</p>
+          </article>
+          <article class="loop">
+            <span class="loop-label">循环 C · 持续更新</span>
+            <strong>关键新情况 → 保留原判断 → 开启新一轮判断</strong>
+            <p>项目历史连续存在，旧结论不被修改，新信息形成新的判断依据。</p>
+          </article>
+        </div>
+
+        <div class="intelligence-chain" aria-label="智能层输入处理输出边界">
+          <div class="chain-step"><small>智能输入</small><strong>业务事实、项目材料、系统结果、人的问题、获准历史经验</strong></div>
+          <span class="chain-arrow">→</span>
+          <div class="chain-step"><small>智能处理</small><strong>比较、归纳、发现冲突、判断缺失、解释具体情境</strong></div>
+          <span class="chain-arrow">→</span>
+          <div class="chain-step"><small>智能输出</small><strong>项目摘要、风险解释、关键问题、建议、依据与不确定性</strong></div>
+          <span class="chain-arrow">→</span>
+          <div class="chain-step"><small>智能边界</small><strong>增强人的判断，不作最终决定</strong></div>
+        </div>
+
+        <div class="authority" aria-label="总体权限边界">
+          <span>业务主导项目并提供真实语境</span><b>→</b>
+          <span>系统组织协作并完成确定性处理</span><b>→</b>
+          <span>智能理解和提出建议</span><b>→</b>
+          <span class="final">风控协同守护并作最终决定</span>
+        </div>
+      </section>
+
+      <section class="event-panel" aria-label="关键事件交互说明">
+        <div class="event-head">
+          <h2 id="eventTitle">材料进入项目：四个角色分别发生什么</h2>
+          <div class="event-tabs" role="group" aria-label="选择关键事件">
+            <button class="event-tab" type="button" data-event="materials" aria-pressed="true">材料进入项目</button>
+            <button class="event-tab" type="button" data-event="submit" aria-pressed="false">直接提交</button>
+            <button class="event-tab" type="button" data-event="advice" aria-pressed="false">智能提出建议</button>
+            <button class="event-tab" type="button" data-event="communicate" aria-pressed="false">风控发起沟通</button>
+            <button class="event-tab" type="button" data-event="supplement" aria-pressed="false">业务补充事实</button>
+            <button class="event-tab" type="button" data-event="decide" aria-pressed="false">风控作出决定</button>
+            <button class="event-tab" type="button" data-event="reevaluate" aria-pressed="false">新情况再评估</button>
+          </div>
+        </div>
+
+        <div class="event-detail" aria-live="polite" aria-atomic="true">
+          <article class="actor-detail business"><strong>业务</strong><p data-actor="business"></p></article>
+          <article class="actor-detail system"><strong>系统</strong><p data-actor="system"></p></article>
+          <article class="actor-detail intelligence"><strong>智能</strong><p data-actor="intelligence"></p></article>
+          <article class="actor-detail risk"><strong>风控</strong><p data-actor="risk"></p></article>
+        </div>
+      </section>
+
+      <div class="footer-note">TAG 业务机制设计框架 v0.1 · 设计能力不等于后端已经实现</div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const DESIGN_WIDTH = 2560;
+    const DESIGN_HEIGHT = 1440;
+    const boardStage = document.getElementById('boardStage');
+
+    function fitBoard() {
+      const scale = Math.min(window.innerWidth / DESIGN_WIDTH, window.innerHeight / DESIGN_HEIGHT);
+      boardStage.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    }
+
+    const eventDetails = {
+      materials: {
+        title: '材料进入项目：四个角色分别发生什么',
+        business: '上传客户材料，并说明材料对应的业务事实、背景和用途。',
+        system: '把材料、消息和任务归入正确项目，整理基础信息并提示明显缺失。',
+        intelligence: '阅读新增内容，识别重要变化、矛盾、未知项和需要继续了解的问题。',
+        risk: '通常不必立即介入；项目提交审查后再集中查看。'
+      },
+      submit: {
+        title: '业务直接提交：帮助机制不能成为新门槛',
+        business: '可在任何准备程度下提交风控，不需要等待智能判断完成。',
+        system: '汇总当前材料、基础结果、缺失信息和沟通历史，并通知风控。',
+        intelligence: '提供当前可以确认的建议，同时明确不知道或无法确认的部分。',
+        risk: '开始审查；信息不足时进入“沟通”，而不是简单把项目退回。'
+      },
+      advice: {
+        title: '智能提出建议：输入、处理、输出和权限边界',
+        business: '提供真实业务语境，也可以追问“为什么”和“下一步需要什么”。',
+        system: '提供项目材料、确定性计算结果、当前状态和获准历史经验。',
+        intelligence: '形成项目摘要、风险解释、关键问题、建议、依据与不确定性。',
+        risk: '把建议作为判断辅助，可以接受、质疑或要求进一步解释。'
+      },
+      communicate: {
+        title: '风控发起沟通：围绕同一个项目目标协作',
+        business: '理解风控真正关心的问题，解释业务逻辑或补充有效材料。',
+        system: '把问题、负责人、已有信息和等待状态继续保留在同一项目中。',
+        intelligence: '帮助双方定位分歧，解释不同判断来自哪些事实、假设或缺失。',
+        risk: '只围绕有实质影响的问题沟通，帮助项目变得清楚和可判断。'
+      },
+      supplement: {
+        title: '业务补充事实：只更新真正受影响的判断',
+        business: '针对具体问题补充材料、说明或客户反馈，不重复提交无关信息。',
+        system: '更新受影响的项目事实、基础计算、任务和审查状态。',
+        intelligence: '重看发生变化的部分，并解释新信息如何影响原有建议。',
+        risk: '确认关键问题是否解决；仍不清楚时继续沟通。'
+      },
+      decide: {
+        title: '风控作出决定：通过、沟通或否决',
+        business: '接收决定与理由；通过后推进，沟通时继续完善，否决时理解关键原因。',
+        system: '保存决定、理由和当时使用的信息，使整个过程以后能够回看。',
+        intelligence: '提供最后的判断支持，但不能替风控确认结果。',
+        risk: '结合业务事实、系统结果和智能建议，承担最终判断责任。'
+      },
+      reevaluate: {
+        title: '新情况再评估：连续推进但不修改历史',
+        business: '说明新情况为什么可能改变原判断，并补充相应事实。',
+        system: '保留原来的完整判断，同时开启一轮新的项目评估。',
+        intelligence: '比较新旧信息，解释哪些判断需要变化、哪些仍然成立。',
+        risk: '基于新情况重新决定，不能偷偷修改原来的决定。'
+      }
+    };
+
+    const eventTitle = document.getElementById('eventTitle');
+    const actorFields = {
+      business: document.querySelector('[data-actor="business"]'),
+      system: document.querySelector('[data-actor="system"]'),
+      intelligence: document.querySelector('[data-actor="intelligence"]'),
+      risk: document.querySelector('[data-actor="risk"]')
+    };
+
+    function showEvent(eventName) {
+      const detail = eventDetails[eventName];
+      eventTitle.textContent = detail.title;
+      Object.entries(actorFields).forEach(([actor, element]) => {
+        element.textContent = detail[actor];
+      });
+    }
+
+    document.querySelectorAll('.event-tab').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.event-tab').forEach((item) => {
+          item.setAttribute('aria-pressed', String(item === button));
+        });
+        showEvent(button.dataset.event);
+      });
+    });
+
+    window.addEventListener('resize', fitBoard);
+    fitBoard();
+    showEvent('materials');
+  </script>
+</body>
+</html>

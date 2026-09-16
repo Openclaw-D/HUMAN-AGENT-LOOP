@@ -1,0 +1,18 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "incremental": false
+  },
+  "include": [
+    "../../../next-env.d.ts",
+    "../shared/**/*.ts",
+    "../shared/**/*.tsx",
+    "./**/*.ts",
+    "./**/*.tsx",
+    "../../collaboration/page.tsx",
+    "../../value/page.tsx"
+  ],
+  "exclude": [
+    "../../../node_modules"
+  ]
+}

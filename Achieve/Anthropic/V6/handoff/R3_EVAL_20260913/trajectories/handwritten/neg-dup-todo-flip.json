@@ -1,0 +1,83 @@
+{
+  "schema": "product-trajectory@1",
+  "meta": {
+    "trajectoryId": "neg-dup-todo-flip",
+    "source": "handwritten",
+    "exportedAt": "2026-09-13T05:00:00Z",
+    "exportTool": "handwritten by SA-1 (synthetic control)",
+    "note": "合成控制负例：同一 eventId（EV-DUP-1）的 todo_state_changed 重复出现两次且语义相反（先 open→resolved，再翻转回 open）（注入违规：R-DUP）。TD-1 保留在最终清单，避免误伤 R-HANG。其余部分照正例构造。全部内容虚构，不代表产品已执行。"
+  },
+  "session": {
+    "sessionId": "SESS-HW-NEG-DUP",
+    "projectId": "2026PA21001",
+    "title": "合成负例：重复事件翻转待办状态（虚构案例）",
+    "status": "ended",
+    "generation": 1,
+    "participants": [
+      { "participantId": "p-biz", "displayName": "业务岗（合成）", "kind": "human", "domainRole": "business", "attendance": "present", "attendanceVerified": true, "joined": "2026-09-12T01:30:00Z" },
+      { "participantId": "p-credit", "displayName": "信审岗（合成）", "kind": "human", "domainRole": "credit", "attendance": "present", "attendanceVerified": true, "joined": "2026-09-12T01:32:00Z" },
+      { "participantId": "p-policy", "displayName": "政策岗（合成）", "kind": "human", "domainRole": "policy", "attendance": "present", "attendanceVerified": true, "joined": "2026-09-12T01:31:00Z" },
+      { "participantId": "p-asset", "displayName": "资产岗（合成）", "kind": "human", "domainRole": "asset", "attendance": "present", "attendanceVerified": true, "joined": "2026-09-12T01:33:00Z" },
+      { "participantId": "p-model", "displayName": "模型输出通道（合成，authority=none）", "kind": "model", "domainRole": "coordinator", "attendance": "present", "attendanceVerified": false, "joined": "2026-09-12T01:30:00Z" },
+      { "participantId": "p-owner", "displayName": "实际控制人（合成）", "kind": "human", "domainRole": "customer-actual-controller", "attendance": "present", "attendanceVerified": true, "joined": "2026-09-12T01:35:00Z" }
+    ],
+    "video": { "provider": "none", "state": "not_configured", "message": "视频服务未接入" },
+    "createdAt": "2026-09-12T01:30:00Z",
+    "updatedAt": "2026-09-12T02:55:00Z"
+  },
+  "evidence": [
+    {
+      "evidenceId": "EV-1",
+      "projectId": "2026PA21001",
+      "sessionId": "SESS-HW-NEG-DUP",
+      "fixtureId": "FX-SYN-NEG-009",
+      "title": "设备验收单（合成样例）",
+      "sourceType": "upload",
+      "capturedAt": "2026-09-12T01:36:00Z",
+      "receivedAt": "2026-09-12T01:37:00Z",
+      "mime": "image/png",
+      "width": 1024,
+      "height": 768,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000018",
+      "version": 1,
+      "supersededBy": null,
+      "supersedes": null,
+      "digestOf": null
+    }
+  ],
+  "annotations": [
+    {
+      "annotationId": "AN-1",
+      "sessionId": "SESS-HW-NEG-DUP",
+      "evidenceId": "EV-1",
+      "evidenceVersion": 1,
+      "rect": { "x": 50, "y": 75, "width": 210, "height": 46 },
+      "question": "验收单编号与合同是否一致（合成提问）",
+      "author": "p-asset",
+      "status": "open",
+      "version": 1,
+      "createdAt": "2026-09-12T01:42:00Z",
+      "replies": [
+        { "replyId": "RP-1", "kind": "model_simulation", "author": "p-model", "text": "模型提示：编号字段需人工比对（合成，不构成结论）", "at": "2026-09-12T01:44:00Z" }
+      ]
+    }
+  ],
+  "reviews": [
+    { "reviewId": "RV-1", "sessionId": "SESS-HW-NEG-DUP", "targetType": "evidence", "targetId": "EV-1", "targetVersion": 1, "action": "confirm", "opinion": "政策岗确认：进入尽职调查阶段的前序条件满足（合成记录）", "reviewer": "p-policy", "at": "2026-09-12T02:05:00Z" }
+  ],
+  "calculations": [],
+  "timeline": [
+    { "eventId": "ev-1201", "sessionId": "SESS-HW-NEG-DUP", "at": "2026-09-12T01:40:00Z", "atDisplay": "2026-09-12 09:40", "actor": "p-model", "kind": "formal_gate", "level": "记录", "event": "model_preprocessing 门槛判定（预处理在 pre_review 阶段允许，中性记录）", "before": null, "after": "true", "impact": "预处理属允许的前序步骤（合成）" },
+    { "eventId": "ev-1202", "sessionId": "SESS-HW-NEG-DUP", "at": "2026-09-12T02:00:00Z", "atDisplay": "2026-09-12 10:00", "actor": "p-biz", "kind": "lifecycle_advanced", "level": "正式", "event": "pre_review → due_diligence", "before": "pre_review", "after": "due_diligence", "impact": "进入尽职调查阶段（合成）" },
+    { "eventId": "ev-1203", "sessionId": "SESS-HW-NEG-DUP", "at": "2026-09-12T02:05:00Z", "atDisplay": "2026-09-12 10:05", "actor": "p-policy", "kind": "human_confirmation", "level": "人工", "event": "人工确认进入尽职调查阶段（依据 EV-1@1，合成）", "before": null, "after": "EV-1@1", "impact": "lifecycle_advanced 的人工确认支撑（合成）" },
+    { "eventId": "EV-DUP-1", "sessionId": "SESS-HW-NEG-DUP", "at": "2026-09-12T02:30:00Z", "atDisplay": "2026-09-12 10:30", "actor": "p-biz", "kind": "todo_state_changed", "level": "记录", "event": "TD-1", "before": "open", "after": "resolved", "impact": "待办办理完成（合成）" },
+    { "eventId": "EV-DUP-1", "sessionId": "SESS-HW-NEG-DUP", "at": "2026-09-12T02:35:00Z", "atDisplay": "2026-09-12 10:35", "actor": "p-biz", "kind": "todo_state_changed", "level": "记录", "event": "TD-1", "before": "resolved", "after": "open", "impact": "同一 eventId 的重复投递被用来翻转状态：重开待办（合成违规注入）" },
+    { "eventId": "ev-1206", "sessionId": "SESS-HW-NEG-DUP", "at": "2026-09-12T02:50:00Z", "atDisplay": "2026-09-12 10:50", "actor": "p-asset", "kind": "todo_state_changed", "level": "记录", "event": "TD-2", "before": "open", "after": "resolved", "impact": "补充验收材料核收（合成）" }
+  ],
+  "todos": [
+    { "todoId": "TD-1", "title": "核对验收单编号（合成）", "sessionId": "SESS-HW-NEG-DUP", "status": "open", "linkedOpinionIds": [], "updatedAt": "2026-09-12T02:35:00Z" },
+    { "todoId": "TD-2", "title": "补充验收材料（合成）", "sessionId": "SESS-HW-NEG-DUP", "status": "resolved", "linkedOpinionIds": [], "updatedAt": "2026-09-12T02:50:00Z" }
+  ],
+  "ruleConfig": { "version": 0, "status": "unconfigured", "layers": {} },
+  "expectedRule": "R-DUP"
+}

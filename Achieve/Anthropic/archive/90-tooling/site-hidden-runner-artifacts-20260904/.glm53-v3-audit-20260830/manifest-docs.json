@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 2,
+  "id": "v3-audit-docs",
+  "taskType": "read-only-review",
+  "objective": "Audit README and SITE_CONTRACT claims against the current V3 root frontend and package scripts without changing files or making visual judgments.",
+  "workingDirectory": "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site",
+  "model": "glm-5.3-flash",
+  "effort": "high",
+  "sandboxMode": "read-only",
+  "allowedReads": [
+    "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/README.md",
+    "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/SITE_CONTRACT.md",
+    "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/package.json",
+    "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/app/jw-front.tsx",
+    "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/test/jw-front.test.mjs"
+  ],
+  "allowedWrites": [],
+  "excluded": [
+    "task-docs.md",
+    "controller-docs.ps1",
+    "all files not listed in allowedReads",
+    "Git, network, dependency installation, site and browser execution"
+  ],
+  "baseline": {
+    "solutionInitiallyMissing": false,
+    "checks": [
+      "Controller build exposed root module and API routes",
+      "Controller browser smoke rendered root collaboration and policy routes"
+    ]
+  },
+  "acceptance": {
+    "command": "node --experimental-strip-types --test ./test/jw-front.test.mjs",
+    "maxRuns": 1
+  },
+  "stopConditions": [
+    "provider_error",
+    "rate_limit",
+    "timeout",
+    "scope_violation",
+    "permission_denial",
+    "quota_auth_or_network_failure",
+    "acceptance_test_failure"
+  ],
+  "jsonlPath": "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/.glm53-v3-audit-20260830/lane-docs.jsonl",
+  "contract": {
+    "taskPackPath": "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/.glm53-v3-audit-20260830/task-docs.md",
+    "controllerTestPath": "C:/Users/22673/Desktop/Anthropic/jianwei-v3/site/.glm53-v3-audit-20260830/controller-docs.ps1",
+    "controllerCommand": "pwsh -NoProfile -File ./.glm53-v3-audit-20260830/controller-docs.ps1",
+    "profiles": ["exact-shape", "path", "integration"],
+    "requiredTerms": ["documentation drift", "current frontend authority", "route skeleton", "visual judgment excluded"]
+  },
+  "commandPolicy": {
+    "maxCommandEvents": 6,
+    "maxReadsPerAllowedFile": 1,
+    "forbidDirectoryEnumeration": true,
+    "rejectUnclassifiedCommands": true
+  },
+  "runner": {
+    "timeoutSeconds": 1200,
+    "queueTimeoutSeconds": 300,
+    "skipGitRepoCheck": false,
+    "authorizedNonGitRoot": null,
+    "billingLeasePath": "C:/Users/22673/Desktop/GLM/benchmarks/billing-attestation-v1/lease-v3-audit-20260830-1409.json"
+  },
+  "roi": {
+    "directCodexMinutesLow": 25,
+    "parallelBenefitMinutesLow": 12,
+    "reuseBenefitMinutesLow": 5,
+    "taskPackMinutesHigh": 5,
+    "monitoringMinutesHigh": 3,
+    "reviewMinutesHigh": 8,
+    "handoffMinutesHigh": 2,
+    "expectedRepairMinutesHigh": 4,
+    "contextSwitchMinutesHigh": 2,
+    "providerRiskMinutesHigh": 2,
+    "minimumNetMinutes": 10,
+    "minimumBenefitCostRatio": 1.25
+  }
+}

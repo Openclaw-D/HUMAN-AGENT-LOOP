@@ -1,0 +1,163 @@
+{
+  "caseSetId": "v7-cases",
+  "version": "1.1.0",
+  "note": "合成异常用例集：正常、证据矛盾、缺参、口径变化、旧证据替换 + 不确定低估/调用未知/规则不覆盖。全部数据为合成演示，无真实客户资料。expected.providerCalls 断言升级短路（0=模型未被调用）。",
+  "cases": [
+    {
+      "caseId": "C1-normal-consistent",
+      "category": "normal",
+      "title": "正常：证据一致、计算成功、候选如实引用",
+      "factVersion": 7,
+      "evidence": [
+        { "evidenceId": "ev-001", "version": 2, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "value": 84 },
+        { "evidenceId": "ev-001", "version": 2, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "value": 60 }
+      ],
+      "calcInput": {
+        "currency": "CNY",
+        "monthlyOperatingCashFlow": { "value": 84, "caliber": "经营现金流·租金后", "source": { "evidenceId": "ev-001", "version": 2 } },
+        "monthlyDebtService": { "value": 60, "caliber": "月度租金+利息", "source": { "evidenceId": "ev-001", "version": 2 } }
+      },
+      "providerScript": { "text": {
+        "observations": ["两份输入同口径，计算结果：覆盖率 1.4（与工具输出一致）。"],
+        "evidenceRefs": [{ "evidenceId": "ev-001", "version": 2 }],
+        "assumptions": ["输入口径与计算声明一致。"],
+        "uncertainty": ["月度数值为单期采样，未覆盖季节波动。"],
+        "recommendedHumanAction": "need_more_evidence"
+      } },
+      "expected": { "status": "candidate_ready", "reason": null, "providerPhase": "ok", "providerCalls": 1 }
+    },
+    {
+      "caseId": "C2-evidence-conflict",
+      "category": "evidence_conflict",
+      "title": "证据矛盾：同口径两证据数值不一致且无取代关系",
+      "factVersion": 8,
+      "evidence": [
+        { "evidenceId": "ev-001", "version": 2, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "value": 84 },
+        { "evidenceId": "ev-001", "version": 2, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "value": 60 },
+        { "evidenceId": "ev-002", "version": 1, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "value": 70 }
+      ],
+      "calcInput": {
+        "currency": "CNY",
+        "monthlyOperatingCashFlow": { "value": 84, "caliber": "经营现金流·租金后", "source": { "evidenceId": "ev-001", "version": 2 } },
+        "monthlyDebtService": { "value": 60, "caliber": "月度租金+利息", "source": { "evidenceId": "ev-001", "version": 2 } }
+      },
+      "providerScript": null,
+      "expected": { "status": "human_required", "reason": "evidence_conflict", "providerPhase": "not_called", "providerCalls": 0 }
+    },
+    {
+      "caseId": "C3-missing-param",
+      "category": "missing_input",
+      "title": "缺参：月供输入缺失，计算显式拒绝",
+      "factVersion": 9,
+      "evidence": [
+        { "evidenceId": "ev-001", "version": 2, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "value": 84 }
+      ],
+      "calcInput": {
+        "currency": "CNY",
+        "monthlyOperatingCashFlow": { "value": 84, "caliber": "经营现金流·租金后", "source": { "evidenceId": "ev-001", "version": 2 } }
+      },
+      "providerScript": null,
+      "expected": { "status": "human_required", "reason": "missing_input", "providerPhase": "not_called", "providerCalls": 0 }
+    },
+    {
+      "caseId": "C4-caliber-change",
+      "category": "caliber_change",
+      "title": "口径变化：同指标两种口径并存且无换算声明",
+      "factVersion": 10,
+      "evidence": [
+        { "evidenceId": "ev-001", "version": 2, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "value": 84 },
+        { "evidenceId": "ev-001", "version": 2, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "value": 60 },
+        { "evidenceId": "ev-003", "version": 1, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金前", "value": 96 }
+      ],
+      "calcInput": {
+        "currency": "CNY",
+        "monthlyOperatingCashFlow": { "value": 84, "caliber": "经营现金流·租金后", "source": { "evidenceId": "ev-001", "version": 2 } },
+        "monthlyDebtService": { "value": 60, "caliber": "月度租金+利息", "source": { "evidenceId": "ev-001", "version": 2 } }
+      },
+      "providerScript": null,
+      "expected": { "status": "human_required", "reason": "caliber_change", "providerPhase": "not_called", "providerCalls": 0 }
+    },
+    {
+      "caseId": "C5-superseded-cited",
+      "category": "superseded_evidence",
+      "title": "旧证据替换：候选引用已被取代的 v1 证据，意见失效",
+      "factVersion": 11,
+      "evidence": [
+        { "evidenceId": "ev-001", "version": 1, "supersededBy": "ev-001@2", "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "value": 90 },
+        { "evidenceId": "ev-001", "version": 2, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "value": 84 },
+        { "evidenceId": "ev-001", "version": 2, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "value": 60 }
+      ],
+      "calcInput": {
+        "currency": "CNY",
+        "monthlyOperatingCashFlow": { "value": 84, "caliber": "经营现金流·租金后", "source": { "evidenceId": "ev-001", "version": 2 } },
+        "monthlyDebtService": { "value": 60, "caliber": "月度租金+利息", "source": { "evidenceId": "ev-001", "version": 2 } }
+      },
+      "providerScript": { "text": {
+        "observations": ["按 v1 证据，经营现金流为 90；计算覆盖率 1.4。"],
+        "evidenceRefs": [{ "evidenceId": "ev-001", "version": 1 }],
+        "assumptions": ["沿用 v1 证据数值。"],
+        "uncertainty": ["v1 与 v2 数值存在差异。"],
+        "recommendedHumanAction": "accept_candidate"
+      } },
+      "expected": { "status": "human_required", "reason": "superseded_evidence_cited", "providerPhase": "ok", "providerCalls": 1 }
+    },
+    {
+      "caseId": "C6-uncertainty-understatement",
+      "category": "uncertainty_understatement",
+      "title": "不确定低估：口径不同（合法）但候选自报零不确定",
+      "factVersion": 12,
+      "evidence": [
+        { "evidenceId": "ev-001", "version": 2, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "value": 84 },
+        { "evidenceId": "ev-001", "version": 2, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "value": 60 }
+      ],
+      "calcInput": {
+        "currency": "CNY",
+        "monthlyOperatingCashFlow": { "value": 84, "caliber": "经营现金流·租金前", "source": { "evidenceId": "ev-001", "version": 2 } },
+        "monthlyDebtService": { "value": 60, "caliber": "月度租金+利息", "source": { "evidenceId": "ev-001", "version": 2 } }
+      },
+      "providerScript": { "text": {
+        "observations": ["计算结果：覆盖率 1.4。"],
+        "evidenceRefs": [{ "evidenceId": "ev-001", "version": 2 }],
+        "assumptions": [],
+        "uncertainty": [],
+        "recommendedHumanAction": "accept_candidate"
+      } },
+      "expected": { "status": "human_required", "reason": "uncertainty_understatement", "providerPhase": "ok", "providerCalls": 1 }
+    },
+    {
+      "caseId": "C7-call-unknown",
+      "category": "call_unknown",
+      "title": "调用不可知：发送后超时，status=unknown 且不得自动重试",
+      "factVersion": 13,
+      "evidence": [
+        { "evidenceId": "ev-001", "version": 2, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "value": 84 },
+        { "evidenceId": "ev-001", "version": 2, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "value": 60 }
+      ],
+      "calcInput": {
+        "currency": "CNY",
+        "monthlyOperatingCashFlow": { "value": 84, "caliber": "经营现金流·租金后", "source": { "evidenceId": "ev-001", "version": 2 } },
+        "monthlyDebtService": { "value": 60, "caliber": "月度租金+利息", "source": { "evidenceId": "ev-001", "version": 2 } }
+      },
+      "providerScript": { "phase": "sent_unknown", "code": "TIMEOUT_AFTER_SEND", "message": "模拟：发送后网关超时" },
+      "expected": { "status": "unknown", "reason": "call_unknown", "providerPhase": "sent_unknown", "providerCalls": 1 }
+    },
+    {
+      "caseId": "C8-rule-not-covered",
+      "category": "rule_not_covered",
+      "title": "规则不覆盖：证据含范围外指标，短路升级",
+      "factVersion": 14,
+      "evidence": [
+        { "evidenceId": "ev-001", "version": 2, "supersededBy": null, "indicator": "monthly_operating_cash_flow", "caliber": "经营现金流·租金后", "value": 84 },
+        { "evidenceId": "ev-001", "version": 2, "supersededBy": null, "indicator": "monthly_debt_service", "caliber": "月度租金+利息", "value": 60 },
+        { "evidenceId": "ev-004", "version": 1, "supersededBy": null, "indicator": "employee_turnover_rate", "caliber": "年度离职率", "value": 0.18 }
+      ],
+      "calcInput": {
+        "currency": "CNY",
+        "monthlyOperatingCashFlow": { "value": 84, "caliber": "经营现金流·租金后", "source": { "evidenceId": "ev-001", "version": 2 } },
+        "monthlyDebtService": { "value": 60, "caliber": "月度租金+利息", "source": { "evidenceId": "ev-001", "version": 2 } }
+      },
+      "providerScript": null,
+      "expected": { "status": "human_required", "reason": "rule_not_covered", "providerPhase": "not_called", "providerCalls": 0 }
+    }
+  ]
+}

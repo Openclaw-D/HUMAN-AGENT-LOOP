@@ -1,0 +1,23 @@
+{
+  "name": "v7-backend-b-orchestration",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "V7 lane B: model collaboration & resumable orchestration (LangGraph JS candidate vs thin orchestration, same use case)",
+  "scripts": {
+    "test": "node --test test/thin-recovery.test.mjs test/langgraph-recovery.test.mjs test/adapter-bridge.test.mjs test/equivalence.test.mjs test/loopback-http.test.mjs test/a-live-integration.test.mjs test/d9-trusted-resume.test.mjs",
+    "test:thin": "node --test test/thin-recovery.test.mjs",
+    "test:langgraph": "node --test test/langgraph-recovery.test.mjs",
+    "test:bridge": "node --test test/adapter-bridge.test.mjs",
+    "test:equiv": "node --test test/equivalence.test.mjs",
+    "evidence:mock-http": "node src/real-http/loopback-evidence.mjs",
+    "test:d9": "node --test test/d9-trusted-resume.test.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@langchain/core": "0.3.68",
+    "@langchain/langgraph": "0.2.62"
+  }
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "name": "复现1 服务端侧：原载荷重试命中重放且不重复记账",
+    "observed": {
+      "firstVersion": 8,
+      "polledVersion": 8,
+      "todoAfterPoll": "待复核",
+      "retryStatus": 200,
+      "replayed": true,
+      "versionAfterRetry": 8
+    },
+    "expectation": "firstVersion+1, retry replayed=true, 不再递增"
+  },
+  {
+    "name": "复现2 服务端侧：资产待办提交后相关域判断",
+    "observed": {
+      "assetJudgmentText": "待复核",
+      "creditJudgmentText": "已通过",
+      "relatedDomain": "asset"
+    },
+    "expectation": "asset=待复核（黄），credit 不被错误指认"
+  },
+  {
+    "name": "复现3 服务端侧：NOT_FOUND message 是否暴露内部 todoId",
+    "observed": {
+      "serverMessage": "待办不存在或已非开放状态：todo-device-list"
+    },
+    "expectation": "不应包含 todo-device-list 等内部字段（前端亦需映射）"
+  },
+  {
+    "name": "复现4 前端侧：乱序 GET 防回退",
+    "observed": {
+      "pageRefreshGuards": "page.tsx refresh() 直赋 overviewRef（源码级已知缺陷，CP2-1 修复）"
+    },
+    "expectation": "修复后所有状态入口经 shouldApplyOverview"
+  },
+  {
+    "name": "复现5 前端侧：情景切换无确认/取消流",
+    "observed": {
+      "current": "选择即 POST seed（page.tsx seedScenario），无确认；在途请求/草稿处理未定义"
+    },
+    "expectation": "修复后确认流：取消不发写入；确认才切换"
+  }
+]

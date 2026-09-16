@@ -1,0 +1,2108 @@
+=== diff app/v5-preview/page.tsx (baseline → current) ===
+--- /c/Users/22673/Desktop/Anthropic/V6/handoff/SE_REBUILD_20260913/baseline/app/v5-preview/page.tsx	2026-09-13 18:49:13.603548300 +0800
++++ app/v5-preview/page.tsx	2026-09-13 19:12:57.734674300 +0800
+@@ -8,8 +8,10 @@
+ // V6 BATCH_2 rework-1：R1 刷新后按完整原载荷恢复/确认未知请求；R2 说明与消息两条独立
+ // 恢复通道（互不误清，同类第二次提交不静默覆盖）；R3 回执按 requestId 所有权与草稿修订
+ // 标识生效，旧回执不清后来编辑的新草稿、不挂上新情景。
++// V6 SE_REBUILD（sub-agent A）：渲染层重组为紧凑连续面板（100dvh，无整页滚动，仅消息列表
++// 内部滚动）。所有 hooks/回调/存储键/版本门/恢复通道原样保留；演示情景切换/技术说明/版本
++// 信息收进客户行右缘二级下拉（demoControls 槽位传入 RowsView），不占主操作行。
+ // 页面不出现任何真实审批/放款/结清业务按钮；情景切换仅是演示控制·非业务操作。
+-import Link from 'next/link';
+ import { useCallback, useEffect, useRef, useState } from 'react';
+ import type { ProjectOverview, ScenarioId } from '../../lib/v5-preview/shared-types';
+ import RowsView from './rows-view';
+@@ -20,6 +22,7 @@
+   buildMessageBody,
+   buildNoteBody,
+   decideRepeatSubmit,
++  formatMessageTime,
+   isSameRequestOwner,
+   isStaleRecordScenario,
+   keepRequestIdForRetry,
+@@ -46,7 +49,7 @@
+   type StoredNoteRequest,
+   type SubmitOutcome,
+ } from './rows-logic';
+-import styles from './preview.module.css';
++import styles from './se-overview.module.css';
+ 
+ const SCENARIO_OPTIONS: ReadonlyArray<{ id: ScenarioId; label: string }> = [
+   { id: 'approval', label: '审批推进中' },
+@@ -474,79 +477,15 @@
+   }, [applyOverview, refresh, setNoteRecoverySafe, setMessageRecoverySafe]);
+ 
+   return (
+-    <div className={styles.previewRoot}>
+-      <header className={styles.previewBar} role="region" aria-label="预览控制（合成演示）">
+-        <b className={styles.previewBadge}>交互预览 · 合成数据</b>
+-        <span className={styles.previewBarNote}>合成演示数据，不执行正式审批</span>
+-        <Link className={styles.remoteEntry} href="/v5-preview/remote-session">📹 远程尽调访谈 →</Link>
+-        <label className={styles.barField} htmlFor="v5-rows-scenario">
+-          演示情景
+-          <select
+-            id="v5-rows-scenario"
+-            value={overview?.scenario ?? ''}
+-            disabled={seedBusy || phase !== 'ready'}
+-            onChange={(e) => {
+-              const nextScenario = e.target.value as ScenarioId;
+-              // CP2-5：切换会重置此前演示记录——重置前明确说明影响并提供取消；取消不发写入。
+-              // 有未确认请求或草稿时同样提示（旧请求不得悄悄提交给新待办）。
+-              setPendingScenario(nextScenario);
+-              setConfirmOpen(true);
+-              e.target.value = overview?.scenario ?? '';
+-            }}
+-          >
+-            {overview === null ? <option value="">加载中…</option> : null}
+-            {SCENARIO_OPTIONS.map((s) => (
+-              <option key={s.id} value={s.id}>{s.label}</option>
+-            ))}
+-          </select>
+-        </label>
+-        <span className={styles.barHint}>演示控制·非业务操作</span>
+-      </header>
+-
+-      {confirmOpen && pendingScenario !== null ? (
+-        <div className={styles.confirmCard} role="alertdialog" aria-label="确认切换演示情景">
+-          <p className={styles.confirmTitle}>切换到「{SCENARIO_OPTIONS.find((s) => s.id === pendingScenario)?.label}」？</p>
+-          <p className={styles.confirmDetail}>
+-            切换会重置演示记录：此前的补充说明与项目沟通记录不会保留；未发送的请求将被取消，已填写的草稿保留在本页且不会自动提交。
+-          </p>
+-          <div className={styles.confirmActions}>
+-            <button
+-              type="button"
+-              className={styles.primaryBtn}
+-              disabled={seedBusy}
+-              onClick={() => {
+-                setConfirmOpen(false);
+-                const target = pendingScenario;
+-                setPendingScenario(null);
+-                if (target !== null) void seedScenario(target);
+-              }}
+-            >
+-              确认切换
+-            </button>
+-            <button
+-              type="button"
+-              className={styles.secondaryBtn}
+-              disabled={seedBusy}
+-              onClick={() => {
+-                // 取消：不发任何写入；select 由受控 value 自动回当前情景。
+-                setConfirmOpen(false);
+-                setPendingScenario(null);
+-              }}
+-            >
+-              取消
+-            </button>
+-          </div>
+-        </div>
+-      ) : null}
++    <div className={styles.seOverviewRoot}>
++      {/* 页面级提示（紧凑单行；出现时沟通区收缩让位，不产生整页滚动）。 */}
+       {conflict !== null ? (
+-        <p className={styles.conflictBanner} role="alert">
+-          {conflict.text}
+-        </p>
++        <p className={`${styles.notice} ${styles.noticeWarn}`} role="alert">{conflict.text}</p>
+       ) : null}
+-      {pollError !== null ? <p className={styles.softNotice} role="status">{pollError}</p> : null}
+-      {recoveryNotice !== null ? <p className={styles.softNotice} role="status">{recoveryNotice}</p> : null}
+-      {seedError !== null ? <p className={styles.formError} role="alert">{seedError}</p> : null}
+-      {seedNotice !== null ? <p className={styles.softNotice} role="status">{seedNotice}</p> : null}
++      {pollError !== null ? <p className={`${styles.notice} ${styles.noticeSoft}`} role="status">{pollError}</p> : null}
++      {recoveryNotice !== null ? <p className={`${styles.notice} ${styles.noticeSoft}`} role="status">{recoveryNotice}</p> : null}
++      {seedError !== null ? <p className={`${styles.notice} ${styles.noticeDanger}`} role="alert">{seedError}</p> : null}
++      {seedNotice !== null ? <p className={`${styles.notice} ${styles.noticeSoft}`} role="status">{seedNotice}</p> : null}
+ 
+       {phase === 'loading' ? (
+         <div className={styles.skeleton} role="status" aria-label="加载中（合成演示）">
+@@ -566,7 +505,7 @@
+           <p className={styles.errorHint}>合成演示数据暂不可用；可点击重试。</p>
+           <button
+             type="button"
+-            className={styles.primaryBtn}
++            className={styles.btnPrimary}
+             onClick={() => {
+               setPhase('loading');
+               void refresh();
+@@ -579,7 +518,43 @@
+ 
+       {phase === 'ready' && overview !== null ? (
+         <>
+-          <RowsView overview={overview}>
++          <RowsView
++            overview={overview}
++            demoControls={(
++              /* 二级收纳：演示情景切换（确认流在 page 层）+ 技术说明 + 版本信息；合成标记即 chip 本身。 */
++              <details className={styles.demoDetails}>
++                <summary className={styles.demoSummary}>合成演示·控制</summary>
++                <div className={styles.demoMenu} role="region" aria-label="预览控制（合成演示）">
++                  <label className={styles.demoField} htmlFor="v5-rows-scenario">
++                    演示情景
++                    <select
++                      id="v5-rows-scenario"
++                      className={styles.demoSelect}
++                      value={overview.scenario}
++                      disabled={seedBusy}
++                      onChange={(e) => {
++                        const nextScenario = e.target.value as ScenarioId;
++                        // CP2-5：切换会重置此前演示记录——重置前明确说明影响并提供取消；取消不发写入。
++                        // 有未确认请求或草稿时同样提示（旧请求不得悄悄提交给新待办）。
++                        setPendingScenario(nextScenario);
++                        setConfirmOpen(true);
++                        e.target.value = overview.scenario;
++                      }}
++                    >
++                      {SCENARIO_OPTIONS.map((s) => (
++                        <option key={s.id} value={s.id}>{s.label}</option>
++                      ))}
++                    </select>
++                  </label>
++                  <p className={styles.demoHint}>演示控制·非业务操作</p>
++                  <p className={styles.demoNote}>合成演示数据，不执行正式审批。</p>
++                  <p className={styles.demoVersion}>
++                    版本 v{overview.version} · 更新于 {formatMessageTime(overview.updatedAt)} · {overview.scenarioLabel}
++                  </p>
++                </div>
++              </details>
++            )}
++          >
+             <TodoCard
+               todo={overview.todo}
+               onSubmitNote={submitNote}
+@@ -593,7 +568,7 @@
+               }}
+             />
+           </RowsView>
+-          {/* R3：聊天置底（外框固定，内部滚动）；主区（五行/待办/详情）独立滚动不随聊天。 */}
++          {/* 沟通区 flex:1 常驻置底（外框固定，仅消息列表内部滚动）；尽调访谈入口在其工具行。 */}
+           <ChatPanel
+             messages={overview.messages}
+             onSendMessage={sendMessage}
+@@ -608,6 +583,42 @@
+           />
+         </>
+       ) : null}
++
++      {confirmOpen && pendingScenario !== null ? (
++        <div className={styles.confirmCard} role="alertdialog" aria-label="确认切换演示情景">
++          <p className={styles.confirmTitle}>切换到「{SCENARIO_OPTIONS.find((s) => s.id === pendingScenario)?.label}」？</p>
++          <p className={styles.confirmDetail}>
++            切换会重置演示记录：此前的补充说明与项目沟通记录不会保留；未发送的请求将被取消，已填写的草稿保留在本页且不会自动提交。
++          </p>
++          <div className={styles.confirmActions}>
++            <button
++              type="button"
++              className={styles.btnSecondary}
++              disabled={seedBusy}
++              onClick={() => {
++                // 取消：不发任何写入；select 由受控 value 自动回当前情景。
++                setConfirmOpen(false);
++                setPendingScenario(null);
++              }}
++            >
++              取消
++            </button>
++            <button
++              type="button"
++              className={styles.btnPrimary}
++              disabled={seedBusy}
++              onClick={() => {
++                setConfirmOpen(false);
++                const target = pendingScenario;
++                setPendingScenario(null);
++                if (target !== null) void seedScenario(target);
++              }}
++            >
++              确认切换
++            </button>
++          </div>
++        </div>
++      ) : null}
+     </div>
+   );
+ }
+=== diff app/v5-preview/rows-view.tsx (baseline → current) ===
+--- /c/Users/22673/Desktop/Anthropic/V6/handoff/SE_REBUILD_20260913/baseline/app/v5-preview/rows-view.tsx	2026-09-13 18:49:13.781577100 +0800
++++ app/v5-preview/rows-view.tsx	2026-09-13 19:11:23.040384500 +0800
+@@ -1,74 +1,117 @@
+-// V5 ROWS · 主视图：顶部客户/项目/演示标注 + 项目进展（灰度示意条+文字，无数字）
+-// + 四条宽横条域卡 + 最重要待办 + 项目沟通 + 合成数据页脚。
+-// 桌面（≥900px）仅加宽容器，仍为纵向横条；不做四列/拼图/详情页。
+-import type { ReactNode } from 'react';
++// V6 SE_REBUILD · 总览主视图：一块连续紧凑面板 = 客户与编号（单行）→ 生命周期四阶段
++// （唯一阶段进度表达）→ 四域矩阵（共享列头 输入/处理/协同/输出 + 四条 44px 域行）→
++// 状态/待办（children）。演示控制/技术说明经 demoControls 收进客户行右缘二级下拉，
++// 不占主操作行；合成标记小而清楚（下拉 chip 本身）。无第二条总进度条、无装饰留白。
++// 桌面（≥700px）仅加宽居中容器，仍为纵向紧凑面板。
++import { Fragment, type ReactNode } from 'react';
+ import type { ProjectOverview } from '../../lib/v5-preview/shared-types';
+ import DomainRow from './domain-row';
+-import { formatMessageTime, lifecyclePosition, projectLine, scenarioProgressWidth } from './rows-logic';
+-import styles from './preview.module.css';
++import { lifecyclePosition, projectLine } from './rows-logic';
++import {
++  ChecklistIcon,
++  CycleIcon,
++  GearIcon,
++  InboxIcon,
++  MagnifierIcon,
++  NodesIcon,
++  OutboxIcon,
++  PenIcon,
++} from './se-icons';
++import styles from './se-overview.module.css';
++
++/** 四段呈现列（仅展示层映射：输入/处理/协同/输出；段内部含义仍是 接收/处理/协同/核验）。 */
++const PRESENTATION_COLUMNS: readonly { key: string; label: string }[] = [
++  { key: 'in', label: '输入' },
++  { key: 'process', label: '处理' },
++  { key: 'collab', label: '协同' },
++  { key: 'out', label: '输出' },
++];
++
++function ColumnIcon({ index }: { index: number }) {
++  if (index === 0) return <InboxIcon size={11} />;
++  if (index === 1) return <GearIcon size={11} />;
++  if (index === 2) return <NodesIcon size={11} />;
++  return <OutboxIcon size={11} />;
++}
++
++/** 生命周期阶段功能图标（固定于阶段名称右侧）：预审清单/尽调放大镜/签约笔/租后循环。 */
++function StageIcon({ stageKey }: { stageKey: string }) {
++  if (stageKey === 'pre_review') return <ChecklistIcon size={11} />;
++  if (stageKey === 'due_diligence') return <MagnifierIcon size={11} />;
++  if (stageKey === 'signing') return <PenIcon size={11} />;
++  return <CycleIcon size={11} />;
++}
+ 
+-export default function RowsView({ overview, children }: { overview: ProjectOverview; children?: ReactNode }) {
+-  const fillPct = scenarioProgressWidth(overview.scenario);
++export default function RowsView({
++  overview,
++  demoControls,
++  children,
++}: {
++  overview: ProjectOverview;
++  /** 演示控制二级收纳（page 持有情景切换确认流状态，经此槽位嵌入客户行右缘）。 */
++  demoControls?: ReactNode;
++  children?: ReactNode;
++}) {
++  const pos = lifecyclePosition(overview.scenario);
+   return (
+-    <main className={styles.rowsMain}>
+-      <header className={styles.projHead}>
+-        <p className={styles.pageKicker}>项目总览 · {overview.scenarioLabel}</p>
+-        <h1 className={styles.customer}>{overview.customerName}</h1>
+-        <p className={styles.projLine}>{projectLine(overview.projectName, overview.projectCode)}</p>
+-        <p className={styles.demoMark}>演示项目</p>
+-      </header>
+-
+-      {/* CP3：手机端总体说明收纳进进展行 aria（视觉隐藏）；桌面正常显示。 */}
+-      <section
+-        className={styles.progressRow}
+-        aria-label={`项目进展：${overview.overall.progressLabel}（演示示意·非计算）。${overview.overall.description}`}
+-      >
+-        <span className={styles.progressTitle}>项目进展</span>
+-        <span className={styles.track} aria-hidden="true">
+-          <span className={styles.trackFill} style={{ width: `${fillPct}%` }} />
+-        </span>
+-        <span className={styles.progressLabel}>{overview.overall.progressLabel}</span>
+-        <span className={styles.progressHint}>演示示意·非计算</span>
+-      </section>
+-      <p className={styles.overallDesc}>{overview.overall.description}</p>
+-
+-      {/* V6 R2 五行·行1：总生命周期四段（阶段标记，非时间比例）。 */}
+-      {(() => {
+-        const pos = lifecyclePosition(overview.scenario);
+-        return (
+-          <section className={styles.lifecycleRow} aria-label={`总生命周期：${pos.stages.map((s) => s.label).join('→')}。${pos.note}`}>
+-            <p className={styles.lifecycleTitle}>总生命周期</p>
+-            <ol className={styles.lifecycleStages}>
+-              {pos.stages.map((stage, i) => (
+-                <li
+-                  key={stage.key}
+-                  className={styles.lifecycleStage}
+-                  data-state={pos.settled || i < pos.currentIndex ? 'done' : i === pos.currentIndex ? 'current' : 'pending'}
+-                  aria-current={i === pos.currentIndex && !pos.settled ? 'step' : undefined}
+-                >
++    <div className={styles.mainWrap}>
++      <div className={styles.panel}>
++        {/* 客户与编号：单行；长名称省略号 + title 完整值。 */}
++        <header className={styles.customerRow}>
++          <h1 className={styles.customerName} title={overview.customerName}>{overview.customerName}</h1>
++          <span className={styles.customerCode} title={projectLine(overview.projectName, overview.projectCode)}>
++            {projectLine(overview.projectName, overview.projectCode)}
++          </span>
++          {/* 总体进展语义保留（原进展行文字），视觉隐藏不占行高。 */}
++          <span className={styles.srOnly}>
++            项目进展：{overview.overall.progressLabel}（演示示意·非计算）。{overview.overall.description}
++          </span>
++          {demoControls}
++        </header>
++
++        <div className={styles.band} aria-hidden="true" />
++
++        {/* 生命周期：预审/尽调/签约/租后 阶段标记（非任选阶段按钮；克制背景/文字色）。 */}
++        <section
++          className={styles.lifecycleRow}
++          aria-label={`总生命周期：${pos.stages.map((s) => s.label).join('→')}。${pos.settled ? '已结清（项目完整终点）· ' : ''}${pos.note}`}
++        >
++          {pos.stages.map((stage, i) => {
++            const state = pos.settled || i < pos.currentIndex ? 'done' : i === pos.currentIndex ? 'current' : 'pending';
++            return (
++              <Fragment key={stage.key}>
++                {i > 0 ? <span className={styles.lifecycleConn} data-state={state === 'pending' ? 'todo' : 'done'} aria-hidden="true" /> : null}
++                <span className={styles.lifecycleStage} data-state={state} aria-current={i === pos.currentIndex && !pos.settled ? 'step' : undefined}>
+                   {stage.label}
+-                </li>
+-              ))}
+-            </ol>
+-            <p className={styles.lifecycleNote}>
+-              {pos.settled ? '已结清（项目完整终点）· ' : ''}{pos.note}
+-            </p>
+-          </section>
+-        );
+-      })()}
+-
+-      <section className={styles.domainList} aria-label="四域总览（政策/信审/商务/资产，合成演示）">
+-        {overview.domains.map((d) => (
+-          <DomainRow key={d.domainId} domain={d} />
+-        ))}
+-      </section>
+-
+-      {children}
+-
+-      <footer className={styles.foot}>
+-        <span className={styles.footBadge}>合成数据 · 交互预览</span>
+-        <span className={styles.footMeta}>版本 v{overview.version} · 更新于 {formatMessageTime(overview.updatedAt)}</span>
+-      </footer>
+-    </main>
++                  <StageIcon stageKey={stage.key} />
++                </span>
++              </Fragment>
++            );
++          })}
++        </section>
++
++        <div className={styles.band} aria-hidden="true" />
++
++        {/* 四域矩阵：共用一行列头（呈现标签 输入/处理/协同/输出）；四个专业域各一行，与列头对齐。 */}
++        <section className={styles.matrixSection} aria-label="四域总览（政策/信审/商务/资产，合成演示）">
++          <div className={`${styles.matrixGrid} ${styles.matrixHead}`}>
++            <span className={styles.matrixCorner}>四域</span>
++            {PRESENTATION_COLUMNS.map((col, i) => (
++              <span key={col.key} className={styles.colHead}>
++                <ColumnIcon index={i} />
++                {col.label}
++              </span>
++            ))}
++          </div>
++          {overview.domains.map((d) => (
++            <DomainRow key={d.domainId} domain={d} relatedTodo={overview.todo} />
++          ))}
++        </section>
++
++        <div className={styles.band} aria-hidden="true" />
++
++        {children}
++      </div>
++    </div>
+   );
+ }
+=== diff app/v5-preview/domain-row.tsx (baseline → current) ===
+--- /c/Users/22673/Desktop/Anthropic/V6/handoff/SE_REBUILD_20260913/baseline/app/v5-preview/domain-row.tsx	2026-09-13 18:49:14.121116300 +0800
++++ app/v5-preview/domain-row.tsx	2026-09-13 19:08:33.868391100 +0800
+@@ -1,99 +1,106 @@
+-// V5 ROWS · 四域宽横条域卡：域名 + 判断状态灯 + 四段灰度分段条 + 一句话摘要。
+-// 颜色纪律：红黄绿（信号色）仅用于判断状态灯圆点/文字；分段条只允许黑白灰。
++// V6 SE_REBUILD · 四域矩阵行（紧凑 44px）：左侧域名+域图标+判断徽章，右侧四步状态格
++// 与列头（输入/处理/协同/输出，呈现层映射；段内部含义仍是 接收/处理/协同/核验）对齐。
++// 颜色纪律：红黄绿仅用于判断状态徽章；四步格只允许黑白灰。
++// 整行可点击/键盘展开（hit area≥44px）：展开显示 summary、四段 segmentLabels 与状态、
++// 当前相关待办提示；展开状态为本地 UI 状态，数据刷新（同 domainId）不重置。
+ // 无专业详情入口：业务只能看授权总览，不做任何跳转到专业工作台的链接。
+-// V6-CTRL E：四段名称手机端无需悬停即可查看——点击横条轻量展开"段名·状态"折叠行，
+-// 默认收起保持紧凑；不展示任何专业详情、不加跳转。
+ import { useState } from 'react';
+-import type { DomainRow as DomainRowData, SegmentState } from '../../lib/v5-preview/shared-types';
+-import { collaborationDots, segmentStateLabel } from './rows-logic';
+-import styles from './preview.module.css';
++import type { DomainId, DomainRow as DomainRowData, JudgmentStatus, SegmentState, TodoItem } from '../../lib/v5-preview/shared-types';
++import { segmentStateLabel } from './rows-logic';
++import {
++  CheckIcon,
++  ChevronDownIcon,
++  ContractIcon,
++  CrossIcon,
++  DiamondIcon,
++  RulerIcon,
++  ShieldIcon,
++  WarnIcon,
++} from './se-icons';
++import styles from './se-overview.module.css';
+ 
+-const DOT_CLASS: Record<string, string> = {
+-  done: styles.dotDone,
+-  current: styles.dotCurrent,
+-  pending: styles.dotPending,
+-};
++/** 四段呈现列名（仅展示层映射：输入/处理/协同/输出；不改任何字段/枚举/API）。 */
++const PRESENTATION_COLUMNS: readonly string[] = ['输入', '处理', '协同', '输出'];
+ 
+-const SEGMENT_CLASS: Record<SegmentState, string> = {
+-  done: styles.segDone,
+-  current: styles.segCurrent,
+-  pending: styles.segPending,
+-};
+-
+-function segmentClass(state: SegmentState): string {
+-  // 未知段状态失败关闭：按浅灰呈现，aria 文本标"未知"，不猜测为完成。
+-  return SEGMENT_CLASS[state] ?? styles.segPending;
++function DomainMark({ domainId }: { domainId: DomainId }) {
++  if (domainId === 'policy') return <RulerIcon size={13} />;
++  if (domainId === 'credit') return <ShieldIcon size={13} />;
++  if (domainId === 'commerce') return <ContractIcon size={13} />;
++  return <DiamondIcon size={13} />;
+ }
+ 
+-function lampClass(status: DomainRowData['judgmentStatus']): string {
+-  switch (status) {
+-    case 'green':
+-      return styles.lampGreen;
+-    case 'yellow':
+-      return styles.lampYellow;
+-    case 'red':
+-      return styles.lampRed;
+-    default:
+-      return styles.lampGray;
+-  }
++/** 判断徽章图标：green=对号 / yellow=叹号 / red=叉（仅实际 red 才红叉，不伪造）/ gray=灰点。 */
++function JudgmentMark({ status }: { status: JudgmentStatus }) {
++  if (status === 'green') return <CheckIcon size={9} />;
++  if (status === 'yellow') return <WarnIcon size={9} />;
++  if (status === 'red') return <CrossIcon size={9} />;
++  return <span className={styles.judgmentDot} aria-hidden="true" />;
+ }
+ 
+-export default function DomainRow({ domain }: { domain: DomainRowData }) {
+-  const [namesOpen, setNamesOpen] = useState(false);
+-  const ariaText = domain.segments
+-    .map((state: SegmentState, i: number) => `${domain.segmentLabels[i]}：${segmentStateLabel(state)}`)
++export default function DomainRow({ domain, relatedTodo = null }: { domain: DomainRowData; relatedTodo?: TodoItem | null }) {
++  const [open, setOpen] = useState(false);
++  const panelId = `v5-se-domain-panel-${domain.domainId}`;
++  const segmentsText = domain.segments
++    .map((state: SegmentState, i: number) => `${PRESENTATION_COLUMNS[i]}：${segmentStateLabel(state)}`)
+     .join('，');
++  const related = relatedTodo !== null && relatedTodo.relatedDomain === domain.domainId ? relatedTodo : null;
+   return (
+-    <article className={styles.domainCard}>
+-      <header className={styles.domainHead}>
+-        <h2 className={styles.domainName}>{domain.name}</h2>
+-        <span className={`${styles.lamp} ${lampClass(domain.judgmentStatus)}`}>
+-          <span className={styles.lampDot} aria-hidden="true" />
+-          <span>{domain.judgmentText}</span>
+-        </span>
+-      </header>
+-      {/* V6 R2 五行·行2–5：协作四步点阵（接收/处理/协同/核验；合成映射，与生命周期四段不同）。 */}
+-      <div className={styles.collabDots} role="img" aria-label={`${domain.name}协作四步（合成映射）：${collaborationDots(domain).map((d) => `${d.label}${d.state === 'done' ? '完成' : d.state === 'current' ? '进行中' : '未开始'}`).join('，')}`}>
+-        {collaborationDots(domain).map((dot) => (
+-          <span key={dot.key} className={styles.collabDot}>
+-            <span className={`${styles.dot} ${DOT_CLASS[dot.state] ?? styles.dotPending}`} aria-hidden="true" />
+-            <span className={styles.dotLabel}>{dot.label}</span>
+-          </span>
+-        ))}
+-        <span className={styles.collabNote}>协作四步·合成映射</span>
+-      </div>
++    <article className={styles.domainWrap}>
+       <button
+         type="button"
+-        className={styles.segToggle}
+-        aria-expanded={namesOpen}
+-        aria-label={`${domain.name}分段含义（点击${namesOpen ? '收起' : '展开'}）`}
+-        onClick={() => setNamesOpen((v) => !v)}
++        className={styles.domainBtn}
++        aria-expanded={open}
++        aria-controls={panelId}
++        aria-label={`${domain.name}（${domain.judgmentText}）。${segmentsText}。点击${open ? '收起' : '展开'}该域说明`}
++        onClick={() => setOpen((v) => !v)}
+       >
+-        <span className={styles.segments} role="img" aria-label={`${domain.name}分段进度：${ariaText}`}>
++        <span className={styles.matrixGrid}>
++          <span className={styles.domainIdCell}>
++            <span className={styles.domainNameLine}>
++              <DomainMark domainId={domain.domainId} />
++              <span className={styles.domainName}>{domain.name}</span>
++              <span className={styles.chevron} data-open={open ? 'true' : 'false'} aria-hidden="true">
++                <ChevronDownIcon size={10} />
++              </span>
++            </span>
++            <span className={styles.judgmentBadge} data-judgment={domain.judgmentStatus} title={domain.judgmentText}>
++              <JudgmentMark status={domain.judgmentStatus} />
++              <span>{domain.judgmentText}</span>
++            </span>
++          </span>
+           {domain.segments.map((state: SegmentState, i: number) => (
+             <span
+               key={`${domain.domainId}-${i}`}
+-              className={`${styles.seg} ${segmentClass(state)}`}
+-              title={domain.segmentLabels[i]}
++              className={styles.cell}
++              data-state={state}
++              title={`${PRESENTATION_COLUMNS[i]}（${domain.segmentLabels[i]}）：${segmentStateLabel(state)}${i === 3 ? '（输出格如实显示原状态，如待核验，不等于正式通过）' : ''}`}
++              aria-hidden="true"
+             />
+           ))}
+         </span>
+-        <span className={styles.segToggleHint}>{namesOpen ? '收起段名' : '段名'}</span>
+       </button>
+-      {namesOpen ? (
+-        <>
+-          <p className={styles.segNames}>
++      {open ? (
++        <div id={panelId} className={styles.domainExpanded}>
++          <h2 className={styles.srOnly}>{domain.name}</h2>
++          <p className={styles.summaryText}>{domain.summary}</p>
++          <ul className={styles.segChipList} aria-label={`${domain.name}四段状态（段名按该域配置）`}>
+             {domain.segments.map((state: SegmentState, i: number) => (
+-              <span key={`${domain.domainId}-name-${i}`} className={styles.segNameChip}>
++              <li key={`${domain.domainId}-seg-${i}`} className={styles.segChip} data-state={state}>
++                <span className={styles.segChipDot} aria-hidden="true" />
+                 {domain.segmentLabels[i]} · {segmentStateLabel(state)}
+-              </span>
++              </li>
+             ))}
+-          </p>
+-          {/* CP3：手机端 summary 收纳进展开区（桌面仍常驻显示） */}
+-          <p className={`${styles.domainSummary} ${styles.domainSummaryExpanded}`}>{domain.summary}</p>
+-        </>
++          </ul>
++          {related !== null ? (
++            <p className={styles.relatedHint} role="status">
++              当前相关待办：{related.title}（{related.status}，合成演示）
++            </p>
++          ) : null}
++          <button type="button" className={styles.collapseBtn} onClick={() => setOpen(false)}>
++            收起
++          </button>
++        </div>
+       ) : null}
+-      <p className={styles.domainSummary}>{domain.summary}</p>
+     </article>
+   );
+ }
+=== diff app/v5-preview/chat-panel.tsx (baseline → current) ===
+--- /c/Users/22673/Desktop/Anthropic/V6/handoff/SE_REBUILD_20260913/baseline/app/v5-preview/chat-panel.tsx	2026-09-13 18:49:14.274421900 +0800
++++ app/v5-preview/chat-panel.tsx	2026-09-13 19:10:29.884586900 +0800
+@@ -1,12 +1,13 @@
+-// V5 ROWS · "项目沟通"轻量可展开面板：消息列表（fromKind 区分 + marks 标签）+ 输入框
+-// → POST /api/v5-preview/messages。409 冲突/网络错误保留输入内容；只有成功才清空——
+-// 清空资格由"草稿-请求关联"判定：请求真正发出时冻结 {requestId, 发送时修订}，
+-// 被阻断的新提交不改写关联（rework-2 F1），在途期间编辑出的新内容不被迟到的成功回执清空
+-//（A→B→A 修订序列同样保留）。
+-// V6 BATCH_2 rework-1：消息的未确认请求恢复行独立于说明通道（互不误清），且不依赖
+-// 面板折叠状态（折叠时仍可见）；恢复受限（记录损坏/旧版哨兵）只提示 + 显式清除。
+-// V6 rework-2：确认成功后同步清理旧内联错误/冲突提示（不残留"内容已保留"式过时反馈）。
++// V6 SE_REBUILD · "项目沟通"常驻面板（flex:1 占剩余空间，约 55%/45% 参照）：消息列表内部滚动，
++// 输入+发送常驻底部；尽调访谈入口放沟通工具行（输入行上方）。折叠（chat-open 键）仅收起
++// 消息区与输入，工具行与恢复行保持可达。
++// 409 冲突/网络错误保留输入内容；只有成功才清空——清空资格由"草稿-请求关联"判定：
++// 请求真正发出时冻结 {requestId, 发送时修订}，被阻断的新提交不改写关联（rework-2 F1），
++// 在途期间编辑出的新内容不被迟到的成功回执清空（A→B→A 修订序列同样保留）。
++// 消息的未确认请求恢复行独立于说明通道（互不误清），且不依赖面板折叠状态；恢复受限
++// （记录损坏/旧版哨兵）只提示 + 显式清除。确认成功后同步清理旧内联错误/冲突提示。
+ // 聊天不能解除红线：待复核等状态只随服务端数据变化，聊天仅留档沟通。
++import Link from 'next/link';
+ import { useEffect, useRef, useState, type FormEvent } from 'react';
+ import type { OverviewMessage } from '../../lib/v5-preview/shared-types';
+ import {
+@@ -21,7 +22,8 @@
+   type ResolveOutcome,
+   type SubmitOutcome,
+ } from './rows-logic';
+-import styles from './preview.module.css';
++import { VideoIcon } from './se-icons';
++import styles from './se-overview.module.css';
+ 
+ interface ChatPanelProps {
+   messages: OverviewMessage[];
+@@ -37,12 +39,6 @@
+   recoveryPersistFailed: boolean;
+ }
+ 
+-function kindClass(kind: OverviewMessage['fromKind']): string {
+-  if (kind === 'business') return styles.kindBusiness;
+-  if (kind === 'domain') return styles.kindDomain;
+-  return styles.kindSystem;
+-}
+-
+ export default function ChatPanel({
+   messages,
+   onSendMessage,
+@@ -138,21 +134,28 @@
+   }
+ 
+   return (
+-    <section className={styles.chatPanel} aria-label="项目沟通">
+-      <button
+-        type="button"
+-        className={styles.chatToggle}
+-        aria-expanded={open}
+-        aria-controls="v5-rows-chat-body"
+-        onClick={() => setOpen((v) => {
+-          try { window.sessionStorage.setItem('jw:v5-preview:chat-open', v ? '0' : '1'); } catch { /* 不可用则不持久 */ }
+-          return !v;
+-        })}
+-      >
+-        <span className={styles.chatToggleTitle}>项目沟通</span>
+-        <span className={styles.chatToggleSub}>业务与风控共同跟进 · {messages.length} 条（合成）</span>
+-        <span className={styles.chatToggleHint}>{open ? '收起' : '展开'}</span>
+-      </button>
++    <section className={styles.chatSection} aria-label="项目沟通">
++      {/* 沟通工具行：折叠开关 + 尽调访谈入口（输入行附近）。 */}
++      <div className={styles.chatToolbar}>
++        <button
++          type="button"
++          className={styles.chatToggle}
++          aria-expanded={open}
++          aria-controls="v5-rows-chat-body"
++          onClick={() => setOpen((v) => {
++            try { window.sessionStorage.setItem('jw:v5-preview:chat-open', v ? '0' : '1'); } catch { /* 不可用则不持久 */ }
++            return !v;
++          })}
++        >
++          <span className={styles.chatToggleTitle}>项目沟通</span>
++          <span className={styles.chatToggleCount}>业务与风控共同跟进 · {messages.length} 条（合成）</span>
++          <span className={styles.chatToggleHint}>{open ? '收起' : '展开'}</span>
++        </button>
++        <Link className={styles.remoteLink} href="/v5-preview/remote-session">
++          <VideoIcon size={11} />
++          远程尽调访谈
++        </Link>
++      </div>
+       {/* R2：消息恢复行在折叠区之外——面板收起时仍可达，且与说明通道互相独立。 */}
+       {pendingMessage !== null ? (
+         <PendingMessageRow
+@@ -171,7 +174,7 @@
+               <li key={m.id} className={styles.msgItem}>
+                 <div className={styles.msgHead}>
+                   <span className={styles.msgWho}>{m.fromName}</span>
+-                  <span className={`${styles.msgKind} ${kindClass(m.fromKind)}`}>{fromKindLabel(m.fromKind)}</span>
++                  <span className={styles.msgKind} data-kind={m.fromKind}>{fromKindLabel(m.fromKind)}</span>
+                   {m.marks.map((mark) => (
+                     <em key={mark} className={styles.mark}>{mark}</em>
+                   ))}
+@@ -182,7 +185,7 @@
+             ))}
+           </ol>
+           <form className={styles.chatForm} onSubmit={handleSubmit}>
+-            <label className={styles.fieldLabel} htmlFor="v5-rows-chat-input">
++            <label className={styles.srOnly} htmlFor="v5-rows-chat-input">
+               发送项目沟通（合成演示）
+             </label>
+             <div className={styles.chatFormRow}>
+@@ -195,9 +198,10 @@
+                 onChange={(e) => {
+                   setInput(e.target.value);
+                   inputRevisionRef.current += 1;
++                  try { window.sessionStorage.setItem('jw:v5-preview:draft:chat', e.target.value); } catch { /* 忽略 */ }
+                 }}
+               />
+-              <button type="submit" className={styles.primaryBtn} disabled={busy || input.trim() === ''}>
++              <button type="submit" className={styles.btnPrimary} disabled={busy || input.trim() === ''}>
+                 {busy ? '发送中…' : '发送'}
+               </button>
+             </div>
+@@ -235,9 +239,9 @@
+ 
+   if (slot.status === 'limited') {
+     return (
+-      <div className={styles.pendingRequestRow} role="status">
++      <div className={styles.pendingRow} role="status">
+         <span>{recoveryLimitedNotice('message', slot.reason)}</span>
+-        <button type="button" className={styles.secondaryBtn} onClick={onDismiss}>
++        <button type="button" className={styles.btnSecondary} onClick={onDismiss}>
+           清除该提示
+         </button>
+       </div>
+@@ -258,13 +262,13 @@
+   }
+ 
+   return (
+-    <div className={styles.pendingRequestRow} role="status">
++    <div className={styles.pendingRow} role="status">
+       <span>
+         {pendingRequestRowText('message')}
+         {persistFailed ? '（浏览器存储不可用：本页刷新后可能无法恢复该请求信息）' : ''}
+       </span>
+       {resolveFailed ? <span className={styles.pendingRowHint}>确认未完成：请稍后再次尝试（该请求已保留）。</span> : null}
+-      <button type="button" className={styles.secondaryBtn} disabled={resolving} onClick={() => void handleResolve()}>
++      <button type="button" className={styles.btnSecondary} disabled={resolving} onClick={() => void handleResolve()}>
+         {resolving ? '确认中…' : recoveryResolveLabel('message')}
+       </button>
+     </div>
+=== diff app/v5-preview/todo-card.tsx (baseline → current) ===
+--- /c/Users/22673/Desktop/Anthropic/V6/handoff/SE_REBUILD_20260913/baseline/app/v5-preview/todo-card.tsx	2026-09-13 18:49:14.415449700 +0800
++++ app/v5-preview/todo-card.tsx	2026-09-13 19:09:41.823165100 +0800
+@@ -1,15 +1,16 @@
+-// V5 ROWS · 最重要待办卡："补充说明"展开补充说明表单（不含文件上传能力） → POST /api/v5-preview/notes。
++// V6 SE_REBUILD · 状态/待办紧凑行（约 52px 两行）：左动作名称+状态徽章（图标在状态文字左侧），
++// 右侧两行如实显示"预计剩余：未设置 / 截止时间：暂无估计"（TodoItem 无任何时间字段，
++// 禁止伪造倒计时）。整行可点击/键盘展开：详情、复核说明与补充说明表单在当前界面内展开。
+ // 409 VERSION_CONFLICT / 网络错误 / 业务错误（NO_OPEN_TODO 等）一律保留草稿；
+ // 只有提交成功（outcome === 'ok'）才清空输入——清空资格由"草稿-请求关联"判定：
+ // 请求真正发出时冻结 {requestId, 发送时修订}，被阻断的新提交不改写关联（rework-2 F1），
+ // 在途编辑出的新草稿不被迟到的成功回执清空（A→B→A 修订序列同样保留）。
+ // 提交是"补充说明"，不是审批通过：界面不提供任何批准/放款/结清按钮。
+-// V6 BATCH_2 rework-1：未确认说明请求的恢复行对所有待办状态可见（不依赖待补充/待复核/null）；
++// 未确认说明请求的恢复行对所有待办状态可见（不依赖待补充/待复核/null，且在折叠区之外）；
+ // 恢复受限（记录损坏/旧版哨兵）只提示 + 显式清除，无虚假确认按钮。
+-// V6 rework-2：确认成功后同步清理旧内联错误/冲突提示（不残留"内容已保留"式过时反馈）。
+ // 复核提示按待办相关域显示（relatedDomain），不写死信审。
+ import { useRef, useState, type FormEvent } from 'react';
+-import type { TodoItem } from '../../lib/v5-preview/shared-types';
++import type { TodoItem, TodoStatus } from '../../lib/v5-preview/shared-types';
+ import {
+   pendingRequestRowText,
+   recoveryLimitedNotice,
+@@ -20,7 +21,8 @@
+   type ResolveOutcome,
+   type SubmitOutcome,
+ } from './rows-logic';
+-import styles from './preview.module.css';
++import { CheckIcon, ChevronDownIcon, ClockIcon, WarnIcon } from './se-icons';
++import styles from './se-overview.module.css';
+ 
+ interface TodoCardProps {
+   todo: TodoItem | null;
+@@ -43,6 +45,13 @@
+   asset: '资产',
+ };
+ 
++/** 状态徽章图标（在状态文字左侧）：待补充=叹号黄 / 待复核=灰点 / 已完成·已结清=对号绿。 */
++function TodoMark({ status }: { status: TodoStatus }) {
++  if (status === '待补充') return <WarnIcon size={9} />;
++  if (status === '待复核') return <span className={styles.judgmentDot} aria-hidden="true" />;
++  return <CheckIcon size={9} />;
++}
++
+ export default function TodoCard({
+   todo,
+   onSubmitNote,
+@@ -52,7 +61,7 @@
+   resolvingPending,
+   recoveryPersistFailed,
+ }: TodoCardProps) {
+-  const [formOpen, setFormOpen] = useState(false);
++  const [open, setOpen] = useState(false);
+   const [draft, setDraft] = useState(() => {
+     try { return window.sessionStorage.getItem('jw:v5-preview:draft:todo') ?? ''; } catch { return ''; }
+   });
+@@ -69,7 +78,7 @@
+   function clearDraft() {
+     setDraft('');
+     try { window.sessionStorage.removeItem('jw:v5-preview:draft:todo'); } catch { /* 忽略 */ }
+-    setFormOpen(false);
++    setOpen(false);
+     setEditKept(false);
+     setError(null);
+     setConflictHint(null);
+@@ -77,8 +86,7 @@
+ 
+   if (todo === null) {
+     return (
+-      <section className={styles.todoCard} aria-label="当前待办">
+-        <p className={styles.todoKicker}>当前待办</p>
++      <section className={styles.todoSection} aria-label="当前待办">
+         <p className={styles.todoEmpty}>当前演示情景无开放待办；项目沟通仍可留言留档（合成演示）。</p>
+         {pendingNote !== null ? (
+           <PendingNoteRow
+@@ -146,7 +154,7 @@
+       } else {
+         setEditKept(true);
+       }
+-      // 成功反馈 = 服务端返回的最新状态（待办转"待复核"后卡片显示复核中说明），无需本地成功横幅。
++      // 成功反馈 = 服务端返回的最新状态（待办转"待复核"后展开区显示复核中说明），无需本地成功横幅。
+       return;
+     }
+     if (result.outcome === 'conflict') {
+@@ -159,68 +167,36 @@
+   }
+ 
+   return (
+-    <section className={styles.todoCard} aria-label="当前待办">
+-      <p className={styles.todoKicker}>当前待办</p>
+-      <div className={styles.todoHead}>
+-        <div>
+-          <h2 className={styles.todoTitle}>{todo.title}</h2>
+-          <p className={styles.todoDetail}>{todo.detail}</p>
+-        </div>
+-        <div className={styles.todoActions}>
+-          <span className={styles.todoStatus}>{todo.status}</span>
+-          {canSubmit ? (
+-            <button
+-              type="button"
+-              className={styles.primaryBtn}
+-              aria-expanded={formOpen}
+-              aria-controls="v5-rows-note-form"
+-              onClick={() => {
+-                setFormOpen((v) => !v);
+-                setError(null);
+-                setConflictHint(null);
+-              }}
+-            >
+-              补充说明
+-            </button>
+-          ) : null}
+-        </div>
+-      </div>
+-      {pendingReview ? (
+-        <p className={styles.todoReviewNote} role="status">已提交补充说明，{reviewerName}复核中（合成）</p>
+-      ) : null}
+-      {canSubmit && formOpen ? (
+-        <form id="v5-rows-note-form" className={styles.todoForm} onSubmit={handleSubmit}>
+-          <label className={styles.fieldLabel} htmlFor="v5-rows-note-text">
+-            补充说明（合成演示；提交后相关专业域转入待复核）
+-          </label>
+-          <textarea
+-            id="v5-rows-note-text"
+-            className={styles.textarea}
+-            value={draft}
+-            maxLength={2000}
+-            rows={4}
+-            placeholder="例：设备清单与报价要点说明（合成演示内容）。"
+-            onChange={(e) => {
+-              setDraft(e.target.value);
+-              draftRevisionRef.current += 1;
+-              try { window.sessionStorage.setItem('jw:v5-preview:draft:todo', e.target.value); } catch { /* 忽略 */ }
+-            }}
+-          />
+-          <div className={styles.formRow}>
+-            <span className={styles.fieldHint}>{draft.trim().length}/2000 字符</span>
+-            <button type="submit" className={styles.primaryBtn} disabled={busy || draft.trim() === ''}>
+-              {busy ? '提交中…' : '提交说明'}
+-            </button>
+-          </div>
+-          {error !== null ? <p className={styles.formError} role="alert">提交失败：{error}（草稿已保留，可修改后重试）</p> : null}
+-          {conflictHint !== null ? <p className={styles.formConflict} role="status">{conflictHint}</p> : null}
+-          {editKept ? (
+-            <p className={styles.formConflict} role="status">
+-              说明已提交；表单中保留的是提交之后的新编辑，未随本次发送（合成演示）。
+-            </p>
+-          ) : null}
+-        </form>
+-      ) : null}
++    <section className={styles.todoSection} aria-label="当前待办">
++      <button
++        type="button"
++        className={styles.todoRow}
++        aria-expanded={open}
++        aria-controls="v5-se-todo-panel"
++        aria-label={`当前待办：${todo.title}（${todo.status}）。预计剩余未设置；截止时间暂无估计。点击${open ? '收起' : '展开'}详情`}
++        onClick={() => {
++          setOpen((v) => !v);
++          setError(null);
++          setConflictHint(null);
++        }}
++      >
++        <span className={styles.todoTitleWrap}>
++          <span className={styles.todoTitle} title={todo.title}>{todo.title}</span>
++          <span className={styles.todoBadge} data-status={todo.status}>
++            <TodoMark status={todo.status} />
++            <span>{todo.status}</span>
++          </span>
++        </span>
++        {/* TodoItem 无任何时间字段：如实显示未设置/暂无估计，不伪造倒计时。 */}
++        <span className={styles.todoTimes} title="演示数据不含时间字段；如实显示未设置，不提供倒计时或估计">
++          <span className={styles.todoTimeLine}><ClockIcon size={10} />预计剩余：未设置</span>
++          <span className={styles.todoTimeLine}>截止时间：暂无估计</span>
++        </span>
++        <span className={styles.chevron} data-open={open ? 'true' : 'false'} aria-hidden="true">
++          <ChevronDownIcon size={11} />
++        </span>
++      </button>
++      {/* 恢复行在折叠区之外：任何待办状态（含无待办）都可见。 */}
+       {pendingNote !== null ? (
+         <PendingNoteRow
+           slot={pendingNote}
+@@ -235,6 +211,48 @@
+           onResolveSuccess={handleResolveSuccess}
+         />
+       ) : null}
++      {open ? (
++        <div id="v5-se-todo-panel" className={styles.todoExpanded}>
++          <h2 className={styles.srOnly}>{todo.title}</h2>
++          <p className={styles.todoDetailText}>{todo.detail}</p>
++          {pendingReview ? (
++            <p className={styles.reviewNote} role="status">已提交补充说明，{reviewerName}复核中（合成）</p>
++          ) : null}
++          {canSubmit ? (
++            <form id="v5-rows-note-form" className={styles.todoForm} onSubmit={handleSubmit}>
++              <label className={styles.srOnly} htmlFor="v5-rows-note-text">
++                补充说明（合成演示；提交后相关专业域转入待复核）
++              </label>
++              <textarea
++                id="v5-rows-note-text"
++                className={styles.textarea}
++                value={draft}
++                maxLength={2000}
++                rows={3}
++                placeholder="例：设备清单与报价要点说明（合成演示内容）。"
++                onChange={(e) => {
++                  setDraft(e.target.value);
++                  draftRevisionRef.current += 1;
++                  try { window.sessionStorage.setItem('jw:v5-preview:draft:todo', e.target.value); } catch { /* 忽略 */ }
++                }}
++              />
++              <div className={styles.formRow}>
++                <span className={styles.fieldHint}>{draft.trim().length}/2000 字符</span>
++                <button type="submit" className={styles.btnPrimary} disabled={busy || draft.trim() === ''}>
++                  {busy ? '提交中…' : '提交说明'}
++                </button>
++              </div>
++              {error !== null ? <p className={styles.formError} role="alert">提交失败：{error}（草稿已保留，可修改后重试）</p> : null}
++              {conflictHint !== null ? <p className={styles.formConflict} role="status">{conflictHint}</p> : null}
++              {editKept ? (
++                <p className={styles.formConflict} role="status">
++                  说明已提交；表单中保留的是提交之后的新编辑，未随本次发送（合成演示）。
++                </p>
++              ) : null}
++            </form>
++          ) : null}
++        </div>
++      ) : null}
+     </section>
+   );
+ }
+@@ -264,9 +282,9 @@
+ 
+   if (slot.status === 'limited') {
+     return (
+-      <div className={styles.pendingRequestRow} role="status">
++      <div className={styles.pendingRow} role="status">
+         <span>{recoveryLimitedNotice('note', slot.reason)}</span>
+-        <button type="button" className={styles.secondaryBtn} onClick={onDismiss}>
++        <button type="button" className={styles.btnSecondary} onClick={onDismiss}>
+           清除该提示
+         </button>
+       </div>
+@@ -288,13 +306,13 @@
+   }
+ 
+   return (
+-    <div className={styles.pendingRequestRow} role="status">
++    <div className={styles.pendingRow} role="status">
+       <span>
+         {pendingRequestRowText('note')}
+         {persistFailed ? '（浏览器存储不可用：本页刷新后可能无法恢复该请求信息）' : ''}
+       </span>
+       {resolveFailed ? <span className={styles.pendingRowHint}>确认未完成：请稍后再次尝试（该请求已保留）。</span> : null}
+-      <button type="button" className={styles.secondaryBtn} disabled={resolving} onClick={() => void handleResolve()}>
++      <button type="button" className={styles.btnSecondary} disabled={resolving} onClick={() => void handleResolve()}>
+         {resolving ? '确认中…' : recoveryResolveLabel('note')}
+       </button>
+     </div>
+=== diff app/v5-preview/remote-session/page.tsx (baseline → current) ===
+--- /c/Users/22673/Desktop/Anthropic/V6/handoff/SE_REBUILD_20260913/baseline/app/v5-preview/remote-session/page.tsx	2026-09-13 18:49:14.885234700 +0800
++++ app/v5-preview/remote-session/page.tsx	2026-09-13 19:03:07.374869000 +0800
+@@ -1,15 +1,18 @@
+ "use client";
+ 
+-// V6 R2 · 业务↔实控人访谈 · 手机竖屏优先（iPhone 17 标准版设计基准 402×874 CSS px / DPR3）。
+-// 一套响应式 Web：竖屏为设计主体，桌面窄列兼容。
+-// 访谈节奏渐进展开：首屏=当前事项/轮到谁/依据与风险/主动作；技术ID、fixture、调试收进"演示设置"。
+-// 底线：视频/语音未接入如实显示；模型输出显式 SIMULATION、authority=none；
+-// 全部写请求走不可变原请求注册（发送前落盘、同载荷原样重试）；暂停为服务端执行门。
++// V6 SE_REBUILD · 业务↔实控人访谈 · 第三版连续面板视觉（sub-agent B 写面）。
++// 布局：精简顶部（返回+阶段徽章+当前问题简题）→ 连续面板主内容（内部滚动，4px分隔带）
++// → 底部常驻输入与操作区（补证输入/暂停/恢复/转人工，hit area≥44px）。
++// 无视频时直接呈现可用的文字访谈：视频状态压缩为紧凑行如实展示，不穿过大面积假画面。
++// 底线不变：视频/语音未接入如实显示；模型输出显式 SIMULATION、authority=none；
++// 全部写请求走不可变原请求注册（发送前落盘、同载荷原样重试）；暂停为服务端执行门；
++// "返回项目"=导航（Link 到 /v5-preview），不冒称结束通话。
+ import { useCallback, useEffect, useRef, useState } from 'react';
+ import Link from 'next/link';
+ import CameraPanel from './camera-panel';
+-import { RequestRegistry, sameBusinessPayload, type RegistryEntry } from '../../../lib/v5-preview/remote-request-registry';
+-import styles from '../preview.module.css';
++import { RequestRegistry, type RegistryEntry } from '../../../lib/v5-preview/remote-request-registry';
++import { CheckIcon, ClockIcon, CrossIcon, GearIcon, MagnifierIcon, WarnIcon } from '../se-icons';
++import styles from './se-interview.module.css';
+ 
+ // ---------------------------------------------------------------------------
+ // API 客户端 + F1 不可变请求注册（沿用返修版语义）
+@@ -87,14 +90,6 @@
+   return registry.listUnknown(sessionId);
+ }
+ 
+-function sameBusinessBody(a: Record<string, unknown>, b: Record<string, unknown>): boolean {
+-  const strip = (o: Record<string, unknown>) => {
+-    const { requestId: _r, ...rest } = o;
+-    return JSON.stringify(rest);
+-  };
+-  return strip(a) === strip(b);
+-}
+-
+ // ---------------------------------------------------------------------------
+ // 类型
+ // ---------------------------------------------------------------------------
+@@ -117,6 +112,60 @@
+ const VOICE_NOTE_NO_API = '语音输入未接入：当前环境无浏览器语音识别接口，产品也未集成 ASR 服务。可先用下方文字输入（语音接口已冻结，接入另行授权）。';
+ const VOICE_NOTE_API_PRESENT = '浏览器具备语音识别接口（Web Speech），但产品尚未接入：为不以未验证能力冒充已支持，语音录入暂不可用，请先用文字输入。';
+ 
++// ---------------------------------------------------------------------------
++// 本页内联细线图标（se-icons 未导出、不新增导出；视觉规范同 se-icons：24 viewBox/1.8 描边）
++// ---------------------------------------------------------------------------
++
++function iconBase(size: number | undefined, className: string | undefined) {
++  return {
++    width: size ?? 16,
++    height: size ?? 16,
++    viewBox: '0 0 24 24',
++    fill: 'none',
++    stroke: 'currentColor',
++    strokeWidth: 1.8,
++    strokeLinecap: 'round' as const,
++    strokeLinejoin: 'round' as const,
++    'aria-hidden': true,
++    className,
++  };
++}
++
++function ArrowLeftIcon({ size, className }: { size?: number; className?: string }) {
++  return (
++    <svg {...iconBase(size, className)}>
++      <path d="M19 12H5M11 6l-6 6 6 6" />
++    </svg>
++  );
++}
++
++function ChevronRightIcon({ size, className }: { size?: number; className?: string }) {
++  return (
++    <svg {...iconBase(size, className)}>
++      <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />
++    </svg>
++  );
++}
++
++function CameraLineIcon({ size, className }: { size?: number; className?: string }) {
++  return (
++    <svg {...iconBase(size, className)}>
++      <path d="M8.5 7 10 4.5h4L15.5 7" />
++      <rect x="3.5" y="7" width="17" height="12.5" rx="2" />
++      <circle cx="12" cy="13.2" r="3.2" />
++    </svg>
++  );
++}
++
++function MicLineIcon({ size, className }: { size?: number; className?: string }) {
++  return (
++    <svg {...iconBase(size, className)}>
++      <rect x="9.5" y="3.5" width="5" height="10" rx="2.5" />
++      <path d="M6.5 11.5a5.5 5.5 0 0 0 11 0M12 17v3.5" />
++    </svg>
++  );
++}
++
+ export default function RemoteSessionPage() {
+   const [phase, setPhase] = useState<'loading' | 'empty' | 'ready' | 'error'>('loading');
+   const [detail, setDetail] = useState<SessionDetail | null>(null);
+@@ -150,7 +199,6 @@
+   const session = detail?.session ?? null;
+   const paused = session?.status === 'paused';
+   const activeQuestion = detail?.annotations.find((a) => !a.expired && a.status === 'open') ?? null;
+-  const activeEvidence = detail?.evidence.find((e) => e.evidenceId === activeEvidenceId) ?? null;
+   const openCount = detail?.annotations.filter((a) => !a.expired && a.status === 'open').length ?? 0;
+ 
+   const loadDetail = useCallback(async (sessionId: string): Promise<void> => {
+@@ -287,6 +335,32 @@
+     }, 'create-review', () => setNotice('本轮判断已暂停（服务端已阻断模型/确认类动作）'), session.sessionId);
+   }
+ 
++  /** 恢复本轮（显式）：仅会话处于暂停时可用；与暂停同为服务端复核动作，失败如实反馈。 */
++  function resumeRound(): void {
++    if (session === null || activeQuestion === null) return;
++    void runWrite('reviews', {
++      targetType: 'annotation',
++      targetId: activeQuestion.annotationId,
++      targetVersion: activeQuestion.version,
++      action: 'resume_round',
++      opinion: '演示恢复（合成）',
++      expectedVersion: remoteVersion,
++    }, 'create-review', () => setNotice('已显式恢复本轮'), session.sessionId);
++  }
++
++  /** 转人工（escalate_human）：走同一人工复核写路径；暂停中被服务端阻断（按钮同时置灰并说明）。 */
++  function escalateHuman(): void {
++    if (session === null || activeQuestion === null) return;
++    void runWrite('reviews', {
++      targetType: 'annotation',
++      targetId: activeQuestion.annotationId,
++      targetVersion: activeQuestion.version,
++      action: 'escalate_human',
++      opinion: '关键问题转人工处理（合成演示）',
++      expectedVersion: remoteVersion,
++    }, 'create-review', () => setNotice('已提交转人工复核（合成演示；模型无审批权）'), session.sessionId);
++  }
++
+   function reviewDraftOpinion(): string {
+     return '本轮判断暂停（关键问题待闭环，合成演示）';
+   }
+@@ -302,15 +376,25 @@
+ 
+   if (phase === 'loading' || phase === 'error') {
+     return (
+-      <div className={styles.remoteRoot}>
+-        <header className={styles.ivHeader}>
+-          <Link className={styles.ivBack} href="/v5-preview" aria-label="返回项目总览">←</Link>
+-          <b className={styles.ivHeaderTitle}>远程尽调访谈</b>
+-          <span className={styles.ivChip} data-state="loading">{phase === 'error' ? '加载失败' : '加载中'}</span>
++      <div className={styles.seInterviewRoot}>
++        <header className={styles.sivTop}>
++          <Link className={styles.sivTopBack} href="/v5-preview" aria-label="返回项目总览"><ArrowLeftIcon size={18} /></Link>
++          <b className={styles.sivTopTitle}>远程尽调访谈</b>
++          <span className={styles.sivTopChip} data-state={phase === 'error' ? 'error' : 'loading'}>{phase === 'error' ? '加载失败' : '加载中'}</span>
+         </header>
+-        <div className={styles.ivCard} role={phase === 'error' ? 'alert' : 'status'}>
+-          <p className={styles.ivQuestion}>{phase === 'error' ? `加载失败：${loadError ?? '未知错误'}` : '正在加载访谈会话（合成演示）…'}</p>
+-          {phase === 'error' ? <button type="button" className={styles.ivPrimary} onClick={() => { setPhase('loading'); void loadState(); }}>重试</button> : null}
++        <div className={styles.sivScroll}>
++          <div className={styles.sivPanel}>
++            <section className={styles.sivSection} role={phase === 'error' ? 'alert' : 'status'}>
++              <p className={styles.sivQ}>{phase === 'error' ? `加载失败：${loadError ?? '未知错误'}` : '正在加载访谈会话（合成演示）…'}</p>
++              {phase === 'error'
++                ? (
++                    <div className={styles.sivBtnRow}>
++                      <button type="button" className={styles.sivPrimary} onClick={() => { setPhase('loading'); void loadState(); }}>重试</button>
++                    </div>
++                  )
++                : null}
++            </section>
++          </div>
+         </div>
+       </div>
+     );
+@@ -318,104 +402,351 @@
+ 
+   if (phase === 'empty') {
+     return (
+-      <div className={styles.remoteRoot}>
+-        <header className={styles.ivHeader}>
+-          <Link className={styles.ivBack} href="/v5-preview" aria-label="返回项目总览">←</Link>
+-          <b className={styles.ivHeaderTitle}>远程尽调访谈</b>
+-          <span className={styles.ivChip} data-state="empty">未开始</span>
++      <div className={styles.seInterviewRoot}>
++        <header className={styles.sivTop}>
++          <Link className={styles.sivTopBack} href="/v5-preview" aria-label="返回项目总览"><ArrowLeftIcon size={18} /></Link>
++          <b className={styles.sivTopTitle}>远程尽调访谈</b>
++          <span className={styles.sivTopChip} data-state="empty">未开始</span>
+         </header>
+-        <div className={styles.ivCard}>
+-          <p className={styles.ivQuestion}>尚无访谈会话。创建后：业务与实控人围绕关键问题访谈；证据用显著标记的合成图形；视频/语音未接入会如实显示。</p>
+-          {writeError !== null ? <p className={styles.remoteError} role="alert">{writeError}</p> : null}
+-          {unknowns.map((u) => (
+-            <div key={u.requestId} className={styles.remotePendingBar} role="status">
+-              <span>有一条未确认请求（{u.op}）。</span>
+-              <button type="button" className={styles.ivSecondary} disabled={busy} onClick={() => { void retryPending(u.requestId); }}>原样重试</button>
+-              <button type="button" className={styles.ivSecondary} disabled={busy} onClick={() => discardPendingById(u.requestId)}>放弃</button>
+-            </div>
+-          ))}
+-          <button type="button" className={styles.ivPrimary} disabled={busy} onClick={() => { void createSession(); }}>开始访谈会话</button>
+-          {notice !== null ? <p className={styles.remoteError} role="status">{notice}</p> : null}
++        <div className={styles.sivScroll}>
++          <div className={styles.sivPanel}>
++            <section className={styles.sivSection}>
++              <p className={styles.sivQ}>尚无访谈会话</p>
++              <p className={styles.sivNote}>创建后：业务与实控人围绕关键问题访谈；证据用显著标记的合成图形；视频/语音未接入会如实显示。</p>
++              {writeError !== null ? <p className={styles.sivError} role="alert">{writeError}</p> : null}
++              {unknowns.map((u) => (
++                <div key={u.requestId} className={styles.sivPendingBar} role="status">
++                  <span>有一条未确认请求（{u.op}）。</span>
++                  <button type="button" className={styles.sivBtnSmall} disabled={busy} onClick={() => { void retryPending(u.requestId); }}>原样重试</button>
++                  <button type="button" className={styles.sivBtnSmall} disabled={busy} onClick={() => discardPendingById(u.requestId)}>放弃</button>
++                </div>
++              ))}
++              <div className={styles.sivBtnRow}>
++                <button type="button" className={styles.sivPrimary} disabled={busy} onClick={() => { void createSession(); }}>开始访谈会话</button>
++              </div>
++              {notice !== null ? <p className={styles.sivNotice} role="status">{notice}</p> : null}
++            </section>
++          </div>
+         </div>
+       </div>
+     );
+   }
+ 
+   return (
+-    <div className={styles.remoteRoot}>
+-      <header className={styles.ivHeader}>
+-        <Link className={styles.ivBack} href="/v5-preview" aria-label="返回项目总览（状态与草稿保留）">←</Link>
+-        <b className={styles.ivHeaderTitle}>远程尽调 · {detail?.session.projectId}</b>
+-        <span className={styles.ivChip} data-state={paused ? 'paused' : 'live'}>{paused ? '本轮已暂停' : '进行中'}</span>
++    <div className={styles.seInterviewRoot}>
++      <header className={styles.sivTop}>
++        <Link className={styles.sivTopBack} href="/v5-preview" aria-label="返回项目总览（状态与草稿保留）"><ArrowLeftIcon size={18} /></Link>
++        <span className={styles.sivTopChip} data-state={paused ? 'paused' : 'live'}>
++          {paused ? <WarnIcon size={13} className={styles.sivChipIcon} /> : <span className={styles.sivDot} aria-hidden="true" />}
++          {paused ? '已暂停' : '进行中'}
++        </span>
++        <b className={styles.sivTopTitle}>{activeQuestion !== null ? activeQuestion.question : '当前待办：补充设备清单'}</b>
+       </header>
+ 
+-      {unknowns.map((u) => (
+-        <div key={u.requestId} className={styles.remotePendingBar} role="status">
+-          <span>有一条请求结果未知（{u.op}，发送于 {new Date(u.savedAt).toLocaleTimeString()}）。</span>
+-          <button type="button" className={styles.ivSecondary} disabled={busy} onClick={() => { void retryPending(u.requestId); }}>原样重试</button>
+-          <button type="button" className={styles.ivSecondary} disabled={busy} onClick={() => discardPendingById(u.requestId)}>放弃</button>
+-        </div>
+-      ))}
+-      {notice !== null ? <p className={styles.remoteNotice} role="status">{notice}</p> : null}
+-      {writeError !== null ? <p className={styles.remoteError} role="alert">{writeError}</p> : null}
+-
+-      {/* 视频/连接状态区（诚实：未接入） */}
+-      <section className={styles.ivVideoCard} aria-label="视频与连接状态">
+-        <div className={styles.ivVideoStage} data-simulation={simulationOn ? 'on' : 'off'}>
+-          <div className={styles.ivSimStage}>
+-            <span className={styles.ivSimAvatar}>{simulationOn ? '实控人（合成头像位）' : '实控人视频位'}</span>
+-            <span className={styles.remoteSimTag}>{simulationOn ? '模拟会议视图 · 非真实画面' : '视频未接入'}</span>
+-          </div>
++      {unknowns.length > 0 ? (
++        <div className={styles.sivStatusStrip}>
++          {unknowns.map((u) => (
++            <div key={u.requestId} className={styles.sivPendingBar} role="status">
++              <span>有一条请求结果未知（{u.op}，发送于 {new Date(u.savedAt).toLocaleTimeString()}）。</span>
++              <button type="button" className={styles.sivBtnSmall} disabled={busy} onClick={() => { void retryPending(u.requestId); }}>原样重试</button>
++              <button type="button" className={styles.sivBtnSmall} disabled={busy} onClick={() => discardPendingById(u.requestId)}>放弃</button>
++            </div>
++          ))}
+         </div>
+-        <div className={styles.ivVideoMeta}>
+-          <span className={styles.ivVideoState}>连接状态：未接入（不申请摄像头/麦克风，不采集）</span>
+-          <label className={styles.ivSimToggle}>
+-            <input type="checkbox" checked={simulationOn} onChange={(e) => setSimulationOn(e.target.checked)} />
+-            模拟画面开关
+-          </label>
++      ) : null}
++
++      {/* 主内容：一块连续面板、内部滚动、4px 分隔带 */}
++      <div className={styles.sivScroll}>
++        <div className={styles.sivPanel}>
++          {/* 当前关键问题（首屏主体，不穿过假画面） */}
++          <section className={styles.sivSection} aria-label="当前关键问题">
++            <p className={styles.sivSecKicker}>
++              远程尽调 · {detail?.session.projectId} · 当前关键问题 · 轮到{activeQuestion ? '实控人回答' : '业务发起'}
++              {openCount > 1 ? `（另有 ${openCount - 1} 个待办问题）` : ''}
++            </p>
++            {activeQuestion !== null ? (
++              <>
++                <p className={styles.sivQ}>{activeQuestion.question}</p>
++                <p className={styles.sivBasis}>
++                  依据：现场证据 v{activeQuestion.evidenceVersion}
++                  {(() => {
++                    const ev = detail?.evidence.find((e) => e.evidenceId === activeQuestion.evidenceId);
++                    return ev !== undefined ? ` · ${ev.verificationStatus === 'human_verified' ? '已人工核实' : ev.verificationStatus === 'contested' ? '有争议' : '未核实'}` : '';
++                  })()}
++                </p>
++                <p className={styles.sivRisk}>风险提示：设备清单尚未补齐，相关判断处于待核实状态（不因资料增加自动放行）。</p>
++              </>
++            ) : (
++              <>
++                <p className={styles.sivQ}>当前待办：补充设备清单，请实控人现场说明设备现状。</p>
++                <p className={styles.sivBasis}>依据：信审待补充（合成演示状态）。</p>
++                <p className={styles.sivRisk}>风险提示：关键资料未到位前，不做额度/价格结论。</p>
++              </>
++            )}
++          </section>
++
++          {/* 视频/连接状态：紧凑行如实展示（未接入/未配置；不放大面积模拟画面） */}
++          <section className={styles.sivSection} aria-label="视频与连接状态">
++            <div className={styles.sivRowLine}>
++              <CameraLineIcon size={16} className={styles.sivMutedIcon} />
++              <span className={styles.sivLineTxt}>连接状态：未接入（不申请摄像头/麦克风，不采集）</span>
++              <span className={styles.sivStateBadge} data-state="bad"><CrossIcon size={13} />未配置</span>
++            </div>
++            <label className={styles.sivToggle}>
++              <input type="checkbox" checked={simulationOn} onChange={(e) => setSimulationOn(e.target.checked)} />
++              模拟画面开关（仅全屏模拟视图内生效，非真实画面）
++            </label>
++          </section>
++
++          {/* 语音说明（点开后按需呈现；能力如实检测，不申请麦克风） */}
++          {voiceOpen ? (
++            <section className={styles.sivSection} role="status" aria-label="语音输入说明">
++              <p className={styles.sivNote}>{voiceCaps === 'no_api' ? VOICE_NOTE_NO_API : voiceCaps === 'api_present' ? VOICE_NOTE_API_PRESENT : '正在检测语音能力…'}</p>
++              <p className={styles.sivNote}>语音接口已冻结：接入需媒体权限与 ASR 服务授权（另行 Gate），不以普通文本框冒称已支持语音。</p>
++              <div className={styles.sivBtnRow}>
++                <button type="button" className={styles.sivBtnSmall} onClick={() => setFullscreen(true)}>
++                  进入全屏访谈（模拟画面 · 转写演示）
++                </button>
++                <button
++                  type="button"
++                  className={styles.sivBtnSmall}
++                  onClick={() => {
++                    transcriptSeq.current += 1;
++                    const n = transcriptSeq.current;
++                    setTranscript((prev) => [...prev, {
++                      at: new Date().toLocaleTimeString('zh-CN', { hour12: false }),
++                      who: n % 2 === 1 ? '实控人（合成）' : '业务（合成）',
++                      text: n % 2 === 1 ? `（合成转写事件 ${n}）设备运行正常，共三台。` : `（合成转写事件 ${n}）追问：检修计划请书面确认。`,
++                    }]);
++                  }}
++                >
++                  添加合成转写事件（演示 · 非真实 ASR）
++                </button>
++              </div>
++            </section>
++          ) : null}
++
++          {/* 证据入口（折叠）：附着合成证据 + 证据清单 + 本地拍照 */}
++          <details
++            className={styles.sivDetails}
++            onToggle={(e) => { if ((e.target as HTMLDetailsElement).open && activeEvidenceId === null && (detail?.evidence.length ?? 0) > 0) setActiveEvidenceId(detail!.evidence[0].evidenceId); }}
++          >
++            <summary>
++              <MagnifierIcon size={16} className={styles.sivSummaryLead} />
++              <span className={styles.sivSummaryTxt}>证据（{detail?.evidence.length ?? 0}）与本地拍照</span>
++              <ChevronRightIcon size={16} className={styles.sivChevron} />
++            </summary>
++            <div className={styles.sivDetailsBody}>
++              <div className={styles.sivBtnRow}>
++                <button type="button" className={styles.sivBtnSmall} disabled={busy} onClick={() => { void runWrite('evidence', { fixtureId: 'fixture-inspection', expectedVersion: remoteVersion }, 'attach-evidence', () => setNotice('证据已附着（合成）'), session?.sessionId ?? ''); }}>
++                  附着现场巡检（合成）
++                </button>
++                <button type="button" className={styles.sivBtnSmall} disabled={busy} onClick={() => { void runWrite('evidence', { fixtureId: 'fixture-equipment', expectedVersion: remoteVersion }, 'attach-evidence', () => setNotice('证据已附着（合成）'), session?.sessionId ?? ''); }}>
++                  附着设备清单（合成）
++                </button>
++              </div>
++              <ul className={styles.sivEvidenceList}>
++                {(detail?.evidence ?? []).map((e) => (
++                  <li key={e.evidenceId} className={styles.sivEvidenceItem} data-active={e.evidenceId === activeEvidenceId ? 'yes' : 'no'}>
++                    <button type="button" className={styles.sivEvidenceBtn} onClick={() => setActiveEvidenceId(e.evidenceId)}>
++                      {e.title}
++                    </button>
++                    <span className={styles.sivStateBadge} data-state={e.verificationStatus === 'human_verified' ? 'ok' : e.verificationStatus === 'contested' ? 'warn' : 'idle'}>
++                      {e.verificationStatus === 'human_verified' ? <CheckIcon size={13} /> : e.verificationStatus === 'contested' ? <WarnIcon size={13} /> : <ClockIcon size={13} />}
++                      {e.verificationStatus === 'human_verified' ? '已核实' : e.verificationStatus === 'contested' ? '有争议' : '未核实'}
++                    </span>
++                    {e.expired ? <span className={styles.sivStateBadge} data-state="bad"><CrossIcon size={13} />已过期</span> : null}
++                  </li>
++                ))}
++                {(detail?.evidence.length ?? 0) === 0 ? <li className={styles.sivNote}>尚无证据。</li> : null}
++              </ul>
++              <CameraPanel />
++            </div>
++          </details>
++
++          {/* 项目沟通与历史问答（折叠）：回复角色如实标注（模型=模拟） */}
++          <details className={styles.sivDetails}>
++            <summary>
++              <GearIcon size={16} className={styles.sivSummaryLead} />
++              <span className={styles.sivSummaryTxt}>项目沟通与历史问答（{detail?.annotations.length ?? 0} 问）</span>
++              <ChevronRightIcon size={16} className={styles.sivChevron} />
++            </summary>
++            <div className={styles.sivDetailsBody}>
++              <ul className={styles.sivAnnotations}>
++                {(detail?.annotations ?? []).map((a) => (
++                  <li key={a.annotationId} className={styles.sivAnnotation} data-expired={a.expired ? 'yes' : 'no'}>
++                    <p className={styles.sivQuestion}>【证据 v{a.evidenceVersion}{a.expired ? ' · 证据已过期' : ''}】{a.question}</p>
++                    {a.replies.map((r) => (
++                      <p key={r.replyId} className={styles.sivReply} data-kind={r.kind}>
++                        <span className={styles.sivReplyKind}>{r.kind === 'model_simulation' ? '模型（模拟）' : r.kind === 'business' ? '业务' : '专业域'}</span>
++                        <span>{r.text}</span>
++                      </p>
++                    ))}
++                    <div className={styles.sivBtnRow}>
++                      <button
++                        type="button"
++                        className={styles.sivBtnSmall}
++                        disabled={busy || paused}
++                        title={paused ? '本轮判断已暂停：模型推进被服务端阻断' : undefined}
++                        onClick={() => { void runWrite('annotations/simulate', { annotationId: a.annotationId, expectedVersion: remoteVersion }, 'simulate-followups', () => setNotice('模拟追问已生成（SIMULATION）'), session?.sessionId ?? ''); }}
++                      >
++                        模拟追问（SIMULATION）
++                      </button>
++                    </div>
++                  </li>
++                ))}
++                {(detail?.annotations.length ?? 0) === 0 ? <li className={styles.sivNote}>暂无历史问答。</li> : null}
++              </ul>
++            </div>
++          </details>
++
++          {/* 演示设置（折叠：技术 ID/调试/演示控制） */}
++          <details className={styles.sivDetails} open={showTech} onToggle={(e) => setShowTech((e.target as HTMLDetailsElement).open)}>
++            <summary>
++              <ClockIcon size={16} className={styles.sivSummaryLead} />
++              <span className={styles.sivSummaryTxt}>演示设置（技术详情 · 合成演示控制）</span>
++              <ChevronRightIcon size={16} className={styles.sivChevron} />
++            </summary>
++            <div className={styles.sivDetailsBody}>
++              <p className={styles.sivNote}>
++                会话 {session?.sessionId.slice(0, 12)}… · 项目 {session?.projectId} · 远端 v{remoteVersion} · 视频 {session?.video.state}（provider: {session?.video.provider}）
++              </p>
++              <div className={styles.sivBtnRow}>
++                <button type="button" className={styles.sivBtnSmall} disabled={busy} onClick={() => { void runWrite('calculation', { expectedVersion: remoteVersion }, 'attempt-calculation', (data) => { setCalcResult([data.calculation as SessionDetail['calculations'][0]]); }, session?.sessionId ?? ''); }}>
++                  尝试核算（未配置 → 如实显示）
++                </button>
++              </div>
++              <ul className={styles.sivCalcList}>
++                {(calcResult ?? detail?.calculations ?? []).slice(-1).reverse().map((c) => (
++                  <li key={c.calcId} className={styles.sivCalcItem} data-status={c.status} data-stale={c.stale ? 'yes' : 'no'}>
++                    <b>{c.status}{c.stale ? '（已过期）' : ''}</b>
++                    <ul>{c.reasons.map((r, i) => <li key={i}>{r}</li>)}</ul>
++                  </li>
++                ))}
++              </ul>
++              <p className={styles.sivNote}>暂停/恢复/转人工等复核动作在下方留痕。</p>
++              <ul className={styles.sivReviewLog}>
++                {(detail?.reviews ?? []).slice(-4).reverse().map((r) => (
++                  <li key={r.reviewId}>{REVIEW_ACTION_LABEL[r.action] ?? r.action} · 针对 v{r.targetVersion} · {r.opinion.slice(0, 26)}</li>
++                ))}
++              </ul>
++            </div>
++          </details>
++
++          <p className={styles.sivFooter}>合成演示 · 不执行正式审批 · 视频/语音未接入如实显示 · 模型输出仅为模拟（authority=none）</p>
+         </div>
+-      </section>
++      </div>
+ 
+-      {/* 当前关键问题（主卡） */}
+-      <section className={styles.ivCard} aria-label="当前关键问题">
+-        <p className={styles.ivKicker}>
+-          当前关键问题 · 轮到{activeQuestion ? '实控人回答' : '业务发起'}
+-          {openCount > 1 ? `（另有 ${openCount - 1} 个待办问题）` : ''}
+-        </p>
++      {/* 底部常驻：补证输入 + 操作按钮 + 状态反馈（hit area≥44px） */}
++      <div className={styles.sivDock}>
+         {activeQuestion !== null ? (
+           <>
+-            <p className={styles.ivQuestion}>{activeQuestion.question}</p>
+-            <p className={styles.ivBasis}>
+-              依据：现场证据 v{activeQuestion.evidenceVersion}
+-              {(() => {
+-                const ev = detail?.evidence.find((e) => e.evidenceId === activeQuestion.evidenceId);
+-                return ev !== undefined ? ` · ${ev.verificationStatus === 'human_verified' ? '已人工核实' : ev.verificationStatus === 'contested' ? '有争议' : '未核实'}` : '';
+-              })()}
+-            </p>
+-            <p className={styles.ivRisk}>风险提示：设备清单尚未补齐，相关判断处于待核实状态（不因资料增加自动放行）。</p>
++            <div className={styles.sivDockLabelRow}>
++              <label className={styles.sivFieldLabel} htmlFor="iv-answer">访谈记录（转写草稿 · 文字输入）</label>
++              <button
++                type="button"
++                className={styles.sivVoiceBtn}
++                aria-label="语音输入（未接入，点击查看说明）"
++                onClick={openVoicePanel}
++              >
++                <MicLineIcon size={15} />
++                语音 · 未接入
++              </button>
++            </div>
++            <textarea
++              id="iv-answer"
++              className={styles.sivTextarea}
++              value={answer}
++              rows={2}
++              maxLength={2000}
++              placeholder="记录实控人现场说明要点（合成演示）…"
++              onChange={(e) => {
++                setAnswer(e.target.value);
++                answerRevisionRef.current += 1;
++                try { window.sessionStorage.setItem('jw:v5-preview:draft:answer', e.target.value); } catch { /* 忽略 */ }
++              }}
++            />
++            <p className={styles.sivFieldLabel}>关键字段核对（人工纠正，非模型结论）</p>
++            <div className={styles.sivFields}>
++              <label className={styles.sivField}>
++                设备数量（台）
++                <input
++                  className={styles.sivInput}
++                  inputMode="numeric" value={fields.deviceCount}
++                  placeholder="待口述确认"
++                  onChange={(e) => { setFields((p) => ({ ...p, deviceCount: e.target.value })); answerRevisionRef.current += 1; }}
++                />
++              </label>
++              <label className={styles.sivField}>
++                报价（万元）
++                <input
++                  className={styles.sivInput}
++                  inputMode="decimal" value={fields.quote}
++                  placeholder="待口述确认"
++                  onChange={(e) => { setFields((p) => ({ ...p, quote: e.target.value })); answerRevisionRef.current += 1; }}
++                />
++              </label>
++            </div>
++            <div className={styles.sivActions}>
++              <button
++                type="button"
++                className={styles.sivPrimary}
++                disabled={busy || activeQuestion === null || answer.trim() === ''}
++                onClick={submitInterviewRecord}
++              >
++                {busy ? '提交中…' : '提交访谈记录'}
++              </button>
++              <button
++                type="button"
++                className={styles.sivSecondary}
++                disabled={busy || paused}
++                title={paused ? '本轮已处于暂停状态' : undefined}
++                onClick={pauseRound}
++              >
++                暂停本轮
++              </button>
++              {paused ? (
++                <button
++                  type="button"
++                  className={styles.sivSecondary}
++                  disabled={busy}
++                  onClick={resumeRound}
++                >
++                  恢复本轮
++                </button>
++              ) : null}
++              <button
++                type="button"
++                className={styles.sivSecondary}
++                disabled={busy || paused}
++                title={paused ? '本轮判断已暂停：转人工被服务端阻断（补证/纠正仍可用）' : undefined}
++                onClick={escalateHuman}
++              >
++                转人工
++              </button>
++            </div>
+           </>
+         ) : (
+           <>
+-            <p className={styles.ivQuestion}>当前待办：补充设备清单，请实控人现场说明设备现状。</p>
+-            <p className={styles.ivBasis}>依据：信审待补充（合成演示状态）。</p>
+-            <p className={styles.ivRisk}>风险提示：关键资料未到位前，不做额度/价格结论。</p>
+-            <div className={styles.ivAsk}>
+-              <label className={styles.ivFieldLabel} htmlFor="iv-ask">业务发起关键问题（绑定现场证据）</label>
+-              <textarea
+-                id="iv-ask"
+-                className={styles.remoteTextarea}
+-                value={askDraft}
+-                rows={2}
+-                maxLength={2000}
+-                placeholder="例：请说明照片区块中设备的现状与数量（合成演示）…"
+-                onChange={(e) => {
+-                  setAskDraft(e.target.value);
+-                  try { window.sessionStorage.setItem('jw:v5-preview:draft:ask', e.target.value); } catch { /* 忽略 */ }
+-                }}
+-              />
++            <div className={styles.sivDockLabelRow}>
++              <label className={styles.sivFieldLabel} htmlFor="iv-ask">业务发起关键问题（绑定现场证据）</label>
++            </div>
++            <textarea
++              id="iv-ask"
++              className={styles.sivTextarea}
++              value={askDraft}
++              rows={2}
++              maxLength={2000}
++              placeholder="例：请说明照片区块中设备的现状与数量（合成演示）…"
++              onChange={(e) => {
++                setAskDraft(e.target.value);
++                try { window.sessionStorage.setItem('jw:v5-preview:draft:ask', e.target.value); } catch { /* 忽略 */ }
++              }}
++            />
++            <div className={styles.sivActions}>
+               <button
+                 type="button"
+-                className={styles.ivPrimary}
++                className={styles.sivPrimary}
+                 disabled={busy || askDraft.trim() === ''}
+                 onClick={() => {
+                   if (session === null) return;
+@@ -446,248 +777,63 @@
+             </div>
+           </>
+         )}
+-      </section>
+-
+-      {/* 回答区：语音（诚实）+ 转写草稿 + 关键字段纠偏 + 提交/暂停 */}
+-      <section className={styles.ivCard} aria-label="回答与提交">
+-        <div className={styles.ivVoiceRow}>
+-          <button
+-            type="button"
+-            className={styles.ivMic}
+-            aria-label="语音输入（未接入，点击查看说明）"
+-            onClick={openVoicePanel}
+-          >
+-            <span className={styles.ivMicIcon} aria-hidden="true">🎙</span>
+-            <span className={styles.ivMicLabel}>语音输入</span>
+-          </button>
+-          <div className={styles.ivVoiceSide}>
+-            <span className={styles.ivVoiceBadge} data-state="off">未接入</span>
+-            <p className={styles.ivVoiceHint}>转写草稿请先用文字输入。</p>
+-          </div>
+-        </div>
+-        {voiceOpen ? (
+-          <div className={styles.ivVoicePanel} role="status">
+-            <p>{voiceCaps === 'no_api' ? VOICE_NOTE_NO_API : voiceCaps === 'api_present' ? VOICE_NOTE_API_PRESENT : '正在检测语音能力…'}</p>
+-            <p className={styles.remoteNote}>语音接口已冻结：接入需媒体权限与 ASR 服务授权（另行 Gate），不以普通文本框冒称已支持语音。</p>
+-            <div className={styles.remoteCalcRow}>
+-              <button type="button" className={styles.remoteBtnSmall} onClick={() => setFullscreen(true)}>
+-                进入全屏访谈（模拟画面 · 转写演示）
+-              </button>
+-              <button
+-                type="button"
+-                className={styles.remoteBtnSmall}
+-                onClick={() => {
+-                  transcriptSeq.current += 1;
+-                  const n = transcriptSeq.current;
+-                  setTranscript((prev) => [...prev, {
+-                    at: new Date().toLocaleTimeString('zh-CN', { hour12: false }),
+-                    who: n % 2 === 1 ? '实控人（合成）' : '业务（合成）',
+-                    text: n % 2 === 1 ? `（合成转写事件 ${n}）设备运行正常，共三台。` : `（合成转写事件 ${n}）追问：检修计划请书面确认。`,
+-                  }]);
+-                }}
+-              >
+-                添加合成转写事件（演示 · 非真实 ASR）
+-              </button>
+-            </div>
++        {paused || notice !== null || writeError !== null ? (
++          <div className={styles.sivFeedback}>
++            {paused ? <p className={styles.sivNote} role="status">本轮判断已暂停：模型推进与确认类动作被服务端阻断；补证/纠正仍可用。</p> : null}
++            {notice !== null ? <p className={styles.sivNotice} role="status">{notice}</p> : null}
++            {writeError !== null ? <p className={styles.sivError} role="alert">{writeError}</p> : null}
+           </div>
+         ) : null}
+-        <label className={styles.ivFieldLabel} htmlFor="iv-answer">访谈记录（转写草稿 · 文字输入）</label>
+-        <textarea
+-          id="iv-answer"
+-          className={styles.remoteTextarea}
+-          value={answer}
+-          rows={3}
+-          maxLength={2000}
+-          placeholder="记录实控人现场说明要点（合成演示）…"
+-          onChange={(e) => {
+-            setAnswer(e.target.value);
+-            answerRevisionRef.current += 1;
+-            try { window.sessionStorage.setItem('jw:v5-preview:draft:answer', e.target.value); } catch { /* 忽略 */ }
+-          }}
+-        />
+-        <p className={styles.ivFieldLabel}>关键字段核对（人工纠正，非模型结论）</p>
+-        <div className={styles.ivFields}>
+-          <label className={styles.ivField}>
+-            设备数量（台）
+-            <input
+-              inputMode="numeric" value={fields.deviceCount}
+-              placeholder="待口述确认"
+-              onChange={(e) => { setFields((p) => ({ ...p, deviceCount: e.target.value })); answerRevisionRef.current += 1; }}
+-            />
+-          </label>
+-          <label className={styles.ivField}>
+-            报价（万元）
+-            <input
+-              inputMode="decimal" value={fields.quote}
+-              placeholder="待口述确认"
+-              onChange={(e) => { setFields((p) => ({ ...p, quote: e.target.value })); answerRevisionRef.current += 1; }}
+-            />
+-          </label>
+-        </div>
+-        <div className={styles.ivActions}>
+-          <button
+-            type="button"
+-            className={styles.ivPrimary}
+-            disabled={busy || activeQuestion === null || answer.trim() === ''}
+-            onClick={submitInterviewRecord}
+-          >
+-            {busy ? '提交中…' : '提交访谈记录'}
+-          </button>
+-          <button
+-            type="button"
+-            className={styles.ivSecondary}
+-            disabled={busy || activeQuestion === null || paused}
+-            title={paused ? '本轮已处于暂停状态' : undefined}
+-            onClick={pauseRound}
+-          >
+-            暂停本轮
+-          </button>
+-        </div>
+-        {paused ? <p className={styles.remoteNote} role="status">本轮判断已暂停：模型推进与确认类动作被服务端阻断；补证/纠正仍可用。</p> : null}
+-      </section>
+-
+-      {/* 证据入口（折叠） */}
+-      <details
+-        className={styles.ivSection}
+-        onToggle={(e) => { if ((e.target as HTMLDetailsElement).open && activeEvidenceId === null && (detail?.evidence.length ?? 0) > 0) setActiveEvidenceId(detail!.evidence[0].evidenceId); }}
+-      >
+-        <summary>证据（{detail?.evidence.length ?? 0}）与本地拍照</summary>
+-        <div className={styles.remoteFixtures}>
+-          <button type="button" className={styles.remoteBtnSmall} disabled={busy} onClick={() => { void runWrite('evidence', { fixtureId: 'fixture-inspection', expectedVersion: remoteVersion }, 'attach-evidence', () => setNotice('证据已附着（合成）'), session?.sessionId ?? ''); }}>
+-            附着现场巡检（合成）
+-          </button>
+-          <button type="button" className={styles.remoteBtnSmall} disabled={busy} onClick={() => { void runWrite('evidence', { fixtureId: 'fixture-equipment', expectedVersion: remoteVersion }, 'attach-evidence', () => setNotice('证据已附着（合成）'), session?.sessionId ?? ''); }}>
+-            附着设备清单（合成）
+-          </button>
+-        </div>
+-        <ul className={styles.remoteEvidenceList}>
+-          {(detail?.evidence ?? []).map((e) => (
+-            <li key={e.evidenceId} className={styles.remoteEvidenceItem} data-active={e.evidenceId === activeEvidenceId ? 'yes' : 'no'}>
+-              <button type="button" className={styles.remoteEvidenceBtn} onClick={() => setActiveEvidenceId(e.evidenceId)}>
+-                {e.title}
+-              </button>
+-              <span className={styles.remoteEvidenceMeta}>
+-                {e.verificationStatus === 'human_verified' ? '已核实' : e.verificationStatus === 'contested' ? '有争议' : '未核实'}
+-                {e.expired ? ' · 已过期' : ''}
+-              </span>
+-            </li>
+-          ))}
+-          {(detail?.evidence.length ?? 0) === 0 ? <li className={styles.remoteNote}>尚无证据。</li> : null}
+-        </ul>
+-        <CameraPanel />
+-      </details>
+-
+-      {/* 项目沟通与历史问答（折叠） */}
+-      <details className={styles.ivSection}>
+-        <summary>项目沟通与历史问答（{detail?.annotations.length ?? 0} 问）</summary>
+-        <ul className={styles.remoteAnnotations}>
+-          {(detail?.annotations ?? []).map((a) => (
+-            <li key={a.annotationId} className={styles.remoteAnnotation} data-expired={a.expired ? 'yes' : 'no'}>
+-              <p className={styles.remoteQuestion}>【证据 v{a.evidenceVersion}{a.expired ? ' · 证据已过期' : ''}】{a.question}</p>
+-              {a.replies.map((r) => (
+-                <p key={r.replyId} className={styles.remoteReply} data-kind={r.kind}>
+-                  <b>{r.kind === 'model_simulation' ? '模型（模拟）' : r.kind === 'business' ? '业务' : '专业域'}</b>：{r.text}
+-                </p>
+-              ))}
+-              <div className={styles.remoteReplyRow}>
+-                <button
+-                  type="button"
+-                  className={styles.remoteBtnSmall}
+-                  disabled={busy || paused}
+-                  title={paused ? '本轮判断已暂停：模型推进被服务端阻断' : undefined}
+-                  onClick={() => { void runWrite('annotations/simulate', { annotationId: a.annotationId, expectedVersion: remoteVersion }, 'simulate-followups', () => setNotice('模拟追问已生成（SIMULATION）'), session?.sessionId ?? ''); }}
+-                >
+-                  模拟追问（SIMULATION）
+-                </button>
+-              </div>
+-            </li>
+-          ))}
+-          {(detail?.annotations.length ?? 0) === 0 ? <li className={styles.remoteNote}>暂无历史问答。</li> : null}
+-        </ul>
+-      </details>
+-
+-      {/* 演示设置（折叠：技术 ID/调试/演示控制） */}
+-      <details className={styles.ivSection} open={showTech} onToggle={(e) => setShowTech((e.target as HTMLDetailsElement).open)}>
+-        <summary>演示设置（技术详情 · 合成演示控制）</summary>
+-        <p className={styles.remoteNote}>
+-          会话 {session?.sessionId.slice(0, 12)}… · 项目 {session?.projectId} · 远端 v{remoteVersion} · 视频 {session?.video.state}（provider: {session?.video.provider}）
+-        </p>
+-        <div className={styles.remoteCalcRow}>
+-          <button type="button" className={styles.remoteBtnSmall} disabled={busy} onClick={() => { void runWrite('calculation', { expectedVersion: remoteVersion }, 'attempt-calculation', (data) => { setCalcResult([data.calculation as SessionDetail['calculations'][0]]); }, session?.sessionId ?? ''); }}>
+-            尝试核算（未配置 → 如实显示）
+-          </button>
+-          <button
+-            type="button"
+-            className={styles.remoteBtnSmall}
+-            disabled={busy || !paused || activeQuestion === null}
+-            onClick={() => { void runWrite('reviews', { targetType: 'annotation', targetId: activeQuestion?.annotationId ?? '', targetVersion: activeQuestion?.version ?? 0, action: 'resume_round', opinion: '演示恢复（合成）', expectedVersion: remoteVersion }, 'create-review', () => setNotice('已显式恢复本轮'), session?.sessionId ?? ''); }}
+-          >
+-            恢复本轮（显式）
+-          </button>
+-        </div>
+-        <ul className={styles.remoteCalcList}>
+-          {(calcResult ?? detail?.calculations ?? []).slice(-1).reverse().map((c) => (
+-            <li key={c.calcId} className={styles.remoteCalcItem} data-status={c.status} data-stale={c.stale ? 'yes' : 'no'}>
+-              <b>{c.status}{c.stale ? '（已过期）' : ''}</b>
+-              <ul>{c.reasons.map((r, i) => <li key={i}>{r}</li>)}</ul>
+-            </li>
+-          ))}
+-        </ul>
+-        <p className={styles.remoteNote}>暂停/恢复等复核动作在下方留痕。</p>
+-        <ul className={styles.remoteReviewLog}>
+-          {(detail?.reviews ?? []).slice(-4).reverse().map((r) => (
+-            <li key={r.reviewId}>{REVIEW_ACTION_LABEL[r.action] ?? r.action} · 针对 v{r.targetVersion} · {r.opinion.slice(0, 26)}</li>
+-          ))}
+-        </ul>
+-      </details>
+-
+-      <p className={styles.ivFooter}>合成演示 · 不执行正式审批 · 视频/语音未接入如实显示 · 模型输出仅为模拟（authority=none）</p>
++      </div>
+ 
+-      {/* 访谈全屏（Goal 工作包3）：顶部阶段/建议/选项 → 中部画面位（诚实未接入）→ 底部转写+时间戳可回看 + 左翻转/中挂断/右拍照。 */}
++      {/* 访谈全屏（模拟视图）：顶部阶段/建议 → 中部画面位（诚实未接入）→ 底部转写+时间戳可回看 + 左翻转/中挂断/右拍照。 */}
+       {fullscreen ? (
+-        <div className={styles.ivFull} role="dialog" aria-label="全屏访谈（模拟画面）">
+-          <header className={styles.ivFullTop}>
+-            <span className={styles.ivChip} data-state={paused ? 'paused' : 'live'}>{paused ? '已暂停' : '访谈中'}</span>
+-            <span className={styles.ivFullHint}>
++        <div className={styles.sivFull} role="dialog" aria-label="全屏访谈（模拟画面）">
++          <header className={styles.sivFullTop}>
++            <span className={styles.sivTopChip} data-state={paused ? 'paused' : 'live'}>
++              {paused ? <WarnIcon size={13} className={styles.sivChipIcon} /> : <span className={styles.sivDot} aria-hidden="true" />}
++              {paused ? '已暂停' : '访谈中'}
++            </span>
++            <span className={styles.sivFullHint}>
+               {activeQuestion !== null ? `当前问题：${activeQuestion.question.slice(0, 26)}…` : '当前待办：补充设备清单'}
+             </span>
+-            <span className={styles.ivFullSuggest}>建议追问（模拟）：设备检修计划与书面确认</span>
++            <span className={styles.sivFullSuggest}>建议追问（模拟）：设备检修计划与书面确认</span>
+           </header>
+-          <div className={styles.ivFullStage}>
+-            <span className={styles.ivSimAvatar}>实控人画面位</span>
+-            <span className={styles.remoteSimTag}>视频未接入 · 模拟视图（不申请摄像头/麦克风）</span>
++          <div className={styles.sivFullStage}>
++            <span className={styles.sivFullAvatar}>{simulationOn ? '实控人（合成头像位）' : '实控人画面位'}</span>
++            <span className={styles.sivSimTag}>{simulationOn ? '模拟会议视图 · 非真实画面' : '视频未接入 · 模拟视图（不申请摄像头/麦克风）'}</span>
+           </div>
+-          <div className={styles.ivFullTranscript} aria-label="转写记录（合成事件，可回看）">
+-            <p className={styles.ivTranscriptTitle}>实时转写（合成事件 · 非真实 ASR · 可回看）</p>
+-            <ul className={styles.ivTranscriptList}>
+-              {transcript.length === 0 ? <li className={styles.remoteNote}>暂无转写事件；可在退出全屏后添加合成转写演示事件。</li> : null}
++          <div className={styles.sivFullTranscript} aria-label="转写记录（合成事件，可回看）">
++            <p className={styles.sivTranscriptTitle}>实时转写（合成事件 · 非真实 ASR · 可回看）</p>
++            <ul className={styles.sivTranscriptList}>
++              {transcript.length === 0 ? <li className={styles.sivNote}>暂无转写事件；可在退出全屏后添加合成转写演示事件。</li> : null}
+               {transcript.slice().reverse().map((t, i) => (
+-                <li key={`${t.at}-${i}`} className={styles.ivTranscriptItem}>
+-                  <time className={styles.ivTranscriptTime}>{t.at}</time>
+-                  <span className={styles.ivTranscriptWho}>{t.who}</span>
+-                  <span className={styles.ivTranscriptText}>{t.text}</span>
++                <li key={`${t.at}-${i}`} className={styles.sivTranscriptItem}>
++                  <time className={styles.sivTranscriptTime}>{t.at}</time>
++                  <span className={styles.sivTranscriptWho}>{t.who}</span>
++                  <span className={styles.sivTranscriptText}>{t.text}</span>
+                 </li>
+               ))}
+             </ul>
+           </div>
+-          {flipNote !== null ? <p className={styles.ivFullFlipNote} role="status">{flipNote}</p> : null}
+-          <div className={styles.ivFullControls}>
++          {flipNote !== null ? <p className={styles.sivFullFlipNote} role="status">{flipNote}</p> : null}
++          <div className={styles.sivFullControls}>
+             <button
+               type="button"
+-              className={styles.ivFullBtn}
++              className={styles.sivFullBtn}
+               title="视频未接入：无轨道可翻转"
+               onClick={() => setFlipNote('视频未接入：没有可翻转的摄像头轨道（合成演示）。')}
+             >
+               <span aria-hidden="true">⟲</span>
+               翻转
+             </button>
+-            <button type="button" className={styles.ivFullHangup} onClick={() => { setFullscreen(false); setNotice('已退出全屏访谈（模拟视图关闭，无真实通话）。'); }}>
++            <button type="button" className={styles.sivFullHangup} onClick={() => { setFullscreen(false); setNotice('已退出全屏访谈（模拟视图关闭，无真实通话）。'); }}>
+               <span aria-hidden="true">◉</span>
+               挂断
+             </button>
+             <button
+               type="button"
+-              className={styles.ivFullBtn}
++              className={styles.sivFullBtn}
+               onClick={() => { setFullscreen(false); setNotice('已退出全屏；请使用"证据与本地拍照"面板的拍照/选图入口（本地预览，尚未入库）。'); }}
+             >
+               <span aria-hidden="true">◉</span>
+=== diff app/v5-preview/remote-session/camera-panel.tsx (baseline → current) ===
+--- /c/Users/22673/Desktop/Anthropic/V6/handoff/SE_REBUILD_20260913/baseline/app/v5-preview/remote-session/camera-panel.tsx	2026-09-13 18:49:15.093975200 +0800
++++ app/v5-preview/remote-session/camera-panel.tsx	2026-09-13 19:03:41.703773800 +0800
+@@ -18,7 +18,7 @@
+   CAMERA_CONTROLLER_VERSION,
+   buildResourceReceipt,
+ } from '../../../lib/v5-preview/camera/camera-controller.mjs';
+-import styles from '../preview.module.css';
++import styles from './se-interview.module.css';
+ 
+ // 结构化视图类型（与 INTEGRATION.md §4/§5 冻结字段对应；.mjs 零依赖无 @types，不加类型包）。
+ interface CameraCapsView {
+@@ -297,12 +297,12 @@
+   const openAllowed = st !== 'requesting' && st !== 'capturing' && !live;
+ 
+   return (
+-    <div className={styles.remoteCamera} aria-label="本地拍照/预览（尚未入库）">
+-      <div className={styles.remoteCameraRow}>
+-        <h3 className={styles.remoteH3}>本地拍照/预览（用户主动 · 尚未入库）</h3>
++    <div className={styles.sivCamera} aria-label="本地拍照/预览（尚未入库）">
++      <div className={styles.sivCameraRow}>
++        <h3 className={styles.sivCameraH3}>本地拍照/预览（用户主动 · 尚未入库）</h3>
+         <button
+           type="button"
+-          className={styles.remoteBtnSmall}
++          className={styles.sivBtnSmall}
+           aria-expanded={!collapsed}
+           aria-controls="v5-camera-body"
+           onClick={() => setCollapsed((v) => !v)}
+@@ -310,58 +310,58 @@
+           {collapsed ? '展开面板（不停轨）' : '收起面板（不停轨）'}
+         </button>
+       </div>
+-      <p className={styles.remoteNote}>
++      <p className={styles.sivNote}>
+         照片仅在本机预览：不上传、不入库、不提交模型；刷新或离开本页将清除本地预览。『原件』仅指本应用收到的文件，不证明设备或现场真实性。
+       </p>
+-      <p className={styles.remoteNote} data-controller-version={CAMERA_CONTROLLER_VERSION}>
++      <p className={styles.sivNote} data-controller-version={CAMERA_CONTROLLER_VERSION}>
+         相机控制器 {CAMERA_CONTROLLER_VERSION}：拍完默认关轨（单次）；连续拍摄须显式开启。收起面板不改变生命周期（不停轨、不释放预览）。
+       </p>
+       {live ? (
+-        <p className={styles.remoteNote} role="status" data-live="true" style={{ fontWeight: 600 }}>
++        <p className={styles.sivNote} role="status" data-live="true">
+           摄像头开启中（视频轨道存活）{continuous ? ' · 连续拍摄模式（显式开启）' : ' · 单次模式：拍完自动关轨'}
+         </p>
+       ) : null}
+       <div id="v5-camera-body" hidden={collapsed}>
+         {caps === null ? (
+-          <button type="button" className={styles.remoteBtnSmall} onClick={detectNow}>
++          <button type="button" className={styles.sivBtnSmall} onClick={detectNow}>
+             检测本机拍照能力（不申请权限）
+           </button>
+         ) : (
+-          <ul className={styles.remoteCaps}>
++          <ul className={styles.sivCaps}>
+             <li>文件选择/系统拍照输入：可用</li>
+             <li>本地相机取景（getUserMedia）：{caps.getUserMedia === 'available' ? '可用（需你点击授权）' : '不可用（将提供选图方式）'}</li>
+             <li>单次曝光拍照（ImageCapture.takePhoto）：{caps.imageCapture === 'available' ? '可用' : '不可用（回退选图，不以截帧冒充）'}</li>
+             <li>安全上下文：{caps.secureContext === null ? '未知（以实际调用为准）' : caps.secureContext ? '是' : '否（直开摄像头将被拒绝，请用选图）'}</li>
+           </ul>
+         )}
+-        <div className={styles.remoteCameraRow}>
++        <div className={styles.sivCameraRow}>
+           {/* 渐进增强入口：系统拍照/选图；capture 仅为提示，浏览器返回图库时来源未知 */}
+-          <label className={styles.remoteBtnSmall}>
++          <label className={styles.sivBtnSmall}>
+             选择/拍摄图片
+             <input
+               type="file"
+               accept="image/*"
+               capture="environment"
+-              style={{ display: 'none' }}
++              className={styles.sivFileInput}
+               onChange={(e) => { void onFilesSelected(e.target.files, true); e.target.value = ''; }}
+             />
+           </label>
+-          <label className={styles.remoteBtnSmall}>
++          <label className={styles.sivBtnSmall}>
+             从图库选择（来源未知）
+             <input
+               type="file"
+               accept="image/*"
+-              style={{ display: 'none' }}
++              className={styles.sivFileInput}
+               onChange={(e) => { void onFilesSelected(e.target.files, false); e.target.value = ''; }}
+             />
+           </label>
+           {openAllowed ? (
+-            <button type="button" className={styles.remoteBtnSmall} onClick={openCamera}>
++            <button type="button" className={styles.sivBtnSmall} onClick={openCamera}>
+               打开本地相机取景（仅视频轨道）
+             </button>
+           ) : null}
+           {st === 'requesting' ? (
+-            <button type="button" className={styles.remoteBtnSmall} onClick={cancelOpen}>
++            <button type="button" className={styles.sivBtnSmall} onClick={cancelOpen}>
+               取消开启（不等待授权）
+             </button>
+           ) : null}
+@@ -369,18 +369,18 @@
+             <>
+               <button
+                 type="button"
+-                className={styles.remoteBtnSmall}
++                className={styles.sivBtnSmall}
+                 disabled={st !== 'ready' || caps?.imageCapture === 'missing'}
+                 onClick={takePhoto}
+               >
+                 拍照（takePhoto）
+               </button>
+-              <button type="button" className={styles.remoteBtnSmall} onClick={closeCamera}>
++              <button type="button" className={styles.sivBtnSmall} onClick={closeCamera}>
+                 关闭相机
+               </button>
+             </>
+           ) : null}
+-          <label className={styles.remoteBtnSmall} htmlFor="v5-camera-continuous">
++          <label className={styles.sivBtnSmall} htmlFor="v5-camera-continuous">
+             <input
+               id="v5-camera-continuous"
+               type="checkbox"
+@@ -389,26 +389,26 @@
+             />
+             {' '}连续拍摄（显式开启；默认拍完关轨）
+           </label>
+-          <button type="button" className={styles.remoteBtnSmall} onClick={hangupAll}>
++          <button type="button" className={styles.sivBtnSmall} onClick={hangupAll}>
+             挂断并释放全部（停轨+撤 URL）
+           </button>
+         </div>
+-        <p className={styles.remoteNote} data-state={st} data-live={live ? 'yes' : 'no'}>
++        <p className={styles.sivNote} data-state={st} data-live={live ? 'yes' : 'no'}>
+           当前状态：{STATE_LABELS[st] ?? st} · 轨道：{live ? '存活' : '无'} · 预览：
+           {preview ? (decision === 'confirmed' ? '已确认保留（capture_confirmed）' : '待用户确认') : '无'}
+         </p>
+-        {notice !== null ? <p className={styles.remoteNote} role="status">{notice}</p> : null}
++        {notice !== null ? <p className={styles.sivNote} role="status">{notice}</p> : null}
+         <video
+           ref={videoRef}
+-          className={styles.remoteCameraPreview}
++          className={styles.sivCameraPreview}
+           muted
+           playsInline
+           hidden={!live}
+           aria-label="本地相机取景（仅视频轨道，不上传）"
+         />
+         {preview ? (
+-          <div className={styles.remotePhotos} data-preview-id={preview.id} data-decision={decision ?? 'pending'}>
+-            <p className={styles.remotePhotoMeta}>
++          <div className={styles.sivPhotos} data-preview-id={preview.id} data-decision={decision ?? 'pending'}>
++            <p className={styles.sivPhotoMeta}>
+               生命周期：{decision === 'confirmed' ? 'capture_confirmed（用户确认保留）' : '待用户确认（尚未入库、不上传）'}
+               {' · '}来源：{sourceLabel(preview)}
+               {preview.captureHint ? ` · capture 提示：${preview.captureHint.capture}（仅记录，不作来源证明）` : ''}
+@@ -416,41 +416,41 @@
+               {preview.width !== null && preview.height !== null ? ` · ${preview.width}×${preview.height}` : ''}
+               {fileMeta?.lastModified !== null && fileMeta !== null ? ` · 修改时间 ${new Date(fileMeta.lastModified).toLocaleString()}` : ''}
+             </p>
+-            <ul className={styles.remotePhotoList}>
+-              <li className={styles.remotePhotoItem}>
++            <ul className={styles.sivPhotoList}>
++              <li className={styles.sivPhotoItem}>
+                 {preview.url ? (
+                   // eslint-disable-next-line @next/next/no-img-element
+-                  <img src={preview.url} alt="当前本地照片预览（尚未入库）" className={styles.remotePhotoImg} />
++                  <img src={preview.url} alt="当前本地照片预览（尚未入库）" className={styles.sivPhotoImg} />
+                 ) : (
+-                  <span className={styles.remotePhotoMeta}>预览 URL 不可用（object_url_unavailable），原件字节仍在本地内存。</span>
++                  <span className={styles.sivPhotoMeta}>预览 URL 不可用（object_url_unavailable），原件字节仍在本地内存。</span>
+                 )}
+-                <span className={styles.remotePhotoMeta}>
++                <span className={styles.sivPhotoMeta}>
+                   出处：{preview.provenance === 'unverified' ? '未验证（不证明现场拍摄）' : preview.provenance}
+                   {' · '}拍摄时间：{preview.capturedAt === null ? '未知（不解析 EXIF）' : preview.capturedAt}
+                 </span>
+               </li>
+             </ul>
+-            <div className={styles.remoteCameraRow}>
++            <div className={styles.sivCameraRow}>
+               {decision === 'pending' ? (
+                 <>
+-                  <button type="button" className={styles.remoteBtnSmall} onClick={confirmKeep}>
++                  <button type="button" className={styles.sivBtnSmall} onClick={confirmKeep}>
+                     保留这张（确认保留）
+                   </button>
+-                  <button type="button" className={styles.remoteBtnSmall} onClick={cancelPending}>
++                  <button type="button" className={styles.sivBtnSmall} onClick={cancelPending}>
+                     取消（不保留）
+                   </button>
+                 </>
+               ) : null}
+-              <button type="button" className={styles.remoteBtnSmall} onClick={discardCurrent}>
++              <button type="button" className={styles.sivBtnSmall} onClick={discardCurrent}>
+                 清除本地预览（释放内存）
+               </button>
+             </div>
+           </div>
+         ) : null}
+         {records.length > 0 ? (
+-          <div className={styles.remotePhotos}>
+-            <p className={styles.remoteNote}>生命周期记录（仅本地内存，刷新即失；新事件在上）：</p>
+-            <ul className={styles.remoteCaps}>
++          <div className={styles.sivPhotos}>
++            <p className={styles.sivNote}>生命周期记录（仅本地内存，刷新即失；新事件在上）：</p>
++            <ul className={styles.sivCaps}>
+               {records.map((r) => (
+                 <li key={r.id} data-lifecycle={r.label}>
+                   {r.at} · {LIFECYCLE_LABELS[r.label]}（{r.label}）· {r.text}
+=== diff app/v5-preview/se-icons.tsx (baseline → current) ===
+diff: /c/Users/22673/Desktop/Anthropic/V6/handoff/SE_REBUILD_20260913/baseline/app/v5-preview/se-icons.tsx: No such file or directory

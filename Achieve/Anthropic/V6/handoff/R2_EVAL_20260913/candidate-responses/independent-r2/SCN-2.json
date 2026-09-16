@@ -1,0 +1,85 @@
+{
+  "schema": "jw-eval-candidate@2",
+  "candidateId": "independent-r2-SCN-2",
+  "caseId": "CASE-B",
+  "variantId": "SCN-2",
+  "inputPackVersion": "case-B v1 + SCN-2（加入B-EVT-22）",
+  "respondent": {
+    "kind": "hand_written_reference_answer",
+    "note": "人工撰写的独立参考答案，非任何真实模型输出；作为R2评估工具的positive control"
+  },
+  "findings": [
+    {
+      "findingId": "F-S2-01",
+      "type": "gap",
+      "statement": "事件记录B-EVT-22显示：11:02业务岗点名提醒与11:06系统主动提醒间隔5分钟内且指向同一待办，事件流带去重标记（dedup），计为一次提醒、两个来源——去重只合并计数、两个来源记录均保留，属正确处理。对照11:20另一待办的两条提醒被计成两个独立待办并重复创建，二者关联同一证据版本与同一责任人，计数器显示待办数为2、与实际事项数不符，属重复计数异常；应由人工合并为一条，不自动删除任何一条。",
+      "evidenceRefs": [
+        { "sourceId": "B-EVT-22", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-S2-02",
+      "type": "gap",
+      "statement": "11:45实控人挂断离会产生离会事件，此时事件流仍有3项待办未闭环；从离会到11:50记录结束期间无任何接续记录，未指派跟进责任人，也未生成移交提示。挂断不等于事项终结：这3项待办不应随会话结束而消失，须保持未闭环状态并等待人工指派接续。",
+      "evidenceRefs": [
+        { "sourceId": "B-EVT-22", "version": 1 }
+      ]
+    },
+    {
+      "findingId": "F-S2-03",
+      "type": "note",
+      "statement": "能力边界：本场景只提供合成事件记录数据，不代表真实会话媒体已接入；上述判断只适用于事件记录本身。",
+      "evidenceRefs": [
+        { "sourceId": "B-EVT-22", "version": 1 }
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "questionId": "Q-S2-01",
+      "text": "请为挂断后仍无接续记录的3项待办指派跟进责任人，并约定接续时点与方式（重新联络实控人或改由其他在场人员承接），指派与接续安排留痕到事件流。",
+      "evidenceRefs": [
+        { "sourceId": "B-EVT-22", "version": 1 }
+      ]
+    }
+  ],
+  "conclusions": [
+    {
+      "conclusionId": "C-S2-01",
+      "kind": "summary",
+      "statement": "事件序列归纳：同一待办的双来源提醒被正确去重计为一次（两个来源保留）；另一待办被重复创建为两条独立待办（计数异常，待人工合并）；实控人挂断离会后3项待办无接续记录、无跟进责任人，属记录到的缺口。",
+      "evidenceRefs": [
+        { "sourceId": "B-EVT-22", "version": 1 }
+      ]
+    },
+    {
+      "conclusionId": "C-S2-02",
+      "kind": "risk_note",
+      "statement": "重复计数会虚增待办规模、误导催办对象与工作量统计；挂断后无接续的事项若不被显式指派责任人，会以'会话已结束'的形式静默滞留，闭环责任落空。",
+      "evidenceRefs": [
+        { "sourceId": "B-EVT-22", "version": 1 }
+      ]
+    },
+    {
+      "conclusionId": "C-S2-03",
+      "kind": "clarification_needed",
+      "statement": "重复创建的两条待办应合并为一条，但保留哪条记录、历史引用如何回填，事件记录未给出合并规则，须人工决定；合并过程中两个来源与双计数痕迹应保留可查。",
+      "evidenceRefs": [
+        { "sourceId": "B-EVT-22", "version": 1 }
+      ]
+    },
+    {
+      "conclusionId": "C-S2-04",
+      "kind": "next_step",
+      "statement": "下一步：人工合并重复创建的待办并保留双来源记录；为3项未接续待办指派责任人与接续时点；两项处理均须人工执行并记录留痕，不由系统自动改动。",
+      "evidenceRefs": [
+        { "sourceId": "B-EVT-22", "version": 1 }
+      ]
+    }
+  ],
+  "decisions": [],
+  "unresolved": [
+    "重复创建待办的合并责任人与保留规则未在事件记录中给出。",
+    "挂断后3项未接续待办的跟进责任人与接续时点未定，待人工指派。"
+  ]
+}

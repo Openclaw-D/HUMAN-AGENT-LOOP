@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TAG Workflow Lab</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div><p class="eyebrow">TAG · P0 WORKFLOW LAB</p><h1>Communication → evidence → review</h1></div>
+        <p class="simulation-badge">SIMULATED LOCAL ADAPTER · NOT CONNECTED TO BACKEND OR MODEL</p>
+      </header>
+
+      <section class="notice" aria-label="Lab boundary">
+        This is a synthetic acceptance aid. It does not store authoritative state, call a model, or create a real Decision. Provider-generated and simulated values are marked below.
+      </section>
+
+      <section class="workflow-card" aria-labelledby="workflow-title">
+        <div class="section-heading"><div><p class="eyebrow">EVENT SEQUENCE</p><h2 id="workflow-title">Four-lane review loop</h2></div><span>Click any node for its Command, State, Policy, Event, and Test details.</span></div>
+        <div id="workflow" class="workflow" aria-label="Workflow lanes"></div>
+      </section>
+
+      <section class="workbench" aria-label="Workflow controls and state">
+        <form id="command-form" class="command-panel">
+          <div class="section-heading"><div><p class="eyebrow">SYNTHETIC COMMAND</p><h2>Run one test action</h2></div><span id="step-counter">0 / 10 completed</span></div>
+          <label for="material">Synthetic material <textarea id="material" rows="4">Supplier certificate cites calibration results, but the date is missing.</textarea></label>
+          <div class="field-grid">
+            <label for="role">Actor <select id="role"><option value="business">Business human</option><option value="risk">Risk human</option><option value="agent">Project agent</option></select></label>
+            <label for="action">Action <select id="action"></select></label>
+          </div>
+          <button id="run-action" type="submit">Execute one step</button>
+          <p id="outcome" class="outcome" aria-live="polite">Ready. The lab begins with no authoritative records.</p>
+          <p class="microcopy">Rejected commands add no simulated event. Agent output is always <code>advisoryOnly</code>; only Risk can pass or veto this lab flow.</p>
+        </form>
+
+        <aside class="state-panel">
+          <div class="section-heading"><div><p class="eyebrow">SIMULATED STATE</p><h2>Current review</h2></div><span class="unverified">UNVERIFIED</span></div>
+          <dl id="state-summary" class="state-summary"></dl>
+          <div class="timeline-wrap"><h3>Event timeline</h3><ol id="timeline" class="timeline"></ol></div>
+        </aside>
+      </section>
+
+      <section class="bottom-grid">
+        <article class="detail-panel"><div class="section-heading"><div><p class="eyebrow">SELECTED NODE</p><h2 id="detail-title">Select a workflow node</h2></div><span id="detail-status"></span></div><div id="details" class="details empty">Choose a node above to inspect the five acceptance dimensions.</div></article>
+        <article class="snapshot-panel"><div class="section-heading"><div><p class="eyebrow">IMMUTABLE SNAPSHOTS</p><h2>S1 / S2 comparison</h2></div><span class="unverified">SIMULATED</span></div><div id="snapshots" class="snapshots"></div></article>
+      </section>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

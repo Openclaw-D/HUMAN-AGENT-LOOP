@@ -1,0 +1,57 @@
+{
+  "datasetVersion": "1.0",
+  "isSimulated": true,
+  "dataStatus": "synthetic_demo",
+  "source": "deterministic_offline_eval_fixture",
+  "disclaimer": "仅用于脱敏合成离线评测，不是客户材料、公开企业事实或统计验证样本。",
+  "materialTemplate": {
+    "mediaKind": "image",
+    "taskGoals": ["observe", "extract_field_candidates", "scene_spec"],
+    "regions": [
+      {
+        "fieldKey": "registration_valid",
+        "label": "登记状态有效",
+        "unit": null,
+        "bbox": {"x": 0.08, "y": 0.1, "width": 0.36, "height": 0.16}
+      },
+      {
+        "fieldKey": "equipment_count",
+        "label": "在用设备数量",
+        "unit": "台",
+        "bbox": {"x": 0.08, "y": 0.36, "width": 0.36, "height": 0.16}
+      },
+      {
+        "fieldKey": "capacity_utilization_pct",
+        "label": "产能利用率",
+        "unit": "%",
+        "bbox": {"x": 0.54, "y": 0.36, "width": 0.36, "height": 0.16}
+      }
+    ]
+  },
+  "cases": [
+    {"caseId":"mg-eval-01","projectId":"eval-project-01","industry":"金属精密加工","smoke":true,"sourceValues":{"registration_valid":true,"equipment_count":16,"capacity_utilization_pct":62.5}},
+    {"caseId":"mg-eval-02","projectId":"eval-project-02","industry":"金属精密加工","smoke":false,"sourceValues":{"registration_valid":true,"equipment_count":17,"capacity_utilization_pct":63.5}},
+    {"caseId":"mg-eval-03","projectId":"eval-project-03","industry":"金属精密加工","smoke":false,"sourceValues":{"registration_valid":true,"equipment_count":18,"capacity_utilization_pct":64.5}},
+    {"caseId":"mg-eval-04","projectId":"eval-project-04","industry":"金属精密加工","smoke":false,"sourceValues":{"registration_valid":true,"equipment_count":19,"capacity_utilization_pct":65.5}},
+    {"caseId":"mg-eval-05","projectId":"eval-project-05","industry":"塑料制品加工","smoke":true,"sourceValues":{"registration_valid":true,"equipment_count":20,"capacity_utilization_pct":66.5}},
+    {"caseId":"mg-eval-06","projectId":"eval-project-06","industry":"塑料制品加工","smoke":false,"sourceValues":{"registration_valid":true,"equipment_count":21,"capacity_utilization_pct":67.5}},
+    {"caseId":"mg-eval-07","projectId":"eval-project-07","industry":"塑料制品加工","smoke":false,"sourceValues":{"registration_valid":true,"equipment_count":22,"capacity_utilization_pct":68.5}},
+    {"caseId":"mg-eval-08","projectId":"eval-project-08","industry":"塑料制品加工","smoke":false,"sourceValues":{"registration_valid":false,"equipment_count":23,"capacity_utilization_pct":69.5}},
+    {"caseId":"mg-eval-09","projectId":"eval-project-09","industry":"纺织制造","smoke":true,"sourceValues":{"registration_valid":true,"equipment_count":24,"capacity_utilization_pct":70.5}},
+    {"caseId":"mg-eval-10","projectId":"eval-project-10","industry":"纺织制造","smoke":false,"sourceValues":{"registration_valid":true,"equipment_count":25,"capacity_utilization_pct":71.5}},
+    {"caseId":"mg-eval-11","projectId":"eval-project-11","industry":"纺织制造","smoke":false,"sourceValues":{"registration_valid":true,"equipment_count":26,"capacity_utilization_pct":72.5}},
+    {"caseId":"mg-eval-12","projectId":"eval-project-12","industry":"纺织制造","smoke":false,"sourceValues":{"registration_valid":true,"equipment_count":27,"capacity_utilization_pct":73.5}},
+    {"caseId":"mg-eval-13","projectId":"eval-project-13","industry":"印刷包装","smoke":true,"sourceValues":{"registration_valid":true,"equipment_count":28,"capacity_utilization_pct":74.5}},
+    {"caseId":"mg-eval-14","projectId":"eval-project-14","industry":"印刷包装","smoke":false,"sourceValues":{"registration_valid":true,"equipment_count":29,"capacity_utilization_pct":75.5}},
+    {"caseId":"mg-eval-15","projectId":"eval-project-15","industry":"印刷包装","smoke":false,"sourceValues":{"registration_valid":true,"equipment_count":30,"capacity_utilization_pct":76.5}},
+    {"caseId":"mg-eval-16","projectId":"eval-project-16","industry":"印刷包装","smoke":false,"sourceValues":{"registration_valid":false,"equipment_count":31,"capacity_utilization_pct":77.5}},
+    {"caseId":"mg-eval-17","projectId":"eval-project-17","industry":"电子制造","smoke":true,"sourceValues":{"registration_valid":true,"equipment_count":32,"capacity_utilization_pct":78.5}},
+    {"caseId":"mg-eval-18","projectId":"eval-project-18","industry":"电子制造","smoke":false,"sourceValues":{"registration_valid":true,"equipment_count":33,"capacity_utilization_pct":79.5}},
+    {"caseId":"mg-eval-19","projectId":"eval-project-19","industry":"电子制造","smoke":false,"sourceValues":{"registration_valid":true,"equipment_count":34,"capacity_utilization_pct":80.5}},
+    {"caseId":"mg-eval-20","projectId":"eval-project-20","industry":"电子制造","smoke":false,"sourceValues":{"registration_valid":true,"equipment_count":35,"capacity_utilization_pct":81.5}},
+    {"caseId":"mg-eval-21","projectId":"eval-project-21","industry":"玻璃深加工","smoke":true,"sourceValues":{"registration_valid":true,"equipment_count":36,"capacity_utilization_pct":82.5}},
+    {"caseId":"mg-eval-22","projectId":"eval-project-22","industry":"玻璃深加工","smoke":false,"sourceValues":{"registration_valid":true,"equipment_count":37,"capacity_utilization_pct":83.5}},
+    {"caseId":"mg-eval-23","projectId":"eval-project-23","industry":"玻璃深加工","smoke":false,"sourceValues":{"registration_valid":true,"equipment_count":38,"capacity_utilization_pct":84.5}},
+    {"caseId":"mg-eval-24","projectId":"eval-project-24","industry":"玻璃深加工","smoke":false,"sourceValues":{"registration_valid":false,"equipment_count":39,"capacity_utilization_pct":85.5}}
+  ]
+}

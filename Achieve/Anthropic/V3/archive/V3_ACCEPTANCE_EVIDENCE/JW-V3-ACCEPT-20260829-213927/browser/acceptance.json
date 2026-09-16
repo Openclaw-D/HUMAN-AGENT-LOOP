@@ -1,0 +1,180 @@
+{
+  "status": "PASS_WITH_MANUAL_KEYBOARD_ACTIVATION_PENDING",
+  "acceptedAt": "2026-08-29T13:50:29.370Z",
+  "browser": "Codex in-app Browser / Sites right panel",
+  "url": "http://127.0.0.1:4311/",
+  "requestedPhysicalViewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "observedCssViewport": {
+    "width": 1271,
+    "height": 715,
+    "devicePixelRatio": 1.5099999559919013,
+    "scrollWidth": 1271,
+    "scrollHeight": 715
+  },
+  "finalState": {
+    "roles": [
+      "协同",
+      "业务",
+      "风控",
+      "外联"
+    ],
+    "contextVersion": "CTX-0003",
+    "commencementVisible": true,
+    "deviationChartVisible": true,
+    "timeGrain": "季"
+  },
+  "timeGrainEvidence": [
+    {
+      "active": "年",
+      "grain": "年",
+      "profit": "净利润改善4272万元目标5120万元应达4600万元差值-328万元预测口径 · 年"
+    },
+    {
+      "active": "半年",
+      "grain": "半年",
+      "profit": "净利润改善2152万元目标2560万元应达2300万元差值-148万元预测口径 · 半年"
+    },
+    {
+      "active": "季",
+      "grain": "季",
+      "profit": "净利润改善1092万元目标1280万元应达1150万元差值-58万元预测口径 · 季"
+    },
+    {
+      "active": "月",
+      "grain": "月",
+      "profit": "净利润改善384万元目标430万元应达383万元差值+1万元预测口径 · 月"
+    },
+    {
+      "active": "周",
+      "grain": "周",
+      "profit": "净利润改善89万元目标98万元应达88万元差值+1万元预测口径 · 周"
+    },
+    {
+      "active": "日",
+      "grain": "日",
+      "profit": "净利润改善17.4万元目标20万元应达17.5万元差值-0.1万元预测口径 · 日"
+    }
+  ],
+  "console": {
+    "warnings": 0,
+    "errors": 0
+  },
+  "screenshot": {
+    "file": "browser/sites-1080p-god-view.png",
+    "sha256": "7088a1ed24133f6c526ad8e4285cd94e32902b121b0baf7ec0e86e0b331bea78",
+    "bytes": 97025
+  },
+  "note": "Windows display scaling maps the 1920x1080 physical viewport to a 1271x715 CSS viewport; all three desktop columns remain visible with no horizontal overflow.",
+  "finalRuntimeEpoch": "RUNTIME-0006",
+  "desktop1080": {
+    "status": "PASS",
+    "requestedPhysicalViewport": {
+      "width": 1920,
+      "height": 1080
+    },
+    "observedCssViewport": {
+      "width": 1271,
+      "height": 715,
+      "devicePixelRatio": 1.5100000606477266
+    },
+    "threeColumnsVisible": true,
+    "consoleWarnings": 0,
+    "consoleErrors": 0
+  },
+  "laptop1366": {
+    "status": "PASS",
+    "requestedPhysicalViewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "observedCssViewport": {
+      "width": 904,
+      "height": 508,
+      "devicePixelRatio": 1.5099999559919013
+    },
+    "overallHorizontalOverflow": false,
+    "caseWorkbenchReachable": true,
+    "processCount": 5,
+    "commencementTargetReachable": true
+  },
+  "mobile390": {
+    "status": "PASS",
+    "requestedPhysicalViewport": {
+      "width": 390,
+      "height": 844
+    },
+    "observedCssViewport": {
+      "width": 258,
+      "height": 559,
+      "devicePixelRatio": 1.5099999559919013
+    },
+    "overallHorizontalOverflow": false,
+    "roles": [
+      "协同",
+      "业务",
+      "风控",
+      "外联"
+    ],
+    "externalCaseCount": 1,
+    "externalProcessCount": 1,
+    "internalKpiVisible": false,
+    "trace": [
+      "business T1 -> CTX-0001",
+      "customer T2 -> CTX-0002 and credit regression",
+      "customer T3 Evidence staged",
+      "supplier T3 Evidence staged",
+      "business ContextCommit -> CTX-0003"
+    ],
+    "customerAndSupplierIsolation": true
+  },
+  "accessibility": {
+    "status": "MANUAL_ACTIVATION_PENDING",
+    "nativeButtons": true,
+    "focusVisibleRuleCount": 2,
+    "roleNavigationAriaLabel": "角色应用",
+    "chatTextareaAriaLabel": "协同消息",
+    "reducedMotionRule": true,
+    "focusEstablished": true,
+    "limitation": "Codex in-app Browser key dispatch kept focus on the selected native button but did not emit the browser activation click for Enter/Space. A human Tab/Enter smoke remains required; this is not recorded as PASS."
+  },
+  "artifacts": [
+    {
+      "file": "browser/sites-1080p-god-view.png",
+      "bytes": 104577,
+      "sha256": "243c54ddd2753feaee6bc313997efde35a16eb60be72aff58f26d2d2816e98f4"
+    },
+    {
+      "file": "browser/sites-1366x768-god-view.png",
+      "bytes": 41699,
+      "sha256": "d0c1add36af707bfc81780a6ddc0e3fef795e36816de648e4d9c3b22e9c72b7b"
+    },
+    {
+      "file": "browser/sites-1366x768-case-workbench.png",
+      "bytes": 13044,
+      "sha256": "3241bdf6f564470244ac8e314a67365e8d2504a8a644fd4cacc11deb635c4188"
+    },
+    {
+      "file": "browser/sites-390x844-external-invitation.png",
+      "bytes": 21381,
+      "sha256": "77379698e12f85be2f7e9c4a2aa4e13c80b1f613018e3837a9447ee10a141d33"
+    },
+    {
+      "file": "browser/sites-390x844-customer-t2.png",
+      "bytes": 7218,
+      "sha256": "78c0aec1c872363cb2aa7c0724f01aa6f25584e0488884f95f9f2ae96b1e40e8"
+    },
+    {
+      "file": "browser/sites-390x844-supplier-evidence.png",
+      "bytes": 14212,
+      "sha256": "26a33485811c9d33f9fc1e0507eae2b2a2eb4884d02f9da0ff93f9cc1d1d5687"
+    },
+    {
+      "file": "browser/sites-390x844-business-t3.png",
+      "bytes": 23987,
+      "sha256": "cc4b90c626283ab678069b03a0c07b14f4b00990fe6dd2347200f81e5bc2fb71"
+    }
+  ]
+}

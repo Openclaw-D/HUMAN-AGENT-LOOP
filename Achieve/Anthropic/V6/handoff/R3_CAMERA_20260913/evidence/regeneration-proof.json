@@ -1,0 +1,84 @@
+{
+  "generatedAt": "2026-09-12T23:18:36.856Z",
+  "generator": "test/run-r3.mjs",
+  "r2Root": "C:\\Users\\22673\\Desktop\\Anthropic\\V6\\handoff\\R2_CAMERA_20260913",
+  "r3Root": "C:\\Users\\22673\\Desktop\\Anthropic\\V6\\handoff\\R3_CAMERA_20260913",
+  "generatedDir": "C:\\Users\\22673\\Desktop\\Anthropic\\V6\\handoff\\R3_CAMERA_20260913\\test\\regression-generated",
+  "transformation": [
+    {
+      "kind": "importPath",
+      "search": "../src/camera-controller.mjs",
+      "replace": "../../src/camera-controller.mjs"
+    },
+    {
+      "kind": "versionLiteral",
+      "search": "'0.2.0-r2-candidate'",
+      "replace": "'0.3.0-r3-candidate'"
+    },
+    {
+      "kind": "versionLiteral",
+      "search": "startsWith('0.2.0')",
+      "replace": "startsWith('0.3')"
+    }
+  ],
+  "nodeVersion": "v22.23.1",
+  "semanticDiffTotal": 0,
+  "coordinatorRuling": {
+    "decidedBy": "协调者（R3主agent），2026-09-13",
+    "basis": "版本升级为R3有意变更（见STATUS/MAPPING），行为语义差异0，4条版本断言随映射通过。",
+    "authorizedTransforms": [
+      "a) importPath: ../src/camera-controller.mjs -> ../../src/camera-controller.mjs",
+      "b1) versionLiteral: '0.2.0-r2-candidate' -> '0.3.0-r3-candidate'",
+      "b2) versionLiteral: startsWith('0.2.0') -> startsWith('0.3')"
+    ],
+    "semanticDiffDefinition": "应用a+b两类替换后逐行比较为0；注释中的v0.2.0字样不属映射形态、按原样保留。"
+  },
+  "note": "允许差异仅限裁决授权的两项显式映射（a类按行计数replacedLineCount，b类按次计数versionLiteralReplacements）；重复运行覆盖重生成，generatedSha256逐字节可复现。",
+  "files": [
+    {
+      "file": "camera-controller.test.mjs",
+      "r2Path": "C:\\Users\\22673\\Desktop\\Anthropic\\V6\\handoff\\R2_CAMERA_20260913\\test\\camera-controller.test.mjs",
+      "r2Sha256": "cd86e3c8f235a4fd07e1aaf62cd48c32f6b3c903b5c09e3b7073c3ecae6131ae",
+      "generatedSha256": "64d3a8d92880cfd4c2ff29f991a363fd7948721b86d17cf607c350d620de9670",
+      "replacedLineCount": 1,
+      "versionLiteralReplacements": 1,
+      "semanticDiffLines": 0
+    },
+    {
+      "file": "resource-tracking.test.mjs",
+      "r2Path": "C:\\Users\\22673\\Desktop\\Anthropic\\V6\\handoff\\R2_CAMERA_20260913\\test\\resource-tracking.test.mjs",
+      "r2Sha256": "aea10cbb3a722ccb765f4c9a3be282289f41a4c544dd6c914774459356126c52",
+      "generatedSha256": "3ed0f7697aa009819dba5871399f37dfec93377e8446cb0a52d9da4e77be40ae",
+      "replacedLineCount": 2,
+      "versionLiteralReplacements": 1,
+      "semanticDiffLines": 0
+    },
+    {
+      "file": "adversarial.test.mjs",
+      "r2Path": "C:\\Users\\22673\\Desktop\\Anthropic\\V6\\handoff\\R2_CAMERA_20260913\\test\\adversarial.test.mjs",
+      "r2Sha256": "65ea452151c8f2c4af5347499411729401fa74704cf803cf136c285e49ff5241",
+      "generatedSha256": "c47e38ecc8bffe78c0063ce58fe090eb050b6c7bb8546aa3955744daf119d2fd",
+      "replacedLineCount": 2,
+      "versionLiteralReplacements": 1,
+      "semanticDiffLines": 0
+    },
+    {
+      "file": "stress-loop.test.mjs",
+      "r2Path": "C:\\Users\\22673\\Desktop\\Anthropic\\V6\\handoff\\R2_CAMERA_20260913\\test\\stress-loop.test.mjs",
+      "r2Sha256": "09af44d3bd707477ab6e5256db5841b1dd25fd4c9c657b818ccd05804652b680",
+      "generatedSha256": "f3a8b167150dd5a2d052e322f8b8af098825dcf413c9125f4b9355821bb54649",
+      "replacedLineCount": 2,
+      "versionLiteralReplacements": 1,
+      "semanticDiffLines": 0
+    },
+    {
+      "file": "metadata-integrity.test.mjs",
+      "r2Path": "C:\\Users\\22673\\Desktop\\Anthropic\\V6\\handoff\\R2_CAMERA_20260913\\test\\metadata-integrity.test.mjs",
+      "r2Sha256": "3dfc04621ff6d8332c2e6f4be30619a45887d81e7d93c77df2c768e1b347a8ff",
+      "generatedSha256": "91bfa928c5a5c0e89e4bc509c19fe70ee840ecee3f099b130685e67e174a297d",
+      "replacedLineCount": 2,
+      "versionLiteralReplacements": 0,
+      "semanticDiffLines": 0
+    }
+  ]
+}

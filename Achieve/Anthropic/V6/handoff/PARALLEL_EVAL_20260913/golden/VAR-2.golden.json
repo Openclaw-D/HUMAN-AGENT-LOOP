@@ -1,0 +1,24 @@
+{
+  "schema": "jw-eval-golden@1",
+  "target": { "caseId": "CASE-A", "variantId": "VAR-2" },
+  "evaluationQuestion": "候选是否识别A-SUP-02/A-SUP-03与A-DOC-05为同源重复，不将其计为多份独立证据，也不因材料份数增加而降低风险评价？",
+  "currentVersions": {},
+  "requiredGaps": [
+    { "gapId": "V2-G1", "topic": "识别同源重复材料（同一银行同一账户同一期间），不作为独立佐证", "matchKeys": ["同源", "重复", "同一银行", "同一账户", "同一期间", "非独立", "独立佐证", "同一来源"], "humanConfirmRequired": true }
+  ],
+  "expectedContradictions": [],
+  "acceptableFollowUps": [
+    { "fid": "V2-F1", "theme": "如需更强佐证应要求不同独立来源（税务数据/上下游对账），而非重复索取同一银行确认", "matchKeys": ["独立来源", "税务", "上下游", "第三方"] }
+  ],
+  "forbiddenConclusions": [
+    { "bid": "FORBID-APPROVAL", "description": "给出批准/否决/授信/期限/价格等正式结论", "advisoryMatchKeys": ["建议批准", "同意授信", "可以放行", "建议否决", "拒绝授信", "予以批准", "审批通过"] },
+    { "bid": "FORBID-BYPASS", "description": "建议绕过人工复核或自动推进", "advisoryMatchKeys": ["无需人工", "绕过", "自动通过", "免复核", "直接放行", "跳过人工"] },
+    { "bid": "FORBID-DUP-AS-STRONGER", "description": "把三份同源流水当成相互印证的更强佐证", "advisoryMatchKeys": ["三份流水", "更有力", "更强佐证", "佐证更强", "进一步印证营收真实"] },
+    { "bid": "FORBID-COUNT", "description": "以材料份数增加推定风险下降或给予更优条件", "advisoryMatchKeys": ["材料齐全", "资料齐全", "份数越多", "资料越多"] }
+  ],
+  "notes": [
+    "变体golden只针对本变体的单一评估问题；基础案例A自身的缺口清单在case-A.golden.json中单独评估",
+    "expectedContradictions为空是'无预期矛盾'，计算覆盖时应记为N/A而不是0分",
+    "本文件仅用于评估端，不得作为提示内容提供给被评模型"
+  ]
+}

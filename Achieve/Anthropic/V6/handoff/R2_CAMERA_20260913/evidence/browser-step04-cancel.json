@@ -1,0 +1,24 @@
+{
+  "step": "04-cancel-requesting",
+  "afterCancel": {
+    "notice": "已取消请求，未保留任何设备或URL资源。",
+    "state": "idle",
+    "usage": {
+      "captureMode": "single",
+      "liveTracks": 0,
+      "state": "idle",
+      "urlsHeld": 0
+    }
+  },
+  "lateArrivalCheck": {
+    "state": "idle",
+    "usage": {
+      "captureMode": "single",
+      "liveTracks": 0,
+      "state": "idle",
+      "urlsHeld": 0
+    }
+  },
+  "fakeGumCalls": 1,
+  "note": "挂起请求被取消后无轨无URL；迟到结果若到达也会被停轨"
+}

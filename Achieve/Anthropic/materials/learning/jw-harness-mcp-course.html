@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>从 Terminal 到见微：Harness、Gateway、MCP 与企业 Agent 入门课</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: light-dark(#f5f7fb, #0c111b);
+      --surface: light-dark(#ffffff, #141b28);
+      --surface-2: light-dark(#eef3f8, #1b2535);
+      --text: light-dark(#18212f, #edf3fb);
+      --muted: light-dark(#5d6877, #a8b5c6);
+      --border: light-dark(#d9e1ea, #2d3a4d);
+      --blue: light-dark(#145aa3, #79b7ff);
+      --blue-soft: light-dark(#e7f1fc, #172d46);
+      --green: light-dark(#13734c, #61d39d);
+      --green-soft: light-dark(#e8f7ef, #143527);
+      --orange: light-dark(#9a4c05, #ffb66e);
+      --orange-soft: light-dark(#fff1df, #3c2816);
+      --red: light-dark(#a22b2b, #ff8f8f);
+      --red-soft: light-dark(#fdecec, #3c1d24);
+      --purple: light-dark(#6543a4, #bb9cff);
+      --shadow: 0 14px 34px light-dark(rgba(29, 52, 79, .08), rgba(0, 0, 0, .22));
+      font-family: Inter, "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+    button, input { font: inherit; }
+    a { color: var(--blue); }
+    code, pre { font-family: Consolas, "Cascadia Code", monospace; }
+    code {
+      padding: .1rem .35rem;
+      border-radius: .35rem;
+      background: var(--surface-2);
+    }
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 24px auto 72px;
+      display: grid;
+      grid-template-columns: 230px minmax(0, 1fr);
+      gap: 24px;
+    }
+    .side {
+      position: sticky;
+      top: 18px;
+      align-self: start;
+      max-height: calc(100vh - 36px);
+      overflow: auto;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .side strong { display: block; margin-bottom: 10px; }
+    .side a {
+      display: block;
+      padding: 7px 9px;
+      border-radius: 8px;
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .side a:hover, .side a:focus-visible { background: var(--surface-2); color: var(--text); }
+    .save-state { margin-top: 14px; font-size: .85rem; color: var(--muted); }
+    main { min-width: 0; }
+    .hero {
+      padding: 36px;
+      border-radius: 22px;
+      color: #f7fbff;
+      background: linear-gradient(135deg, #12375f, #1f5d83 58%, #287a79);
+      box-shadow: var(--shadow);
+    }
+    .eyebrow { margin: 0 0 8px; font-size: .82rem; letter-spacing: .12em; opacity: .82; }
+    h1 { margin: 0; line-height: 1.18; font-size: clamp(2rem, 5vw, 3.4rem); }
+    .hero p { max-width: 780px; margin: 16px 0 0; opacity: .9; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .hero-tag { padding: 5px 10px; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; font-size: .86rem; }
+    section {
+      margin-top: 24px;
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      scroll-margin-top: 20px;
+    }
+    h2 { margin: 0 0 8px; line-height: 1.3; font-size: 1.55rem; }
+    h3 { margin: 24px 0 8px; font-size: 1.08rem; }
+    p { margin: 8px 0; }
+    .lead { color: var(--muted); }
+    .verdict {
+      margin: 18px 0;
+      padding: 16px 18px;
+      border-left: 5px solid var(--blue);
+      border-radius: 0 12px 12px 0;
+      background: var(--blue-soft);
+    }
+    .warning { border-left-color: var(--orange); background: var(--orange-soft); }
+    .success { border-left-color: var(--green); background: var(--green-soft); }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface-2);
+    }
+    .card strong { display: block; margin-bottom: 5px; }
+    .term { color: var(--blue); font-weight: 700; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { padding: 11px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { font-size: .86rem; color: var(--muted); font-weight: 650; }
+    tr:last-child td { border-bottom: 0; }
+    .diagram-box {
+      margin: 18px 0;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-2);
+      overflow-x: auto;
+    }
+    .diagram-title { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 12px; font-size: .86rem; color: var(--muted); }
+    .diagram-title b { color: var(--purple); }
+    .flow {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: 8px;
+      min-width: 680px;
+    }
+    .flow.vertical { min-width: 0; flex-direction: column; align-items: stretch; }
+    .node {
+      flex: 1;
+      min-width: 112px;
+      padding: 12px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+    }
+    .arrow { display: grid; place-items: center; color: var(--blue); font-size: 1.25rem; font-weight: 700; }
+    .mermaid-output { display: none; min-height: 160px; place-items: center; }
+    .mermaid-ready .mermaid-output { display: grid; }
+    .mermaid-ready .diagram-fallback { display: none; }
+    .mermaid-output svg { max-width: 100%; height: auto; }
+    details { margin-top: 12px; }
+    summary { cursor: pointer; color: var(--blue); }
+    pre.source {
+      white-space: pre-wrap;
+      padding: 12px;
+      border-radius: 10px;
+      background: light-dark(#111827, #080b11);
+      color: #e7eef8;
+      font-size: .82rem;
+      overflow: auto;
+    }
+    .formula {
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      font: 700 1.05rem/1.6 Consolas, monospace;
+      background: var(--surface-2);
+    }
+    .memory-line {
+      margin: 18px 0 0;
+      padding: 13px 16px;
+      border-radius: 10px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-weight: 700;
+      text-align: center;
+    }
+    .quiz-question {
+      margin: 18px 0;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface-2);
+    }
+    .quiz-question legend { padding: 0 5px; font-weight: 700; }
+    .option { display: block; margin: 8px 0; padding: 7px 10px; border-radius: 8px; cursor: pointer; }
+    .option:hover { background: var(--surface); }
+    .option input { margin-right: 8px; }
+    .feedback { min-height: 1.6em; margin-top: 8px; font-size: .9rem; }
+    .feedback.good { color: var(--green); }
+    .feedback.bad { color: var(--red); }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .button {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 14px;
+      background: var(--surface-2);
+      color: var(--text);
+      cursor: pointer;
+    }
+    .button.primary { border-color: transparent; background: var(--blue); color: white; }
+    .button:hover { filter: brightness(1.05); }
+    .score {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 10px;
+      background: var(--blue-soft);
+      font-weight: 700;
+    }
+    .application details { padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .application details:last-child { border-bottom: 0; }
+    .footer { margin: 26px 0; text-align: center; color: var(--muted); font-size: .86rem; }
+
+    @media (max-width: 900px) {
+      .shell { grid-template-columns: 1fr; }
+      .side { position: static; max-height: none; }
+      .side nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid, .grid.three { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .shell { width: min(100% - 18px, 1180px); margin-top: 10px; }
+      section, .hero { padding: 20px; border-radius: 14px; }
+      .side { padding: 14px; }
+      .side nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .side a { padding: 5px 7px; font-size: .9rem; }
+      th, td { padding: 9px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="side" aria-label="课程导航">
+      <strong>课程地图</strong>
+      <nav>
+        <a href="#north-star">0. 核心结论</a>
+        <a href="#terminal">1. Terminal 系</a>
+        <a href="#gateway">2. Gateway 系</a>
+        <a href="#session">3. Session 系</a>
+        <a href="#persistence">4. 持久化</a>
+        <a href="#capabilities">5. Agent 能力层</a>
+        <a href="#idempotency">6. 幂等性</a>
+        <a href="#schema">7. Schema</a>
+        <a href="#jw">8. 见微与 One</a>
+        <a href="#quiz">9. 记忆测验</a>
+        <a href="#application">10. 应用题</a>
+      </nav>
+      <div id="saveState" class="save-state" aria-live="polite">学习记录：准备中</div>
+    </aside>
+
+    <main>
+      <header class="hero">
+        <p class="eyebrow">JW · ENTERPRISE AGENT FOUNDATIONS</p>
+        <h1>从 Terminal 到见微</h1>
+        <p>用一套清晰的关系图理解 Harness、Gateway、Session、MCP、Skill、Schema、幂等性，以及见微为什么不应该与集团 One 正面竞争。</p>
+        <div class="hero-tags">
+          <span class="hero-tag">理解概念</span>
+          <span class="hero-tag">识别边界</span>
+          <span class="hero-tag">授信场景应用</span>
+          <span class="hero-tag">决赛差异化</span>
+        </div>
+      </header>
+
+      <section id="north-star">
+        <h2>0. 先把最重要的结论钉死</h2>
+        <p class="lead">你可以说见微具备高级 Gateway（网关）的部分能力，但不能把见微只定义成 Gateway。</p>
+        <div class="verdict">
+          <strong>更准确的定位：</strong><br>
+          见微是建立在集团通用技术底座之上的、面向融资租赁真实 Case 的 vertical orchestration &amp; control layer（垂直编排与治理层）。
+        </div>
+        <div class="grid three">
+          <div class="card"><strong>Gateway 主要回答</strong>消息从哪里来，要送到哪里？</div>
+          <div class="card"><strong>Harness 主要回答</strong>Agent 怎样思考、调用工具、运行和恢复？</div>
+          <div class="card"><strong>见微必须回答</strong>业务能力何时进入、能做什么、谁有权决定、失败怎样回退？</div>
+        </div>
+        <div class="verdict warning">
+          <strong>最强反方意见：</strong>如果见微只有统一入口、能力卡片和路由，它就是“又一个 Gateway”或“前端聚合器”。只有真实证明 Case 状态、Human Gate、Evidence、Receipt、审计、评估和失败回退，它才拥有独立价值。
+        </div>
+      </section>
+
+      <section id="terminal">
+        <h2>1. Terminal、Shell、CLI、TUI</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>名称</th><th>最简单的比喻</th><th>Windows 例子</th></tr></thead>
+            <tbody>
+              <tr><td><span class="term">Terminal（终端窗口）</span></td><td>一间房</td><td>Windows Terminal</td></tr>
+              <tr><td><span class="term">Shell（命令解释器）</span></td><td>房间里听懂命令的人</td><td>CMD、PowerShell</td></tr>
+              <tr><td><span class="term">CLI（命令行界面）</span></td><td>说一句，做一件</td><td><code>git status</code>、<code>codex exec</code></td></tr>
+              <tr><td><span class="term">TUI（终端交互界面）</span></td><td>房间里的全屏操作台</td><td><code>codex</code>、Vim</td></tr>
+              <tr><td><span class="term">GUI（图形界面）</span></td><td>有按钮和窗口的办公室</td><td>Codex 桌面版、微信</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="diagram-box mermaid-group">
+          <div class="diagram-title"><span>正确的包含关系</span><b>Mermaid（美人鱼）图 01</b></div>
+          <div class="mermaid-output" aria-label="Terminal、Shell、CLI 和 TUI 的关系图"></div>
+          <div class="diagram-fallback flow">
+            <div class="node">Windows 桌面<br>GUI</div><div class="arrow">→</div>
+            <div class="node">Windows Terminal<br>终端窗口</div><div class="arrow">→</div>
+            <div class="node">PowerShell / CMD<br>Shell</div><div class="arrow">→</div>
+            <div class="node">CLI 命令<br>或启动 TUI</div>
+          </div>
+          <script type="text/plain" class="mermaid-source">flowchart LR
+    A[Windows 桌面 GUI] --> B[Windows Terminal 终端窗口]
+    B --> C[PowerShell 或 CMD Shell]
+    C --> D[git status CLI 命令]
+    C --> E[codex 启动 TUI]</script>
+        </div>
+        <p class="memory-line">一句话记忆：Terminal 是窗口，Shell 是解释器，CLI/TUI 是交互方式。</p>
+      </section>
+
+      <section id="gateway">
+        <h2>2. Gateway：不只是路由器</h2>
+        <p class="lead">Gateway（网关）更像“路由器 + 前台 + 保安 + 档案室 + 闹钟”。</p>
+        <div class="diagram-box mermaid-group">
+          <div class="diagram-title"><span>消息进入 Agent 系统的完整链路</span><b>Mermaid（美人鱼）图 02</b></div>
+          <div class="mermaid-output" aria-label="Gateway 消息路由图"></div>
+          <div class="diagram-fallback flow">
+            <div class="node">微信 / 群聊<br>Heartbeat</div><div class="arrow">→</div>
+            <div class="node">Gateway<br>接入入口</div><div class="arrow">→</div>
+            <div class="node">身份、权限<br>Session 路由</div><div class="arrow">→</div>
+            <div class="node">Agent</div><div class="arrow">→</div>
+            <div class="node">Workspace<br>Tools / Memory</div>
+          </div>
+          <script type="text/plain" class="mermaid-source">flowchart LR
+    A[微信私聊] --> G[Gateway 网关]
+    B[企业群聊] --> G
+    C[Heartbeat 心跳] --> G
+    G --> H[身份与权限检查]
+    H --> R[按用户、频道、Session ID 路由]
+    R --> S1[Main Session]
+    R --> S2[Case Session]
+    S1 --> AG[Agent]
+    S2 --> AG
+    AG --> W[Workspace 与 Tools]
+    AG --> M[Memory 与 Persistence]</script>
+        </div>
+        <div class="grid">
+          <div class="card"><strong>普通路由器</strong>主要根据网络地址转发数据。</div>
+          <div class="card"><strong>Agent Gateway</strong>还理解用户、频道、Session、身份、权限、Agent 和任务状态。</div>
+        </div>
+      </section>
+
+      <section id="session">
+        <h2>3. Session、Thread、Channel、Directory</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>概念</th><th>它是什么</th><th>最像什么</th></tr></thead>
+            <tbody>
+              <tr><td><span class="term">Channel（频道）</span></td><td>消息从哪里进来</td><td>微信群、Slack 频道、企业聊天入口</td></tr>
+              <tr><td><span class="term">Thread（任务/对话线程）</span></td><td>产品界面里的一条独立工作线</td><td>Codex 侧边栏中的一个任务</td></tr>
+              <tr><td><span class="term">Session（运行会话）</span></td><td>运行时连续上下文和状态</td><td>Agent 正在使用的会议室档案</td></tr>
+              <tr><td><span class="term">Session ID（会话编号）</span></td><td>找到某个 Session 的唯一编号</td><td>会议室号码</td></tr>
+              <tr><td><span class="term">Directory（工作目录）</span></td><td>Agent 可以工作的文件位置</td><td>办公桌和文件柜</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="verdict success">
+          <code>codex://threads/01a...</code> 是 Deep Link（深度链接）。其中 <code>01a...</code> 是 Thread ID；完整链接还包含协议和对象类型。它与 Session ID 的作用相似——都用来定位对象——但不保证是同一个系统编号。
+        </div>
+        <div class="diagram-box mermaid-group">
+          <div class="diagram-title"><span>它们不是一一对应</span><b>Mermaid（美人鱼）图 03</b></div>
+          <div class="mermaid-output" aria-label="Channel、Thread、Session 和 Directory 关系图"></div>
+          <div class="diagram-fallback flow">
+            <div class="node">Channel<br>消息入口</div><div class="arrow">→</div>
+            <div class="node">Thread<br>用户工作线</div><div class="arrow">→</div>
+            <div class="node">Session<br>运行上下文</div><div class="arrow">→</div>
+            <div class="node">Directory<br>文件环境</div>
+          </div>
+          <script type="text/plain" class="mermaid-source">flowchart LR
+    C[Channel 消息入口] --> T[Thread 用户工作线]
+    T --> S[Session 运行上下文]
+    S --> D[Directory 文件环境]
+    T2[另一个 Thread] --> S2[另一个 Session]
+    S2 --> D
+    M[Memory 跨会话记忆] -.可被检索.-> S
+    M -.可被检索.-> S2</script>
+        </div>
+        <p class="memory-line">Channel 是入口，Thread 是工作线，Session 是运行上下文，Directory 是文件环境。</p>
+      </section>
+
+      <section id="persistence">
+        <h2>4. Persistence、Memory、Heartbeat</h2>
+        <div class="grid three">
+          <div class="card"><strong>Persistence（持久化）</strong>保存机制。进程重启后，重要状态仍然存在。</div>
+          <div class="card"><strong>Memory（长期记忆）</strong>被保存的数据之一，用来跨会话带回重要信息。</div>
+          <div class="card"><strong>Heartbeat（心跳唤醒）</strong>定期叫醒某个 Agent 或任务，让它检查是否有工作。</div>
+        </div>
+        <h3>企业 Agent 应该持久化什么？</h3>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><td>Session transcript</td><td>对话记录</td></tr>
+              <tr><td>Workflow state</td><td>业务走到哪一步</td></tr>
+              <tr><td>Human Gate / Receipt</td><td>谁批准了什么，以及正式凭证</td></tr>
+              <tr><td>Idempotency record</td><td>哪些业务请求已经处理</td></tr>
+              <tr><td>Audit / Evaluation</td><td>执行轨迹、错误、质量和人工纠正</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="verdict">本课程会把你的答题选择保存到浏览器本地。重新打开时自动恢复——这就是一个很小的 Persistence（持久化）示范。</div>
+      </section>
+
+      <section id="capabilities">
+        <h2>5. Harness、Skill、MCP、Plugin 怎样组合</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>组件</th><th>一句话</th><th>不是什么</th></tr></thead>
+            <tbody>
+              <tr><td><span class="term">Model（模型）</span></td><td>负责理解和推理</td><td>不是完整系统</td></tr>
+              <tr><td><span class="term">Harness（智能体运行框架）</span></td><td>让模型拥有循环、工具、权限、Session、持久化和审计</td><td>不只是聊天框</td></tr>
+              <tr><td><span class="term">Skill（可复用工作方法）</span></td><td>告诉 Agent 什么时候做、怎么做、边界和验收是什么</td><td>不等于远程接口</td></tr>
+              <tr><td><span class="term">MCP（工具连接协议）</span></td><td>让 Harness 按统一协议发现和调用外部工具</td><td>不保证网络一定可达</td></tr>
+              <tr><td><span class="term">Plugin（能力安装包）</span></td><td>可以组合 Skill、MCP、UI、资源和配置</td><td>通常不是独立 SaaS</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula">Model + Harness + Skill + MCP/Tools + Governance = 可工作的 Agent System</div>
+      </section>
+
+      <section id="idempotency">
+        <h2>6. Idempotency（幂等性）：防止重试造成重复后果</h2>
+        <div class="formula">f(f(x)) = f(x)　　例如：abs(abs(-5)) = 5</div>
+        <div class="grid">
+          <div class="card"><strong>天然幂等</strong>把合同状态设置为 <code>approved</code>，执行五次仍是 approved。</div>
+          <div class="card"><strong>天然不幂等</strong>余额增加 100 元，执行五次会增加 500 元。</div>
+        </div>
+
+        <div class="diagram-box mermaid-group">
+          <div class="diagram-title"><span>为什么 timeout 后会重试</span><b>Mermaid（美人鱼）图 04</b></div>
+          <div class="mermaid-output" aria-label="幂等键防止重复扣款的时序图"></div>
+          <div class="diagram-fallback flow">
+            <div class="node">请求 A001</div><div class="arrow">→</div>
+            <div class="node">数据库已扣款</div><div class="arrow">→</div>
+            <div class="node">回复丢失<br>客户端 timeout</div><div class="arrow">→</div>
+            <div class="node">重试 A001<br>返回旧结果</div>
+          </div>
+          <script type="text/plain" class="mermaid-source">sequenceDiagram
+    participant C as 客户端
+    participant S as 服务器
+    participant D as 数据库
+    C->>S: 请求 A001 扣款 100
+    S->>D: 扣款并保存幂等键
+    D-->>S: 成功
+    S--xC: 回复在网络中丢失
+    Note over C: timeout 只表示没收到确定答案
+    C->>S: 重试同一个 A001
+    S->>D: 查询发现 A001 已处理
+    S-->>C: 返回第一次结果，不再扣款</script>
+        </div>
+
+        <h3>在授信四个环节里的作用</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>环节</th><th>重复请求风险</th><th>幂等保护</th></tr></thead>
+            <tbody>
+              <tr><td>1. 提交材料</td><td>同一附件重复入库</td><td>同一材料哈希或提交 ID 只接收一次</td></tr>
+              <tr><td>2. 启动风险分析</td><td>重复创建多个分析任务</td><td>同一 Case + Context Version 只产生一个有效 Run</td></tr>
+              <tr><td>3. 人工审批</td><td>双击导致两次状态推进</td><td>同一审批请求只生成一张 Receipt</td></tr>
+              <tr><td>4. 同步下游系统</td><td>重复创建合同或授信记录</td><td>同一业务事件只消费一次</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="verdict warning">
+          <strong>幂等性不等于一致性：</strong><br>
+          idempotency（幂等性）防止“重复做”；consistency（一致性）保证“不同系统看到的状态不互相矛盾”。它们经常一起出现，但解决的不是同一个问题。
+        </div>
+      </section>
+
+      <section id="schema">
+        <h2>7. Schema（结构契约）：数据必须长什么样</h2>
+        <p>Schema 是“空白表格 + 填写规则”，规定字段名、类型、是否必填、允许值和限制条件。</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Schema 类型</th><th>规定什么</th><th>审批例子</th></tr></thead>
+            <tbody>
+              <tr><td>Tool Schema（工具结构契约）</td><td>模型调用工具时传什么</td><td><code>approve_case(case_id, decision)</code></td></tr>
+              <tr><td>API Schema（接口结构契约）</td><td>程序请求和回复长什么样</td><td><code>POST /cases/approve</code></td></tr>
+              <tr><td>Database Schema（数据库结构）</td><td>表、字段、类型和关系</td><td><code>decisions</code> 表</td></tr>
+              <tr><td>Event Schema（事件结构契约）</td><td>系统事件消息长什么样</td><td><code>case.approved</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="diagram-box">
+          <div class="diagram-title"><span>同一笔审批经过多层 Schema</span><b>结构链路</b></div>
+          <div class="flow">
+            <div class="node">模型决定调用工具</div><div class="arrow">→</div>
+            <div class="node">Tool Schema<br>检查参数</div><div class="arrow">→</div>
+            <div class="node">API Schema<br>检查请求</div><div class="arrow">→</div>
+            <div class="node">业务逻辑</div><div class="arrow">→</div>
+            <div class="node">Database Schema<br>按结构保存</div>
+          </div>
+        </div>
+        <p class="memory-line">Schema 不是数据本身，而是数据必须遵守的模板与规则。</p>
+      </section>
+
+      <section id="jw">
+        <h2>8. 见微与 One：避开正面竞争的正确方式</h2>
+        <p class="lead">Autonomy（自主性）不等于每一层都自己造。真正的自主，是租赁域资产由自己拥有，并且底层可替换、可测试、可迁移。</p>
+        <div class="diagram-box mermaid-group">
+          <div class="diagram-title"><span>集团底座与租赁域治理的分层</span><b>Mermaid（美人鱼）图 05</b></div>
+          <div class="mermaid-output" aria-label="集团 One、见微与业务能力分层架构图"></div>
+          <div class="diagram-fallback flow vertical">
+            <div class="node">集团 One / 通用底座<br>身份、模型、Harness、通用 MCP</div>
+            <div class="arrow">↓</div>
+            <div class="node">见微：租赁编排与治理层<br>Case、状态、路由、Human Gate、Evidence、Evaluation</div>
+            <div class="arrow">↓</div>
+            <div class="node">现有系统 / Agent / Skill / MCP / Rule</div>
+            <div class="arrow">↓</div>
+            <div class="node">具名人员与真实融资租赁 Case<br>正式 Authority 不漂移</div>
+          </div>
+          <script type="text/plain" class="mermaid-source">flowchart TD
+    O[集团 One 与通用技术底座<br/>SSO 模型服务 通用 Harness MCP Skill 基础设施]
+    J[见微 租赁编排与治理层<br/>Case Schema 状态路由 Human Gate Evidence Receipt Eval Fallback]
+    C[专业能力层<br/>现有系统 Agent Skill MCP Rule Adapter]
+    B[真实融资租赁 Case 与具名人员]
+    O --> J
+    J --> C
+    C --> J
+    J --> B
+    B -->|正式授权与纠正| J
+    C -.只能产出 Evidence Candidate ActionIntent.-> J</script>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>集团通用底座更适合拥有</th><th>见微/租赁域必须拥有</th></tr></thead>
+            <tbody>
+              <tr><td>SSO、账号、组织身份</td><td>Case、角色与具名业务责任</td></tr>
+              <tr><td>模型服务、算力、推理平台</td><td>租赁业务 Schema 与 Context Version</td></tr>
+              <tr><td>通用 Harness、基础 Agent Runtime</td><td>业务状态机、动态路由、Human Gate</td></tr>
+              <tr><td>通用 MCP/Skill 注册与安全规范</td><td>Evidence、Decision、Receipt、审计语义</td></tr>
+              <tr><td>网络、日志、部署、监控基础设施</td><td>领域 Eval、失败案例、回退和 benchmark</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>比赛现场必须证明的最小闭环</h3>
+        <ol>
+          <li>一个真实融资租赁 Case 到达明确阶段。</li>
+          <li>见微根据状态和规则选择一个能力，而不是用户随便点击。</li>
+          <li>能力只获得最小必要 Context，输出经过 Schema 校验。</li>
+          <li>Agent 输出只能成为 Evidence 或 Candidate，不能直接成为正式结论。</li>
+          <li>具名人员通过 Human Gate 后生成唯一 Receipt。</li>
+          <li>能力超时、重复请求或被暂停时，Case 不被破坏并能回退。</li>
+        </ol>
+      </section>
+
+      <section id="quiz">
+        <h2>9. 记忆测验：先回答，再看解析</h2>
+        <p class="lead">共 12 题。你的选择会保存在本地；点击“检查答案”获得即时解释。</p>
+        <form id="quizForm">
+          <fieldset class="quiz-question" data-answer="b" data-explain="Windows Terminal 是终端窗口；PowerShell 和 CMD 才是 Shell。">
+            <legend>1. Windows Terminal 最准确的定义是什么？</legend>
+            <label class="option"><input type="radio" name="q1" value="a">一种 Shell</label>
+            <label class="option"><input type="radio" name="q1" value="b">承载 Shell 的终端窗口</label>
+            <label class="option"><input type="radio" name="q1" value="c">一种编程语言</label>
+            <div class="feedback" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-answer="c" data-explain="输入 codex 后出现的持续交互全屏界面，严格说属于 TUI。">
+            <legend>2. 输入 <code>codex</code> 后出现的全屏交互页面更接近什么？</legend>
+            <label class="option"><input type="radio" name="q2" value="a">GUI</label>
+            <label class="option"><input type="radio" name="q2" value="b">数据库</label>
+            <label class="option"><input type="radio" name="q2" value="c">TUI</label>
+            <div class="feedback" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-answer="a" data-explain="Gateway 负责接入、身份、权限、Session 路由和转发，不只是传网络包。">
+            <legend>3. Agent Gateway 最主要增加了什么能力？</legend>
+            <label class="option"><input type="radio" name="q3" value="a">理解用户、权限、Session 和 Agent 路由</label>
+            <label class="option"><input type="radio" name="q3" value="b">提高显示器刷新率</label>
+            <label class="option"><input type="radio" name="q3" value="c">替代全部业务人员</label>
+            <div class="feedback" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-answer="b" data-explain="Session 是运行上下文，Directory 是文件工作位置；多个 Session 可以共用一个 Directory。">
+            <legend>4. Session 与 Directory 的正确关系是什么？</legend>
+            <label class="option"><input type="radio" name="q4" value="a">永远一一对应</label>
+            <label class="option"><input type="radio" name="q4" value="b">一个是上下文，一个是文件环境，可以多对一</label>
+            <label class="option"><input type="radio" name="q4" value="c">它们完全相同</label>
+            <div class="feedback" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-answer="c" data-explain="Deep Link 是完整地址；其中的 ID 用来定位对象，但 Thread ID 不必等于底层 Session ID。">
+            <legend>5. <code>codex://threads/01a...</code> 中的 <code>01a...</code> 是什么？</legend>
+            <label class="option"><input type="radio" name="q5" value="a">工作目录</label>
+            <label class="option"><input type="radio" name="q5" value="b">模型名称</label>
+            <label class="option"><input type="radio" name="q5" value="c">用于定位 Codex Thread 的 ID</label>
+            <div class="feedback" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-answer="a" data-explain="Persistence 是保存机制；Memory 是可能被保存的一类信息。">
+            <legend>6. Persistence 与 Memory 的关系是什么？</legend>
+            <label class="option"><input type="radio" name="q6" value="a">Persistence 是机制，Memory 是其中一类数据</label>
+            <label class="option"><input type="radio" name="q6" value="b">二者完全等价</label>
+            <label class="option"><input type="radio" name="q6" value="c">Memory 只存在于 Main Session</label>
+            <div class="feedback" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-answer="b" data-explain="重复执行的最终业务结果与执行一次相同，就是幂等。">
+            <legend>7. 哪个操作天然幂等？</legend>
+            <label class="option"><input type="radio" name="q7" value="a">余额增加 100 元</label>
+            <label class="option"><input type="radio" name="q7" value="b">把状态设置为 approved</label>
+            <label class="option"><input type="radio" name="q7" value="c">每次创建一张新订单</label>
+            <div class="feedback" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-answer="c" data-explain="timeout 只证明客户端没有收到确定回复；服务器可能已经完成。">
+            <legend>8. 客户端看到 timeout，最准确的判断是什么？</legend>
+            <label class="option"><input type="radio" name="q8" value="a">服务器一定没执行</label>
+            <label class="option"><input type="radio" name="q8" value="b">服务器一定执行成功</label>
+            <label class="option"><input type="radio" name="q8" value="c">客户端不知道服务器最终是否成功</label>
+            <div class="feedback" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-answer="a" data-explain="幂等性防止重复副作用；一致性关注多个状态是否互相矛盾。">
+            <legend>9. 幂等性与一致性的区别是什么？</legend>
+            <label class="option"><input type="radio" name="q9" value="a">幂等防重复动作，一致性防状态矛盾</label>
+            <label class="option"><input type="radio" name="q9" value="b">它们是同一个词</label>
+            <label class="option"><input type="radio" name="q9" value="c">幂等只用于数学</label>
+            <div class="feedback" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-answer="b" data-explain="Schema 是数据的结构和约束合同，不是具体的一条业务数据。">
+            <legend>10. Schema 最准确的理解是什么？</legend>
+            <label class="option"><input type="radio" name="q10" value="a">数据库里的一条记录</label>
+            <label class="option"><input type="radio" name="q10" value="b">数据必须遵守的模板与规则</label>
+            <label class="option"><input type="radio" name="q10" value="c">模型生成的自然语言</label>
+            <div class="feedback" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-answer="c" data-explain="只做接入和路由会被判断为 Gateway；见微要证明 Case、Authority、Evidence、Human Gate 和回退。">
+            <legend>11. 为什么不能只把见微叫“高级 Gateway”？</legend>
+            <label class="option"><input type="radio" name="q11" value="a">因为 Gateway 这个词不好听</label>
+            <label class="option"><input type="radio" name="q11" value="b">因为见微不需要路由</label>
+            <label class="option"><input type="radio" name="q11" value="c">因为见微还必须承担租赁 Case 的状态、权威、证据和失败治理</label>
+            <div class="feedback" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-answer="a" data-explain="通用基础设施应尽量复用；租赁域的状态、责任、证据和评估必须由见微掌握。">
+            <legend>12. 见微与集团 One 最合理的关系是什么？</legend>
+            <label class="option"><input type="radio" name="q12" value="a">复用集团底座，拥有租赁域的编排与治理资产</label>
+            <label class="option"><input type="radio" name="q12" value="b">完整复制 One，证明自己也能造</label>
+            <label class="option"><input type="radio" name="q12" value="c">完全不使用集团能力</label>
+            <div class="feedback" aria-live="polite"></div>
+          </fieldset>
+
+          <div class="actions">
+            <button class="button primary" type="button" id="checkQuiz">检查答案</button>
+            <button class="button" type="button" id="resetQuiz">清空本地答题记录</button>
+          </div>
+          <div id="score" class="score" aria-live="polite">尚未评分</div>
+        </form>
+      </section>
+
+      <section id="application" class="application">
+        <h2>10. 应用题：从“记住”走向“会用”</h2>
+        <p class="lead">先自己回答，再展开参考答案。</p>
+
+        <details>
+          <summary>应用题 1：评委问“集团已经有 One，为什么还要见微？”</summary>
+          <p><strong>参考答案：</strong>见微不复制 One 的通用入口、模型和 Harness。它复用集团底座，把租赁领域的 Case Schema、状态路由、具名责任、Human Gate、Evidence、Receipt、失败回退和领域评估做成可插拔治理层。One 解决共性能力，见微解决能力如何安全进入真实租赁业务。</p>
+        </details>
+
+        <details>
+          <summary>应用题 2：人工审批按钮被连续点击两次，系统应该怎样处理？</summary>
+          <p><strong>参考答案：</strong>前端禁用按钮只能降低概率，后端仍必须用 approval request ID 或 Case + Context Version + decision intent 形成幂等约束。第一次生成 Receipt 后，第二次返回同一结果，不能再次推进状态或生成第二张正式凭证。</p>
+        </details>
+
+        <details>
+          <summary>应用题 3：一个新的风险 Skill 要接入见微，最少检查什么？</summary>
+          <p><strong>参考答案：</strong>entry/exit 条件、input/output Schema、最小可读 Context、禁止写入的正式状态、timeout/retry/idempotency、失败 fallback、Human Gate、版本、Owner、评估集和退出机制。自然语言 description 只负责说明，runtime 必须机器校验。</p>
+        </details>
+
+        <details>
+          <summary>应用题 4：什么时候该用 Mermaid，什么时候该用 LangGraph？</summary>
+          <p><strong>参考答案：</strong>需要让人看懂链路、状态和系统分层时用 Mermaid；需要让程序真正按节点、条件边和状态持久化运行时用 LangGraph。Mermaid 是图，LangGraph 是运行时。</p>
+        </details>
+      </section>
+
+      <p class="footer">建议学习顺序：先看图 → 用一句话复述 → 做测验 → 用见微场景重新解释一次。</p>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      const storageKey = 'jw-agent-foundations-course-v1';
+      const form = document.getElementById('quizForm');
+      const saveState = document.getElementById('saveState');
+      const score = document.getElementById('score');
+
+      function setSaveState(message) {
+        saveState.textContent = `学习记录：${message}`;
+      }
+
+      function readState() {
+        try {
+          return JSON.parse(localStorage.getItem(storageKey) || '{}');
+        } catch (_) {
+          return {};
+        }
+      }
+
+      function saveAnswers() {
+        const answers = {};
+        new FormData(form).forEach((value, key) => { answers[key] = value; });
+        try {
+          localStorage.setItem(storageKey, JSON.stringify({ answers, savedAt: Date.now() }));
+          setSaveState('已自动保存到本地');
+        } catch (_) {
+          setSaveState('浏览器未允许本地保存');
+        }
+      }
+
+      function restoreAnswers() {
+        const state = readState();
+        Object.entries(state.answers || {}).forEach(([name, value]) => {
+          const input = form.querySelector(`input[name="${name}"][value="${value}"]`);
+          if (input) input.checked = true;
+        });
+        setSaveState(state.savedAt ? '已恢复上次答题' : '尚无本地记录');
+      }
+
+      form.addEventListener('change', saveAnswers);
+
+      document.getElementById('checkQuiz').addEventListener('click', () => {
+        let correct = 0;
+        const questions = [...form.querySelectorAll('.quiz-question')];
+        questions.forEach((question) => {
+          const selected = question.querySelector('input:checked');
+          const feedback = question.querySelector('.feedback');
+          const isCorrect = selected && selected.value === question.dataset.answer;
+          feedback.className = `feedback ${isCorrect ? 'good' : 'bad'}`;
+          if (isCorrect) {
+            correct += 1;
+            feedback.textContent = `正确。${question.dataset.explain}`;
+          } else if (!selected) {
+            feedback.textContent = `未作答。${question.dataset.explain}`;
+          } else {
+            feedback.textContent = `需要复习。${question.dataset.explain}`;
+          }
+        });
+        const percentage = Math.round(correct / questions.length * 100);
+        const level = percentage >= 90 ? '已经可以向别人讲解' : percentage >= 70 ? '概念基本建立，再复习错题' : '先重看关系图再做一次';
+        score.textContent = `得分：${correct}/${questions.length}（${percentage}%）——${level}`;
+        saveAnswers();
+      });
+
+      document.getElementById('resetQuiz').addEventListener('click', () => {
+        form.reset();
+        form.querySelectorAll('.feedback').forEach((node) => {
+          node.textContent = '';
+          node.className = 'feedback';
+        });
+        score.textContent = '尚未评分';
+        try { localStorage.removeItem(storageKey); } catch (_) {}
+        setSaveState('已清空');
+      });
+
+      restoreAnswers();
+    })();
+  </script>
+
+  <script type="module">
+    const groups = [...document.querySelectorAll('.mermaid-group')];
+    try {
+      const { default: mermaid } = await import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs');
+      mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: 'base' });
+      for (let index = 0; index < groups.length; index += 1) {
+        const group = groups[index];
+        const source = group.querySelector('.mermaid-source').textContent.trim();
+        const output = group.querySelector('.mermaid-output');
+        const { svg, bindFunctions } = await mermaid.render(`jwMermaid${index}`, source);
+        output.innerHTML = svg;
+        if (bindFunctions) bindFunctions(output);
+        group.classList.add('mermaid-ready');
+      }
+    } catch (error) {
+      console.info('Mermaid 未联网加载，继续显示等价离线图。', error);
+    }
+  </script>
+</body>
+</html>

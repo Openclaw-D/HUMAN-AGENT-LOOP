@@ -1,0 +1,18 @@
+# Dependencies and generated output
+node_modules/
+dist/
+coverage/
+*.log
+.stars-data/
+
+# Local configuration
+.env
+.env.*
+!.env.example
+*.local
+
+# Editor and OS state
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

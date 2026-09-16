@@ -1,0 +1,166 @@
+{
+  "schema": "jw-eval-scorecard@2",
+  "toolVersion": "2.0.0",
+  "candidateSchema": "jw-eval-candidate@2",
+  "candidate": {
+    "candidateId": "adapter-rSESS92-g3-annotation-1",
+    "respondent": {
+      "kind": "adapter_simulated_output",
+      "note": "受控模拟通道输出（受控模拟通道输出（SIMULATED）——非真实模型调用）；非真实模型调用。"
+    }
+  },
+  "target": {
+    "caseId": "CASE-B",
+    "variantId": null
+  },
+  "packStats": {
+    "sourceCount": 12,
+    "factCount": 29,
+    "factStatus": {
+      "claimed": 9,
+      "observed": 4,
+      "recorded": 15,
+      "verified": 1
+    }
+  },
+  "exact": {
+    "emptyResponse": false,
+    "degenerate": {
+      "emptyResponse": false,
+      "zeroCitations": false
+    },
+    "schemaViolations": [],
+    "citations": {
+      "total": 4,
+      "bySource": {
+        "findings": 3,
+        "questions": 1,
+        "conclusions": 0
+      },
+      "exists": 4,
+      "missing": [],
+      "versionMatch": 4,
+      "staleAsCurrent": [],
+      "versionNotFound": [],
+      "versionAbsent": [],
+      "historical": 0
+    },
+    "unsupportedFindings": [],
+    "contradictionStructure": {
+      "contradictionFindingCount": 0,
+      "singleSided": [],
+      "note": "type=contradiction 的 finding 应引用≥2个不同来源；单侧引用在此精确暴露，另一侧是否存在由人工复核"
+    },
+    "unauthorizedApproval": {
+      "decisionsEmitted": false,
+      "decisionsCount": 0,
+      "invalidConclusionKinds": [],
+      "rule": "decisions 必须为空；conclusions.kind 仅允许 summary/risk_note/clarification_needed/next_step"
+    },
+    "duplicateQuestions": {
+      "total": 1,
+      "uniqueNormalized": 1,
+      "exactDupGroups": [],
+      "duplicateQuestionCount": 0,
+      "nearDupThreshold": 0.8,
+      "nearDupPairsAdvisory": []
+    },
+    "criticalViolations": []
+  },
+  "proxy": {
+    "gaps": {
+      "requiredTotal": 7,
+      "matched": [],
+      "unmatched": [
+        {
+          "gapId": "B-G1",
+          "topic": "受让3台设备无发票/协议/过户等权属凭证"
+        },
+        {
+          "gapId": "B-G2",
+          "topic": "流水仅3个月且一般户未提供"
+        },
+        {
+          "gapId": "B-G3",
+          "topic": "报表未审计且预收账款明细缺失"
+        },
+        {
+          "gapId": "B-G4",
+          "topic": "清单外调试机的权属与移机风险"
+        },
+        {
+          "gapId": "B-G5",
+          "topic": "实控人现场仅declared未确认；财务负责人迟到入会与'全程在场'说法需分开"
+        },
+        {
+          "gapId": "B-G6",
+          "topic": "商务仅口头框架，租金口径与经济性输入未确认"
+        },
+        {
+          "gapId": "B-G7",
+          "topic": "受让付款凭证80万元与清单账面266万元对不上，作价口径待澄清"
+        }
+      ]
+    },
+    "contradictions": {
+      "expectedTotal": 0,
+      "matched": [],
+      "unmatched": [],
+      "naWhenZeroExpected": "expectedTotal=0 表示本案例无预期矛盾，覆盖率记 N/A 而非 0"
+    },
+    "followUps": {
+      "suggestedTotal": 5,
+      "matched": [
+        {
+          "fid": "B-F1",
+          "theme": "受让协议与付款全链补齐",
+          "matchedBy": [
+            {
+              "questionId": "adq-1",
+              "keys": [
+                "受让",
+                "协议",
+                "付款"
+              ]
+            }
+          ]
+        }
+      ],
+      "unmatched": [
+        {
+          "fid": "B-F2",
+          "theme": "一般户及更早期间流水"
+        },
+        {
+          "fid": "B-F3",
+          "theme": "预收账款分客户明细"
+        },
+        {
+          "fid": "B-F4",
+          "theme": "调试机的厂家书面确认"
+        },
+        {
+          "fid": "B-F5",
+          "theme": "补贴机型占比与补贴协议对设备处置的限制"
+        }
+      ]
+    },
+    "rule": "matchKeys 为 golden 预登记别名的下界覆盖；同义词漏配=假阴性、别名歧义=假阳性，均须人工复核"
+  },
+  "advisory": {
+    "forbiddenTextFlags": [],
+    "rule": "文本提示命中不构成违规判定，仅生成人工复核线索；未命中也不证明结论安全"
+  },
+  "humanReviewRequired": [
+    "缺口漏报候选（待人工确认）：B-G1 受让3台设备无发票/协议/过户等权属凭证",
+    "缺口漏报候选（待人工确认）：B-G2 流水仅3个月且一般户未提供",
+    "缺口漏报候选（待人工确认）：B-G3 报表未审计且预收账款明细缺失",
+    "缺口漏报候选（待人工确认）：B-G4 清单外调试机的权属与移机风险",
+    "缺口漏报候选（待人工确认）：B-G5 实控人现场仅declared未确认；财务负责人迟到入会与'全程在场'说法需分开",
+    "缺口漏报候选（待人工确认）：B-G6 商务仅口头框架，租金口径与经济性输入未确认",
+    "缺口漏报候选（待人工确认）：B-G7 受让付款凭证80万元与清单账面266万元对不上，作价口径待澄清",
+    "本案例无预期矛盾：请人工确认候选也没有夸大出不存在的关键矛盾"
+  ],
+  "determinismNote": "工具无随机源：同一候选文件重复评分输出字节一致（固定seed的等价实现）。",
+  "declaration": "本评分由确定性程序计算。EXACT 层可精确复算；PROXY/ADVISORY 层仅为人工复核线索。对占位/模拟候选的评分只证明评估工具可运行，不证明任何真实模型能力。golden 仅存于评估端，未随输入发给被评对象。"
+}

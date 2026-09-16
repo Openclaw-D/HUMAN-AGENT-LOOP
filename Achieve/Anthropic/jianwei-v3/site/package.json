@@ -1,0 +1,50 @@
+{
+  "name": "sites-project",
+  "version": "4.0.0-dev.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "vinext dev",
+    "dev:node": "next dev",
+    "local:start": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/manage-localhost.ps1 -Action Start",
+    "local:status": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/manage-localhost.ps1 -Action Status",
+    "local:stop": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/manage-localhost.ps1 -Action Stop",
+    "build": "vinext build",
+    "start": "vinext start",
+    "test": "node --experimental-strip-types --test --experimental-test-isolation=none ./test/*.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "v3:full-run": "node ./scripts/v3-full-run.mjs",
+    "v3:acceptance:http": "node ./scripts/v3-http-acceptance.mjs",
+    "v3:acceptance": "node ./scripts/v3-acceptance.mjs",
+    "check": "npm run test && npm run typecheck && npm run lint && npm run build",
+    "gate:v4life": "node scripts/v4life-gate.mjs"
+  },
+  "dependencies": {
+    "next": "16.2.6",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.37.1",
+    "@cloudflare/workers-types": "4.20260515.1",
+    "@openai/sites-vite-plugin": "^0.1.0 || ^0.2.0",
+    "@tailwindcss/postcss": "4.2.1",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "@vitejs/plugin-rsc": "0.5.26",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.6",
+    "react-server-dom-webpack": "19.2.6",
+    "tailwindcss": "4.2.1",
+    "typescript": "5.9.3",
+    "vinext": "1.0.0-beta.3",
+    "vite": "8.0.13",
+    "wrangler": "4.92.0"
+  },
+  "type": "module"
+}

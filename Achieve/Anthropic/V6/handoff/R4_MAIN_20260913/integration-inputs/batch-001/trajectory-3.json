@@ -1,0 +1,198 @@
+{
+  "schema": "product-trajectory@1",
+  "meta": {
+    "trajectoryId": "trj-rs-mtzjgowy-slx2h1vi-202609130815",
+    "source": "product_export",
+    "exportedAt": "2026-09-13T08:15:48.310Z",
+    "exportTool": "export-trajectory-from-store.mjs（store版本=60，时间线来源=session）",
+    "note": "由 MAIN 隔离运行后的 remote-store 导出；时间线来自真实应用事件。"
+  },
+  "session": {
+    "sessionId": "rs-mtzjgowy-slx2h1vi",
+    "projectId": "JW-2026-018",
+    "title": "R4轨迹3：分歧并存（合成）",
+    "status": "live",
+    "generation": 0,
+    "participants": [
+      {
+        "participantId": "pt-mtzjgowy-r7ltfr67",
+        "displayName": "见微 · 协调（合成）",
+        "kind": "jianwei",
+        "domainRole": "coordinator",
+        "attendance": "live_only",
+        "attendanceVerified": false,
+        "joined": false
+      },
+      {
+        "participantId": "pt-mtzjgowy-g9t0dteb",
+        "displayName": "业务 · 王业务（合成）",
+        "kind": "business",
+        "domainRole": "business",
+        "attendance": "live_only",
+        "attendanceVerified": false,
+        "joined": false
+      },
+      {
+        "participantId": "pt-mtzjgowy-d2svyziz",
+        "displayName": "政策 · 楊政策（合成）",
+        "kind": "domain",
+        "domainRole": "policy",
+        "attendance": "live_only",
+        "attendanceVerified": false,
+        "joined": false
+      },
+      {
+        "participantId": "pt-mtzjgowy-wihyb2x1",
+        "displayName": "信审 · 张信审（合成）",
+        "kind": "domain",
+        "domainRole": "credit",
+        "attendance": "pending",
+        "attendanceVerified": false,
+        "joined": false
+      },
+      {
+        "participantId": "pt-mtzjgowy-v303rb52",
+        "displayName": "商务 · 陈商务（合成）",
+        "kind": "domain",
+        "domainRole": "commerce",
+        "attendance": "pending",
+        "attendanceVerified": false,
+        "joined": false
+      },
+      {
+        "participantId": "pt-mtzjgowy-msctgfue",
+        "displayName": "资产 · 李资产（合成）",
+        "kind": "domain",
+        "domainRole": "asset",
+        "attendance": "pending",
+        "attendanceVerified": false,
+        "joined": false
+      },
+      {
+        "participantId": "pt-mtzjgowy-544ztykn",
+        "displayName": "客户 · 实控人（合成）",
+        "kind": "customer",
+        "domainRole": "customer-actual-controller",
+        "attendance": "on_site_declared",
+        "attendanceVerified": false,
+        "joined": false
+      },
+      {
+        "participantId": "pt-mtzjgowy-kjmncp6g",
+        "displayName": "客户 · 财务负责人（合成）",
+        "kind": "customer",
+        "domainRole": "customer-finance",
+        "attendance": "on_site_declared",
+        "attendanceVerified": false,
+        "joined": false
+      },
+      {
+        "participantId": "pt-mtzjgowy-kgix13zz",
+        "displayName": "客户 · 生产负责人（合成）",
+        "kind": "customer",
+        "domainRole": "customer-production",
+        "attendance": "live_only",
+        "attendanceVerified": false,
+        "joined": false
+      }
+    ],
+    "video": {
+      "provider": "none",
+      "state": "not_configured",
+      "message": "视频服务未接入：可查看会话信息，加入/采集不可用（不申请设备权限、不产生媒体流）"
+    },
+    "createdAt": "2026-09-13T08:15:05.506Z",
+    "updatedAt": "2026-09-13T08:15:05.506Z"
+  },
+  "evidence": [
+    {
+      "evidenceId": "ev-mtzjgox1-lwkke9li",
+      "projectId": "JW-2026-018",
+      "sessionId": "rs-mtzjgowy-slx2h1vi",
+      "fixtureId": "fixture-contract",
+      "title": "合同要素页（合成测试图形）",
+      "sourceType": "simulation_fixture",
+      "capturedAt": "2026-09-13T08:15:05.509Z",
+      "receivedAt": "2026-09-13T08:15:05.509Z",
+      "mime": "image/svg+xml",
+      "width": 800,
+      "height": 600,
+      "sha256": "d0f26dd07192cee1ae40e7baf805f31efc90000b32982349e34e27e004d6c4cf",
+      "version": 1,
+      "supersededBy": null,
+      "digestOf": "fixture_bytes"
+    }
+  ],
+  "annotations": [
+    {
+      "annotationId": "an-mtzjgox4-edl6nph8",
+      "sessionId": "rs-mtzjgowy-slx2h1vi",
+      "evidenceId": "ev-mtzjgox1-lwkke9li",
+      "evidenceVersion": 1,
+      "rect": {
+        "x": 0.1,
+        "y": 0.1,
+        "w": 0.4,
+        "h": 0.3
+      },
+      "question": "轨迹3：合同要素核对（合成）",
+      "author": "业务 · 王业务（演示身份）",
+      "status": "open",
+      "version": 3,
+      "createdAt": "2026-09-13T08:15:05.512Z",
+      "replies": [
+        {
+          "replyId": "rp-mtzjgox6-2w3pybbx",
+          "kind": "business",
+          "author": "业务 · 王业务（演示身份）",
+          "text": "业务意见：条款无误（合成）",
+          "at": "2026-09-13T08:15:05.514Z"
+        },
+        {
+          "replyId": "rp-mtzjgox9-t5qkkw72",
+          "kind": "domain",
+          "author": "相关专业域（演示身份）",
+          "text": "信审不同结论：付款节点需复核（合成）",
+          "at": "2026-09-13T08:15:05.517Z"
+        }
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "reviewId": "rv-mtzjgoxc-mturtn9n",
+      "sessionId": "rs-mtzjgowy-slx2h1vi",
+      "targetType": "evidence",
+      "targetId": "ev-mtzjgox1-lwkke9li",
+      "targetVersion": 1,
+      "action": "confirm",
+      "opinion": "轨迹3：业务侧确认（合成）",
+      "reviewer": "人工复核（演示身份）",
+      "at": "2026-09-13T08:15:05.520Z"
+    },
+    {
+      "reviewId": "rv-mtzjgoxg-x1ls6oqe",
+      "sessionId": "rs-mtzjgowy-slx2h1vi",
+      "targetType": "evidence",
+      "targetId": "ev-mtzjgox1-lwkke9li",
+      "targetVersion": 1,
+      "action": "correct",
+      "opinion": "轨迹3：纠正——付款节点实为季度（合成）",
+      "reviewer": "人工复核（演示身份）",
+      "at": "2026-09-13T08:15:05.524Z"
+    }
+  ],
+  "calculations": [],
+  "timeline": [],
+  "todos": [],
+  "ruleConfig": {
+    "version": 0,
+    "status": "unconfigured",
+    "layers": {
+      "technicalQuality": null,
+      "evidenceSufficiency": null,
+      "businessRisk": null,
+      "economics": null
+    }
+  }
+}

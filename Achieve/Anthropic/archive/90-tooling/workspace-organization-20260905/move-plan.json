@@ -1,0 +1,70 @@
+[
+  {
+    "To": "历史代码\\早期平台快照",
+    "From": "archive\\00-pre-financing-leasing-mvp"
+  },
+  {
+    "To": "历史代码\\V2Z实验",
+    "From": "archive\\10-v2z-experiments"
+  },
+  {
+    "To": "V2\\archive\\P2探索",
+    "From": "archive\\20-p2-discovery"
+  },
+  {
+    "To": "Unity",
+    "From": "archive\\30-v3-materials\\eye-unity"
+  },
+  {
+    "To": "历史代码\\V3静态展示壳",
+    "From": "archive\\30-v3-materials\\legacy-static-shell-20260828"
+  },
+  {
+    "To": "历史代码\\V3原型",
+    "From": "archive\\30-v3-materials\\prototype"
+  },
+  {
+    "To": "V3\\archive",
+    "From": "archive\\30-v3-materials"
+  },
+  {
+    "To": "V4",
+    "From": "versions\\V4"
+  },
+  {
+    "To": "V4\\archive\\产品收敛记录",
+    "From": "archive\\40-v4-life-convergence"
+  },
+  {
+    "To": "V3\\materials\\展示与PPT",
+    "From": "materials\\showcase\\jianwei-v3-showcase"
+  },
+  {
+    "To": "V4\\archive\\执行任务书\\ZCODE_BACKEND_GOAL.md",
+    "From": "jianwei-v3\\site\\docs\\v4\\ZCODE_BACKEND_GOAL.md"
+  },
+  {
+    "To": "V4\\archive\\执行任务书\\ZCODE_CONCURRENCY_TRIAL.md",
+    "From": "jianwei-v3\\site\\docs\\v4\\ZCODE_CONCURRENCY_TRIAL.md"
+  },
+  {
+    "To": "V4\\archive\\执行任务书\\ZCODE_OVERNIGHT_MASTER_PROMPT.md",
+    "From": "jianwei-v3\\site\\docs\\v4\\ZCODE_OVERNIGHT_MASTER_PROMPT.md"
+  },
+  {
+    "To": "V4\\archive\\执行任务书\\ZCODE_OVERNIGHT_WORKSPACE_GOAL.md",
+    "From": "jianwei-v3\\site\\docs\\v4\\ZCODE_OVERNIGHT_WORKSPACE_GOAL.md"
+  },
+  {
+    "To": "V4\\archive\\工程验收\\BACKEND_PROGRESS.md",
+    "From": "jianwei-v3\\site\\docs\\v4\\BACKEND_PROGRESS.md"
+  },
+  {
+    "To": "V4\\archive\\工程验收\\ACCEPTANCE.md",
+    "From": "jianwei-v3\\site\\docs\\v4\\ACCEPTANCE.md"
+  },
+  {
+    "To": "V4\\archive\\工程验收\\ZCODE_RUN_STATUS.md",
+    "From": "jianwei-v3\\site\\docs\\v4\\ZCODE_RUN_STATUS.md"
+  }
+]

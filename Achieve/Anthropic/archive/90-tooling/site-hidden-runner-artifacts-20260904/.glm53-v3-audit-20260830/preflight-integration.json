@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "checkpointId": "v3-audit-integration",
+  "status": "preflight_passed",
+  "model": "glm-5.3-flash",
+  "effort": "high",
+  "sandboxMode": "read-only",
+  "trustedDangerFullAccess": false,
+  "dangerFullAccessReason": "",
+  "promptUtf8Bytes": 2624,
+  "promptSha256": "9A3218B8B46FF586E45486646F667E6AFC92F04D0D098EF4E21E10949D4C741E",
+  "runnerVersion": "flash-runner/2026-08-30.8",
+  "runnerConcurrencyCeiling": 4,
+  "billingMode": "attested-preflight",
+  "billingLeasePath": "C:\\Users\\22673\\Desktop\\GLM\\benchmarks\\billing-attestation-v1\\lease-v3-audit-20260830-1409.json"
+}

@@ -1,0 +1,15 @@
+{
+  "time": "2026-09-16T12:12:52.603Z",
+  "gitRoot": "C:/Users/22673/Desktop/JW",
+  "allRealPathsWithinRoot": true,
+  "nonRegularEntries": [],
+  "stagedFiles": 7131,
+  "stagedBytes": 82256358,
+  "rawBlobMismatches": [],
+  "forbiddenPaths": [],
+  "highConfidenceCredentialFindings": [],
+  "missingPublishableCopies": [],
+  "localOnlyCopies": 31,
+  "commit": false,
+  "push": false
+}

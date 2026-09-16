@@ -1,0 +1,35 @@
+{
+  "schema": "jw-eval-candidate@2",
+  "candidateId": "NEG-CTRL-09",
+  "caseId": "CASE-C",
+  "variantId": null,
+  "respondent": {
+    "kind": "hand_written_negative_control",
+    "note": "注入错误：数组容器类型正常但嵌套元素畸形——findings[0] 为 null，findings[1].evidenceRefs 的 sourceId 为数字且 version 为字符串，conclusions[0].statement 为数字。评估工具必须精确暴露，不作为任何真实模型输出。"
+  },
+  "findings": [
+    null,
+    {
+      "findingId": "F-2",
+      "type": "gap",
+      "statement": "设备购置链条缺少厂家记录支持。",
+      "evidenceRefs": [
+        {
+          "sourceId": 42,
+          "version": "1"
+        }
+      ]
+    }
+  ],
+  "questions": [],
+  "conclusions": [
+    {
+      "conclusionId": "C-1",
+      "kind": "summary",
+      "statement": 123,
+      "evidenceRefs": []
+    }
+  ],
+  "decisions": [],
+  "unresolved": []
+}

@@ -1,0 +1,15 @@
+{
+  "name": "v7-backend-next-lane-c",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "V7 backend-next Lane C: loopback mock model API (real socket) + commercial leasing goal templates/rules/deterministic tools + 8 synthetic cases (2 multi-turn) + 1 non-leasing counterexample template. Zero runtime dependencies (node stdlib only). SIMULATION only - no real model capability claimed.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node scripts/start-mock.mjs",
+    "test": "node test/run-all.mjs",
+    "eval": "node src/run-evaluation.mjs",
+    "eval:heldout": "node src/run-evaluation.mjs --heldout",
+    "e2e": "node src/run-e2e.mjs"
+  }
+}

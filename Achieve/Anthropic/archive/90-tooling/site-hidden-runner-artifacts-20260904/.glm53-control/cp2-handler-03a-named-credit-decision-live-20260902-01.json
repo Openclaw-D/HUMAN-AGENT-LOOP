@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "checkpointId": "cp2-handler-03a-named-credit-decision",
+  "status": "completed",
+  "runnerThrew": false,
+  "runnerFailureCategory": null,
+  "runnerTelemetry": {
+    "runnerVersion": "flash-runner/2026-09-01.2",
+    "wallMs": 573119,
+    "queueWaitMs": 7,
+    "promptSha256": "36C19D99F037B274944678516ECD92F06DAE1766ADDC259242277715FB75CC20",
+    "trustedDangerFullAccess": false,
+    "dangerFullAccessReason": ""
+  },
+  "evidence": {
+    "schemaVersion": 1,
+    "checkpointId": "cp2-handler-03a-named-credit-decision",
+    "disposition": "scope_rejected",
+    "stopScheduling": true,
+    "transport": {
+      "runnerStatus": "completed",
+      "terminal": "turn.completed",
+      "failureKind": null,
+      "providerErrorCount": 0,
+      "rateLimit": false,
+      "quota": false,
+      "authentication": false,
+      "sandboxDenial": false,
+      "network": false,
+      "usage": {
+        "input": 1558360,
+        "cached": 1418240,
+        "output": 19219,
+        "fresh": 140120
+      }
+    },
+    "execution": {
+      "scopeValid": false,
+      "commandCount": 24,
+      "acceptanceRuns": 1,
+      "changedFiles": [
+        "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-aggregate.ts",
+        "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-command-handler.ts",
+        "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-command-types.ts",
+        "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\lib\\v4\\work-store.ts",
+        "C:\\Users\\22673\\Desktop\\Anthropic\\jianwei-v3\\site\\test\\v4-work-command-handler-03a.test.mjs"
+      ],
+      "issues": [
+        "command-count-exceeded:24>12",
+        "command-exit-nonzero:item_35",
+        "allowed-read-count-exceeded:work-command-types.ts:2>1",
+        "allowed-read-count-exceeded:work-aggregate.ts:8>1",
+        "allowed-read-count-exceeded:work-store.ts:2>1",
+        "allowed-read-count-exceeded:work-command-handler.ts:7>1"
+      ]
+    },
+    "controller": {
+      "status": "pending",
+      "exitCode": null
+    }
+  }
+}

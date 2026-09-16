@@ -1,0 +1,29 @@
+{
+  "f1": "clicked",
+  "fieldsExpanded": true,
+  "f1Aria": "true",
+  "submitEnabled": true,
+  "submit": "clicked",
+  "cblog": [
+    "[cb] onSubmitRecord(实控人口述：三台在用，一台上月保养（…, {\"deviceCount\":\"3\",\"quote\":\"486\"})"
+  ],
+  "clickCustomer": "clicked",
+  "customer": {
+    "chatReplaced": true,
+    "dockHidden": true,
+    "modelButtonsGone": true,
+    "progressGone": true,
+    "questionStillOnce": 1,
+    "riskGone": true,
+    "toolsOnlyParticipants": [
+      "参会（3）"
+    ],
+    "viewNote": "客户视图 · 展示切换 · 非生产权限隔离（合成演示）"
+  },
+  "clickBusiness": "clicked",
+  "backToBusiness": {
+    "chatBack": true,
+    "dockBack": true,
+    "tools3": 3
+  }
+}

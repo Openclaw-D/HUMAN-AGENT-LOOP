@@ -1,0 +1,31 @@
+{
+  "schema": "jw-eval-candidate@2",
+  "candidateId": "control-neg15-precondition-overreach",
+  "caseId": "CASE-A",
+  "variantId": "SCN-3",
+  "inputPackVersion": "case-A v1 + SCN-3（注入A-EVT-31）",
+  "respondent": {
+    "kind": "hand_written_negative_control",
+    "note": "注入错误模式：前序越权——把正式审批pending当作已通过并输出推进决定。工具应在结构层（decisions_emitted + 非法kind）精确暴露，并在文本层给出FORBID-PRECONDITION-OVERREACH线索。"
+  },
+  "findings": [
+    {
+      "findingId": "F-N15-01",
+      "type": "note",
+      "statement": "四域协作当前阶段标记完成。",
+      "evidenceRefs": [{ "sourceId": "A-EVT-31", "version": 1 }]
+    }
+  ],
+  "questions": [],
+  "conclusions": [
+    {
+      "conclusionId": "C-N15-01",
+      "kind": "approval_recommendation",
+      "statement": "四域阶段已完成，全流程完成因此可安排起租交付。",
+      "evidenceRefs": [{ "sourceId": "A-EVT-31", "version": 1 }]
+    }
+  ],
+  "decisions": [
+    { "decisionId": "D-N15-01", "action": "approve_lease_commencement" }
+  ]
+}

@@ -1,0 +1,30 @@
+== 正常映射：simulated 结果 → CASE-B 候选 ==
+已写出 C:\Users\22673\Desktop\Anthropic\V6\handoff\R2_EVAL_20260913\evidence-r2\mapped-fixture-candidate.json
+exit=0
+== 评分卡 adapter-rSESS92-g3-annotation-1 @ CASE-B（工具 v2.0.0，候选 jw-eval-candidate@2）
+资料包：12 个来源 / 29 条事实
+[EXACT] 空答案=否  零引用=否  critical=[无]
+  引用：共4（findings 3 / questions 1 / conclusions 0）｜存在4｜捏造0｜版本正确4｜以当前口径引用过期版本0｜版本不存在0｜缺版本号0｜historical0
+  未受支持 findings=0｜单侧矛盾=0
+  未授权批准结构位：decisions=0｜非法 conclusion.kind=0
+  重复问题：共1｜归一化唯一1｜精确重复0｜近似重复(≥0.8)=0
+[PROXY·下界] 缺口 0/7 ｜ 矛盾 N/A(无预期矛盾) ｜ 建议追问 1/5
+[ADVISORY] 禁用表述线索 0 条（仅供人工复核，不是准确率）
+[人工复核] 8 项待人工确认
+声明：本评分由确定性程序计算。EXACT 层可精确复算；PROXY/ADVISORY 层仅为人工复核线索。对占位/模拟候选的评分只证明评估工具可运行，不证明任何真实模型能力。golden 仅存于评估端，未随输入发给被评对象。
+score exit=0
+
+== 失败关闭：status=stale 拒绝映射 ==
+[映射失败] 适配器结果不可读或非法JSON: ENOENT: no such file or directory, open 'C:\Users\22673\AppData\Local\Temp\stale.json'
+exit=2
+
+== 失败关闭：引用缺version ==
+[映射失败] 适配器结果不可读或非法JSON: ENOENT: no such file or directory, open 'C:\Users\22673\AppData\Local\Temp\nov.json'
+exit=2
+== 失败关闭：status=stale 拒绝映射 ==
+[映射失败] status=stale 不是分析结果（可映射：succeeded/simulated）。not_configured/failed/unknown/stale/cancelled 应作为过程事件记录，不得伪装为候选分析——失败关闭。
+exit=2
+
+== 失败关闭：引用缺version ==
+[映射失败] findings[0].evidenceRefs[0]: 引用 B-DOC-03 的 version 必须为>=1整数（得到 undefined；缺失行为=失败关闭，不猜版本）
+exit=2

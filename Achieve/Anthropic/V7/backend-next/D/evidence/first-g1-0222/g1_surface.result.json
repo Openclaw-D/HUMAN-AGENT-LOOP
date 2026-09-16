@@ -1,0 +1,118 @@
+{
+  "suite": "g1_surface",
+  "results": [
+    {
+      "id": "D-01",
+      "title": "四态区分：执行→candidate_ready≠accepted≠decided 全链走通",
+      "severity": "P0",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 23,
+      "failures": [
+        {
+          "msg": "submit facts evidence 返回2xx",
+          "detail": "{\"status\":400,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"INVALID_INPUT\\\",\\\"message\\\":\\\"expectedVersion 必须是非负整数\\\"}\"}"
+        },
+        {
+          "msg": "submit facts evidence ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"INVALID_INPUT\\\",\\\"message\\\":\\\"expectedVersion 必须是非负整数\\\"}\"}"
+        },
+        {
+          "msg": "证据齐备 → ready（deps空）",
+          "detail": "{\"actual\":\"blocked\",\"expected\":\"ready\"}"
+        },
+        {
+          "msg": "exception",
+          "detail": "TypeError: api.as is not a function\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g1_surface.test.mjs:34:34)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ],
+      "ms": 1128,
+      "note": "exception"
+    },
+    {
+      "id": "D-02",
+      "title": "敏感写失败关闭：不可信凭据403；载荷不得携带授权键；角色不可由输入提升",
+      "severity": "P0",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 51,
+      "failures": [
+        {
+          "msg": "可信凭据提证 返回2xx",
+          "detail": "{\"status\":400,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"INVALID_INPUT\\\",\\\"message\\\":\\\"expectedVersion 必须是非负整数\\\"}\"}"
+        },
+        {
+          "msg": "可信凭据提证 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"INVALID_INPUT\\\",\\\"message\\\":\\\"expectedVersion 必须是非负整数\\\"}\"}"
+        },
+        {
+          "msg": "claim 返回2xx",
+          "detail": "{\"status\":409,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_READY\\\",\\\"message\\\":\\\"目标当前 blocked：仅 ready 可领取\\\"}\"}"
+        },
+        {
+          "msg": "claim ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"NOT_READY\\\",\\\"message\\\":\\\"目标当前 blocked：仅 ready 可领取\\\"}\"}"
+        },
+        {
+          "msg": "exception",
+          "detail": "ReferenceError: goalVersion is not defined\n    at Object.fn (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/suites/g1_surface.test.mjs:106:70)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async runSuite (file:///C:/Users/22673/Desktop/Anthropic/V7/backend-next/D/harness/runner.mjs:46:7)"
+        }
+      ],
+      "ms": 406,
+      "note": "exception"
+    },
+    {
+      "id": "D-03",
+      "title": "依赖环检测：模板环在实例化前被 400 DEPENDENCY_CYCLE 拒绝且无半状态",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 6,
+      "failures": [],
+      "ms": 21,
+      "note": ""
+    },
+    {
+      "id": "D-05",
+      "title": "乐观版本：陈旧expectedVersion → 409 VERSION_CONFLICT{serverVersion} 非静默覆盖",
+      "severity": "P1",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 23,
+      "failures": [
+        {
+          "msg": "第一次提证成功 返回2xx",
+          "detail": "{\"status\":400,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"INVALID_INPUT\\\",\\\"message\\\":\\\"expectedVersion 必须是非负整数\\\"}\"}"
+        },
+        {
+          "msg": "第一次提证成功 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"INVALID_INPUT\\\",\\\"message\\\":\\\"expectedVersion 必须是非负整数\\\"}\"}"
+        },
+        {
+          "msg": "陈旧版本被409拒 = VERSION_CONFLICT",
+          "detail": "{\"actual\":\"INVALID_INPUT\",\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"INVALID_INPUT\\\",\\\"message\\\":\\\"expectedVersion 必须是非负整数\\\"}\"}"
+        },
+        {
+          "msg": "失败写不推进版本",
+          "detail": "{}"
+        },
+        {
+          "msg": "新版本重提成功 返回2xx",
+          "detail": "{\"status\":400,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"INVALID_INPUT\\\",\\\"message\\\":\\\"expectedVersion 必须是非负整数\\\"}\"}"
+        },
+        {
+          "msg": "新版本重提成功 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"INVALID_INPUT\\\",\\\"message\\\":\\\"expectedVersion 必须是非负整数\\\"}\"}"
+        }
+      ],
+      "ms": 159,
+      "note": ""
+    }
+  ],
+  "pass": 1,
+  "fail": 3,
+  "skip": 0,
+  "blocked": 0,
+  "totalAssertions": 103,
+  "runnerError": null
+}

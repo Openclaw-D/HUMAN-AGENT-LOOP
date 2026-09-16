@@ -1,0 +1,19 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"jianwei/p1/projection-contract.schema.json",
+  "title":"见微 WorkProjection draft",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["fixture","projectionIdentity","projectionVersion","eventCursor","generatedAt","label","scenarios","defaultViews","work","actors","stages","matrix","activities"],
+  "properties":{
+    "fixture":{"const":true,"description":"This is the prototype schema: fixture is always true. Production runtime must use the same envelope with fixture=false and must never emit fixture=true."},
+    "projectionIdentity":{"type":"string","minLength":1},"projectionVersion":{"type":"string","minLength":1},"eventCursor":{"type":"string","minLength":1},"generatedAt":{"type":"string","format":"date-time"},"label":{"type":"string"},
+    "scenarios":{"type":"array","minItems":10,"items":{"type":"string"}},
+    "defaultViews":{"type":"object","additionalProperties":false,"required":["风控业务协同","需求开发协同","人机交互协同","内容生产协同","经营增长协同","物理智能协同","知识办公协同","客户服务协同","供应链履约协同","医疗服务协同"],"properties":{"风控业务协同":{"$ref":"#/$defs/view"},"需求开发协同":{"$ref":"#/$defs/view"},"人机交互协同":{"$ref":"#/$defs/view"},"内容生产协同":{"$ref":"#/$defs/view"},"经营增长协同":{"$ref":"#/$defs/view"},"物理智能协同":{"$ref":"#/$defs/view"},"知识办公协同":{"$ref":"#/$defs/view"},"客户服务协同":{"$ref":"#/$defs/view"},"供应链履约协同":{"$ref":"#/$defs/view"},"医疗服务协同":{"$ref":"#/$defs/view"}}},
+    "work":{"type":"object","additionalProperties":false,"required":["id","title","goal","goalVersion","stage","status","owner","nextStep"],"properties":{"id":{"type":"string"},"title":{"type":"string"},"goal":{"type":"string"},"goalVersion":{"type":"string"},"stage":{"type":"string"},"status":{"type":"string"},"owner":{"$ref":"#/$defs/owner"},"nextStep":{"type":"string"}}},
+    "actors":{"type":"array","items":{"$ref":"#/$defs/actor"}},"stages":{"type":"array","items":{"$ref":"#/$defs/stage"}},
+    "matrix":{"type":"object","additionalProperties":false,"required":["columns","rows"],"properties":{"columns":{"type":"array","items":{"type":"string"}},"rows":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["actorId","cells"],"properties":{"actorId":{"type":"string"},"cells":{"type":"array","items":{"type":"string"}}}}}}},
+    "activities":{"type":"array","items":{"$ref":"#/$defs/activity"}}
+  },
+  "$defs":{"runtimeFixture":{"const":false,"description":"Production runtime marker. Backend must use false; true is reserved for a prototype fixture."},"view":{"enum":["relation","progress","matrix"]},"owner":{"type":"object","additionalProperties":false,"required":["id","name","role","authority"],"properties":{"id":{"type":"string"},"name":{"type":"string"},"role":{"type":"string"},"authority":{"type":"string"}}},"actor":{"type":"object","additionalProperties":false,"required":["id","name","type","role","authority","state"],"properties":{"id":{"type":"string"},"name":{"type":"string"},"type":{"enum":["human","agent","system"]},"role":{"type":"string"},"authority":{"type":"string"},"state":{"type":"string"}}},"stage":{"type":"object","additionalProperties":false,"required":["id","name","state","detail"],"properties":{"id":{"type":"string"},"name":{"type":"string"},"state":{"enum":["done","current","pending","blocked"]},"detail":{"type":"string"}}},"activity":{"type":"object","additionalProperties":false,"required":["id","type","time","title","body","scope"],"properties":{"id":{"type":"string"},"type":{"enum":["message","artifact","challenge","handoff","gate","action","receipt","system"]},"time":{"type":"string"},"title":{"type":"string"},"body":{"type":"string"},"scope":{"type":"string"},"authoritative":{"type":"boolean"},"basis":{"type":"string"},"impact":{"type":"string"},"receiptStatus":{"enum":["succeeded","failed","unknown"]}}}}
+}

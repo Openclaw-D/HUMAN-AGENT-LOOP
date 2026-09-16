@@ -1,0 +1,434 @@
+{
+  "stats": {
+    "seedCount": 100,
+    "dedupedCandidateCount": 99,
+    "validCount": 91,
+    "removedCount": 9,
+    "verificationDroppedCount": 9,
+    "verificationExcludedCount": 8,
+    "duplicateRemovedCount": 1,
+    "dedupeRemovedCount": 0,
+    "jobs": 84,
+    "strategy": 7,
+    "urls": 91,
+    "jobUrls": 84,
+    "jobIds": 75,
+    "metrics": 25,
+    "salary": 20,
+    "sourceCounts": [
+      [
+        "official_careers_direct",
+        40
+      ],
+      [
+        "official_careers_index",
+        24
+      ],
+      [
+        "BOSS_search_index",
+        20
+      ],
+      [
+        "official_program",
+        6
+      ],
+      [
+        "official_product_signal",
+        1
+      ]
+    ],
+    "gradeCounts": [
+      [
+        "A",
+        45
+      ],
+      [
+        "C",
+        39
+      ],
+      [
+        "B",
+        7
+      ]
+    ],
+    "completeness": [
+      [
+        "company",
+        91,
+        "100.0%"
+      ],
+      [
+        "title_or_signal",
+        91,
+        "100.0%"
+      ],
+      [
+        "layer",
+        91,
+        "100.0%"
+      ],
+      [
+        "scenario",
+        91,
+        "100.0%"
+      ],
+      [
+        "evidence_status",
+        91,
+        "100.0%"
+      ],
+      [
+        "city",
+        83,
+        "91.2%"
+      ],
+      [
+        "job_id",
+        75,
+        "82.4%"
+      ],
+      [
+        "salary_text",
+        20,
+        "22.0%"
+      ],
+      [
+        "technical_route",
+        91,
+        "100.0%"
+      ],
+      [
+        "production_metrics",
+        25,
+        "27.5%"
+      ],
+      [
+        "ai_relevance",
+        91,
+        "100.0%"
+      ],
+      [
+        "evidence_grade",
+        91,
+        "100.0%"
+      ],
+      [
+        "url",
+        91,
+        "100.0%"
+      ]
+    ],
+    "duplicateUrls": [
+      {
+        "url": "https://careers.tencent.com/zh-cn/cityinfo.html?city=5",
+        "count": 6,
+        "recordIds": [
+          "TENCENT-001",
+          "TENCENT-002",
+          "TENCENT-003",
+          "TENCENT-004",
+          "TENCENT-005",
+          "TENCENT-006"
+        ],
+        "reason": "共享官方/BOSS索引或项目页；记录由独立岗位ID、标题或课题区分"
+      },
+      {
+        "url": "https://m.zhipin.com/zhaopin/3cf152b283430a451HF_39W6GA~~/",
+        "count": 6,
+        "recordIds": [
+          "BOSS-001",
+          "BOSS-002",
+          "BOSS-003",
+          "BOSS-015",
+          "BOSS-018",
+          "BOSS-023"
+        ],
+        "reason": "共享官方/BOSS索引或项目页；记录由独立岗位ID、标题或课题区分"
+      },
+      {
+        "url": "https://hr.xiaomi.com/website/top-talent.html",
+        "count": 4,
+        "recordIds": [
+          "XIAOMI-S01",
+          "XIAOMI-S02",
+          "XIAOMI-S03",
+          "XIAOMI-S04"
+        ],
+        "reason": "共享官方/BOSS索引或项目页；记录由独立岗位ID、标题或课题区分"
+      },
+      {
+        "url": "https://m.zhipin.com/zhaopin/02bb009a5a3098381nF93Nu0Eg~~/",
+        "count": 2,
+        "recordIds": [
+          "BOSS-008",
+          "BOSS-010"
+        ],
+        "reason": "共享官方/BOSS索引或项目页；记录由独立岗位ID、标题或课题区分"
+      },
+      {
+        "url": "https://www.zhipin.com/zhaopin/4c10a9367efd2f551H163d66EA~~/",
+        "count": 2,
+        "recordIds": [
+          "BOSS-004",
+          "BOSS-012"
+        ],
+        "reason": "共享官方/BOSS索引或项目页；记录由独立岗位ID、标题或课题区分"
+      }
+    ],
+    "domainMismatches": []
+  },
+  "urlSamples": [
+    {
+      "record_id": "BAIDU-001",
+      "company": "百度",
+      "source_type": "official_careers_direct",
+      "url": "https://talent.baidu.com/jobs/detail/SOCIAL/4b326f6b-2c39-461c-ae64-69b4201c680e",
+      "result": "success",
+      "notes": "官方详情本轮可读，标题、城市、日期和职责均返回",
+      "__line": 2
+    },
+    {
+      "record_id": "BAIDU-002",
+      "company": "百度",
+      "source_type": "official_careers_direct",
+      "url": "https://talent.baidu.com/jobs/detail/SOCIAL/78b2b775-4c6f-4554-87ea-d7133ae4a211",
+      "result": "success",
+      "notes": "官方详情本轮可读，Agent职责与指标维度可见",
+      "__line": 3
+    },
+    {
+      "record_id": "BAIDU-003",
+      "company": "百度",
+      "source_type": "official_careers_direct",
+      "url": "https://talent.baidu.com/jobs/detail/SOCIAL/c8821b51-c061-4652-8fad-61d8a49b9f52",
+      "result": "success",
+      "notes": "官方详情本轮可读，办公Agent职责可见",
+      "__line": 4
+    },
+    {
+      "record_id": "BAIDU-004",
+      "company": "百度",
+      "source_type": "official_careers_direct",
+      "url": "https://talent.baidu.com/jobs/detail/INTERN/52415af4-405a-4f07-8392-d4b63e76df8c",
+      "result": "success",
+      "notes": "官方详情本轮可读，真实业务Agentic RL与用户反馈闭环可见",
+      "__line": 5
+    },
+    {
+      "record_id": "BAIDU-005",
+      "company": "百度",
+      "source_type": "official_careers_direct",
+      "url": "https://talent.baidu.com/jobs/detail/SOCIAL/59e29a75-8bbd-4346-bb26-80c39a9992e5",
+      "result": "success",
+      "notes": "官方详情本轮可读，多模态模型与资源利用率职责可见",
+      "__line": 6
+    },
+    {
+      "record_id": "BAIDU-006",
+      "company": "百度智能云",
+      "source_type": "official_careers_direct",
+      "url": "https://talent.baidu.com/jobs/detail/SOCIAL/a20c009e-7e87-4e38-98b0-7fab767752f5",
+      "result": "success",
+      "notes": "官方详情本轮可读，AI算力与客户成功职责可见",
+      "__line": 7
+    },
+    {
+      "record_id": "BAIDU-007",
+      "company": "百度智能云",
+      "source_type": "official_careers_direct",
+      "url": "https://talent.baidu.com/jobs/detail/SOCIAL/ea1b9710-431f-478a-861c-a68ceefaf1e8",
+      "result": "success",
+      "notes": "官方详情本轮可读，工业Agentic AI与商业化职责可见",
+      "__line": 8
+    },
+    {
+      "record_id": "OPPO-001",
+      "company": "OPPO",
+      "source_type": "official_careers_index",
+      "url": "https://careers.oppo.com/university/oppo/campus/post/1808?recruitType=Graduate",
+      "result": "js_empty",
+      "notes": "直接URL为JS空页；官方搜索索引可读并支持标题、城市、日期和职责",
+      "__line": 9
+    },
+    {
+      "record_id": "OPPO-002",
+      "company": "OPPO",
+      "source_type": "official_careers_index",
+      "url": "https://careers.oppo.com/university/oppo/campus/post/1743",
+      "result": "js_empty",
+      "notes": "直接URL为JS空页；官方搜索索引可读并支持智能体记忆职责",
+      "__line": 10
+    },
+    {
+      "record_id": "OPPO-003",
+      "company": "OPPO",
+      "source_type": "official_careers_index",
+      "url": "https://careers.oppo.com/university/oppo/campus/post/1821?recruitType=Graduate",
+      "result": "js_empty",
+      "notes": "直接URL为JS空页；官方搜索索引可读并支持系统级Agent职责",
+      "__line": 11
+    },
+    {
+      "record_id": "OPPO-004",
+      "company": "OPPO",
+      "source_type": "official_careers_index",
+      "url": "https://careers.oppo.com/university/oppo/campus/post/1843?recruitType=Graduate",
+      "result": "js_empty",
+      "notes": "直接URL为JS空页；官方搜索索引可读并支持AIOS与量产职责",
+      "__line": 12
+    },
+    {
+      "record_id": "OPPO-005",
+      "company": "OPPO",
+      "source_type": "official_careers_index",
+      "url": "https://careers.oppo.com/university/oppo/campus/post/1746?recruitType=Graduate",
+      "result": "js_empty",
+      "notes": "直接URL为JS空页；官方搜索索引可读并支持记忆检索职责",
+      "__line": 13
+    },
+    {
+      "record_id": "OPPO-006",
+      "company": "OPPO",
+      "source_type": "official_careers_index",
+      "url": "https://careers.oppo.com/university/oppo/campus/post/1600?recruitType=Graduate",
+      "result": "js_empty",
+      "notes": "直接URL为JS空页；官方搜索索引可读并支持AI Coding职责",
+      "__line": 14
+    },
+    {
+      "record_id": "OPPO-007",
+      "company": "OPPO",
+      "source_type": "official_careers_index",
+      "url": "https://careers.oppo.com/university/oppo/campus/post/1580?recruitType=Graduate",
+      "result": "js_empty",
+      "notes": "直接URL为JS空页；官方搜索索引可读并支持企业IT AI重构职责",
+      "__line": 15
+    },
+    {
+      "record_id": "BOSS-001",
+      "company": "华尔街见闻",
+      "source_type": "BOSS_search_index",
+      "url": "https://m.zhipin.com/zhaopin/3cf152b283430a451HF_39W6GA~~/",
+      "result": "success",
+      "notes": "BOSS公开索引本轮可读，标题、公司、城市与200-260K·24薪可见；详情页仍有安全校验",
+      "__line": 16
+    },
+    {
+      "record_id": "BOSS-008",
+      "company": "BOSS直聘",
+      "source_type": "BOSS_search_index",
+      "url": "https://m.zhipin.com/zhaopin/02bb009a5a3098381nF93Nu0Eg~~/",
+      "result": "success",
+      "notes": "BOSS公开索引本轮可读，AI-Agent平台技术负责人标题与70-100K·16薪可见",
+      "__line": 17
+    },
+    {
+      "record_id": "BYTE-001",
+      "company": "字节跳动 Seed",
+      "source_type": "official_careers_index",
+      "url": "https://seed.bytedance.com/zh/career",
+      "result": "success",
+      "notes": "官方Seed招聘页本轮可读；仅岗位索引，无详情展开",
+      "__line": 18
+    },
+    {
+      "record_id": "BYTE-007",
+      "company": "字节跳动 Seed",
+      "source_type": "official_careers_direct",
+      "url": "https://joinbytedance.com/search/7610960133552654597",
+      "result": "internal_error",
+      "notes": "本次打开返回Internal Error；核验阶段官方详情曾直接可读，保留A级但记录波动",
+      "__line": 19
+    },
+    {
+      "record_id": "BYTE-016",
+      "company": "字节跳动全球电商",
+      "source_type": "official_careers_direct",
+      "url": "https://joinbytedance.com/search/7621874043991132421",
+      "result": "internal_error",
+      "notes": "本次打开返回Internal Error；核验阶段官方详情曾直接可读，保留A级但记录波动",
+      "__line": 20
+    },
+    {
+      "record_id": "HUAWEI-001",
+      "company": "华为",
+      "source_type": "official_careers_direct",
+      "url": "https://career.huawei.com/reccampportal/portal5/social-recruitment-detail.html?dataSource=1&jobId=28183",
+      "result": "internal_error",
+      "notes": "直接页本次返回Internal Error；核验阶段公开详情接口可读",
+      "__line": 21
+    },
+    {
+      "record_id": "TENCENT-001",
+      "company": "腾讯/微信",
+      "source_type": "official_careers_index",
+      "url": "https://careers.tencent.com/zh-cn/cityinfo.html?city=5",
+      "result": "index_conflict",
+      "notes": "直接页为JS空页；搜索索引同时有近期岗位正文和暂无开放提示，不能声称实时在招",
+      "__line": 22
+    },
+    {
+      "record_id": "ALI-001",
+      "company": "阿里巴巴智能引擎 AI Infra",
+      "source_type": "official_careers_index",
+      "url": "https://talent-holding.alibaba.com/off-campus/position-detail?positionId=1038409",
+      "result": "internal_error",
+      "notes": "详情本次返回Internal Error；官方ROCK索引支持positionId和岗位方向",
+      "__line": 23
+    },
+    {
+      "record_id": "ALI-007",
+      "company": "阿里巴巴集团",
+      "source_type": "official_careers_index",
+      "url": "https://campus-talent.alibaba.com/campus/position/199903540003",
+      "result": "js_empty",
+      "notes": "官方详情为JS空页；官方搜索索引正文可读",
+      "__line": 24
+    },
+    {
+      "record_id": "JD-001",
+      "company": "京东",
+      "source_type": "official_careers_direct",
+      "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=212557",
+      "result": "success",
+      "notes": "官方岗位详情本轮可读",
+      "__line": 25
+    },
+    {
+      "record_id": "JD-009",
+      "company": "京东科技",
+      "source_type": "official_careers_direct",
+      "url": "https://zhaopin.jd.com/web/job-info-detail?requementId=219504",
+      "result": "success",
+      "notes": "官方岗位详情本轮可读，用户/商家规模与7×24场景可见",
+      "__line": 26
+    },
+    {
+      "record_id": "XIAOMI-S01",
+      "company": "小米",
+      "source_type": "official_program",
+      "url": "https://hr.xiaomi.com/website/top-talent.html",
+      "result": "success",
+      "notes": "官方顶尖人才项目页本轮可读；保持strategy_topic，不冒充岗位",
+      "__line": 27
+    },
+    {
+      "record_id": "MEITUAN-S01",
+      "company": "美团 LongCat",
+      "source_type": "official_program",
+      "url": "https://zhaopin.meituan.com/longcatprogram",
+      "result": "internal_error",
+      "notes": "本次打开返回Internal Error；官方项目搜索索引可读，保持strategy_topic",
+      "__line": 28
+    },
+    {
+      "record_id": "MEITUAN-S02",
+      "company": "美团 CatPaw",
+      "source_type": "official_product_signal",
+      "url": "https://tech.meituan.com/2026/07/28/CatPaw-LongCat.html",
+      "result": "success",
+      "notes": "官方技术文章本轮可读，内部员工与Agent规模信号可见",
+      "__line": 29
+    }
+  ]
+}
