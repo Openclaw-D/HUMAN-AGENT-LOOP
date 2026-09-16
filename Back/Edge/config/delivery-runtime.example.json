@@ -1,0 +1,21 @@
+{
+  "_note": "任务三受控交付运行时配置示例。复制为 delivery-runtime.json（Git 排除，勿提交真实值）。principalTokens 必须与 A 内核 --principal-tokens 语法一致（credential=id:kind:roles[:projects[:tenants]]）；authEntries 供 Edge --auth-file（credential 与 principalTokens 的令牌一致）。matrixSeedSql 为幂等播种 SQL（合成开发矩阵，须明确标注非公司制度；生产矩阵由公司批准后经受控流程录入）。以下均为公开合成演示值。",
+  "dbUser": "jw",
+  "dbPassword": "jw-local-demo",
+  "dbName": "jw",
+  "principalTokens": "tok-biz1=biz1:human:business:all:t1,tok-jw1=jw1:human:jianwei:all:t1,tok-cred1=cred1:human:credit:all:t1,tok-comm1=comm1:human:commerce:all:t1,tok-asset1=asset1:human:asset:all:t1,tok-app1=app1:human:approver:all:t1,tok-dir1=dir1:human:director:all:t1,tok-cust1=cust1:human:customer:all:t1,tok-adm1=adm1:human:admin:all:all",
+  "creditMatrix": "matrix-delivery-synthetic",
+  "creditConcentration": "conc-delivery-synthetic",
+  "matrixSeedSql": "INSERT INTO permission_matrix (matrix_version, role, action, allowed, max_amount_minor) VALUES ('matrix-delivery-synthetic','approver','facility.approve',true,1000000000),('matrix-delivery-synthetic','approver','facility.activate',true,NULL),('matrix-delivery-synthetic','approver','facility.suspend',true,NULL),('matrix-delivery-synthetic','approver','facility.reduce',true,NULL),('matrix-delivery-synthetic','business','fr.confirm-external',true,1000000000) ON CONFLICT (matrix_version, role, action) DO NOTHING;",
+  "authEntries": [
+    { "credential": "tok-biz1", "principalId": "biz1", "roles": ["business"] },
+    { "credential": "tok-jw1", "principalId": "jw1", "roles": ["jianwei"] },
+    { "credential": "tok-cred1", "principalId": "cred1", "roles": ["credit"] },
+    { "credential": "tok-comm1", "principalId": "comm1", "roles": ["commerce"] },
+    { "credential": "tok-asset1", "principalId": "asset1", "roles": ["asset"] },
+    { "credential": "tok-app1", "principalId": "app1", "roles": ["approver"] },
+    { "credential": "tok-dir1", "principalId": "dir1", "roles": ["director"] },
+    { "credential": "tok-cust1", "principalId": "cust1", "roles": ["customer"] },
+    { "credential": "tok-adm1", "principalId": "adm1", "roles": ["admin"] }
+  ]
+}

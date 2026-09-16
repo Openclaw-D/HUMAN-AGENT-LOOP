@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>JW browser-harness（E0 操作验证页）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/harness/app.css">
+</head>
+<body>
+<h1>JW browser-harness <small>E0 · 最小可操作验证页（无视觉装饰；视频/通道属任务02，BLOCKED）</small></h1>
+
+<!-- 0) 会话：凭据只用于换取不透明会话，之后不再出现 -->
+<section id="sec-session">
+  <h2>0 · 会话</h2>
+  <label>合成凭据 <input id="cred" value="harness-demo-cred" size="24"></label>
+  <button id="btn-login">换取会话</button>
+  <button id="btn-logout">注销会话</button>
+  <span id="session-state" class="state">未登录</span>
+</section>
+
+<!-- 1) 客户选择 + 工作台 -->
+<section id="sec-customer">
+  <h2>1 · 客户选择与工作台快照</h2>
+  <label>客户
+    <select id="customer">
+      <option value="">—选择—</option>
+      <option value="cust-1001">合成客户一（cust-1001）</option>
+      <option value="cust-2002">合成客户二（cust-2002）</option>
+    </select>
+  </label>
+  <button id="btn-load">加载快照</button>
+  <button id="btn-subscribe">订阅事件</button>
+  <button id="btn-unsubscribe">停订阅</button>
+  <span id="stream-state" class="state">未订阅</span>
+  <div id="resync-flag" class="hidden resync">⚠ 游标失效，已要求 resync（重新加载快照）</div>
+  <pre id="workspace" class="out">（快照未加载）</pre>
+</section>
+
+<!-- 2) 媒体会话占位：常驻组件，面板开合不卸载（D08 结构验证；真实 RTC 属任务02） -->
+<section id="sec-media">
+  <h2>2 · 媒体会话占位（常驻组件）</h2>
+  <p class="note">真实视频接入 BLOCKED（任务02 契约未冻结）。此占位验证：面板开合/四域切换<b>不重建</b>媒体会话组件。</p>
+  <div id="media-stub">MEDIA SESSION STUB（存活计数：<b id="media-tick">0</b> | 重建次数：<b id="media-rebuilds">0</b>）</div>
+</section>
+
+<!-- 3) 透明面板（可开合；开合不触达媒体/订阅） -->
+<section id="sec-panel">
+  <h2>3 · 工作面板 <button id="btn-panel">开/关面板</button></h2>
+  <div id="panel">
+    <h3>四域状态（来自快照）</h3>
+    <pre id="domains" class="out small">—</pre>
+    <h3>缺证 / 待核验</h3>
+    <pre id="missing" class="out small">—</pre>
+    <h3>动作（经 Edge 动作代理；上游内核未运行时如实显示失败）</h3>
+    <label>requestId <input id="req-id" size="36"> <button id="btn-gen-id">生成一次（仅输入框，不自动发送）</button></label>
+    <button id="btn-claim">POST actions/goals/:id/claim（演示 D13）</button>
+    <button id="btn-retry">同 requestId 重试</button>
+    <pre id="action-out" class="out small">—</pre>
+    <h3>消息（受众分离，D09）</h3>
+    <label>受众
+      <select id="audience"><option value="internal">internal</option><option value="customer">customer</option></select>
+    </label>
+    <label><input type="checkbox" id="internal-content"> 标记为内部内容</label>
+    <label><input type="checkbox" id="confirm-external"> 显式确认外发（confirmExternalSend）</label>
+    <label>文本 <input id="msg-text" value="合成消息" size="30"></label>
+    <button id="btn-send">发送</button>
+    <pre id="msg-out" class="out small">—</pre>
+  </div>
+</section>
+
+<!-- 4) 事件流 -->
+<section id="sec-stream">
+  <h2>4 · 事件流（至少一次；客户端按 eventId 去重）</h2>
+  <div>已收唯一事件：<b id="ev-unique">0</b> · 去重丢弃：<b id="ev-dup">0</b> · 游标：<span id="cursor" class="state">—</span></div>
+  <pre id="events" class="out">（无事件）</pre>
+</section>
+
+<!-- 5) 审计 -->
+<section id="sec-audit">
+  <h2>5 · 审计（可审计副作用）</h2>
+  <button id="btn-audit">刷新审计</button>
+  <pre id="audit" class="out small">—</pre>
+</section>
+
+<noscript>本页为操作验证页，需要 JavaScript。</noscript>
+<script src="/harness/app.js"></script>
+</body>
+</html>
