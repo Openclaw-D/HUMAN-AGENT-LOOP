@@ -18,4 +18,6 @@ node src/index.ts --port 48180 --dispatch
 
 C：`cd ../C; node scripts/start-mock.mjs --port 3730`。B应复制config/b-config.http-sample.json到被Git排除的config/b-config.json，将contract.baseUrl改为新A端口48180，mock.baseUrl匹配C端口，再`node src/cli.mjs worker`。真实model key不复制、不默认读取。CLI参数和恢复边界看B/HANDOFF-D.md。
 
+Edge（任务04新增，登记入口）：`cd Back\Edge; node scripts/edge-start.mjs`（默认127.0.0.1:48200，readiness探测A@48180/PG@15442，可用`--kernel-port/--db-port`覆盖）；停止`node scripts/edge-stop.mjs`。端口被占自动拒绝不抢占，停止前按启动标识复核PID。版本封存`node scripts/version-seal.mjs --probe`。详见Back/Edge/README.md。
+
 **数据库数据范围**：只移植migrations和可重建模板，不拷贝旧PG数据。旧容器/卷/服务原样保留；不要直接运行历史文档中的清库或重启命令。

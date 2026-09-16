@@ -40,3 +40,7 @@ Achieve/**/*.key
 # Explicit user deliverable: ready-to-view frontend build.
 !Front/dist/
 !Front/dist/**
+
+# JW task03 delivery runtime credentials (Git excluded; examples stay tracked)
+Back/Edge/config/delivery-runtime.json
+Back/Edge/config/edge-auth.json
