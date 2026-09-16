@@ -4,6 +4,22 @@ Lane: B　Owner: V7/backend-next/B/**　更新: 2026-09-16 06:35（DEF-04+锁安
 任务入口: V7/NIGHT_BACKEND_20260916.md §B + 06:00 定向 Goal(D/DEFECTS.md DEF-04)。只写 B/**;不操作 Codex;无 Git 操作;
 真实密钥 0 读取/0 付费调用(GLM-5.2 仅预留);Celery 仍为 spike 候选不晋升。
 
+
+## CP15 · 2026-09-16 · 任务 03：四域接入持久执行器 + 稳定性修复（EPERM/恢复竞态/多粒度预算）
+
+任务书：`JW_customer_credit_backend_tasks/03_FOUR_DOMAIN_AGENTS_AND_GATES.md`。只写 `Back/B/**`；零真实模型调用。
+
+**已做（全部有自动化验证）**：
+- **四域接线（E1）**：`src/domains/four-domain-tools.mjs` 把 C 确定性流水线接入现有 ToolsPort（fd:perception / fd:assess:<域> / fd:gate / fd:questions / fd:amount / fd:nextstep，步间经编排器注入的 `_priorOutputs` 传递，感知一次规范化、单域重算只算本域）；编排器工具步新增前序输出注入（`graph/task-run-orchestrator.mjs`，模型步语义不变）；路由表 `config/routes-four-domain.json`（全量评估/单域重算×4/单独收口；NO_ROUTE 升级人工）；runtime 支持 `tools.mode='four-domain'` 与 `routesPath`；常驻样例 `config/b-config.four-domain-sample.json`。端到端：seedGoal→claim→worker.executeNow→complete → `candidate_ready`，provider=calculation（零模型调用如实标注），候选只含 A 白名单字段。
+- **EPERM 修复（C24）**：`ports.mjs` atomicWriteJson 在 rename EPERM/EACCES/EBUSY 时有界退避重试（20→400ms 共 5 次），失败清理临时文件并抛结构化 `ATOMIC_WRITE_FAILED`（不吞错、不无限重试；历史遗留 .tmp 残留问题一并治理）；子进程注入测试（2 次 EPERM→重试成功零残留；永久 EPERM→旧内容完好）。
+- **恢复竞态修复（C22）**：新增 `src/fs-lock.mjs`（wx 独占+pid 存活探测+token 校验释放，语义对齐 glm 预算锁）；worker registry 写入全部经 `registry.lock` 串行（多 worker 并发读改写互不再互相覆盖）；`recoverAll` 每 run 取恢复锁，活进程持锁不盲抢（跳过 recover-locked），死锁可接管——两个恢复进程并发不再重复续跑/重复提交。glm.mjs 内置预算锁保持原样（已验收行为不动，合并为可选后续）。
+- **多粒度预算（S3/C20/C21/C23）**：`transport/glm.mjs` 账本条目带 customerKey/sessionKey；可选 `budget.customer/session.maxTotalCost` 与 `budget.maxCalls/maxCallsPerSession` 子限额，同一互斥临界区内【读账→分级判定→预占】；无标注旧条目保守计入所有作用域；新错误码 BUDGET_CUSTOMER_EXCEEDED / BUDGET_SESSION_EXCEEDED / BUDGET_CALLS_EXCEEDED / BUDGET_CALLS_SESSION_EXCEEDED；真实账单未知在 actual 条目标 `billKnown:false`（报告按未知呈现，不记 0）。旧配置（仅全局两值）行为逐字节兼容（budget.test.mjs 9/9 不变）。
+- **选择性重算与缓存**：`src/schedule/recalc-planner.mjs`（事件×依赖映射→受影响域；无关留言=空重算集；superseded 保守扩散；policy_updated→policy+gate；`isResultCurrent` 代次/规则版本判定）；`src/cache/domain-cache.mjs`（键=租户/客户/授权范围/inputHash/规则版本/模型/Prompt 版本；低代次回写拒绝 CACHE_STALE_WRITE；坏条目按 miss 不升级）。
+- **B 侧矩阵**（`test/four-domain-matrix.test.mjs`）：C09/C10/C11/C20（6 真实子进程+计数服务器，出站恰 1）/C21/C22（竞态+进程内 unknown 零盲重发复核）/C23（新 attempt 预占、总量上限仍拦）/C24/C25。矩阵全表映射见 `../C/evidence/four-domain-matrix-map.md`。
+
+**验证**：`npm test` = 82/82（63 旧 + 19 新；连续两轮全绿；开发期一次运行出现 1 个未留存用例名的非确定失败，复跑未复现，怀疑高负载时序，如实记录）。发布清单已重生成 `evidence/b-release-manifest.json`（46 文件）。
+
+**边界（如实）**：`scripts/run-a-integration.mjs`（13 项）与 `scripts/verify-resident.mjs` 需 A 内核 48080+PG，本轮未运行（BLOCKED，A 侧启动属任务 01/04 环境）；GLM-5.2 仍 0 调用；D 独立复测按 HANDOFF-D+四域配置样例在任务 04 执行；A 正式动作的 Gate 检查属任务 01（本任务不代写 A）；Windows 之外平台未测。
 ## 当前状态:DEF-04 接线已修+锁安全加固+worker 端到端预算回归;63/63 全绿;常驻 25/25;新指纹 37cd7a9c05568eb0
 
 **06:00 最终轮(DEF-04 + 锁安全):**

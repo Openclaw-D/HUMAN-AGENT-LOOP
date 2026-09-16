@@ -1,0 +1,31 @@
+{
+  "_comment": "任务 03 四域常驻 worker 配置样例。复制为 b-config.json 后按需修改。四域评估为确定性工具链(tools.mode=four-domain):零模型调用、零出站;transport 段保留为未配置(not_configured 如实上报),E2 真实模型受控测试须另行授权后显式配置。worker.taskTimeoutMs 必须小于 A 的租约时长(当前 90s)。",
+  "tools": { "mode": "four-domain" },
+  "routesPath": "../config/routes-four-domain.json",
+  "transport": {
+    "mode": null,
+    "_comment": "四域 E1 全确定性:transport 未配置。E2 入口:显式配置 mode=real(需 outboundAllow+费率+预算)或 mode=mock(需 C mock 3730)。预算多粒度样例见 budget 段注释。"
+  },
+  "budget": {
+    "maxTotalCost": 0.5,
+    "perCallEstimate": 0.01,
+    "currency": "CNY",
+    "customer": { "maxTotalCost": 0.1 },
+    "session": { "maxTotalCost": 0.05 },
+    "maxCalls": 40,
+    "maxCallsPerSession": 8,
+    "_comment": "任务 03 多粒度预算(全部可选,除全局两值须为正有限数):customer/session 子限额按请求的 projectId/runId 隔离,保守原则(旧账本无标注条目计入所有作用域);maxCalls/maxCallsPerSession 为出站调用次数上限。任一作用域超限=确定未发送失败关闭(BUDGET_EXCEEDED / BUDGET_CUSTOMER_EXCEEDED / BUDGET_SESSION_EXCEEDED / BUDGET_CALLS_EXCEEDED / BUDGET_CALLS_SESSION_EXCEEDED)。"
+  },
+  "contract": {
+    "mode": "stub",
+    "baseUrl": "http://127.0.0.1:48080",
+    "principalCredential": "tok-agent"
+  },
+  "worker": {
+    "workerId": "b-four-domain-1",
+    "concurrency": 2,
+    "pollIntervalMs": 500,
+    "taskTimeoutMs": 60000,
+    "maxReclaims": 1
+  }
+}

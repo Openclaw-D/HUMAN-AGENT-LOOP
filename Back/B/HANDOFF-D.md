@@ -170,3 +170,12 @@ node src/cli.mjs worker                       # 常驻:先恢复扫描,后进入
 - 真实 GLM-5.2 0 调用(transport real 仅预留);生产身份源未接(identity.synthesized 仅测试/组合);
 - Celery 为已验证 spike 候选,不在常驻交付内;
 - A 的 goal 投影无 projectId/人工待办列表蛇形列名等 4 项接口观察在 `../B/interface-change-request.md`。
+
+## §9 任务 03 追加（2026-09-16）：四域 + 稳定性修复的 D 复测入口
+
+D 独立复测（任务 04 执行）新增入口：
+
+- **四域常驻形态**：`cp config/b-config.four-domain-sample.json config/b-config.json && node src/cli.mjs worker`——四域评估为确定性工具链（`tools.mode=four-domain` + `routesPath=config/routes-four-domain.json`），任务种类 `four_domain_evaluation` → `candidate_ready`，provider=calculation，零模型调用零出站。
+- **四域复跑（无需 A/B 服务）**：`cd ../C && node src/evaluation/run-four-domain-evaluation.mjs --all`（42 场景/196 断言；exit 2 = held-out 冻结清单被改）；`node src/evaluation/ab-experiment.mjs`（§8 对照）；`node test/run-all.mjs`（C 72 项）。矩阵全表：`../C/evidence/four-domain-matrix-map.md`。
+- **本轮 B 修复（可反证）**：①EPERM——`node test/atomic-write-eperm-child.mjs <file> 2`（重试成功零残留）+ 矩阵「C24」（永久 EPERM→ATOMIC_WRITE_FAILED 旧内容完好）；②恢复竞态——矩阵「C22/恢复竞态」（活 pid 锁不盲抢/死锁接管/registry 并发写不损坏）；③多粒度预算——矩阵「S3 多粒度预算」「C20」「C21」（新错误码 BUDGET_CUSTOMER_EXCEEDED/BUDGET_SESSION_EXCEEDED/BUDGET_CALLS_EXCEEDED/BUDGET_CALLS_SESSION_EXCEEDED，账本条目含 customerKey/sessionKey，旧账本条目保守计入所有作用域）；④请求大小限额 REQUEST_TOO_LARGE。
+- **发布清单**：`evidence/b-release-manifest.json` 已重生成（含全部四域新文件）；D 以清单核对所测字节。

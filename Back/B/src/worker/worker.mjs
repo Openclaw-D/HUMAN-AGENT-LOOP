@@ -14,6 +14,7 @@
 
 import { fs } from '../deps.mjs';
 import { atomicWriteJson } from '../ports.mjs';
+import { withFileLock } from '../fs-lock.mjs';
 import { toACandidate } from '../transport/bridge.mjs';
 
 /**
@@ -80,7 +81,16 @@ export function createWorker({
   async function saveRegistry(reg) {
     if (!registryDir) return;
     await fs.mkdir(registryDir, { recursive: true });
-    await atomicWriteJson(`${registryDir}/runs.json`, reg);
+    // 任务 03(崩溃恢复竞态修复):多 worker/恢复进程并发读改写 runs.json 会互相覆盖
+    // (丢失状态机推进)。统一经跨进程文件锁串行化写侧;读侧无锁(原子写保证读到完整旧/新态)。
+    const lock = await withFileLock({
+      lockPath: `${registryDir}/registry.lock`,
+      fn: () => atomicWriteJson(`${registryDir}/runs.json`, reg),
+      timeoutMs: 8000,
+    });
+    if (!lock.ok) {
+      throw Object.assign(new Error(`registry 写入未获得锁:${lock.blocked.code}(失败关闭,不带病写)`), { code: 'REGISTRY_LOCK_HELD' });
+    }
   }
   async function registrySet(taskRunId, rec) {
     const reg = await loadRegistry();
@@ -191,6 +201,60 @@ export function createWorker({
     }
   }
 
+  // ---- 单 run 恢复(由 recoverAll 在恢复锁内调用;返回 entry) ----
+  async function recoverOne(taskRunId, meta, entry) {
+    try {
+      const recovered = await orchestrator.recover(taskRunId);
+      if (!recovered) { entry.skipped = 'no-checkpoint'; return entry; }
+      entry.recoveryNotes = recovered.recoveryNotes ?? [];
+      entry.aSubmitReceipt = recovered.aSubmitReceipt ?? null;
+      // 续跑(无 pending interrupt 时;有中断的 run 留给人工 resume,不自动续)
+      if (recovered.state === 'running') {
+        const cont = await orchestrator.continueRun(taskRunId);
+        entry.afterContinue = cont.state;
+        entry.finalView = cont;
+      } else {
+        entry.finalView = recovered;
+      }
+      const view = entry.finalView;
+      const submitRequestId = `${taskRunId}::complete`;
+      const prior = await contract.getExecutionReceipt(submitRequestId);
+      if (prior) {
+        entry.settled = 'already-submitted';
+      } else if (view.terminal && meta.fencingToken) {
+        const report = reportOutcome(view);
+        await contract.createHumanRequest({
+          projectId: view.projectId, goalId: view.goalId, kind: report.humanKind ?? 'clarification',
+          question: report.humanQuestion ?? report.failNote,
+          requestedRole: 'business',
+          requiredEvidenceKinds: [],
+        }).catch(() => {});
+        if (view.terminal.kind === 'unknown') {
+          // unknown:持牌待授权重试——不抢先 fail(否则 B 本地可信 retry_step 无法在 A 上收口,
+          // 只能走 A resume 腿);clarification 待办已如实上报,goal 留在 leased 由人工决断:
+          //   B CLI: B_RESUME_CREDENTIAL=cred:<id> resume <taskRunId> retry_step --step <stepId>
+          //   A 腿:  A resume → GOAL_RESUMED → 常驻 worker 新周期执行
+          entry.settled = 'held-unknown-for-retry';
+          logger(`[recover] ${taskRunId}:unknown 持牌待授权重试(待办已建,goal 留 leased)`);
+        } else {
+          // expectedVersion 取当前目标版本(A 必填乐观版本;恢复窗口内被第三方改动则如实被拒)
+          const gv = await contract.getGoalView?.(view.goalId).catch(() => null);
+          const expectedVersion = gv?.version;
+          const submit = report.completed
+            ? await contract.completeGoal({ goalId: view.goalId, requestId: submitRequestId, expectedVersion, fencingToken: meta.fencingToken, result: report.result })
+            : await contract.failGoal({ goalId: view.goalId, requestId: submitRequestId, expectedVersion, fencingToken: meta.fencingToken, note: report.failNote });
+          entry.settled = submit.ok ? (submit.replayed ? 'submitted-replayed' : 'submitted') : `rejected:${submit.code}`;
+        }
+      } else {
+        entry.settled = 'left-for-human';
+      }
+      await registrySet(taskRunId, { status: `recovered:${entry.settled}`, at: now() });
+    } catch (e) {
+      entry.error = `${e.code ?? ''} ${e.message}`;
+    }
+    return entry;
+  }
+
   // ---- 主循环 ----
   // 跨进程取消通道:CLI/运维在 ${dataDir}/cancellations/<goalId>.flag 放标志,worker 每 tick
   // 消费(对活动 taskRunId 调 orchestrator.cancel → 步边界生效)后删除标志。
@@ -267,7 +331,10 @@ export function createWorker({
       await Promise.allSettled(pending);
       logger(`[worker] ${workerId} 停止`);
     },
-    /** 崩溃恢复:列出 registry 中未正常收尾的 run,逐一 recover + 对账 + 续跑 + 补提交。 */
+    /** 崩溃恢复:列出 registry 中未正常收尾的 run,逐一 recover + 对账 + 续跑 + 补提交。
+     *  任务 03(恢复竞态修复):每 run 取恢复锁(recover-locks/<id>.lock,pid 存活探测),
+     *  两个恢复进程并发 recover 同一 run 时后到者跳过(recover-locked),不重复续跑/重复提交;
+     *  A 侧 requestId 幂等仍是第二道防线。 */
     async recoverAll() {
       const reg = await loadRegistry();
       const results = [];
@@ -275,56 +342,22 @@ export function createWorker({
         if (taskRunId === '#cursor') continue;
         if (['submitted', 'submitted-replayed', 'already-submitted', 'discarded-lease-lost'].some((s) => meta.status?.startsWith(s))) continue;
         const entry = { taskRunId, priorStatus: meta.status };
-        try {
-          const recovered = await orchestrator.recover(taskRunId);
-          if (!recovered) { entry.skipped = 'no-checkpoint'; results.push(entry); continue; }
-          entry.recoveryNotes = recovered.recoveryNotes ?? [];
-          entry.aSubmitReceipt = recovered.aSubmitReceipt ?? null;
-          // 续跑(无 pending interrupt 时;有中断的 run 留给人工 resume,不自动续)
-          if (recovered.state === 'running') {
-            const cont = await orchestrator.continueRun(taskRunId);
-            entry.afterContinue = cont.state;
-            entry.finalView = cont;
-          } else {
-            entry.finalView = recovered;
-          }
-          const view = entry.finalView;
-          const submitRequestId = `${taskRunId}::complete`;
-          const prior = await contract.getExecutionReceipt(submitRequestId);
-          if (prior) {
-            entry.settled = 'already-submitted';
-          } else if (view.terminal && meta.fencingToken) {
-            const report = reportOutcome(view);
-            await contract.createHumanRequest({
-              projectId: view.projectId, goalId: view.goalId, kind: report.humanKind ?? 'clarification',
-              question: report.humanQuestion ?? report.failNote,
-              requestedRole: 'business',
-              requiredEvidenceKinds: [],
-            }).catch(() => {});
-            if (view.terminal.kind === 'unknown') {
-              // unknown:持牌待授权重试——不抢先 fail(否则 B 本地可信 retry_step 无法在 A 上收口,
-              // 只能走 A resume 腿);clarification 待办已如实上报,goal 留在 leased 由人工决断:
-              //   B CLI: B_RESUME_CREDENTIAL=cred:<id> resume <taskRunId> retry_step --step <stepId>
-              //   A 腿:  A resume → GOAL_RESUMED → 常驻 worker 新周期
-              entry.settled = 'held-unknown-for-retry';
-              logger(`[recover] ${taskRunId}:unknown 持牌待授权重试(待办已建,goal 留 leased)`);
-            } else {
-              // expectedVersion 取当前目标版本(A 必填乐观版本;恢复窗口内被第三方改动则如实被拒)
-              const gv = await contract.getGoalView?.(view.goalId).catch(() => null);
-              const expectedVersion = gv?.version;
-              const submit = report.completed
-                ? await contract.completeGoal({ goalId: view.goalId, requestId: submitRequestId, expectedVersion, fencingToken: meta.fencingToken, result: report.result })
-                : await contract.failGoal({ goalId: view.goalId, requestId: submitRequestId, expectedVersion, fencingToken: meta.fencingToken, note: report.failNote });
-              entry.settled = submit.ok ? (submit.replayed ? 'submitted-replayed' : 'submitted') : `rejected:${submit.code}`;
-            }
-          } else {
-            entry.settled = 'left-for-human';
-          }
-          await registrySet(taskRunId, { status: `recovered:${entry.settled}`, at: now() });
-        } catch (e) {
-          entry.error = `${e.code ?? ''} ${e.message}`;
+        const lockDir = `${registryDir ?? ''}/recover-locks`;
+        if (registryDir) await fs.mkdir(lockDir, { recursive: true }).catch(() => {});
+        const lock = registryDir
+          ? await withFileLock({
+            lockPath: `${lockDir}/${encodeURIComponent(taskRunId)}.lock`,
+            fn: () => recoverOne(taskRunId, meta, entry),
+            timeoutMs: 15000,
+          })
+          : { ok: true, value: await recoverOne(taskRunId, meta, entry) };
+        if (!lock.ok) {
+          entry.settled = `recover-locked:${lock.blocked.code}`;
+          entry.note = '另一进程正恢复本 run(活锁不抢):跳过,避免重复续跑/重复提交';
+          results.push(entry);
+          continue;
         }
-        results.push(entry);
+        results.push(lock.value);
       }
       return results;
     },
