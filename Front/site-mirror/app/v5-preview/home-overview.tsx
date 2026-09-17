@@ -6,6 +6,9 @@
 // 证据版本化、未识别输入=待澄清，不假装真实模型理解）。
 // 本地模拟闭环：不接 V7 真实后端、不调真实 LLM、无付费调用；倾向=模拟候选，非正式审批。
 // 任务三 C2：新增"连接/模式提示 + 会话操作条"（用户显式连接真实后台才激活；默认仍为本地合成演示）。
+// 任务03 C3（F09 修复）：live 连接后聊天/四域矩阵/生命周期全部取真实后台投影——
+// 移除 live 分支对 submitCaseTurn/completedTurns/scenario.domains 的依赖；live 请求失败如实显示
+// 错误/对账态，绝不回退本地模拟冒充成功；训练（未连接）模式原样保留、与真实会话不共享草稿。
 import { useCallback, useState } from 'react';
 import type { DomainRow as DomainRowData, SegmentState } from '../../lib/v5-preview/shared-types';
 import { HomeHeader } from './home-header';
@@ -18,7 +21,10 @@ import { SEED_SCENARIOS, findSeedScenario } from './role-cases';
 import { initialCaseState, submitCaseTurn, type CaseState } from './role-mock-adapter';
 import { ROLE_LABEL, type CaseMessage, type RoleId } from './role-contract';
 import { useEdgeLive } from '../../lib/v5-preview/edge/use-edge-live';
-import { EdgeSessionBar, EdgeStatusBar } from './edge-panels';
+import {
+  deriveDomainRowsLive, deriveLifecycleLive, toLiveChatMessage,
+} from '../../lib/v5-preview/edge/edge-logic';
+import { EdgeChatAudienceToggle, EdgeSessionBar, EdgeStatusBar } from './edge-panels';
 import styles from './home-overview.module.css';
 
 type BottomTab = 'chat' | 'todo';
@@ -53,11 +59,18 @@ export default function HomeOverview() {
   const [caseStates, setCaseStates] = useState<Record<string, CaseState>>(() =>
     Object.fromEntries(SEED_SCENARIOS.map((s) => [s.id, initialCaseState(s)])),
   );
+  // live 聊天受众（C2.5）：内部沟通 / 发往客户，显式选择，不随角色切换隐式变化
+  const [chatAudience, setChatAudience] = useState<'customer' | 'internal'>('internal');
 
   const scenario = findSeedScenario(activeCaseId) ?? SEED_SCENARIOS[0];
   const state = caseStates[scenario.id];
 
-  const handleSend = useCallback(
+  const edge = useEdgeLive();
+  // live 判定：已连接真实后台（含重连中——数据仍全部来自后台）；训练模式 = 未连接
+  const live = edge.phase === 'live' || edge.phase === 'reconnecting';
+
+  // 训练模式发送（本地合成模拟；仅在未连接真实后台时可用）
+  const handleTrainingSend = useCallback(
     async (text: string) => {
       setBusy(true);
       setSendError(null);
@@ -76,25 +89,50 @@ export default function HomeOverview() {
     [scenario, state, activeRole],
   );
 
+  // live 发送（真实后台消息受众路由）：状态只来自服务端回执；失败/未知如实呈现，不回退本地模拟
+  const handleLiveSend = useCallback(
+    async (text: string) => {
+      setSendError(null);
+      const r = await edge.sendLiveMessage(text, chatAudience);
+      if (!r.ok) {
+        return { outcome: 'error', code: r.code ?? 'SEND_FAILED', message: r.message ?? '消息未送达' } as const;
+      }
+      return { outcome: 'ok', replayed: false, requestId: r.requestId ?? '' } as const;
+    },
+    [edge, chatAudience],
+  );
+
   const caseList = SEED_SCENARIOS.map((s) => ({ id: s.id, title: s.title, code: s.code }));
-  const chatMessages = state.messages.map(toChatMessage);
-  const chatExtras = Object.fromEntries(
-    state.messages.map((m) => [m.id, { origin: m.origin } as { origin: 'human' | 'preset' | 'model' }]),
-  );
-  const domainRows = scenario.domains.map(
-    (d): DomainRowData => ({
-      domainId: d.domainId,
-      name: d.name,
-      segmentLabels: ['接收', '处理', '协同', '核验'],
-      segments: d.segments as [SegmentState, SegmentState, SegmentState, SegmentState],
-      judgmentStatus: d.judgmentStatus,
-      judgmentText: d.judgmentText,
-      summary: d.summary,
-    }),
-  );
-  const stageIndex = Math.min(state.completedTurns.length, 4);
-  const allDone = state.completedTurns.length >= scenario.turns.length;
-  const edge = useEdgeLive();
+  // 聊天来源：live=服务端回执消息（仅真实投递状态）；未连接=本地训练消息
+  const chatMessages = live
+    ? edge.liveMessages.map(toLiveChatMessage)
+    : state.messages.map(toChatMessage);
+  const chatExtras = live
+    ? Object.fromEntries(edge.liveMessages.map((m) => [m.id, { origin: 'human' as const }]))
+    : Object.fromEntries(
+      state.messages.map((m) => [m.id, { origin: m.origin } as { origin: 'human' | 'preset' | 'model' }]),
+    );
+  // 四域矩阵：live=服务端逐域 currency 判定（灰=未开始/未知，绿=依据当前·≠批准）；未连接=训练情景
+  const domainRows: DomainRowData[] = live
+    ? deriveDomainRowsLive(edge.snapshot)
+    : scenario.domains.map(
+      (d): DomainRowData => ({
+        domainId: d.domainId,
+        name: d.name,
+        segmentLabels: ['接收', '处理', '协同', '核验'],
+        segments: d.segments as [SegmentState, SegmentState, SegmentState, SegmentState],
+        judgmentStatus: d.judgmentStatus,
+        judgmentText: d.judgmentText,
+        summary: d.summary,
+      }),
+    );
+  // 生命周期：live=检查会话 runStatus/closureStatus（服务端状态）；未连接=训练轮次推导
+  const stageIndex = live
+    ? deriveLifecycleLive(edge.snapshot?.session ?? null).stageIndex
+    : Math.min(state.completedTurns.length, 4);
+  const allDone = live
+    ? deriveLifecycleLive(edge.snapshot?.session ?? null).settled
+    : state.completedTurns.length >= scenario.turns.length;
 
   return (
     <div className={styles.root}>
@@ -129,18 +167,25 @@ export default function HomeOverview() {
 
       <div className={styles.bottomArea}>
         <EdgeSessionBar edge={edge} />
+        {live ? (
+          <EdgeChatAudienceToggle value={chatAudience} onChange={setChatAudience} disabled={edge.reconciling} />
+        ) : null}
         <div className={styles.tabPanel}>
           {tab === 'chat' ? (
             <HomeChat
               messages={chatMessages}
               messageExtras={chatExtras}
-              onSendMessage={handleSend}
+              onSendMessage={live ? handleLiveSend : handleTrainingSend}
               pendingMessage={null}
               onResolvePendingMessage={async () => ({ result: 'ok' })}
               onDismissPendingMessage={() => {}}
               resolvingPending={false}
               recoveryPersistFailed={false}
-              inputPlaceholder={`以${ROLE_LABEL[activeRole]}视角补充证据或留言（本地模拟；未识别内容将标待澄清）`}
+              inputPlaceholder={live
+                ? (chatAudience === 'customer'
+                  ? '发往客户（真实后台；服务端回执为准，不显示本地假成功）'
+                  : '内部沟通（真实后台；服务端回执为准）')
+                : `以${ROLE_LABEL[activeRole]}视角补充证据或留言（本地模拟；未识别内容将标待澄清）`}
             />
           ) : (
             <HomeRoleView scenario={scenario} state={state} roleId={activeRole} edge={edge} />
@@ -173,7 +218,7 @@ export default function HomeOverview() {
       {sendError !== null ? (
         <p className={styles.rootError} role="alert">{sendError}</p>
       ) : null}
-      {busy ? (
+      {busy && !live ? (
         <p className={styles.srOnly} role="status">本地模拟处理中…</p>
       ) : null}
     </div>

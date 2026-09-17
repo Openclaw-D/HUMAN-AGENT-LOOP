@@ -7,7 +7,7 @@
 //     本脚本不内嵌任何真实凭据；缺配置即失败关闭。
 // 用法：node scripts/delivery-up.mjs [--skip-frontend-hint] [--db-port 15442] [--kernel-port 48180] [--edge-port 48200]
 import { execFile, spawn } from 'node:child_process';
-import { existsSync, readFileSync, writeFileSync, mkdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, statSync } from 'node:fs';
 import net from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -148,9 +148,13 @@ const nowIso = new Date().toISOString();
 writeFileSync(aPidFile, JSON.stringify({ pid: aChild.pid, marker: aMarker, port: kernelPort, startedAt: nowIso, heartbeatAt: nowIso }));
 ok(`A 内核运行中 pid=${aChild.pid} port=${kernelPort} marker=${aMarker.slice(0, 12)}…`);
 
-// heartbeat 维护（与 edge-start 同纪律：停止前复核三证）。本脚本保持前台运行作为监督进程；
+// heartbeat 维护（与 edge-start 同纪律：停止前复核四证）。本脚本保持前台运行作为监督进程；
 // Ctrl+C（SIGINT/SIGBREAK）= 停止 Edge+A 并清理（等价 delivery-down）。
+// 子进程已退时不再续写心跳（delivery-down 的 heartbeat 证因此如实过期 → 拒绝盲杀）。
 const hbTimer = setInterval(() => {
+  let childAlive = true;
+  try { process.kill(aChild.pid, 0); } catch { childAlive = false; }
+  if (!childAlive) return;
   try {
     const j = JSON.parse(readFileSync(aPidFile, 'utf8'));
     j.heartbeatAt = new Date().toISOString();
@@ -160,7 +164,15 @@ const hbTimer = setInterval(() => {
 
 // ---- 7) 启动 Edge（--live，凭据映射=delivery-runtime 的 authEntries） ----
 const authPath = path.join(EDGE_ROOT, 'config', 'edge-auth.json');
-writeFileSync(authPath, JSON.stringify({ entries: cfg.authEntries ?? [] }, null, 2));
+if (Array.isArray(cfg.authEntries) && cfg.authEntries.length > 0) {
+  writeFileSync(authPath, JSON.stringify({ entries: cfg.authEntries }, null, 2));
+  ok(`Edge 身份目录已写入（${cfg.authEntries.length} 条；服务端内存使用）`);
+} else {
+  console.log('[delivery-up] i delivery-runtime.json 未提供 authEntries：Edge 会话交换将失败关闭（无法登录演示身份）');
+  if (existsSync(authPath)) {
+    try { rmSync(authPath, { force: true }); } catch { }
+  }
+}
 const edgeStart = await run(process.execPath, [path.join(EDGE_ROOT, 'scripts', 'edge-start.mjs'),
   '--port', String(edgePort), '--live', '--kernel-port', String(kernelPort), '--db-port', String(dbPort),
   '--auth-file', authPath, '--marker', `jw-delivery-edge-${aMarker.slice(-8)}`,

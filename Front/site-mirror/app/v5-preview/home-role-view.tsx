@@ -8,7 +8,7 @@ import type { CaseScenario, CaseState, RoleId } from './role-contract';
 import { FACT_STATUS_LABEL, ROLE_LABEL } from './role-contract';
 import { jianweiGaps } from './role-mock-adapter';
 import type { EdgeLiveApi } from '../../lib/v5-preview/edge/use-edge-live';
-import { EdgeCreditPanel, EdgeVerifyCards } from './edge-panels';
+import { EdgeCreditPanel, EdgeObjectLinks, EdgeVerifyCards } from './edge-panels';
 import styles from './home-overview.module.css';
 
 const TASK_STATUS_LABEL: Record<string, string> = {
@@ -93,6 +93,7 @@ export function HomeRoleView({
 
       {edge ? <EdgeVerifyCards edge={edge} /> : null}
       {edge ? <EdgeCreditPanel edge={edge} /> : null}
+      {edge ? <EdgeObjectLinks edge={edge} /> : null}
 
       <div className={styles.roleViewBlock}>
         <h3 className={styles.roleViewTitle}>共享项目事实（全角色一致·含证据版本）</h3>

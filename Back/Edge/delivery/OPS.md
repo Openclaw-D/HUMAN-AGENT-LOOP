@@ -37,6 +37,7 @@ Edge `--live`（48200，内核投影 + 会话鉴权 + 动作白名单代理）�
 | Edge readiness（逐依赖独立，无 all_ok 汇总） | http://127.0.0.1:48200/healthz/ready |
 | 浏览器操作验证页（E0 语义：SSE 断线补取/受众守卫/回执重试） | http://127.0.0.1:48200/harness/ |
 | 演示种子（现场验收前运行一次） | `node scripts/delivery-seed.mjs` → 打印客户 ID 与现场动线（全程真实 API，不改库） |
+| **现场验收清单（打印随行）** | `delivery/ACCEPTANCE_CHECKLIST.md`——三终端连接/贯穿场景/录屏/回填逐项对应 |
 
 前端连接真实后台：页面顶部"连接与模式"条填 Edge 地址（跨端口演示需 Edge 加
 `--allowed-origin http://127.0.0.1:3618`，见 edge-start 参数）、凭据与客户 ID——凭据只提交到 Edge 服务端换

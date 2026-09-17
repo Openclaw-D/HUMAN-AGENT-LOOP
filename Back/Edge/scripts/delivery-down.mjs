@@ -53,8 +53,15 @@ if (!existsSync(aPidFile)) {
       contentOk = typeof j.contractVersion === 'string' && /^v\d/.test(j.contractVersion);
     } catch { contentOk = false; }
     if (!contentOk) refuse(`端口 ${rec.port} 的 /healthz 不含 A 内核标识（contractVersion）：端口内容与 pidfile 不符`);
+    // 第四证：命令行含本脚本写入的 --delivery-marker（防同端口另一 A 实例被误杀；T5-⑤ 整改）
+    let markerOk = false;
+    try {
+      const ps = await run('powershell', ['-NoProfile', '-Command', `(Get-CimInstance Win32_Process -Filter "ProcessId=${rec.pid}").CommandLine`], 15000);
+      markerOk = String(ps.stdout || '').includes(String(rec.marker));
+    } catch { markerOk = false; }
+    if (!markerOk) refuse('命令行复核未通过：进程命令行不含本脚本写入的 --delivery-marker 标识');
     process.kill(rec.pid);
-    ok(`A 内核已停止 pid=${rec.pid}（pid+heartbeat+端口标识三证相符）`);
+    ok(`A 内核已停止 pid=${rec.pid}（pid+heartbeat+端口标识+命令行 marker 四证相符）`);
     rmSync(aPidFile, { force: true });
   }
 }

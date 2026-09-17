@@ -36,23 +36,33 @@ function portOpen(host, port, timeoutMs = 1200) {
 export async function checkFreezeGate() {
   const reasons = [];
 
-  // 1) 共享契约升版
+  // 1) 共享契约含 v2：头部版本 ≥ v2，或已按"增量登记"形式发布（§8 v2 增量契约登记，
+  //    实际发布形式：头部保持 v1.3 基线 + §8 登记 v2 增量与指针，2026-09-17 起）
   let contractVersion = null;
+  let contractBody = '';
   try {
-    const firstLine = readFileSync(path.join(BACK_ROOT, 'CONTRACT.md'), 'utf8').split(/\r?\n/)[0] || '';
+    const text = readFileSync(path.join(BACK_ROOT, 'CONTRACT.md'), 'utf8');
+    contractBody = text;
+    const firstLine = text.split(/\r?\n/)[0] || '';
     const m = firstLine.match(/v(\d+)\.(\d+)/);
     if (m) contractVersion = `v${m[1]}.${m[2]}`;
-    if (!m || Number(m[1]) < 2) reasons.push(`CONTRACT.md 仍为 ${contractVersion || '未知版本'}（需 ≥ v2）`);
+    const hasV2Section = /##\s*8｜v2 增量契约登记/.test(text);
+    if (!m || (Number(m[1]) < 2 && !hasV2Section)) {
+      reasons.push(`CONTRACT.md 无 v2 契约（头部 ${contractVersion || '未知'}，无 §8 v2 增量登记）`);
+    }
   } catch (e) {
     reasons.push(`CONTRACT.md 不可读: ${e.message}`);
   }
 
-  // 2) 提案状态变更
+  // 2) 提案状态行变更，或 §8 登记存在（登记即发布，提案文档状态行不再是独立阻塞）
   try {
     const head = readFileSync(path.join(REPO_ROOT, 'docs', 'customer-next', 'S1_API_V2_SCHEMA_PROPOSAL.md'), 'utf8').slice(0, 2000);
-    if (head.includes('待总控冻结')) reasons.push('S1_API_V2_SCHEMA_PROPOSAL.md 仍自标"待总控冻结"');
+    const registered = /##\s*8｜v2 增量契约登记/.test(contractBody);
+    if (head.includes('待总控冻结') && !registered) {
+      reasons.push('S1_API_V2_SCHEMA_PROPOSAL.md 仍自标"待总控冻结"且 CONTRACT 无 v2 登记');
+    }
   } catch {
-    reasons.push('S1_API_V2_SCHEMA_PROPOSAL.md 不存在');
+    if (!/##\s*8｜v2 增量契约登记/.test(contractBody)) reasons.push('S1_API_V2_SCHEMA_PROPOSAL.md 不存在');
   }
 
   // 3) 实现固定（Back/A 无未提交变更）

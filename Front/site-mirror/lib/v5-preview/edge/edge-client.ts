@@ -18,12 +18,28 @@ export interface EdgeSessionInfo {
 export interface WorkspaceResponse {
   ok: boolean;
   customerId: string;
+  principalId?: string;
   snapshot: EdgeSnapshotShapes;
-  snapshotVersion: number;
+  snapshotVersion: number | string; // kernel 模式为字符串 seq（bigint 精度），fixture 为数字
   eventCursor: string | null;
   source?: string;
-  projection?: { notes?: string[] };
+  eventWindow?: {
+    buffered: number; oldestSeq: string | null; newestSeq: string | null; gap: boolean; truncated: boolean; note?: string;
+  };
+  projection?: {
+    notes?: string[];
+    freshness?: Record<string, { ok: boolean; at: string; code?: string; note?: string }>;
+    at?: string;
+  };
   error?: string;
+}
+
+export interface ReadyzCheck { name: string; ok: boolean; detail?: Record<string, unknown> }
+export interface ReadyzResponse {
+  ok: boolean;
+  checks: ReadyzCheck[];
+  capabilities?: Record<string, unknown>;
+  checkedAt?: string;
 }
 
 export class EdgeHttpError extends Error {
@@ -87,6 +103,37 @@ export function createEdgeClient({ baseUrl, fetchImpl = fetch }: EdgeClientOptio
       return j;
     },
 
+    /** 消息（受众路由）：customer/internal 分离；内部外发需服务端外发权限点，拒绝原样抛出。 */
+    async sendMessage(customerId: string, body: { requestId: string; audience: 'customer' | 'internal'; text: string; threadId?: string; internalContent?: boolean; confirmExternalSend?: boolean }): Promise<{ ok: boolean; requestId: string; audience: string; delivery: { messageId: string; state: string }; replayed?: boolean }> {
+      const s = authed();
+      const r = await fetchImpl(`${root}/api/jw/v2/customers/${encodeURIComponent(customerId)}/messages`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-jw-session': s.sessionId },
+        body: JSON.stringify(body),
+      });
+      const j = await r.json().catch(() => ({ ok: false, error: 'INVALID_RESPONSE' }));
+      if (!r.ok) throw new EdgeHttpError(r.status, String(j.error ?? 'SEND_FAILED'), String(j.note ?? j.message ?? '消息未送达'), typeof j.requestId === 'string' ? j.requestId : undefined);
+      return j;
+    },
+
+    /** 大历史分页（live）：A after/limit 逐页直读，逐请求鉴权；不假装知道总数。 */
+    async eventsPage(customerId: string, afterSeq = '0', limit = 200): Promise<{ ok: boolean; events: Array<{ eventId: string; payloadRef?: { type?: string }; payload?: unknown; aggregateVersion: string }>; nextAfterSeq: string; hasMore: boolean }> {
+      const s = authed();
+      const q = new URLSearchParams({ afterSeq: String(afterSeq), limit: String(limit) });
+      const r = await fetchImpl(`${root}/api/jw/v2/customers/${encodeURIComponent(customerId)}/events-page?${q}`, {
+        headers: { 'x-jw-session': s.sessionId },
+      });
+      const j = await r.json().catch(() => ({ ok: false, error: 'INVALID_RESPONSE' }));
+      if (!r.ok) throw new EdgeHttpError(r.status, String(j.error ?? 'PAGE_FAILED'), String(j.note ?? '分页事件获取失败'));
+      return j;
+    },
+
+    /** readiness 逐依赖检查（C1.6：组件级独立显示，无 all_ok 汇总位）。 */
+    async readyz(): Promise<ReadyzResponse> {
+      const r = await fetchImpl(`${root}/healthz/ready`);
+      return await r.json();
+    },
+
     /** 动作（白名单代理）：必带 requestId；上游未知 502 时抛出并保留原 ID 供重试。 */
     async action<T = Record<string, unknown>>(path: string, body: Record<string, unknown>): Promise<T> {
       const s = authed();
@@ -105,12 +152,16 @@ export function createEdgeClient({ baseUrl, fetchImpl = fetch }: EdgeClientOptio
     /**
      * 事件流：cursor=null 时服务端先发 cursor 基线；重连时传上次游标。
      * 返回 stop()。onResync：游标过期（Edge 重启/窗口裁剪）→ 调用方重取快照再重订。
+     * onDrop(reason, status?)：status 为 HTTP 状态码；401/403=会话失效，调用方应转终态而非无限重连。
      */
     openEvents(customerId: string, cursor: string | null, handlers: {
       onEvent: (envelope: { eventId: string; payloadRef?: { type?: string }; payload?: unknown }) => void;
-      onCursor: (cursor: string, snapshotVersion: number) => void;
+      onCursor: (cursor: string, snapshotVersion: number | string) => void;
       onResync: () => void;
-      onDrop: (reason: string) => void;
+      /** status 为 HTTP 状态码（可得时）；401/403=会话失效，调用方应转终态而非无限重连。 */
+      onDrop: (reason: string, status?: number) => void;
+      /** 服务端 auth 帧（撤权/会话过期）：终止性，调用方应转未连接态并要求重认证，不得自动重连。 */
+      onAuth?: (info: { code?: string; note?: string }) => void;
     }, fetchCtor = fetchImpl): () => void {
       const s = authed();
       const controller = new AbortController();
@@ -122,7 +173,7 @@ export function createEdgeClient({ baseUrl, fetchImpl = fetch }: EdgeClientOptio
             signal: controller.signal,
           });
           if (!r.ok || !r.body) {
-            handlers.onDrop(`HTTP ${r.status}`);
+            handlers.onDrop(`HTTP ${r.status}`, r.status);
             return;
           }
           const reader = r.body.getReader();
@@ -138,9 +189,13 @@ export function createEdgeClient({ baseUrl, fetchImpl = fetch }: EdgeClientOptio
             buf = parsed.rest;
             for (const f of parsed.frames) {
               if (f.event === 'cursor') {
-                try { const d = JSON.parse(f.data); handlers.onCursor(String(d.eventCursor ?? ''), Number(d.snapshotVersion ?? 0)); } catch { /* 忽略坏帧 */ }
+                try { const d = JSON.parse(f.data); handlers.onCursor(String(d.eventCursor ?? ''), d.snapshotVersion ?? 0); } catch { /* 忽略坏帧 */ }
               } else if (f.event === 'resync') {
                 handlers.onResync();
+              } else if (f.event === 'auth') {
+                // 终止性事件（C1.2）：撤权/会话过期——不再消费后续帧，由调用方决定重认证
+                try { const d = JSON.parse(f.data); handlers.onAuth?.({ code: String(d.code ?? 'AUTH'), note: String(d.note ?? '') }); } catch { handlers.onAuth?.({}); }
+                return;
               } else if (f.event === 'business') {
                 try { handlers.onEvent(JSON.parse(f.data)); } catch { /* 忽略坏帧 */ }
               }
@@ -154,8 +209,8 @@ export function createEdgeClient({ baseUrl, fetchImpl = fetch }: EdgeClientOptio
       return () => controller.abort();
     },
 
-    /** 版本封存（连接/模式提示展示 buildId，观众可核对运行版本）。 */
-    async versionz(): Promise<{ buildId?: string; contractVersion?: string | null; delivery?: { rulePack?: { version?: string | null } } }> {
+    /** 版本封存（连接/模式提示展示 buildId；capabilities 逐能力独立展示，无 all_ok）。 */
+    async versionz(): Promise<{ buildId?: string; contractVersion?: string | null; capabilities?: Record<string, unknown>; delivery?: { rulePack?: { version?: string | null } } }> {
       const r = await fetchImpl(`${root}/versionz`);
       return await r.json();
     },

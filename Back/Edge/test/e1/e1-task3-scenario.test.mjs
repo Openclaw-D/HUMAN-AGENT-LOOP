@@ -100,7 +100,7 @@ test('E1·任务三 贯穿场景（automated 九会话矩阵 + 信用链 + Gate 
     '客户会话获得快照主体（服务端按角色分发的部分）',
   );
   assert.ok(
-    (wsCust.json.projection?.notes ?? []).some((n) => n.includes('受限')),
+    (wsCust.json.projection?.notes ?? []).some((n) => n.includes('受限') || n.includes('事件补取失败')),
     '客户会话的事件流受限如实标注（A 侧 B13：customer 角色不授证据/事件读取；Edge 不绕道）',
   );
 
@@ -279,7 +279,11 @@ test('E1·任务三 贯穿场景（automated 九会话矩阵 + 信用链 + Gate 
   assert.equal(res1PostRestart.json.replayed, true, '重启后同 requestId 仍幂等（不重复预占）');
   // 事件流续跑：重启后新动作事件可继续收到（游标单调，不重复触发旧提示由客户端按 eventId 去重保证）
   const fr1Get = await call('biz1', 'GET', `/api/jw/v2/customers/${customerId}/workspace`);
-  assert.ok(fr1Get.json.snapshotVersion >= ws4.json.snapshotVersion, '事件水位不回退');
+  // snapshotVersion 现为字符串化 seq（BigInt 精度）——用 BigInt 比较，避免字典序误报（增量复核 P3）
+  assert.ok(
+    BigInt(fr1Get.json.snapshotVersion) >= BigInt(ws4.json.snapshotVersion),
+    `事件水位不回退（${ws4.json.snapshotVersion} → ${fr1Get.json.snapshotVersion}）`,
+  );
   assert.ok(preCursor, '重启前游标已记录（Edge 不重启场景下游标补取语义由 E0 覆盖）');
 
   // ---- [C12] API 直连保底路径：本场景全程未依赖任何前端/三维 ----

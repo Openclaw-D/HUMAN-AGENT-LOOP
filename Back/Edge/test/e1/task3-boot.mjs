@@ -56,10 +56,17 @@ export async function bootStack({ t, runName }) {
   const PG_PORT = 15434;
   const API_PORT = 17919;
   mkdirSync(RUN_DIR, { recursive: true });
+  // 增量复核 P3 整改：清理钩子在资源创建前注册——内核就绪失败等中途 throw 时仍能回收
+  // PG 容器/内核/Edge，不再遗留占 15434。任务按创建逆序执行。
+  const cleanupTasks = [];
+  if (t) t.after(async () => {
+    for (const fn of [...cleanupTasks].reverse()) { try { await fn(); } catch { } }
+  });
 
   // 1) 隔离 PG + 迁移（001/002/003 必需；004 属任务二在制品，失败则记入 notes 不阻断本路消费面）
   const pgctl = await import('../../../D/harness/pgctl.mjs');
   const pg = await pgctl.ensurePg({ runDir: RUN_DIR, port: PG_PORT, db: 'v7d_boot' });
+  cleanupTasks.push(() => pgctl.destroyPg(pg.name));
   // 幂等引导：上次失败运行可能残留同名库——先强制丢弃再建（只影响本测试家族 v7d_ 隔离库）
   await run('docker', ['exec', pg.name, 'psql', '-U', 'v7next', '-d', 'v7d_boot', '-c', `DROP DATABASE IF EXISTS ${DB} WITH (FORCE)`]);
   await pgctl.createDb(pg.name, DB);
@@ -71,13 +78,16 @@ export async function bootStack({ t, runName }) {
     ? ['004_decision_loop.sql 属任务二在制品：随内核启动应用，本路不消费其路由']
     : [];
 
-  // 3) A 内核（九角色 + admin；合成政策位）
+  // 3) A 内核（九角色 + admin；合成政策位）。--allow-legacy-basis 与上游 decision-loop 自测同口径：
+  //    上游已引入 BASIS_PACKAGE 权威门（决策包冻结链），E1 聚焦任务三消费面，采用其显式兼容档。
   const dsn = `postgres://v7next:v7next@127.0.0.1:${PG_PORT}/${DB}`;
   const kernelLogFd = openSync(path.join(RUN_DIR, 'kernel.log'), 'w');
   const api = spawn(process.execPath, [path.join(BACK_ROOT, 'A', 'src', 'index.ts'), '--port', String(API_PORT), '--db', dsn,
-    '--principal-tokens', NINE_PRINCIPALS, '--credit-matrix', 'matrix-e1-task3', '--credit-concentration', 'conc-e1-task3'],
+    '--principal-tokens', NINE_PRINCIPALS, '--credit-matrix', 'matrix-e1-task3', '--credit-concentration', 'conc-e1-task3',
+    '--allow-legacy-basis'],
     { windowsHide: true, stdio: ['ignore', kernelLogFd, kernelLogFd] });
   api.unref();
+  cleanupTasks.push(() => { try { process.kill(api.pid); } catch { } });
   const kernelBase = `http://127.0.0.1:${API_PORT}`;
   const kernelReady = await waitHttp(`${kernelBase}/healthz`, (r) => r.status === 200);
   if (!kernelReady) throw new Error('A 内核未就绪（详见 kernel.log）');
@@ -128,6 +138,7 @@ export async function bootStack({ t, runName }) {
     auth: async ({ session }) => (session ? { ok: true, principalId: session.principalId } : { ok: false, reason: 'SESSION_REQUIRED' }),
     sessionStore, verifyCredential, proxy, messages, auditSink, staticHandler: null,
   });
+  cleanupTasks.push(() => edge.close());
   const base = `http://127.0.0.1:${edge.port}`;
 
   // 5) 九个独立 Edge 会话（C02 自动化矩阵）
@@ -172,7 +183,8 @@ export async function bootStack({ t, runName }) {
 
   // C07 注入助手：停内核（kill）/ 原参重启（同库同端口），日志落 RUN_DIR。
   const kernelArgs = [path.join(BACK_ROOT, 'A', 'src', 'index.ts'), '--port', String(API_PORT), '--db', dsn,
-    '--principal-tokens', NINE_PRINCIPALS, '--credit-matrix', 'matrix-e1-task3', '--credit-concentration', 'conc-e1-task3'];
+    '--principal-tokens', NINE_PRINCIPALS, '--credit-matrix', 'matrix-e1-task3', '--credit-concentration', 'conc-e1-task3',
+    '--allow-legacy-basis'];
   let restartSeq = 0;
   const killKernel = () => { try { process.kill(api.pid); } catch { } };
   const restartKernel = async () => {

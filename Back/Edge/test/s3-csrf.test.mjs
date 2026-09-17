@@ -59,12 +59,14 @@ test('Sec-Fetch-Site：cross-site/same-site/none 拒绝；same-origin 放行；�
   });
 });
 
-test('非浏览器客户端（无 Origin 无 Sec-Fetch-Site）放行；有 Sec-Fetch-Site 无 Origin 拒绝；null origin 拒绝', async () => {
+test('非浏览器客户端（无 Origin 无 Sec-Fetch-Site）放行；same-origin 无 Origin 按 X08 放行；不一致仍拒；null origin 拒绝', async () => {
   await withEdge(async (base) => {
     const plain = await post(base, '/api/jw/v2/session', {}, { credential: 'tok-demo' });
     assert.equal(plain.status, 200, '无浏览器头的客户端（curl/CI）不受影响');
     const sfsOnly = await post(base, '/api/jw/v2/session', { 'sec-fetch-site': 'same-origin' }, { credential: 'tok-demo' });
-    assert.equal(sfsOnly.body.error, 'CSRF_ORIGIN_REJECTED', '浏览器必然携带 Origin；缺失即不一致');
+    assert.equal(sfsOnly.status, 200, 'X08（T6 裁决）：same-origin 声明 + Origin 被中间层剥除 → 放行');
+    const inconsistent = await post(base, '/api/jw/v2/session', { 'sec-fetch-site': 'same-origin', origin: 'http://evil.example' }, { credential: 'tok-demo' });
+    assert.equal(inconsistent.body.error, 'CSRF_ORIGIN_REJECTED', '声明 same-origin 却携带跨站 Origin → 信号不一致仍拒绝（T6 收紧）');
     const nullOrigin = await post(base, '/api/jw/v2/session', { origin: 'null' }, { credential: 'tok-demo' });
     assert.equal(nullOrigin.body.error, 'CSRF_ORIGIN_REJECTED');
   });

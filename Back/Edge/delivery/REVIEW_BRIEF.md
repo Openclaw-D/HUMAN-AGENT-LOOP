@@ -88,4 +88,36 @@ Front 首页连接真实后台 → `node scripts/delivery-down.mjs`。
 
 ## 复核记录
 
+### 非作者独立复核（2026-09-17，执行者：ZCode 非作者独立复核代理——未参与任务三任何被复核文件的编写；非 Codex）
+
+按 REVIEW_BRIEF §1–§3 完成只读复核与运行验证。范围：§1 清单关键文件全读（Back/Edge：kernel-store/server/session/proxy/version/edge-start/edge-stop/delivery-up/delivery-down/task3-boot/task3-gate/两支 E1 用例/contract/consumed-surface-v1.json；Front：edge-logic/edge-client/use-edge-live/edge-panels），并对照 Back/A/src/http/server.ts 实际路由核验消费面。
+
+验证命令真实退出码：env-check exit 0（fail=0，busy 端口未被处置，3 项能力位 BLOCKED 为如实标注）；node test/run-all.mjs exit 0（27/27）；e1-task3-inspection exit 0（1/1）；e1-task3-scenario exit 0（1/1）；Front typecheck exit 0 + npm test exit 0（19/19）；backup-restore-drill 首跑 exit 1（15434 被外部 e1-d02 测试族循环容器 v7d-pg-d6926d5071 占用，非本复核遗留，按边界未处置），端口空闲复跑 exit 0（PASS，12 步，证据 s5-drill-20260916-211808）。dist 产物 hash 与任务书声明一致（index-Cymdx02J.js）。
+
+§2 七问结论：1/2/3/4 成立（含两处作者自报修复的实证确认：kernel-store.mjs:64,67,97-98 的 Number() 归一与 :20 的 600ms 轮询；凭据仅在服务端会话记录与上游头中出现，响应/日志/审计/静态资源全链 grep 无原文）；5 基本成立（Edge 停止三证含命令行 marker 可防 PID 复用；A 停止三证较弱，见 P3；30s 阈值失效方向为拒绝，安全）；6 大体成立（绿灯后于服务端确认、拒绝原样透出，两处 P3）；7 大体一致（消费读取 8 条与主要写路径全部在 A 路由实测在位；漂移 3 处均为快照滞后，列出不改）。
+
+缺陷结论：无 P0–P2。P3 共 7 项（逐条文件：行号见复核报告）：①subscribe 游标失效静默（kernel-store.mjs:233-235，理论缺口）；②v1 族动作回执经 Edge 不可查而 502 提示指引查回执（server.mjs:260-278、proxy.mjs:168）；③UI 重试不复用 requestId（edge-panels.tsx:73，现受 expectedVersion 保护，额度命令接入前必须整改）；④事件流 401/403 并入无限重连、auth-failed 态从未派发（edge-client.ts:124-127、use-edge-live.ts:74-83）；⑤A 停止三证无命令行复核且 heartbeat 反映监督进程（delivery-down.mjs:40-57）；⑥消费面快照缺 disburse 与检查会话写面少列（consumed-surface-v1.json:42,51-56）；⑦凭据输入未掩码（edge-panels.tsx:48）。
+
+环境备注（非代码缺陷）：本机存在外部循环拉起的 e1-d02 测试族 PG 容器（.run/e1-d02-pg，约每分钟起落）间歇占用 15434，与 drill/E1 共用固定端口会碰撞；建议长期为各族分配不同测试端口段。
+
+复核结论：**接受**。P3 项不阻断任务三交付验收，作为非阻塞整改项带入下一迭代（其中③在额度命令接入前端前必须先改——复核后作者已修复③④⑦并补⑥口径、修正②提示文案，①⑤列为遗留见 HANDOFF_DEFECTS T5）。
+
+### P2 整改闭合确认（2026-09-17，ZCode 非作者独立复核代理）
+
+对增量复核 P2 项（kernel-store.mjs pullEvents 未声明变量 maxSeqThisPull）的整改进行只读闭合确认：①该行已按建议方案一删除，全仓 grep 无代码级遗留引用；②防死循环语义由既有三重保证覆盖（<500 退出 / byId eventId 去重 / MAX_POLL_PAGES=20 页上限），探针实证恒满页场景下单次 pull 恰 20 页收口、lastSeq 推进正常（7568）、notes 为空、freshness.events.ok=true 如实恢复；③整改后独立复跑：Edge E0 27/27、e1-task3-scenario 1/1 通过；e1-task3-inspection 曾因 A lane 06:51 对 inspection.ts 新增会话版本自增出现断言过期（VERSION_CONFLICT，与 Edge 整改无因果），已移交 A/test lane 对齐后由任务三以重读快照+换新 requestId 重试模式复绿。**P2 闭合成立，增量复核整体结论由有条件接受更新为接受**；遗留 P3 项保持非阻塞建议。
+
+### 增量复核（2026-09-17，执行者：ZCode 非作者独立复核代理，同前次非作者复核身份）
+
+针对 C1 授权修复版整体重写的 kernel-store.mjs 与 server.mjs csrfCheck/调用点增量、任务三 lane 两处外科修复（customer 主读取不走 settle 保 404 透传；exposure/findings/object-inventory 显式 pick）做只读增量复核。结论：**有条件接受**——唯一阻断整改项为 kernel-store.mjs:171 maxSeqThisPull 未定义（P2，满页必抛 ReferenceError，探针实证；E1 小数据量下休眠）→ **已整改并经上节确认闭合**。另 6 项 P3 非阻塞：throw 死代码、角色 403 并入撤权、重查窗口恒定放大、E1 snapshotVersion 字符串比较（已随整改修复）、boot 清理时序（已随整改修复）、server auth 帧前端无消费者（并行 writer 已在 edge-client/onAuth 接线）。csrfCheck X08/T6 收紧逐分支审查未发现新绕过；消费面契约已同步升版 task03-repair-1。
+
+
+### 作者侧预审（2026-09-17，ZCode 自查；**不构成独立验收**）
+
+按 review-agent 缺陷优先流程对 §1 全部文件复查一遍。发现并当场修复 1 项：
+- [P2] delivery-up 在配置缺 authEntries 时静默写入空身份目录 → 改为显式提示"会话交换将失败关闭"并清理旧文件（`scripts/delivery-up.mjs`）。
+确认安全的重点面（复核者可抽查）：订阅注册窗口/Edge 重启 resync/多订阅者共享缓冲（kernel-store）、
+凭据仅存服务端会话记录（session.mjs；响应与日志无原文）、代理白名单正则与顺序（proxy.mjs）、
+三证复核拒杀路径（delivery-down 两次实拒 + 一次放行均有留档）。
+**§8 的"非作者复核"门仍待 Codex 或其他非作者执行——以下记录留空。**
+
 （待非作者复核者填写）

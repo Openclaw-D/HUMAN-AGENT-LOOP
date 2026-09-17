@@ -56,26 +56,30 @@ export function createEdgeServer({
   const sessionOf = (req) => sessionStore?.resolve(req.headers['x-jw-session']);
   const extraOrigins = new Set(allowedOrigins.map((o) => String(o).replace(/\/$/, '')));
 
-  // CSRF 守卫：只作用于写方法（POST）。判据（D17 种子，浏览器层全链路待 S3 剩余）：
-  //   1) Sec-Fetch-Site 存在时必须为 same-origin（浏览器真实性信号）；
-  //   2) Origin 与 Host 同源 → 放行；在显式允许列表 → 放行；
-  //   3) Origin 与 Sec-Fetch-Site 均缺省 → 视为非浏览器客户端（curl/CI/harness），放行；
-  //   4) 其余组合（跨站 Origin、null origin、有 Sec-Fetch-Site 却无 Origin）→ 拒绝。
+  // CSRF 守卫（任务03 C2/X08 修复 + T6 裁决收紧）：只作用于写方法（POST）。判定顺序——
+  //   1) Origin 与 Host 同源 → 放行；
+  //   2) Origin 在显式允许列表 → 放行（先于 Sec-Fetch-Site 判定：合法跨端口/staging 浏览器
+  //      会带 sec-fetch-site=cross-site，不得被 same-site/cross-site 条件先拦——X08 反例修复）；
+  //   3) Origin 与 Sec-Fetch-Site 均缺省 → 非浏览器客户端（curl/CI/harness），放行（身份由会话承担）；
+  //   4) Sec-Fetch-Site=same-origin：无 Origin（X08 客户端被代理剥头）→ 放行；
+  //      携带 Origin 时必须与 Host 同源或在允许列表——声明与信号不一致仍拒绝（T6 裁决，防伪造声明）；
+  //   5) 其余（跨站 Origin、same-site 未列白名单、null origin、有 site 无 origin 非 same-origin）→ 拒绝。
   const csrfCheck = (req) => {
-    const site = req.headers['sec-fetch-site'];
-    if (site && site !== 'same-origin') return `sec-fetch-site=${site}`;
-    const origin = req.headers.origin;
-    if (!origin) return site ? 'sec-fetch-site 存在但 origin 缺失' : null;
-    if (origin === 'null') return 'null origin';
+    const site = req.headers['sec-fetch-site'] ? String(req.headers['sec-fetch-site']) : null;
+    const origin = req.headers.origin ? String(req.headers.origin) : null;
     const host = req.headers.host ? String(req.headers.host).toLowerCase() : null;
-    try {
-      const o = new URL(origin);
-      if (host && o.host === host) return null;
-      if (extraOrigins.has(origin.replace(/\/$/, ''))) return null;
-      return `跨站 origin=${origin.slice(0, 60)}`;
-    } catch {
-      return 'origin 不可解析';
+    if (origin && origin !== 'null' && host) {
+      try {
+        if (new URL(origin).host.toLowerCase() === host) return null;
+      } catch { /* 落到下方拒绝 */ }
     }
+    if (origin && extraOrigins.has(origin.replace(/\/$/, ''))) return null;
+    if (!origin && !site) return null;
+    if (site === 'same-origin') {
+      if (!origin) return null; // X08：same-origin 声明 + Origin 被中间层剥除
+      return `origin=${origin.slice(0, 60)} sec-fetch-site=same-origin 声明与 Origin 不一致`;
+    }
+    return `origin=${origin ? origin.slice(0, 60) : '<缺>'} sec-fetch-site=${site ?? '<缺>'}`;
   };
 
   const runReadiness = async () => {
@@ -109,7 +113,7 @@ export function createEdgeServer({
     if (!verdict.ok) return sendJson(res, 403, { ok: false, error: verdict.reason || 'FORBIDDEN' });
     let ws;
     try {
-      ws = await store.getWorkspace(customerId, { credential: session?.credential });
+      ws = await store.getWorkspace(customerId, { credential: session?.credential, principalId: session?.principalId });
     } catch (e) {
       return sendUpstreamError(res, e);
     }
@@ -125,13 +129,17 @@ export function createEdgeServer({
     res.write(frame);
   };
 
+  // 慢客户端背压上限（C1.5）：Node 缓冲的超限即判定为跟不上实时流——显式 resync 后断开，
+  // 客户端带游标重连补取；不以无界内存维持假实时。
+  const MAX_SSE_PENDING_BYTES = 256 * 1024;
+
   const handleEvents = async (req, res, customerId, urlObj) => {
     const session = sessionOf(req);
     const verdict = await verify({ req, customerId, action: 'events:subscribe', session });
     if (!verdict.ok) return sendJson(res, 403, { ok: false, error: verdict.reason || 'FORBIDDEN' });
     let ws;
     try {
-      ws = await store.getWorkspace(customerId, { credential: session?.credential });
+      ws = await store.getWorkspace(customerId, { credential: session?.credential, principalId: session?.principalId });
     } catch (e) {
       return sendUpstreamError(res, e);
     }
@@ -145,11 +153,19 @@ export function createEdgeServer({
       'X-Accel-Buffering': 'no',
     });
 
-    const push = (env) => { if (!closeStream.dead) writeSse(res, 'business', env, env.eventId); };
     const closeStream = { dead: false };
+    const hadSession = Boolean(session);
     let unsubscribe = null;
     const heartbeat = setInterval(() => {
-      if (!closeStream.dead) res.write(`: hb ${Date.now()}\n\n`);
+      if (closeStream.dead) return;
+      // 会话生命周期复检（C1.2）：TTL 过期/被撤销 → auth 帧后终止，长连接不豁免
+      //（仅对建立时确有会话的流；fixture 放行形态无会话概念，不受此检影响）
+      if (hadSession && sessionStore && !sessionOf(req)) {
+        writeSse(res, 'auth', { code: 'SESSION_EXPIRED', note: '会话已过期或被撤销：终止订阅，请重新认证' });
+        log(`[sse] session expired mid-stream customer=${customerId}`);
+        return finish();
+      }
+      res.write(`: hb ${Date.now()}\n\n`);
     }, SSE_HEARTBEAT_MS);
 
     const finish = () => {
@@ -161,23 +177,40 @@ export function createEdgeServer({
     };
     req.once('close', finish);
 
+    // 授权事件分发（C1.1/C1.2）：回调只收本身份桶的事件；凭据被 A 拒绝（撤权/过期）→
+    // auth 帧后终止本连接——不因其他身份仍有权限而继续推送。
+    const push = (env) => {
+      if (closeStream.dead) return;
+      if (res.writableLength > MAX_SSE_PENDING_BYTES) {
+        writeSse(res, 'resync', { reason: 'slow_client_overflow', hint: 'GET workspace then resubscribe with eventCursor' });
+        return finish();
+      }
+      writeSse(res, 'business', env, env.eventId);
+    };
+    const onAuthFail = (code) => {
+      if (closeStream.dead) return;
+      writeSse(res, 'auth', { code: code || 'EVENTS_UNAUTHORIZED', note: '权限变更或凭据失效：终止订阅，请重新认证' });
+      log(`[sse] auth-terminated customer=${customerId} code=${code}`);
+      finish();
+    };
+
     // 无游标：以 workspace 基线游标起步——先订阅（after=基线，内核存储会先补缓冲缺口）再发
     // cursor 帧；客户端记录基线后只消费后续事件，重复帧按 eventId 去重（至少一次语义）。
     if (!cursor) {
-      unsubscribe = store.subscribe(customerId, push, { credential: session?.credential, after: ws.eventCursor });
+      unsubscribe = store.subscribe(customerId, push, { credential: session?.credential, principalId: session?.principalId, after: ws.eventCursor, onAuthFail });
       writeSse(res, 'cursor', { eventCursor: ws.eventCursor, snapshotVersion: ws.snapshotVersion });
     } else {
-      const replay = store.replayFrom(customerId, cursor);
+      const replay = store.replayFrom(customerId, cursor, { credential: session?.credential, principalId: session?.principalId });
       if (replay.expired) {
         // 游标失效：显式 resync，不允许从当前时点静默漏事件（任务04 D05）。
         writeSse(res, 'resync', { reason: replay.reason, hint: 'GET workspace then resubscribe with new eventCursor' });
         return finish();
       }
-      unsubscribe = store.subscribe(customerId, push, { credential: session?.credential, after: cursor });
+      unsubscribe = store.subscribe(customerId, push, { credential: session?.credential, principalId: session?.principalId, after: cursor, onAuthFail });
       for (const env of replay.events) writeSse(res, 'business', env, env.eventId);
     }
 
-    log(`[sse] customer=${customerId} cursor=${cursor || '<head>'} source=${ws.source || 'fixture'}`);
+    log(`[sse] customer=${customerId} principal=${session?.principalId ?? 'unknown'} cursor=${cursor || '<head>'} source=${ws.source || 'fixture'}`);
   };
 
   const requireSession = (req, res) => {
@@ -212,6 +245,18 @@ export function createEdgeServer({
     if (!verdict.ok) return sendJson(res, 403, { ok: false, error: verdict.reason || 'FORBIDDEN' });
     const read = await readJsonBody(req);
     if (read.err) return sendJson(res, 400, { ok: false, error: read.err });
+    // 内部内容外发豁免不是万能开关（C2.5/U07）：除受众守卫外，还须单独持
+    // messages:external-send 权限（Edge 权限点，默认拒绝）；审计由消息路由强制落。
+    if (read.body.audience === 'customer' && read.body.internalContent === true && read.body.confirmExternalSend === true) {
+      const gv = await verify({ req, customerId, action: 'messages:external-send', session });
+      if (!gv.ok) {
+        return sendJson(res, 403, {
+          ok: false,
+          error: 'EXTERNAL_SEND_NOT_PERMITTED',
+          note: '内部内容外发需要显式外发权限（messages:external-send），confirmExternalSend 本身不构成豁免',
+        });
+      }
+    }
     const result = await messages.handle({ session, customerId, body: read.body, log });
     return sendJson(res, result.status, result.body);
   };
@@ -274,6 +319,27 @@ export function createEdgeServer({
           } catch (e) {
             const reason = e.name === 'TimeoutError' ? 'timeout' : String(e.cause?.code || e.message);
             return sendJson(res, 502, { ok: false, error: 'UPSTREAM_UNKNOWN', requestId, reason });
+          }
+        }
+
+        // 大历史分页（C1.3/U04）：A 的 after/limit 逐页透传，逐请求凭据鉴权；
+        // fixture 存储无上游分页源 → 如实 NOT_SUPPORTED，不伪造历史。
+        if (customerId && pathname.endsWith('/events-page')) {
+          const session = requireSession(req, res);
+          if (!session) return;
+          if (typeof store.pageEvents !== 'function') {
+            return sendJson(res, 501, { ok: false, error: 'NOT_SUPPORTED', note: '分页事件直读仅 live（kernel）模式提供' });
+          }
+          const verdict = await verify({ req, customerId, action: 'events:read', session });
+          if (!verdict.ok) return sendJson(res, 403, { ok: false, error: verdict.reason || 'FORBIDDEN' });
+          try {
+            const page = await store.pageEvents(customerId, {
+              afterSeq: urlObj.searchParams.get('afterSeq') || '0',
+              limit: Number(urlObj.searchParams.get('limit')) || 200,
+            }, { credential: session.credential, principalId: session.principalId });
+            return sendJson(res, 200, page);
+          } catch (e) {
+            return sendUpstreamError(res, e);
           }
         }
 
@@ -445,11 +511,28 @@ export async function main(argv) {
   const verifyCredential = live ? liveVerifier : fixtureVerifier;
 
   // workspace/events 鉴权：live = 会话必需（真实客户/租户授权由 A 每请求裁决，Edge 不缓存）；
-  // fixture = 语义自检放行。
+  // fixture = 语义自检放行。messages:external-send 是独立 Edge 权限点（C2.5）：
+  // 默认拒绝（fail-closed），仅 --external-send-roles / JW_EDGE_EXTERNAL_SEND_ROLES 显式列出的
+  // 角色可豁免外发守卫；fixture 形态仅 admin 演示角色可过（只证明语义，不用于真实身份）。
+  const externalSendRoles = [
+    ...argv.flatMap((a, i) => (a === '--external-send-roles' && argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1].split(',').map((s) => s.trim()).filter(Boolean) : [])),
+    ...(process.env.JW_EDGE_EXTERNAL_SEND_ROLES ? process.env.JW_EDGE_EXTERNAL_SEND_ROLES.split(',').map((s) => s.trim()).filter(Boolean) : []),
+  ];
   const scopeAuth = live
-    ? async ({ session }) => (session ? { ok: true, principalId: session.principalId } : { ok: false, reason: 'SESSION_REQUIRED' })
+    ? async ({ session, action }) => {
+      if (!session) return { ok: false, reason: 'SESSION_REQUIRED' };
+      if (action === 'messages:external-send') {
+        const allowed = externalSendRoles.length > 0 && session.roles.some((r) => externalSendRoles.includes(r));
+        if (!allowed) return { ok: false, reason: 'EXTERNAL_SEND_NOT_PERMITTED' };
+      }
+      return { ok: true, principalId: session.principalId };
+    }
     : (args['fixture-auth'] && fixtureVerifier
-      ? async ({ session }) => (session ? { ok: true, principalId: session.principalId } : { ok: false, reason: 'PRINCIPAL_UNTRUSTED' })
+      ? async ({ session, action }) => {
+        if (!session) return { ok: false, reason: 'PRINCIPAL_UNTRUSTED' };
+        if (action === 'messages:external-send' && !session.roles.includes('admin')) return { ok: false, reason: 'EXTERNAL_SEND_NOT_PERMITTED' };
+        return { ok: true, principalId: session.principalId };
+      }
       : async () => ({ ok: true }));
 
   // E0 消息投递 seam：内存 sink；真实通道（企微客服/存档）属任务02。
@@ -468,7 +551,14 @@ export async function main(argv) {
     // fixture：E0 占位（真实凭据映射随 --live 落地）。
     credentialFor: live ? (session) => session.credential : (session) => `session:${session.principalId}`,
   });
-  const messages = createMessageRouter({ deliver, auditSink });
+  const messages = createMessageRouter({
+    deliver, auditSink,
+    // live：发往客户前以本会话凭据校验目标客户可读（A 逐请求裁决，防错 customerId/越权外发）；
+    // fixture：无上游目标面 → 不接校验（E0 语义自检）。
+    validateTarget: live && typeof store.checkCustomer === 'function'
+      ? (session, customerId) => store.checkCustomer(customerId, { credential: session.credential })
+      : null,
+  });
 
   const harnessDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'D', 'browser-harness', 'public');
   const staticHandler = createStaticHandler({ rootDir: harnessDir });

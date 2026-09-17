@@ -165,7 +165,7 @@ export function createUpstreamProxy({
           error: 'UPSTREAM_UNKNOWN',
           requestId,
           reason,
-          note: '结果未知：先查回执（GET /api/v1/receipts/:requestId），用同 requestId 安全重试；不生成新 requestId',
+          note: '结果未知：用同 requestId 安全重试（不生成新 ID）。v2 授信面可先查 GET /api/jw/v2/receipts/:requestId 对账；v1 族（检查会话/目标）以上游幂等表 + expectedVersion 门裁决重发',
         }));
         return;
       }

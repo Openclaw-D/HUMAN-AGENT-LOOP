@@ -71,8 +71,21 @@ test('E1·任务三 检查会话面：开始/暂停外发/恢复代际/结束待
   assert.equal(ws.snapshot.session.runStatus, 'preparing');
   let version = () => ws.snapshot.session.version;
 
+  // 会话生命周期命令（带乐观锁）。A 会话版本账可能含额外自增点（上游语义演进）：
+  // 遇 409 VERSION_CONFLICT → 重读快照、换新 requestId 重试（409 未执行，新 ID 无重复风险）。
+  const ixAct = async (who, verb, subPath, extra = {}) => {
+    let r = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) ws = await wsOf();
+      const body = { requestId: rid(verb), expectedVersion: version(), ...extra };
+      r = await call(who, 'POST', `/api/jw/v2/actions/inspections/${sessionId}/${subPath}`, body);
+      if (!(r.status === 409 && r.json.error === 'VERSION_CONFLICT')) break;
+    }
+    return r;
+  };
+
   // ---- 开始（计划版本显式对齐） ----
-  const start = await call('biz1', 'POST', `/api/jw/v2/actions/inspections/${sessionId}/start`, { requestId: rid('st'), expectedVersion: version() });
+  const start = await ixAct('biz1', 'st', 'start');
   assert.equal(start.status, 200, `开始失败: ${JSON.stringify(start.json)}`);
   assert.equal(start.json.runStatus, 'in_progress');
   ws = await wsOf();
@@ -98,7 +111,7 @@ test('E1·任务三 检查会话面：开始/暂停外发/恢复代际/结束待
   assert.equal(grant1.status, 200, `外发授权失败: ${JSON.stringify(grant1.json)}`);
 
   // ---- 暂停（暂停自动提问）：suspended + 代际+1 + checkpoint；暂停后授权被拒（等待原因） ----
-  const pause = await call('biz1', 'POST', `/api/jw/v2/actions/inspections/${sessionId}/pause`, { requestId: rid('pa'), expectedVersion: version() });
+  const pause = await ixAct('biz1', 'pa', 'pause');
   assert.equal(pause.status, 200, `暂停失败: ${JSON.stringify(pause.json)}`);
   assert.equal(pause.json.runStatus, 'suspended');
   assert.equal(pause.json.dispatchGeneration, (ws.snapshot.session.outbound.dispatchGeneration ?? 0) + 1, '调度代际 +1');
@@ -113,7 +126,7 @@ test('E1·任务三 检查会话面：开始/暂停外发/恢复代际/结束待
   assert.equal(ws.snapshot.session.runStatus, 'suspended');
 
   // ---- 恢复：旧代际申请被拒（不重复外发）；sent 问题不可重复授权 ----
-  const resume = await call('biz1', 'POST', `/api/jw/v2/actions/inspections/${sessionId}/resume`, { requestId: rid('re'), expectedVersion: version() });
+  const resume = await ixAct('biz1', 're', 'resume');
   assert.equal(resume.status, 200, `恢复失败: ${JSON.stringify(resume.json)}`);
   assert.equal(resume.json.runStatus, 'in_progress');
   const grantStale = await call('biz1', 'POST', `/api/jw/v2/actions/inspections/${sessionId}/outbound/grant`, {
@@ -129,7 +142,7 @@ test('E1·任务三 检查会话面：开始/暂停外发/恢复代际/结束待
 
   // ---- 结束：未决项转会后待办（不冒充已核验） ----
   ws = await wsOf();
-  const end = await call('biz1', 'POST', `/api/jw/v2/actions/inspections/${sessionId}/end`, { requestId: rid('end'), expectedVersion: version() });
+  const end = await ixAct('biz1', 'end', 'end');
   assert.equal(end.status, 200, `结束失败: ${JSON.stringify(end.json)}`);
   ws = await wsOf();
   assert.equal(ws.snapshot.session.runStatus, 'ended');

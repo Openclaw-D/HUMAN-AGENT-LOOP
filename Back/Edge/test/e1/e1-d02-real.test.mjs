@@ -14,7 +14,7 @@ const skipReason = gate.frozen ? false : `E1 门未过: ${gate.reasons.join('; '
 
 test('E1-D02 真实变体：真实 PG 停库时 liveness 保持、readiness 逐依赖如实翻转', { skip: skipReason }, async (t) => {
   const { execFile, spawn } = await import('node:child_process');
-  const { createWriteStream, mkdirSync, rmSync } = await import('node:fs');
+  const { mkdirSync, openSync, rmSync } = await import('node:fs');
     const path = await import('node:path');
   const { fileURLToPath } = await import('node:url');
 
@@ -49,28 +49,28 @@ test('E1-D02 真实变体：真实 PG 停库时 liveness 保持、readiness 逐�
     if (api) { try { process.kill(api.pid); } catch { } }
     if (edge) { try { await edge.close(); } catch { } }
     if (pg) { try { await pgctl.destroyPg(pg.name); } catch { } }
-    try { rmSync(RUN_DIR, { recursive: true, force: true, maxRetries: 2 }); } catch { }
+    // 现场日志保留在 RUN_DIR/kernel.log（.run/ 被 Git 排除），供失败诊断
   };
   t.after(cleanup);
 
-  // 1) 自有隔离 PG + 全部迁移
+  // 1) 自有隔离 PG + 全部迁移（迁移非幂等：每轮先重建库，保证从零开始）
   mkdirSync(RUN_DIR, { recursive: true });
   pg = await pgctl.ensurePg({ runDir: RUN_DIR, port: PORT, db: 'v7d_boot' });
+  await pgctl.psql(pg.name, 'postgres', `DROP DATABASE IF EXISTS ${DB} WITH (FORCE)`);
+  await pgctl.psql(pg.name, 'postgres', `CREATE DATABASE ${DB}`);
   await pgctl.createDb(pg.name, DB);
-  const { readdirSync } = await import('node:fs');
-  const migrations = readdirSync(path.join(BACK_ROOT, 'A', 'migrations')).filter((f) => f.endsWith('.sql')).sort();
-  for (const m of migrations) {
-    await run('docker', ['cp', path.join(BACK_ROOT, 'A', 'migrations', m), `${pg.name}:/tmp/${m}`]);
-    await run('docker', ['exec', pg.name, 'psql', '-U', 'v7next', '-d', DB, '-v', 'ON_ERROR_STOP=1', '-f', `/tmp/${m}`]);
-  }
+  // 迁移由内核启动时自动执行（空库 → 001..00N）；测试不预迁移避免重复建表。
 
   // 2) 启动 JW A 内核（合成 principal 公开值；D 端口段，不碰 48080）
   const dsn = `postgres://v7next:v7next@127.0.0.1:${PORT}/${DB}`;
-  const out = createWriteStream(path.join(RUN_DIR, 'kernel.log'));
+  const out = openSync(path.join(RUN_DIR, 'kernel.log'), 'a');
   api = spawn(process.execPath, [path.join(BACK_ROOT, 'A', 'src', 'index.ts'), '--port', String(API_PORT), '--db', dsn,
     '--principal-tokens', 'tok-admin=alice:human:admin:all,tok-approver=carol:human:approver:all'], { windowsHide: true, stdio: ['ignore', out, out] });
   api.unref();
-  assert.ok(await waitHttp(`http://127.0.0.1:${API_PORT}/healthz`, (r) => r.status === 200), 'A 内核未就绪');
+  let apiExit = null;
+  api.once('exit', (code, sig) => { apiExit = `exit=${code} sig=${sig}`; });
+  const ready = await waitHttp(`http://127.0.0.1:${API_PORT}/healthz`, (r) => r.status === 200);
+  assert.ok(ready, `A 内核未就绪（${apiExit ?? '仍在运行'}；日志 ${RUN_DIR}\kernel.log）`);
 
   // 3) Edge 真实探针指向该栈
   const { startEdgeServer } = await import('../../src/server.mjs');

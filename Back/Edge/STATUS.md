@@ -46,3 +46,16 @@
 - Docker Desktop 引擎在本会话内出现两次不可达/半启动（ServerVersion 为空但 info 可答）；演练前用 `docker ps` 作为就绪判据而非 `docker info`。
 - 检测到并行 writer（Back/Connectors、Back/A 002 迁移、Back/C 四域、docs/customer-next 提案）；Edge 未读写这些路径。
 - `--fixture-auth` 的 `harness-demo-cred` 是公开合成演示凭据（仿 A tok-* 模式），禁止用于真实身份；不启用时登录/写面一律失败关闭。
+
+## 任务03 修复轮（2026-09-17 下午；PR#3 审核后四任务并行 N1）
+
+本路（Back/Edge/src + Front 接线；独立测试归任务04）针对审核 F05/F09 及任务书 C1–C4 的修复已落地并隔离栈自验：
+
+- **C1（F05 修复）**：`src/kernel-store.mjs` 重写——事件缓冲/订阅/回放按 (customerId × principalId × 凭据指纹) 分桶（缓存键含授权上下文，不再按 customerId 共用广播）；本桶凭据遇上游 401/403 → onAuthFail 通知并销桶（server 发 SSE `auth` 帧后终止，撤权断流）；快照权威面扩展（decision-status / findings / object-inventory 逐查询 + freshness 逐组件、无 all_ok）；assessments/FR 引用显式标注 `refsSource='event_buffer', refsExhaustive=false`（A 缺列表端点，需求提交任务01）；seq 全程字符串/BigInt（不无条件 Number 转换）；提交滞后重查窗口 128 + eventId 去重 + 有序插入 + gap 标注（反序提交窗口内自愈）；新增 `/events-page` 分页直读（大历史不因缓冲窗口消失，fixture 形态如实 501）；空闲桶自动回收。
+- **C1.2/C2（server/messages）**：SSE 心跳周期复检会话（过期/撤销 → auth 帧 + 终止，仅对建立时有会话的流）；慢客户端 `writableLength` 超限 → resync 后断开（背压有界）；csrfCheck 判定顺序修复（X08/F09：同源 → 显式白名单 → 无头非浏览器 → same-origin 信号 → 其余拒绝，合法跨端口源不再被 same-site 先拦）；内部内容外发 `confirmExternalSend` 不再万能豁免——须过 `messages:external-send` 权限点（默认拒绝，`--external-send-roles`/`JW_EDGE_EXTERNAL_SEND_ROLES` 显式授予）+ live 模式目标客户可读校验（store.checkCustomer，防错 customerId）；消息 requestId 同载荷重放 `replayed:true`、异载荷 409。
+- **C3（F09 前端）**：`home-overview` live 分支移除对 submitCaseTurn/completedTurns/scenario.domains 的依赖——live 聊天走 Edge 消息路由（服务端回执状态 sending/sent/unknown/failed，失败不回退本地模拟）、四域矩阵来自 decisionStatus 逐域 currency（灰=未开始/未知，绿=依据当前≠批准）、生命周期来自会话 runStatus/closureStatus；训练模式原样保留且与真实会话不共享草稿。`edge-logic` 新增 live 投影纯函数（deriveDomainRowsLive/deriveLifecycleLive/deriveDecisionLines/capabilityChips/toLiveChatMessage）；额度区区分 候选/已批准/可用/可支用 + Gate 结论（rejected 终态不给绿灯）+ 决策就绪/缺口/阻断；状态栏新增能力位 chips（逐项独立）+ readiness 逐依赖 + freshness + 快照版本/事件窗口。撤权/会话失效（auth 帧、HTTP 401/403）为终止性，不自动重连复活旧会话。
+- **C4**：EdgeObjectLinks 二维桥接保底面板（object-inventory：objectId/siteSnapshotId/sceneVersion 锚定状态）；手机邀请上传/实时视频/三维多人场区如实标注 not_wired / blocked_external_access；**D27-S BLOCKED**（本仓无 Unity/三维构建，不冒充）。本交付不含三维厂区。
+- **并写合并**：同一工作区有并行 writer 落了同方向补强（凭据输入 password 化、会话动作 502 重试同 requestId 复用、SSE onDrop 401/403 终态、消费面 inspection 写面更新）——已保留并合并，未回退任何人改动。
+- **自验**（隔离栈 PG@15436 + A@17921 + Edge 随机端口；临时脚本在系统 Temp，不入库；不写 Back/Edge/test）：单元 11 项（分桶/撤权断流/反序提交窗口/BigInt 精度/回放分桶隔离）+ 集成 28 项全绿（CSRF 四态、会话交换、权威快照块、SSE 实时+双身份双桶、events-page、消息受众/外发门/目标校验/幂等、会话撤销 401/403、fixture events-page 501）。A 侧为任务01在途版内核（其 createCustomer 已要求可信 principal——消费面已兼容）。Front：typecheck 0 错、vite build 通过、dist 已重建、纯逻辑测试 8/8。
+- **提交任务01 的需求**（upstreamGaps 已登记 consumed-surface）：① 按客户列出 assessments/financing-requests 的权威 GET 端点；② events 的 seq 提交序语义或已提交水位/缺口检测（消除滞后窗口残余风险）。
+- **给任务04 的测试需求**见 `Back/Edge/delivery/TASK03_V02_FIX_REPORT.md` §5（不代写 Back/Edge/test）。
