@@ -151,12 +151,14 @@ export function createEdgeClient({ baseUrl, fetchImpl = fetch }: EdgeClientOptio
 
     /**
      * 事件流：cursor=null 时服务端先发 cursor 基线；重连时传上次游标。
-     * 返回 stop()。onResync：游标过期（Edge 重启/窗口裁剪）→ 调用方重取快照再重订。
+     * 返回 stop()。onOpen：SSE 响应就绪（200）即回调——调用方借此把重连态转回 live。
+     * onResync：游标过期（Edge 重启/窗口裁剪）→ 调用方重取快照再重订。
      * onDrop(reason, status?)：status 为 HTTP 状态码；401/403=会话失效，调用方应转终态而非无限重连。
      */
     openEvents(customerId: string, cursor: string | null, handlers: {
       onEvent: (envelope: { eventId: string; payloadRef?: { type?: string }; payload?: unknown }) => void;
       onCursor: (cursor: string, snapshotVersion: number | string) => void;
+      onOpen?: () => void;
       onResync: () => void;
       /** status 为 HTTP 状态码（可得时）；401/403=会话失效，调用方应转终态而非无限重连。 */
       onDrop: (reason: string, status?: number) => void;
@@ -176,6 +178,7 @@ export function createEdgeClient({ baseUrl, fetchImpl = fetch }: EdgeClientOptio
             handlers.onDrop(`HTTP ${r.status}`, r.status);
             return;
           }
+          handlers.onOpen?.();
           const reader = r.body.getReader();
           const dec = new TextDecoder();
           let buf = '';

@@ -1,0 +1,115 @@
+{
+  "tier": "D2",
+  "round": 3,
+  "startedAt": "2026-09-17T16:46:04.112Z",
+  "bootMs": 12234,
+  "parallel3CustomersMs": 1048,
+  "customers": [
+    "cust-mu5rhie7-e260a01e6b97",
+    "cust-mu5rhicq-cebb9bdca97d",
+    "cust-mu5rhie7-eebd53cd07f6"
+  ],
+  "latencies": {
+    "w_create": {
+      "n": 3,
+      "min": 18,
+      "median": 69,
+      "max": 71,
+      "note": "n<20：不出高分位数（BASELINE §3 纪律）"
+    },
+    "w_artifact": {
+      "n": 6,
+      "min": 19,
+      "median": 25,
+      "max": 41,
+      "note": "n<20：不出高分位数（BASELINE §3 纪律）"
+    },
+    "w_inspection": {
+      "n": 3,
+      "min": 173,
+      "median": 174,
+      "max": 233,
+      "note": "n<20：不出高分位数（BASELINE §3 纪律）"
+    },
+    "w_gate": {
+      "n": 3,
+      "min": 15,
+      "median": 16,
+      "max": 18,
+      "note": "n<20：不出高分位数（BASELINE §3 纪律）"
+    },
+    "w_package": {
+      "n": 3,
+      "min": 254,
+      "median": 268,
+      "max": 274,
+      "note": "n<20：不出高分位数（BASELINE §3 纪律）"
+    },
+    "w_assess": {
+      "n": 3,
+      "min": 13,
+      "median": 20,
+      "max": 27,
+      "note": "n<20：不出高分位数（BASELINE §3 纪律）"
+    },
+    "w_candidate": {
+      "n": 3,
+      "min": 13,
+      "median": 22,
+      "max": 24,
+      "note": "n<20：不出高分位数（BASELINE §3 纪律）"
+    },
+    "w_review": {
+      "n": 3,
+      "min": 15,
+      "median": 16,
+      "max": 16,
+      "note": "n<20：不出高分位数（BASELINE §3 纪律）"
+    },
+    "w_propose": {
+      "n": 3,
+      "min": 20,
+      "median": 20,
+      "max": 21,
+      "note": "n<20：不出高分位数（BASELINE §3 纪律）"
+    },
+    "w_approve": {
+      "n": 3,
+      "min": 45,
+      "median": 47,
+      "max": 56,
+      "note": "n<20：不出高分位数（BASELINE §3 纪律）"
+    },
+    "w_activate": {
+      "n": 3,
+      "min": 25,
+      "median": 36,
+      "max": 41,
+      "note": "n<20：不出高分位数（BASELINE §3 纪律）"
+    },
+    "w_fr": {
+      "n": 6,
+      "min": 16,
+      "median": 24,
+      "max": 39,
+      "note": "n<20：不出高分位数（BASELINE §3 纪律）"
+    },
+    "w_reserve2": {
+      "n": 3,
+      "min": 86,
+      "median": 120,
+      "max": 169,
+      "note": "n<20：不出高分位数（BASELINE §3 纪律）"
+    },
+    "w_read": {
+      "n": 3,
+      "min": 77,
+      "median": 85,
+      "max": 125,
+      "note": "n<20：不出高分位数（BASELINE §3 纪律）"
+    }
+  },
+  "errors": [],
+  "result": "PASS",
+  "finishedAt": "2026-09-17T16:46:18.685Z"
+}

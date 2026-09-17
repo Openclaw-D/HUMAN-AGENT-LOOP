@@ -1,0 +1,71 @@
+{
+  "#cursor": {
+    "eventSeq": 129
+  },
+  "v7d-b25-d25-7:g-mu5skhax-119a756d473f:c1-1789665396139": {
+    "status": "submitted",
+    "goalId": "g-mu5skhax-119a756d473f",
+    "fencingToken": 1,
+    "startedAt": "2026-09-17T17:16:36.184Z",
+    "leaseUntil": "2026-09-17T17:16:44.173Z",
+    "claimedAt": "2026-09-17T17:16:36.139Z",
+    "outcomeState": "candidate_ready",
+    "aGoalVersion": 4,
+    "at": "2026-09-17T17:16:36.272Z"
+  },
+  "v7d-b25-d25-7:g-mu5skh8s-69c130c90e01:c1-1789665396184": {
+    "status": "submitted",
+    "goalId": "g-mu5skh8s-69c130c90e01",
+    "fencingToken": 1,
+    "startedAt": "2026-09-17T17:16:36.228Z",
+    "leaseUntil": "2026-09-17T17:16:44.210Z",
+    "claimedAt": "2026-09-17T17:16:36.184Z",
+    "outcomeState": "failed",
+    "aGoalVersion": 4,
+    "at": "2026-09-17T17:16:36.288Z"
+  },
+  "v7d-b25-d25-7:g-mu5sk9fs-df3035136b53:c1-1789665396429": {
+    "status": "submitted",
+    "goalId": "g-mu5sk9fs-df3035136b53",
+    "fencingToken": 1,
+    "startedAt": "2026-09-17T17:16:36.489Z",
+    "leaseUntil": "2026-09-17T17:16:44.481Z",
+    "claimedAt": "2026-09-17T17:16:36.429Z",
+    "outcomeState": "failed",
+    "aGoalVersion": 4,
+    "at": "2026-09-17T17:16:36.572Z"
+  },
+  "v7d-b25-d25-7:g-mu5sk834-61259035563d:c1-1789665396489": {
+    "status": "submitted",
+    "goalId": "g-mu5sk834-61259035563d",
+    "fencingToken": 1,
+    "startedAt": "2026-09-17T17:16:36.533Z",
+    "leaseUntil": "2026-09-17T17:16:44.510Z",
+    "claimedAt": "2026-09-17T17:16:36.489Z",
+    "outcomeState": "failed",
+    "aGoalVersion": 4,
+    "at": "2026-09-17T17:16:36.595Z"
+  },
+  "v7d-b25-d25-7:g-mu5skfw0-f97916b46906:c1-1789665397874": {
+    "status": "submitted",
+    "goalId": "g-mu5skfw0-f97916b46906",
+    "fencingToken": 1,
+    "startedAt": "2026-09-17T17:16:37.963Z",
+    "leaseUntil": "2026-09-17T17:16:45.954Z",
+    "claimedAt": "2026-09-17T17:16:37.874Z",
+    "outcomeState": "failed",
+    "aGoalVersion": 4,
+    "at": "2026-09-17T17:16:38.060Z"
+  },
+  "v7d-b25-d25-7:g-mu5skfur-69d68740209b:c1-1789665397964": {
+    "status": "submitted",
+    "goalId": "g-mu5skfur-69d68740209b",
+    "fencingToken": 1,
+    "startedAt": "2026-09-17T17:16:38.048Z",
+    "leaseUntil": "2026-09-17T17:16:46.039Z",
+    "claimedAt": "2026-09-17T17:16:37.964Z",
+    "outcomeState": "failed",
+    "aGoalVersion": 4,
+    "at": "2026-09-17T17:16:38.116Z"
+  }
+}

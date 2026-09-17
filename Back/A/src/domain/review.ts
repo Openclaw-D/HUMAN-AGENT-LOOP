@@ -225,26 +225,50 @@ export function buildReviewCommands(kernel: Kernel): ReviewApi {
         const impactScope = (row.impact_scope ?? {}) as { actions?: string[]; domains?: string[]; blocking?: boolean };
 
         let evidenceRefs: { artifactId: string; sha256: string; kind: string; grade: string }[] = [];
+        let waiverResolved: Record<string, unknown> | null = null;
         if (outcome === 'explained_verified') {
           evidenceRefs = await requireClosureEvidence(tx, owner.customer_id, requiredAction, frame.evidenceRefs);
         } else if (outcome === 'not_applicable') {
-          // 明确不适用 = 业务例外：只在已批准的可豁免规则范围内（硬红线无通用 ack 绕过；P-05 fail-closed）
+          // 明确不适用 = 业务例外：只在已登记的有效豁免范围内（硬红线无通用 ack 绕过；P-05 fail-closed）
           if (hardGate) {
             throw conflict('POLICY_PENDING', `差异绑定不可豁免规则 ${ruleRef?.ruleId}：不接受 not_applicable（只能核验成立或确认不利事实）`);
           }
+          // goal-01 G1：waiverRef 只收服务端豁免登记引用 {exemptionId}；自报 policyApproved/approvedBy/validUntil 一律拒绝
           const waiver = frame.waiverRef === undefined || frame.waiverRef === null ? null : reqObject(frame.waiverRef, 'waiverRef');
-          if (waiver === null || waiver.policyApproved !== true
-            || typeof waiver.approvedBy !== 'string' || waiver.approvedBy.length === 0
-            || typeof waiver.validUntil !== 'string' || waiver.validUntil.length === 0) {
-            throw conflict('POLICY_PENDING', 'not_applicable 需要已批准的豁免政策依据（waiverRef.policyApproved/approvedBy/validUntil）：未配置一律拒绝');
+          if (waiver === null) {
+            throw conflict('POLICY_PENDING', 'not_applicable 需要豁免依据（waiverRef.exemptionId）：未登记一律拒绝');
           }
+          if (waiver.policyApproved !== undefined || waiver.approvedBy !== undefined || waiver.validUntil !== undefined) {
+            throw invalid('waiverRef 只接受 {exemptionId}：豁免不可自报（批准人以服务端登记为准）');
+          }
+          const exemptionId = reqString(waiver.exemptionId, 'waiverRef.exemptionId', 64);
+          const rows = await tx.query(`SELECT * FROM domain_exemptions WHERE exemption_id=$1`, [exemptionId]);
+          if (rows.rows.length === 0) throw notFound(`豁免登记不存在：${exemptionId}`);
+          const ex = rows.rows[0] as Record<string, unknown>;
+          if (ex.tenant_id !== owner.tenant_id || ex.customer_id !== owner.customer_id) throw notFound(`豁免登记不存在：${exemptionId}`);
+          if (ex.status !== 'valid') {
+            throw conflict('POLICY_PENDING', `豁免 ${exemptionId} 已撤销：not_applicable 拒绝`);
+          }
+          if (ex.valid_until !== null && new Date(ex.valid_until as string).getTime() <= Date.now()) {
+            throw conflict('POLICY_PENDING', `豁免 ${exemptionId} 已过期：not_applicable 拒绝`);
+          }
+          const findingType = row.finding_type as string;
+          const ruleId = ruleRef?.ruleId ?? null;
+          const scope = String(ex.scope);
+          if (scope !== 'any' && scope !== findingType && (ruleId === null || scope !== ruleId)) {
+            throw conflict('POLICY_PENDING', `豁免 ${exemptionId} 范围（${scope}）不覆盖本差异（type=${findingType}${ruleId ? `，rule=${ruleId}` : ''}）`);
+          }
+          waiverResolved = {
+            exemptionId, scope, approvedBy: ex.approved_by,
+            validUntil: ex.valid_until, policyVersion: ex.policy_version,
+          };
         } else if (outcome === 'adverse_confirmed' && hardGate === false && rationale.length === 0 && ackNote.length === 0) {
           throw invalid('adverse_confirmed 需要 rationale 或 ackNote 说明确认内容');
         }
         const closed = outcome === 'explained_verified' || outcome === 'adverse_confirmed' || outcome === 'not_applicable';
         const resolution = {
           outcome, by: ctx.actor, at: new Date().toISOString(), rationale,
-          evidenceRefs, waiverRef: frame.waiverRef ?? null, ackNote: ackNote === '' ? null : ackNote,
+          evidenceRefs, waiverRef: waiverResolved, ackNote: ackNote === '' ? null : ackNote,
         };
         await tx.query(
           `UPDATE decision_findings SET status=$2, resolution=$3::jsonb, version=version+1, updated_at=now() WHERE finding_id=$1`,

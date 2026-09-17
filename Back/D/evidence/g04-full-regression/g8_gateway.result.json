@@ -1,0 +1,120 @@
+{
+  "suite": "g8_gateway",
+  "results": [
+    {
+      "id": "D-24",
+      "title": "模型未配置如实拒绝：real_http→409 MODEL_NOT_CONFIGURED；无静默mock成功",
+      "severity": "P0",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 0,
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "Error: createdb v7d_g8_sut: createdb: error: database creation failed: ERROR:  database \"v7d_g8_sut\" already exists\n\n    at Module.createDb (file:///C:/Users/22673/Desktop/JW/Back/D/harness/pgctl.mjs:95:11)\n    at async Module.startSut (file:///C:/Users/22673/Desktop/JW/Back/D/harness/sutctl.mjs:31:3)\n    at async sut (file:///C:/Users/22673/Desktop/JW/Back/D/suites/g8_gateway.test.mjs:103:21)\n    at async Object.fn (file:///C:/Users/22673/Desktop/JW/Back/D/suites/g8_gateway.test.mjs:127:17)\n    at async runSuite (file:///C:/Users/22673/Desktop/JW/Back/D/harness/runner.mjs:46:7)"
+        }
+      ],
+      "ms": 4925,
+      "note": "exception"
+    },
+    {
+      "id": "D-26",
+      "title": "mock/real来源强标记：provider字段落库可读；C假API响应带simulation标记头",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 26,
+      "failures": [],
+      "ms": 942,
+      "note": ""
+    },
+    {
+      "id": "D-23b",
+      "title": "C假API凭据纪律：请求体含key→anomaly标记；无效key→401掩码不泄漏",
+      "severity": "P1",
+      "owner": "C",
+      "state": "pass",
+      "assertions": 4,
+      "failures": [],
+      "ms": 30,
+      "note": ""
+    },
+    {
+      "id": "D-27p",
+      "title": "unknown探针就绪度：C假API断连场景可注入（D-27 B侧部分留门）",
+      "severity": "P1",
+      "owner": "D",
+      "state": "blocked",
+      "assertions": 2,
+      "failures": [],
+      "ms": 12,
+      "note": "BLOCKED: D-27端到端需B worker（unknown零盲重发是B执行器行为）；探针就绪度已验证"
+    },
+    {
+      "id": "D-25a",
+      "title": "跨进程并发预算门：预算1/1，3 worker同抢3目标→恰1次mock调用，其余诚实失败",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 33,
+      "failures": [
+        {
+          "msg": "并发预算门：恰1次模型调用（预算1/1，跨进程不绕过）",
+          "detail": "{\"actual\":0,\"expected\":1}"
+        }
+      ],
+      "ms": 27336,
+      "note": ""
+    },
+    {
+      "id": "D-25b",
+      "title": "账本不可读失败关闭：costLogPath指向目录→0调用+目标诚实失败",
+      "severity": "P0",
+      "owner": "B",
+      "state": "pass",
+      "assertions": 14,
+      "failures": [],
+      "ms": 16736,
+      "note": ""
+    },
+    {
+      "id": "D-25c",
+      "title": "坏账本失败关闭：损坏行+超限有效行→0调用（不静默跳过放行）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "pass",
+      "assertions": 13,
+      "failures": [],
+      "ms": 16742,
+      "note": ""
+    },
+    {
+      "id": "D-25d",
+      "title": "非法预算失败关闭：maxTotalCost为字符串→worker构造即拒绝（exit≠0）且0调用",
+      "severity": "P0",
+      "owner": "B",
+      "state": "pass",
+      "assertions": 11,
+      "failures": [],
+      "ms": 13119,
+      "note": ""
+    },
+    {
+      "id": "D-25e",
+      "title": "预算重启持久：第一笔消耗后重启worker，第二目标BUDGET_EXCEEDED（账本持久不绕过）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "pass",
+      "assertions": 24,
+      "failures": [],
+      "ms": 19273,
+      "note": ""
+    }
+  ],
+  "pass": 6,
+  "fail": 2,
+  "skip": 0,
+  "blocked": 1,
+  "totalAssertions": 127,
+  "runnerError": null
+}

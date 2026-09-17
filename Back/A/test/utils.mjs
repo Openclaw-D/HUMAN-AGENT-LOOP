@@ -54,44 +54,54 @@ export async function dropTestDb(name) {
 }
 
 /** 启动内核进程；返回 {port, stop, dbUrl, pool(直连DB, 白盒时间操纵用)}。keepDb=true 时 stop 不删库（重启测试用）。
- *  principalSpec 可选：v2 授信域测试需租户限定身份（第5段 tenants），默认保持 v1 合成目录。 */
+ *  principalSpec 可选：v2 授信域测试需租户限定身份（第5段 tenants），默认保持 v1 合成目录。
+ *  随机端口偶发与本机常驻服务（如 Edge 面板@48200）碰撞：EADDRINUSE 时自动换口重试（goal-01）。 */
 export async function startKernel({ portOffset = 0, leaseSeconds = 90, dispatch = false, dbUrl = null, keepDb = false, extraArgs = [], principalSpec = PRINCIPAL_SPEC } = {}) {
   const db = dbUrl === null ? await createTestDb() : { name: null, url: dbUrl };
-  const port = BASE_PORT + Math.floor(Math.random() * 400) + portOffset;
-  const args = ['src/index.ts', '--port', String(port), '--db', db.url, '--principal-tokens', principalSpec,
-    '--lease-seconds', String(leaseSeconds)];
-  if (dispatch) args.push('--dispatch');
-  if (extraArgs.length > 0) args.push(...extraArgs);
-  const child = spawn('node', args, { cwd: A_ROOT, stdio: ['ignore', 'pipe', 'pipe'] });
-  const logs = [];
-  child.stdout.on('data', (d) => logs.push(d.toString()));
-  child.stderr.on('data', (d) => logs.push(d.toString()));
-  const base = `http://127.0.0.1:${port}`;
-  // 等健康检查通过
-  let up = false;
-  for (let i = 0; i < 60; i++) {
-    try {
-      const r = await fetch(`${base}/healthz`);
-      if (r.status === 200) { up = true; break; }
-    } catch { /* 未起 */ }
-    await sleep(250);
+  try {
+    for (let attempt = 1; ; attempt++) {
+      const port = BASE_PORT + Math.floor(Math.random() * 400) + portOffset;
+      const args = ['src/index.ts', '--port', String(port), '--db', db.url, '--principal-tokens', principalSpec,
+        '--lease-seconds', String(leaseSeconds)];
+      if (dispatch) args.push('--dispatch');
+      if (extraArgs.length > 0) args.push(...extraArgs);
+      const child = spawn('node', args, { cwd: A_ROOT, stdio: ['ignore', 'pipe', 'pipe'] });
+      const logs = [];
+      child.stdout.on('data', (d) => logs.push(d.toString()));
+      child.stderr.on('data', (d) => logs.push(d.toString()));
+      const base = `http://127.0.0.1:${port}`;
+      // 等健康检查通过
+      let up = false;
+      for (let i = 0; i < 60; i++) {
+        try {
+          const r = await fetch(`${base}/healthz`);
+          if (r.status === 200) { up = true; break; }
+        } catch { /* 未起 */ }
+        await sleep(250);
+      }
+      if (up) {
+        const pool = new pg.Pool({ connectionString: db.url });
+        return {
+          port, base, dbUrl: db.url, dbName: db.name, child, logs,
+          pool,
+          async stop() {
+            child.kill('SIGTERM');
+            await sleep(300);
+            if (!child.killed) child.kill('SIGKILL');
+            try { await pool.end(); } catch { /* 已断 */ }
+            if (db.name !== null && !keepDb) await dropTestDb(db.name);
+          },
+        };
+      }
+      child.kill('SIGKILL');
+      const logText = logs.join('');
+      if (attempt < 3 && logText.includes('EADDRINUSE')) continue; // 端口碰撞：换口重来
+      throw new Error(`kernel 启动失败：\n${logText}`);
+    }
+  } catch (error) {
+    if (db.name !== null && !keepDb) { try { await dropTestDb(db.name); } catch { /* 尽力清理 */ } }
+    throw error;
   }
-  if (!up) {
-    child.kill();
-    throw new Error(`kernel 启动失败：\n${logs.join('')}`);
-  }
-  const pool = new pg.Pool({ connectionString: db.url });
-  return {
-    port, base, dbUrl: db.url, dbName: db.name, child, logs,
-    pool,
-    async stop() {
-      child.kill('SIGTERM');
-      await sleep(300);
-      if (!child.killed) child.kill('SIGKILL');
-      try { await pool.end(); } catch { /* 已断 */ }
-      if (db.name !== null && !keepDb) await dropTestDb(db.name);
-    },
-  };
 }
 
 /** HTTP 客户端：默认带 principal credential。 */

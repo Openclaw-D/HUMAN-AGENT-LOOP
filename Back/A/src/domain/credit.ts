@@ -81,6 +81,11 @@ export async function computeBuckets(tx: PoolClient, facilityId: string): Promis
     }
     sum[r.entry_type] = n;
   }
+  return buildBucketView(facilityId, sum);
+}
+
+/** goal-01 P1：批量路径的桶推导（无 DB 访问；与 computeBuckets 同一算术，单一事实源）。 */
+export function buildBucketView(_facilityId: string, sum: Record<string, number>): BucketView {
   const n = (k: string): number => sum[k] ?? 0;
   const reserved = n('reserve') - n('reserve_release') - n('reserve_expire') - n('reserve_commit');
   const committed = n('reserve_commit') - n('commit_cancel') - n('disburse');
@@ -104,21 +109,17 @@ export interface FacilityExposureView extends BucketView {
   staleBlockers: string[];
 }
 
-/** 惰性到期 + 状态裁决 + 可用额推导。写路径传 expire:true（须持锁）。 */
-export async function facilityView(tx: PoolClient, facilityRow: Record<string, unknown>, opts: { expire?: boolean; helpers?: V2Helpers; customerId?: string }): Promise<FacilityExposureView> {
+/** goal-01 P1：视图组装纯函数（桶与依据状态由调用方提供；写路径 facilityView 与批量读路径共用）。 */
+export function buildFacilityView(
+  facilityRow: Record<string, unknown>, buckets: BucketView, basisStale: boolean,
+  _opts: { expire?: boolean } = {},
+): FacilityExposureView {
   const facilityId = facilityRow.facility_id as string;
-  if (opts.expire && opts.helpers && opts.customerId) {
-    await lazyExpire(tx, facilityId, facilityRow.currency as string, opts.customerId, opts.helpers);
-  }
   let status = facilityRow.status as string;
   const effectiveTo = facilityRow.effective_to as string | null;
   if (status === 'active' && effectiveTo !== null && new Date(`${effectiveTo}T23:59:59Z`).getTime() < Date.now()) {
-    if (opts.expire) {
-      await tx.query(`UPDATE credit_facilities SET status='expired', version=version+1, updated_at=now() WHERE facility_id=$1 AND status='active'`, [facilityId]);
-    }
     status = 'expired';
   }
-  const buckets = await computeBuckets(tx, facilityId);
   const approved = Number(facilityRow.approved_amount_minor);
   const revolving = facilityRow.revolving === true;
   const overLimit = buckets.exposureNowMinor > approved;
@@ -135,14 +136,7 @@ export async function facilityView(tx: PoolClient, facilityRow: Record<string, u
   if (coolingActive) blockers.push('cooling_active');
   const hardBlockers = blockers.filter((b) => b !== 'cooling_active');
   // 依据失效阻断新增支用（S4）：basis 评估 stale/非待审 → 新支用 0
-  const basis = facilityRow.basis as { assessmentId?: string } | null;
-  if (basis?.assessmentId) {
-    const a = await tx.query(`SELECT stale, status FROM credit_assessments WHERE assessment_id=$1`, [basis.assessmentId]);
-    const row = a.rows[0] as { stale: boolean; status: string } | undefined;
-    if (row && (row.stale || row.status === 'stale' || row.status === 'superseded' || row.status === 'rejected')) {
-      blockers.push('stale_basis');
-    }
-  }
+  if (basisStale) blockers.push('stale_basis');
   return {
     ...buckets,
     approvedAmountMinor: approved,
@@ -152,6 +146,33 @@ export async function facilityView(tx: PoolClient, facilityRow: Record<string, u
     overLimit,
     staleBlockers: blockers,
   };
+}
+
+/** 依据评估失效判定（facilityView 批量化共用）：评估 stale 或进入确定性否定状态。 */
+function assessmentIsStale(row: { stale: boolean; status: string } | undefined): boolean {
+  return !!row && (row.stale || row.status === 'stale' || row.status === 'superseded' || row.status === 'rejected');
+}
+
+/** 惰性到期 + 状态裁决 + 可用额推导。写路径传 expire:true（须持锁）。 */
+export async function facilityView(tx: PoolClient, facilityRow: Record<string, unknown>, opts: { expire?: boolean; helpers?: V2Helpers; customerId?: string }): Promise<FacilityExposureView> {
+  const facilityId = facilityRow.facility_id as string;
+  if (opts.expire && opts.helpers && opts.customerId) {
+    await lazyExpire(tx, facilityId, facilityRow.currency as string, opts.customerId, opts.helpers);
+  }
+  let status = facilityRow.status as string;
+  const effectiveTo = facilityRow.effective_to as string | null;
+  if (opts.expire && status === 'active' && effectiveTo !== null && new Date(`${effectiveTo}T23:59:59Z`).getTime() < Date.now()) {
+    await tx.query(`UPDATE credit_facilities SET status='expired', version=version+1, updated_at=now() WHERE facility_id=$1 AND status='active'`, [facilityId]);
+    status = 'expired';
+  }
+  const buckets = await computeBuckets(tx, facilityId);
+  const basis = facilityRow.basis as { assessmentId?: string } | null;
+  let basisStale = false;
+  if (basis?.assessmentId) {
+    const a = await tx.query(`SELECT stale, status FROM credit_assessments WHERE assessment_id=$1`, [basis.assessmentId]);
+    basisStale = assessmentIsStale(a.rows[0] as { stale: boolean; status: string } | undefined);
+  }
+  return buildFacilityView({ ...facilityRow, status }, buckets, basisStale, opts);
 }
 
 // ---------------------------------------------------------------------------
@@ -1079,11 +1100,10 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
             `可用额不足：请求 ${amount} 分，可用 ${view.availableForNewDrawMinor} 分`,
             { requestedMinor: amount, availableMinor: view.availableForNewDrawMinor, currency: frRow.currency });
         }
-        // A3.4：预占提交点复查——未决差异先行（REVIEW_REQUIRED），再按依据包/兼容核拦截
-        await assertFrUseGates(tx, cfgRef(), facilityRow, frRow, 'reserve');
+        // A3.4：预占提交点复查——未决差异先行（REVIEW_REQUIRED），再按依据包/兼容核拦截（复用门内视图，不重复聚合）
+        const gateView = await assertFrUseGates(tx, cfgRef(), facilityRow, frRow, 'reserve', view);
         const txId = uuid();
         const ttl = facilityRow.reserve_ttl_seconds as number | null;
-        const after0 = await computeBuckets(tx, frRow.facility_id as string);
         await insertEntry(tx, {
           tenantId: frRow.tenant_id as string, customerId: frRow.customer_id as string, facilityId: frRow.facility_id as string,
           frId, entryType: 'reserve', amountMinor: amount, currency: frRow.currency as string,
@@ -1098,12 +1118,25 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
           actor: ctx.actor, action: 'reservation_placed', targetType: 'financing_request', targetId: frId,
           summary: `预占 ${amount} 分`, payload: { facilityId: frRow.facility_id, txId },
         });
+        // goal-01 P2：同事务内本命令是唯一写者，门内快照 + 本笔增量即提交后状态（与重读聚合逐字段一致）
+        const exposureAfter = {
+          reservedMinor: gateView.reservedMinor + amount,
+          committedMinor: gateView.committedMinor,
+          outstandingMinor: gateView.outstandingMinor,
+          lifetimeDisbursedMinor: gateView.lifetimeDisbursedMinor,
+          exposureNowMinor: gateView.exposureNowMinor + amount,
+          approvedAmountMinor: Number(facilityRow.approved_amount_minor),
+        };
+        for (const v of [exposureAfter.reservedMinor, exposureAfter.exposureNowMinor]) {
+          if (!Number.isSafeInteger(v)) {
+            throw new AppError('INTERNAL', `预占后桶值超出安全整数范围（facility ${frRow.facility_id}）：拒绝推导，不静默舍入`);
+          }
+        }
         await h.emit('RESERVATION_PLACED', frRow.customer_id as string, { frId, facilityId: frRow.facility_id, amountMinor: amount, txId });
         await h.emit('LEDGER_ENTRY_APPENDED', frRow.customer_id as string, { entryType: 'reserve', amountMinor: amount, facilityId: frRow.facility_id, txId });
         await h.emit('USE_READINESS_CHANGED', frRow.customer_id as string,
-          { frId, status: 'reserved', amountMinor: amount, exposure: { ...after0, approvedAmountMinor: Number(facilityRow.approved_amount_minor) } });
-        const after = await computeBuckets(tx, frRow.facility_id as string);
-        return { ok: true, frId, status: 'reserved', exposure: { ...after, approvedAmountMinor: Number(facilityRow.approved_amount_minor) } };
+          { frId, status: 'reserved', amountMinor: amount, exposure: { ...exposureAfter } });
+        return { ok: true, frId, status: 'reserved', exposure: { ...exposureAfter } };
       });
     },
 
@@ -1419,13 +1452,46 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       const client = await kernel.pool.connect();
       try {
         const facilities = await client.query(`SELECT * FROM credit_facilities WHERE customer_id=$1 ORDER BY created_at`, [customerId]);
-        const views: FacilityExposureView[] = [];
-        for (const f of facilities.rows as Record<string, unknown>[]) {
-          views.push(await facilityView(client, f, { expire: false }));
+        const rows = facilities.rows as Record<string, unknown>[];
+        // goal-01 P1：批量桶推导 + 批量依据状态（原 per-facility facilityView 是 O(N) 查询的 N+1）
+        const ids = rows.map((f) => f.facility_id as string);
+        const bucketSums = new Map<string, Record<string, number>>();
+        const basisStaleByFacility = new Map<string, boolean>();
+        if (ids.length > 0) {
+          const bucketRows = await client.query(
+            `SELECT facility_id, entry_type, SUM(amount_minor)::bigint AS total
+             FROM exposure_entries WHERE facility_id = ANY($1) GROUP BY facility_id, entry_type`, [ids]);
+          for (const r of bucketRows.rows as { facility_id: string; entry_type: string; total: string }[]) {
+            const n = Number(r.total);
+            // F12/K16 同口径：不安全整数显式失败，不静默舍入
+            if (!Number.isSafeInteger(n)) {
+              throw new AppError('INTERNAL', `账目聚合超出安全整数范围（facility ${r.facility_id}，${r.entry_type}）：拒绝推导，不静默舍入`);
+            }
+            const m = bucketSums.get(r.facility_id) ?? {};
+            m[r.entry_type] = n;
+            bucketSums.set(r.facility_id, m);
+          }
+          const basisIds = rows
+            .map((f) => (f.basis as { assessmentId?: string } | null)?.assessmentId)
+            .filter((x): x is string => typeof x === 'string');
+          if (basisIds.length > 0) {
+            const basisRows = await client.query(
+              `SELECT assessment_id, stale, status FROM credit_assessments WHERE assessment_id = ANY($1)`, [basisIds]);
+            const byId = new Map<string, { stale: boolean; status: string }>(
+              (basisRows.rows as { assessment_id: string; stale: boolean; status: string }[]).map((r) => [r.assessment_id, { stale: r.stale, status: r.status }]),
+            );
+            for (const f of rows) {
+              const aid = (f.basis as { assessmentId?: string } | null)?.assessmentId;
+              basisStaleByFacility.set(f.facility_id as string, assessmentIsStale(typeof aid === 'string' ? byId.get(aid) : undefined));
+            }
+          }
         }
+        const views: FacilityExposureView[] = rows.map((f) =>
+          buildFacilityView(f, buildBucketView(f.facility_id as string, bucketSums.get(f.facility_id as string) ?? {}),
+            basisStaleByFacility.get(f.facility_id as string) ?? false, { expire: false }));
         return {
           ok: true, customer: projectCustomer(customer),
-          facilities: views.map((v, i) => ({ facilityId: (facilities.rows[i] as Record<string, unknown>).facility_id, ...v })),
+          facilities: views.map((v, i) => ({ facilityId: (rows[i] as Record<string, unknown>).facility_id, ...v })),
           totalsMinor: {
             exposureNow: views.reduce((s, v) => s + v.exposureNowMinor, 0),
             outstanding: views.reduce((s, v) => s + v.outstandingMinor, 0),
@@ -1532,14 +1598,21 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
         for (const row of priorUsed.rows as { evidence_refs: string[] }[]) {
           for (const e of row.evidence_refs ?? []) used.add(String(e));
         }
+        // goal-01 P3：批量校验证据引用（一次 ANY 查询替代逐件查询；校验口径不变）
+        const requestedIds: string[] = [];
+        for (const ref of evidenceRefs) {
+          requestedIds.push(reqString(typeof ref === 'string' ? ref : reqObject(ref, 'evidenceRefs[]').artifactId, 'evidenceRefs[]', 64));
+        }
+        const artRows = await tx.query(
+          `SELECT artifact_id, customer_id, superseded_by, duplicate_of FROM evidence_artifacts WHERE artifact_id = ANY($1)`, [requestedIds]);
+        const artById = new Map<string, Record<string, unknown>>(
+          (artRows.rows as Record<string, unknown>[]).map((r) => [r.artifact_id as string, r]),
+        );
         const normalizedRefs: string[] = [];
         let hasNew = false;
-        for (const ref of evidenceRefs) {
-          const artifactId = reqString(typeof ref === 'string' ? ref : reqObject(ref, 'evidenceRefs[]').artifactId, 'evidenceRefs[]', 64);
-          const art = await tx.query(
-            `SELECT customer_id, superseded_by, duplicate_of FROM evidence_artifacts WHERE artifact_id=$1`, [artifactId]);
-          if (art.rows.length === 0) throw notFound(`证据工件不存在：${artifactId}`);
-          const a = art.rows[0] as Record<string, unknown>;
+        for (const artifactId of requestedIds) {
+          const a = artById.get(artifactId);
+          if (a === undefined) throw notFound(`证据工件不存在：${artifactId}`);
           if (a.customer_id !== customerId) throw notFound('证据工件不属于该客户');
           if (a.superseded_by !== null || a.duplicate_of !== null) throw conflict('ARTIFACT_SUPERSEDED', `证据工件已失效：${artifactId}`);
           normalizedRefs.push(artifactId);
@@ -1612,13 +1685,14 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
 
 /** A3.4/K14/K15：用信提交点机械复查。次序：客户级未决差异（REVIEW_REQUIRED 先行，复核不等待冷却）
  *  → 依据包当前性/Gate（commit 及 reserve；disburse 为已承诺义务的执行，不再重复当前性门）。
- *  冷却不在其列：只影响向上申请/发布（K18），不冻结既有合法用信。 */
+ *  冷却不在其列：只影响向上申请/发布（K18），不冻结既有合法用信。
+ *  goal-01 P2：调用方已持有同事务内 facilityView 时经 viewOverride 复用，避免重复聚合（省 2 查询/命令）。 */
 async function assertFrUseGates(
   tx: PoolClient, cfg: Config, facilityRow: Record<string, unknown>, frRow: Record<string, unknown>,
-  action: 'reserve' | 'commit' | 'disburse',
-): Promise<void> {
+  action: 'reserve' | 'commit' | 'disburse', viewOverride?: FacilityExposureView,
+): Promise<FacilityExposureView> {
   // 设施硬状态（冷却不在其列）：暂停/过期/超限/依据失效 → 无新用信动作
-  const view = await facilityView(tx, facilityRow, { expire: true });
+  const view = viewOverride ?? await facilityView(tx, facilityRow, { expire: true });
   const hard = view.staleBlockers.filter((b) => b !== 'cooling_active');
   if (hard.length > 0) {
     throw conflict(
@@ -1628,13 +1702,14 @@ async function assertFrUseGates(
   }
   await assertNoBlockingFindings(tx, frRow.customer_id as string, 'use_of_funds');
   const basis = facilityRow.basis as { packageId?: string } | null;
-  if (action === 'disburse') return; // 已承诺敞口的执行：不回写历史决定，也不以当前性追溯冻结（K14c）
+  if (action === 'disburse') return view; // 已承诺敞口的执行：不回写历史决定，也不以当前性追溯冻结（K14c）
   if (basis?.packageId) {
     await checkPackageForAction(tx, frRow.customer_id as string, basis.packageId, 'use_of_funds');
   } else if (!cfg.allowLegacyBasis) {
     throw conflict('BASIS_PACKAGE_REQUIRED',
       '存量依据未绑定依据包：用信正式动作阻断（兼容核需显式 --allow-legacy-basis；旧数据只读保留）');
   }
+  return view;
 }
 
 /** 集中度（P-03）：政策版本未配置 → POLICY_PENDING；有关联组且配置组上限 → 合计校验。 */
@@ -1683,11 +1758,19 @@ async function reverifyBasis(tx: PoolClient, facilityRow: Record<string, unknown
   }
   const snap = await tx.query(`SELECT evidence_snapshot FROM credit_assessments WHERE assessment_id=$1`, [basis.assessmentId]);
   const snapshot = (snap.rows[0] as { evidence_snapshot: { artifactId: string }[] }).evidence_snapshot ?? [];
+  // goal-01 P3：快照工件批量取共享锁（一次 ANY 查询替代逐件循环；锁语义不变，封闭 A15 竞态）
+  const ids = snapshot.map((ref) => ref.artifactId);
+  const found = new Map<string, { superseded_by: string | null; duplicate_of: string | null }>();
+  if (ids.length > 0) {
+    const arts = await tx.query(
+      `SELECT artifact_id, superseded_by, duplicate_of FROM evidence_artifacts WHERE artifact_id = ANY($1) FOR SHARE`, [ids]);
+    for (const r of arts.rows as { artifact_id: string; superseded_by: string | null; duplicate_of: string | null }[]) {
+      found.set(r.artifact_id, r);
+    }
+  }
   for (const ref of snapshot) {
-    // FOR SHARE：与 supersede 的 FOR UPDATE 互斥——任一方先提交，另一方即见最新事实（A15 竞态封闭）
-    const art = await tx.query(`SELECT superseded_by, duplicate_of FROM evidence_artifacts WHERE artifact_id=$1 FOR SHARE`, [ref.artifactId]);
-    if (art.rows.length === 0) throw conflict('STALE_BASIS', `快照工件缺失：${ref.artifactId}`);
-    const row = art.rows[0] as { superseded_by: string | null; duplicate_of: string | null };
+    const row = found.get(ref.artifactId);
+    if (row === undefined) throw conflict('STALE_BASIS', `快照工件缺失：${ref.artifactId}`);
     if (row.superseded_by !== null || row.duplicate_of !== null) {
       throw conflict('STALE_BASIS', `快照工件已失效：${ref.artifactId}`, { artifactId: ref.artifactId });
     }

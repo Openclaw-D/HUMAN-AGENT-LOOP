@@ -1,0 +1,196 @@
+{
+  "schemaVersion": "jw.version-seal.v1",
+  "sealedAt": "2026-09-17T16:17:33.763Z",
+  "buildId": "e3b8ab5a10ceda9b",
+  "git": {
+    "gitSha": "1ec0ee4e79a793d1c95363022cb7d06ea04a6a5a",
+    "sourceDirty": true,
+    "dirtyCount": 23,
+    "dirtyPaths": [
+      "Back/A/src/domain/errors.ts",
+      "Back/A/src/domain/inspection.ts",
+      "Back/A/test/inspection-utils.mjs",
+      "Back/B/src/schedule/recalc-planner.mjs",
+      "Back/C/evidence/four-domain-ab-experiment.json",
+      "Back/Connectors/scripts/start-connectors.mjs",
+      "Back/Connectors/src/compose.mjs",
+      "Back/Connectors/src/evidence/a_register.mjs",
+      "Back/Connectors/src/evidence/service.mjs",
+      "Back/Connectors/src/http/server.mjs",
+      "Back/Connectors/src/store/schema.sql",
+      "Back/Edge/src/kernel-store.mjs",
+      "Front/site-mirror/lib/v5-preview/edge/edge-logic.ts",
+      "Back/A/test/evidence-object-match.test.mjs",
+      "Back/C/src/parse/",
+      "Back/Connectors/src/processing/",
+      "Back/Connectors/test/processing-helpers.mjs",
+      "Back/Connectors/test/processing.e2e.mjs",
+      "Back/Edge/scripts/perf-g04.mjs",
+      "Back/Edge/test/e1/e1-g04-fullchain.test.mjs",
+      "Back/Edge/test/e1/g04-chain.mjs",
+      "docs/backend-upgrade/",
+      "docs/customer-next/acceptance/evidence/d25-scan-20260917-161725/"
+    ]
+  },
+  "sourceDigest": {
+    "back": {
+      "files": 326,
+      "sha256": "39f8f44974082a37eb695e64a8d2094fc03db392d3d2a018099b0a66c6f89b74"
+    },
+    "frontSrc": {
+      "files": 8,
+      "sha256": "a08a24c26e0179e022f13de22160117c53a2cb9cfdfcbd797b014c810286925f"
+    }
+  },
+  "dist": {
+    "frontend": {
+      "files": 3,
+      "sha256": "22627a65b03cefe6a92ff36ecb1d3b2fa595cbbeb30fb846aacd17c866004c76"
+    }
+  },
+  "contractVersion": "v1.3",
+  "contractDigest": "2eb24ec34eceb0c036c272d0858112fb29aed830736a12ebd8baad12a332cbf5",
+  "migrationVersion": {
+    "count": 7,
+    "sha256": "c70cfd10783c264cf57ed298f64f9157c2165cc0201acd528b9bfd5f2f36e6ba",
+    "latest": "007_ledger_once.sql"
+  },
+  "rulesetVersion": {
+    "files": 6,
+    "sha256": "f6d81815fb40c4e60f7293a89f35a1c3c339fd921ee5fe3456643692a67a06e2"
+  },
+  "delivery": {
+    "consumedSurface": {
+      "present": true,
+      "schemaVersion": "jw.edge.consumed-surface.v1",
+      "publishedAt": "2026-09-17",
+      "digest": "eb1d8b5c4caa2325933cc6d94c2ea9b4d295bb9fc7a25de7b7fa8b66fbb456f4",
+      "reads": 11,
+      "writes": 13
+    },
+    "rulePack": {
+      "present": true,
+      "rulesetId": null,
+      "version": "1.0.0",
+      "boundary": "simulation_only",
+      "rules": 8,
+      "digest": "a411727ca1b72cf3e903b298628b6ebd34fb2e0a0506a04f8dbf8db4b79a6602"
+    },
+    "fourDomainTools": {
+      "present": true,
+      "toolVersion": "fd-tools@1.0.0",
+      "digest": "eeb253c11953da5a20bd619531e10ca6829d22ece01010b39ad1f58cd441777b"
+    },
+    "lockfiles": {
+      "files": [
+        {
+          "path": "Back/A/package-lock.json",
+          "sha256": "d7e8f1a5271a0d11abef3b81674714f4fb3ba120cd67c98049a486cc9cf301c5"
+        },
+        {
+          "path": "Back/B/package-lock.json",
+          "sha256": "c040d55b66a69b0dfbc2fbf94e8562d98ef200f74d3a227b76ad789049e216ed"
+        },
+        {
+          "path": "Front/package-lock.json",
+          "sha256": "3886e388f37cacd4bfd70604dcbfc4438e3d8ff794022ea703fbde98b58672f8"
+        }
+      ],
+      "zeroDepLanes": [
+        "Back/C",
+        "Back/Edge",
+        "Back/D"
+      ]
+    },
+    "scene": {
+      "threeD": "absent",
+      "note": "本仓 Front 无 Unity/三维场区构建；交付形态为二维页面（任务书前提与实现不符，如实记录）"
+    },
+    "unityBuild": null
+  },
+  "runtime": {
+    "node": "v22.23.1",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "capabilities": {
+    "model": "not_configured",
+    "video": "not_wired",
+    "recording": "not_wired",
+    "policy": "not_wired",
+    "credit": "not_wired",
+    "docker": "available",
+    "note": "能力位逐一独立报告；禁止汇总为 all_ok"
+  },
+  "services": [
+    {
+      "name": "pg-jw-15442",
+      "port": 15442,
+      "open": true,
+      "detail": "tcp connect ok"
+    },
+    {
+      "name": "pg-legacy-15432",
+      "port": 15432,
+      "open": false,
+      "detail": "ECONNREFUSED",
+      "note": "legacy：旧工作区遗留端口，其健康状态不计入 JW 运行版本"
+    },
+    {
+      "name": "front-3618",
+      "port": 3618,
+      "open": true,
+      "detail": "tcp connect ok"
+    },
+    {
+      "name": "kernel-jw-48180",
+      "port": 48180,
+      "open": true,
+      "detail": "tcp connect ok",
+      "health": {
+        "ok": true,
+        "detail": {
+          "status": 200,
+          "ok": true,
+          "db": "up",
+          "model": "not_configured"
+        },
+        "note": "A内核 /healthz 的 ok 字段含 liveness 混淆，业务就绪以 db===up 为准"
+      },
+      "edgeVersionzResponds": false,
+      "notEdge": true
+    },
+    {
+      "name": "kernel-legacy-48080",
+      "port": 48080,
+      "open": true,
+      "detail": "tcp connect ok",
+      "note": "legacy：旧工作区遗留端口，其健康状态不计入 JW 运行版本",
+      "health": {
+        "ok": false,
+        "detail": {
+          "status": 200,
+          "ok": true,
+          "db": "down",
+          "model": "not_configured"
+        },
+        "note": "A内核 /healthz 的 ok 字段含 liveness 混淆，业务就绪以 db===up 为准"
+      },
+      "edgeVersionzResponds": false,
+      "notEdge": true
+    },
+    {
+      "name": "edge-48200",
+      "port": 48200,
+      "open": true,
+      "detail": "tcp connect ok",
+      "health": {
+        "ok": true,
+        "detail": {
+          "status": 200,
+          "ok": true
+        }
+      }
+    }
+  ]
+}

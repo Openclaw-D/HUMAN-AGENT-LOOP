@@ -1,0 +1,38 @@
+{
+  "#cursor": {
+    "eventSeq": 64
+  },
+  "v7d-b25-d25-2:g-mu5siw8u-35297c595e8c:c1-1789665323606": {
+    "status": "submitted",
+    "goalId": "g-mu5siw8u-35297c595e8c",
+    "fencingToken": 1,
+    "startedAt": "2026-09-17T17:15:23.655Z",
+    "leaseUntil": "2026-09-17T17:15:31.644Z",
+    "claimedAt": "2026-09-17T17:15:23.606Z",
+    "outcomeState": "failed",
+    "aGoalVersion": 4,
+    "at": "2026-09-17T17:15:23.763Z"
+  },
+  "v7d-b25-d25-2:g-mu5siw9p-45653e46250b:c1-1789665323655": {
+    "status": "submitted",
+    "goalId": "g-mu5siw9p-45653e46250b",
+    "fencingToken": 1,
+    "startedAt": "2026-09-17T17:15:23.677Z",
+    "leaseUntil": "2026-09-17T17:15:31.666Z",
+    "claimedAt": "2026-09-17T17:15:23.655Z",
+    "outcomeState": "failed",
+    "aGoalVersion": 4,
+    "at": "2026-09-17T17:15:23.831Z"
+  },
+  "v7d-b25-d25-2:g-mu5siwaz-658b8a8b5793:c1-1789665323683": {
+    "status": "submitted",
+    "goalId": "g-mu5siwaz-658b8a8b5793",
+    "fencingToken": 1,
+    "startedAt": "2026-09-17T17:15:23.743Z",
+    "leaseUntil": "2026-09-17T17:15:31.732Z",
+    "claimedAt": "2026-09-17T17:15:23.683Z",
+    "outcomeState": "failed",
+    "aGoalVersion": 4,
+    "at": "2026-09-17T17:15:23.900Z"
+  }
+}

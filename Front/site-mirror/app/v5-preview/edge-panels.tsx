@@ -69,6 +69,9 @@ export function EdgeStatusBar({ edge }: { edge: EdgeLiveApi }) {
       ) : null}
       {edge.error ? <span className="jwEdgeErr" role="alert">{edge.error}</span> : null}
       {edge.reconciling ? <span className="jwEdgeWarn" role="status">关键命令结果未知：对账中（以回执/快照为准，不重复发送）</span> : null}
+      {edge.phase === 'off' ? (
+        <span className="jwEdgeMeta" title="上游暂无授权客户列表接口（IR-03-A①）">客户目录接口未提供：可办客户范围不完整，需手输客户 ID（缺失≠不存在）</span>
+      ) : null}
       {edge.phase === 'live' ? (
         <button type="button" className="jwEdgeBtn" onClick={edge.disconnect}>断开真实后台</button>
       ) : (
@@ -90,7 +93,8 @@ export function EdgeStatusBar({ edge }: { edge: EdgeLiveApi }) {
   );
 }
 
-/** 2) 会话操作条：服务端会话快照驱动；命令经 Edge 动作代理，拒绝原样显示。 */
+/** 2) 会话操作条：服务端会话快照驱动；可用动作优先投影服务端 availableActions（契约以服务端为准），
+ *  未提供时才按 runStatus 本地推导并如实标注；命令经 Edge 动作代理，拒绝原样显示。 */
 export function EdgeSessionBar({ edge }: { edge: EdgeLiveApi }) {
   const [actionError, setActionError] = useState<string | null>(null);
   const [busyAction, setBusyAction] = useState<string | null>(null);
@@ -100,7 +104,7 @@ export function EdgeSessionBar({ edge }: { edge: EdgeLiveApi }) {
   const session = edge.snapshot?.session ?? null;
   if (!session) return null;
   const wait = deriveWaitReason(session);
-  const acts = deriveSessionActions(session);
+  const { acts, fromServer } = deriveSessionActions(session);
   const run = (key: string, path: string) => {
     const ridKey = `${session.sessionId ?? 's'}:${key}`;
     let rid = ridMapRef.current.get(ridKey);
@@ -131,12 +135,13 @@ export function EdgeSessionBar({ edge }: { edge: EdgeLiveApi }) {
     end: `/api/jw/v2/actions/inspections/${encodeURIComponent(session.sessionId ?? '')}/end`,
     close: `/api/jw/v2/actions/inspections/${encodeURIComponent(session.sessionId ?? '')}/close`,
   };
+  const renderable = acts.filter((a) => paths[a.key] !== undefined);
   return (
     <div className="jwEdgeSessionBar" aria-label="检查会话操作条（真实后台）">
       <span className="jwEdgeSessionTitle">{session.title ?? '检查会话'}</span>
       <span className="jwEdgeChip" data-run={session.runStatus}>运行：{session.runStatus ?? '未知'}</span>
       <span className="jwEdgeChip" data-closure={session.closureStatus}>收口：{session.closureStatus ?? '未知'}</span>
-      {acts.map((a) => (
+      {renderable.map((a) => (
         <button
           key={a.key}
           type="button"
@@ -147,6 +152,7 @@ export function EdgeSessionBar({ edge }: { edge: EdgeLiveApi }) {
           {busyAction === a.key ? '提交中…' : a.label}
         </button>
       ))}
+      {!fromServer ? <span className="jwEdgeMeta">（服务端未提供 availableActions：以上为本地推导，仅发起用）</span> : null}
       {wait ? <span className="jwEdgeWait" role="status">等待原因：{wait}</span> : null}
       {actionError ? <span className="jwEdgeErr" role="alert">{actionError}</span> : null}
     </div>

@@ -1,0 +1,57 @@
+{
+  "tier": "D3",
+  "round": 3,
+  "startedAt": "2026-09-17T16:56:10.456Z",
+  "bootMs": 15352,
+  "errors": [],
+  "seedAndStressMs": 72964,
+  "sse": {
+    "reconnects": 3,
+    "resumedWithoutResync": 2,
+    "lastId": "5c06c9e6-e792-4df0-b8b5-ac99e612f25d",
+    "cursorSeen": [
+      "5c06c9e6-e792-4df0-b8b5-ac99e612f25d"
+    ]
+  },
+  "rssPeakKernel": 98873344,
+  "rssPeakEdge": 118693888,
+  "restart1": {
+    "detectDownMs": 5,
+    "recoverOkMs": 348
+  },
+  "restart2": {
+    "detectDownMs": 3,
+    "recoverOkMs": 351
+  },
+  "latencies": {
+    "read": {
+      "n": 1600,
+      "min": 23,
+      "median": 43,
+      "max": 162,
+      "p50": 43,
+      "p95": 62,
+      "note": "n>=20"
+    },
+    "write": {
+      "n": 544,
+      "min": 11,
+      "median": 36,
+      "max": 140,
+      "p50": 36,
+      "p95": 46,
+      "note": "n>=20"
+    },
+    "replay": {
+      "n": 20,
+      "min": 10,
+      "median": 30,
+      "max": 32,
+      "p50": 30,
+      "p95": 32,
+      "note": "n>=20"
+    }
+  },
+  "result": "PASS",
+  "finishedAt": "2026-09-17T16:57:40.645Z"
+}

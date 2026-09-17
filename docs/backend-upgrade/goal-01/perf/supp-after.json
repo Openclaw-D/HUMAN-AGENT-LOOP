@@ -1,0 +1,26 @@
+{
+  "root": "C:\\Users\\22673\\Desktop\\JW\\Back\\A",
+  "at": "2026-09-17T17:32:34.913Z",
+  "requests": 100,
+  "wallMs": 1483.663,
+  "queriesPerRequest": 4,
+  "totalQueries": 400,
+  "statements": [
+    {
+      "query": "SELECT facility_id, entry_type, SUM(amount_minor)::bigint AS total FROM exposure_entries WHERE facility_id = ANY($1) GRO",
+      "calls": 100
+    },
+    {
+      "query": "SELECT assessment_id, stale, status FROM credit_assessments WHERE assessment_id = ANY($1)",
+      "calls": 100
+    },
+    {
+      "query": "SELECT * FROM credit_facilities WHERE customer_id=$1 ORDER BY created_at",
+      "calls": 100
+    },
+    {
+      "query": "SELECT * FROM customers WHERE customer_id=$1",
+      "calls": 100
+    }
+  ]
+}

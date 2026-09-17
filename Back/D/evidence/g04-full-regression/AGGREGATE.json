@@ -1,0 +1,1597 @@
+{
+  "run": "g04-full-regression",
+  "startedUtc": "g04-full-regression",
+  "endedUtc": "2026-09-17T17:17:00.485Z",
+  "suites": [
+    {
+      "file": "g1_surface.test.mjs",
+      "exitCode": 0,
+      "crashed": false,
+      "res": {
+        "suite": "g1_surface",
+        "results": [
+          {
+            "id": "D-01",
+            "title": "四态区分：执行→candidate_ready≠accepted≠decided 全链走通",
+            "severity": "P0",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 44,
+            "failures": [],
+            "ms": 16289,
+            "note": ""
+          },
+          {
+            "id": "D-02",
+            "title": "敏感写失败关闭：不可信凭据403；载荷不得携带授权键；角色不可由输入提升",
+            "severity": "P0",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 59,
+            "failures": [],
+            "ms": 513,
+            "note": ""
+          },
+          {
+            "id": "D-03",
+            "title": "依赖环检测：模板环在实例化前被 400 DEPENDENCY_CYCLE 拒绝且无半状态",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 6,
+            "failures": [],
+            "ms": 32,
+            "note": ""
+          },
+          {
+            "id": "D-05",
+            "title": "乐观版本：陈旧expectedVersion → 409 VERSION_CONFLICT{serverVersion} 非静默覆盖",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 23,
+            "failures": [],
+            "ms": 170,
+            "note": ""
+          }
+        ],
+        "pass": 4,
+        "fail": 0,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 132,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    },
+    {
+      "file": "g2_concurrency_lease.test.mjs",
+      "exitCode": 0,
+      "crashed": false,
+      "res": {
+        "suite": "g2_concurrency_lease",
+        "results": [
+          {
+            "id": "D-06",
+            "title": "两客户端同时领取同一任务：恰一2xx，唯一assignee",
+            "severity": "P0",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 23,
+            "failures": [],
+            "ms": 8311,
+            "note": ""
+          },
+          {
+            "id": "D-07",
+            "title": "两客户端并发提交同目标：恰一成功，版本恰+1，效果不重复",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 26,
+            "failures": [],
+            "ms": 249,
+            "note": ""
+          },
+          {
+            "id": "D-08",
+            "title": "过期租约写回拒绝 + fencing单调：过期complete/旧token均被结构性拒绝且零写副作用",
+            "severity": "P0",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 39,
+            "failures": [],
+            "ms": 10848,
+            "note": ""
+          }
+        ],
+        "pass": 3,
+        "fail": 0,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 88,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    },
+    {
+      "file": "g3_outbox_idem.test.mjs",
+      "exitCode": 0,
+      "crashed": false,
+      "res": {
+        "suite": "g3_outbox_idem",
+        "results": [
+          {
+            "id": "D-09",
+            "title": "outbox与业务写同事务：成功写出事件；失败写零孤儿事件（DB行级核验）",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 26,
+            "failures": [],
+            "ms": 5045,
+            "note": ""
+          },
+          {
+            "id": "D-10",
+            "title": "至少一次投递+重复投递：订阅端500→重投同eventId；业务效果不因重投重复",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 27,
+            "failures": [],
+            "ms": 1265,
+            "note": ""
+          },
+          {
+            "id": "D-11",
+            "title": "requestId幂等：同载荷重放replayed；异载荷409 REQUEST_MISMATCH且第二效果不生效",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 25,
+            "failures": [],
+            "ms": 697,
+            "note": ""
+          },
+          {
+            "id": "D-10b",
+            "title": "v1.0#5订阅边界与死信：常败投递指数退避至dead",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 21,
+            "failures": [],
+            "ms": 5217,
+            "note": ""
+          }
+        ],
+        "pass": 4,
+        "fail": 0,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 99,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    },
+    {
+      "file": "g4_recovery.test.mjs",
+      "exitCode": 1,
+      "crashed": false,
+      "res": {
+        "suite": "g4_recovery",
+        "results": [
+          {
+            "id": "D-13",
+            "title": "杀API重启：目标/待办/证据/回执全量持久，版本不变",
+            "severity": "P0",
+            "owner": "A",
+            "state": "fail",
+            "assertions": 35,
+            "failures": [
+              {
+                "msg": "create template 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "create template ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "create project 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "create project ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "instantiate collect 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "instantiate collect ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "instantiate review 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "instantiate review ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "证据 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "证据 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "claim 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "claim ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "complete 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "complete ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "人工待办 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "人工待办 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "candidate态跨重启",
+                "detail": "{\"expected\":\"candidate_ready\"}"
+              },
+              {
+                "msg": "重启后可写 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "重启后可写 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "重启后待办可回应 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "重启后待办可回应 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              }
+            ],
+            "ms": 4316,
+            "note": ""
+          },
+          {
+            "id": "D-14",
+            "title": "重启DB容器：数据完整、API自动恢复、新写正常",
+            "severity": "P0",
+            "owner": "A",
+            "state": "fail",
+            "assertions": 30,
+            "failures": [
+              {
+                "msg": "create template 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "create template ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "create project 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "create project ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "instantiate collect 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "instantiate collect ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "instantiate review 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "instantiate review ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "证据 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "证据 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "claim 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "claim ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "complete 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "complete ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "人工待办 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "人工待办 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "DB重启后可写 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "DB重启后可写 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              }
+            ],
+            "ms": 32534,
+            "note": ""
+          },
+          {
+            "id": "D-12",
+            "title": "运行中杀worker→恢复续跑：已回执步不重执行、unknown零盲重发（B侧）",
+            "severity": "P0",
+            "owner": "B",
+            "state": "fail",
+            "assertions": 16,
+            "failures": [
+              {
+                "msg": "模板 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "模板 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "项目 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "项目 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "实例化calc任务目标（params透传工具确定性输入,契约§2） 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "实例化calc任务目标（params透传工具确定性输入,契约§2） ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "提证触发ready（含calc工具输入+币种） 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "提证触发ready（含calc工具输入+币种） ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "杀worker后恢复续跑至candidate_ready",
+                "detail": "{\"expected\":\"candidate_ready\"}"
+              }
+            ],
+            "ms": 93099,
+            "note": ""
+          },
+          {
+            "id": "D-15",
+            "title": "checkpoint与worker存储凭据零泄漏（B侧；A侧审计/事件面已由D-23覆盖）",
+            "severity": "P0",
+            "owner": "B",
+            "state": "pass",
+            "assertions": 2,
+            "failures": [],
+            "ms": 1,
+            "note": ""
+          },
+          {
+            "id": "D-12b",
+            "title": "mid-flight击杀：model步8s延迟窗口内SIGKILL→重启→C mock恰收1次调用（零盲重发）+诚实终态",
+            "severity": "P0",
+            "owner": "B",
+            "state": "fail",
+            "assertions": 15,
+            "failures": [
+              {
+                "msg": "模板 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "模板 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "项目 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "项目 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "实例化model目标 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "实例化model目标 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "提证 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "提证 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              }
+            ],
+            "ms": 26615,
+            "note": ""
+          },
+          {
+            "id": "D-27b",
+            "title": "unknown人工恢复端到端：中断→零盲重发→无凭据resume被拒→带凭据retry_step恰一次重发→candidate",
+            "severity": "P0",
+            "owner": "B",
+            "state": "fail",
+            "assertions": 28,
+            "failures": [
+              {
+                "msg": "模板 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "模板 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "项目 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "项目 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "实例化 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "实例化 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "提证 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "提证 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "第二项目（同模板goalKey唯一） 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "第二项目（同模板goalKey唯一） ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "第二个model目标 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "第二个model目标 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "提证2 返回2xx",
+                "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "提证2 ok:true",
+                "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+              },
+              {
+                "msg": "人工授权重发恰一次（run2在resume后恰1次真实调用）",
+                "detail": "{\"actual\":0,\"expected\":1}"
+              },
+              {
+                "msg": "人工恢复后到达candidate_ready",
+                "detail": "{\"expected\":\"candidate_ready\"}"
+              },
+              {
+                "msg": "候选provider=simulation（真实经mock执行的候选）",
+                "detail": "{\"expected\":\"simulation\"}"
+              }
+            ],
+            "ms": 32610,
+            "note": ""
+          }
+        ],
+        "pass": 1,
+        "fail": 5,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 126,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    },
+    {
+      "file": "g5_human_loop.test.mjs",
+      "exitCode": 0,
+      "crashed": false,
+      "res": {
+        "suite": "g5_human_loop",
+        "results": [
+          {
+            "id": "D-16",
+            "title": "人工缺证等待：waiting_human不冻结无关目标；回应后恢复",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 43,
+            "failures": [],
+            "ms": 4280,
+            "note": ""
+          },
+          {
+            "id": "D-17",
+            "title": "人工待办跨重启持久：杀API重启后待办在、可回应生效",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 24,
+            "failures": [],
+            "ms": 1131,
+            "note": ""
+          },
+          {
+            "id": "D-18",
+            "title": "越权回应/验收拒绝：非requestedRole与不可信凭据均403且零状态变化",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 23,
+            "failures": [],
+            "ms": 184,
+            "note": ""
+          }
+        ],
+        "pass": 3,
+        "fail": 0,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 90,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    },
+    {
+      "file": "g6_evidence_invalidation.test.mjs",
+      "exitCode": 0,
+      "crashed": false,
+      "res": {
+        "suite": "g6_evidence_invalidation",
+        "results": [
+          {
+            "id": "D-19",
+            "title": "v1.3两节点：accepted目标stale投影+下游传递可见+状态不变+历史保留",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 33,
+            "failures": [],
+            "ms": 4114,
+            "note": ""
+          },
+          {
+            "id": "D-19b",
+            "title": "v1.3非accepted命中路径：ready目标取代→invalidated→立即重绑回ready；下游随上游再验收恢复ready",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 32,
+            "failures": [],
+            "ms": 368,
+            "note": ""
+          },
+          {
+            "id": "D-19c",
+            "title": "v1.3三级链传递stale：root输入取代→root/middle/leaf全部stale可见，状态全部不变",
+            "severity": "P0",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 57,
+            "failures": [],
+            "ms": 555,
+            "note": ""
+          },
+          {
+            "id": "D-19d",
+            "title": "v1.3复核门：stale目标accept/decide被409 UPSTREAM_STALE拦截（含staleRoots）→staleReviewAck放行→decided历史不改写",
+            "severity": "P0",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 72,
+            "failures": [],
+            "ms": 905,
+            "note": ""
+          },
+          {
+            "id": "D-20",
+            "title": "非法操作边界：取代不存在证据404；重复取代409 EVIDENCE_SUPERSEDED；未知goalKey拒绝",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 26,
+            "failures": [],
+            "ms": 265,
+            "note": ""
+          }
+        ],
+        "pass": 5,
+        "fail": 0,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 220,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    },
+    {
+      "file": "g7_security.test.mjs",
+      "exitCode": 0,
+      "crashed": false,
+      "res": {
+        "suite": "g7_security",
+        "results": [
+          {
+            "id": "D-21",
+            "title": "跨项目隔离：p1-bound principal对p2敏感写全403；正向控制p1可写；开放写按契约明示记录",
+            "severity": "P0",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 38,
+            "failures": [],
+            "ms": 4303,
+            "note": ""
+          },
+          {
+            "id": "D-22",
+            "title": "提示注入不提权：content按契约不作禁用键扫描（惰性存储）；无任何状态/权限副作用",
+            "severity": "P0",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 33,
+            "failures": [],
+            "ms": 389,
+            "note": ""
+          },
+          {
+            "id": "D-23",
+            "title": "凭据异常零泄漏：403响应不回显凭据；SUT日志/DB不落原始凭据",
+            "severity": "P0",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 19,
+            "failures": [],
+            "ms": 51835,
+            "note": ""
+          }
+        ],
+        "pass": 3,
+        "fail": 0,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 90,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    },
+    {
+      "file": "g8_gateway.test.mjs",
+      "exitCode": 1,
+      "crashed": false,
+      "res": {
+        "suite": "g8_gateway",
+        "results": [
+          {
+            "id": "D-24",
+            "title": "模型未配置如实拒绝：real_http→409 MODEL_NOT_CONFIGURED；无静默mock成功",
+            "severity": "P0",
+            "owner": "A",
+            "state": "fail",
+            "assertions": 0,
+            "failures": [
+              {
+                "msg": "exception",
+                "detail": "Error: createdb v7d_g8_sut: createdb: error: database creation failed: ERROR:  database \"v7d_g8_sut\" already exists\n\n    at Module.createDb (file:///C:/Users/22673/Desktop/JW/Back/D/harness/pgctl.mjs:95:11)\n    at async Module.startSut (file:///C:/Users/22673/Desktop/JW/Back/D/harness/sutctl.mjs:31:3)\n    at async sut (file:///C:/Users/22673/Desktop/JW/Back/D/suites/g8_gateway.test.mjs:103:21)\n    at async Object.fn (file:///C:/Users/22673/Desktop/JW/Back/D/suites/g8_gateway.test.mjs:127:17)\n    at async runSuite (file:///C:/Users/22673/Desktop/JW/Back/D/harness/runner.mjs:46:7)"
+              }
+            ],
+            "ms": 4925,
+            "note": "exception"
+          },
+          {
+            "id": "D-26",
+            "title": "mock/real来源强标记：provider字段落库可读；C假API响应带simulation标记头",
+            "severity": "P1",
+            "owner": "A",
+            "state": "pass",
+            "assertions": 26,
+            "failures": [],
+            "ms": 942,
+            "note": ""
+          },
+          {
+            "id": "D-23b",
+            "title": "C假API凭据纪律：请求体含key→anomaly标记；无效key→401掩码不泄漏",
+            "severity": "P1",
+            "owner": "C",
+            "state": "pass",
+            "assertions": 4,
+            "failures": [],
+            "ms": 30,
+            "note": ""
+          },
+          {
+            "id": "D-27p",
+            "title": "unknown探针就绪度：C假API断连场景可注入（D-27 B侧部分留门）",
+            "severity": "P1",
+            "owner": "D",
+            "state": "blocked",
+            "assertions": 2,
+            "failures": [],
+            "ms": 12,
+            "note": "BLOCKED: D-27端到端需B worker（unknown零盲重发是B执行器行为）；探针就绪度已验证"
+          },
+          {
+            "id": "D-25a",
+            "title": "跨进程并发预算门：预算1/1，3 worker同抢3目标→恰1次mock调用，其余诚实失败",
+            "severity": "P0",
+            "owner": "B",
+            "state": "fail",
+            "assertions": 33,
+            "failures": [
+              {
+                "msg": "并发预算门：恰1次模型调用（预算1/1，跨进程不绕过）",
+                "detail": "{\"actual\":0,\"expected\":1}"
+              }
+            ],
+            "ms": 27336,
+            "note": ""
+          },
+          {
+            "id": "D-25b",
+            "title": "账本不可读失败关闭：costLogPath指向目录→0调用+目标诚实失败",
+            "severity": "P0",
+            "owner": "B",
+            "state": "pass",
+            "assertions": 14,
+            "failures": [],
+            "ms": 16736,
+            "note": ""
+          },
+          {
+            "id": "D-25c",
+            "title": "坏账本失败关闭：损坏行+超限有效行→0调用（不静默跳过放行）",
+            "severity": "P0",
+            "owner": "B",
+            "state": "pass",
+            "assertions": 13,
+            "failures": [],
+            "ms": 16742,
+            "note": ""
+          },
+          {
+            "id": "D-25d",
+            "title": "非法预算失败关闭：maxTotalCost为字符串→worker构造即拒绝（exit≠0）且0调用",
+            "severity": "P0",
+            "owner": "B",
+            "state": "pass",
+            "assertions": 11,
+            "failures": [],
+            "ms": 13119,
+            "note": ""
+          },
+          {
+            "id": "D-25e",
+            "title": "预算重启持久：第一笔消耗后重启worker，第二目标BUDGET_EXCEEDED（账本持久不绕过）",
+            "severity": "P0",
+            "owner": "B",
+            "state": "pass",
+            "assertions": 24,
+            "failures": [],
+            "ms": 19273,
+            "note": ""
+          }
+        ],
+        "pass": 6,
+        "fail": 2,
+        "skip": 0,
+        "blocked": 1,
+        "totalAssertions": 127,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    },
+    {
+      "file": "g9_deliverability.test.mjs",
+      "exitCode": 1,
+      "crashed": false,
+      "res": {
+        "suite": "g9_deliverability",
+        "results": [
+          {
+            "id": "D-28",
+            "title": "依赖manifest：assembly/manifest.json覆盖入口传递源图+package.json+lockfile",
+            "severity": "P0",
+            "owner": "A",
+            "state": "fail",
+            "assertions": 7,
+            "failures": [
+              {
+                "msg": "传递源图全部在manifest（含两跳依赖）",
+                "detail": "{\"actual\":8,\"expected\":0}"
+              }
+            ],
+            "ms": 19,
+            "note": ""
+          },
+          {
+            "id": "D-29",
+            "title": "干净目录启动：manifest文件复制到D自有干净目录→安装→迁移→启动→健康",
+            "severity": "P0",
+            "owner": "A",
+            "state": "fail",
+            "assertions": 3,
+            "failures": [
+              {
+                "msg": "exception",
+                "detail": "Error: d-g9-clean-api exited early code=1; log=C:\\Users\\22673\\Desktop\\JW\\Back\\D\\evidence\\g04-full-regression\\g9-clean-api.log\n    at file:///C:/Users/22673/Desktop/JW/Back/D/harness/proc.mjs:32:51"
+              }
+            ],
+            "ms": 4025,
+            "note": "exception"
+          }
+        ],
+        "pass": 0,
+        "fail": 2,
+        "skip": 0,
+        "blocked": 0,
+        "totalAssertions": 10,
+        "runnerError": null
+      },
+      "stderrTail": ""
+    }
+  ],
+  "totals": {
+    "suites": 9,
+    "crashed": 0,
+    "pass": 29,
+    "fail": 9,
+    "skip": 0,
+    "blocked": 1,
+    "totalAssertions": 982
+  },
+  "flat": [
+    {
+      "id": "D-01",
+      "title": "四态区分：执行→candidate_ready≠accepted≠decided 全链走通",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 44,
+      "ms": 16289
+    },
+    {
+      "id": "D-02",
+      "title": "敏感写失败关闭：不可信凭据403；载荷不得携带授权键；角色不可由输入提升",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 59,
+      "ms": 513
+    },
+    {
+      "id": "D-03",
+      "title": "依赖环检测：模板环在实例化前被 400 DEPENDENCY_CYCLE 拒绝且无半状态",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 6,
+      "ms": 32
+    },
+    {
+      "id": "D-05",
+      "title": "乐观版本：陈旧expectedVersion → 409 VERSION_CONFLICT{serverVersion} 非静默覆盖",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 23,
+      "ms": 170
+    },
+    {
+      "id": "D-06",
+      "title": "两客户端同时领取同一任务：恰一2xx，唯一assignee",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 23,
+      "ms": 8311
+    },
+    {
+      "id": "D-07",
+      "title": "两客户端并发提交同目标：恰一成功，版本恰+1，效果不重复",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 26,
+      "ms": 249
+    },
+    {
+      "id": "D-08",
+      "title": "过期租约写回拒绝 + fencing单调：过期complete/旧token均被结构性拒绝且零写副作用",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 39,
+      "ms": 10848
+    },
+    {
+      "id": "D-09",
+      "title": "outbox与业务写同事务：成功写出事件；失败写零孤儿事件（DB行级核验）",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 26,
+      "ms": 5045
+    },
+    {
+      "id": "D-10",
+      "title": "至少一次投递+重复投递：订阅端500→重投同eventId；业务效果不因重投重复",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 27,
+      "ms": 1265
+    },
+    {
+      "id": "D-11",
+      "title": "requestId幂等：同载荷重放replayed；异载荷409 REQUEST_MISMATCH且第二效果不生效",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 25,
+      "ms": 697
+    },
+    {
+      "id": "D-10b",
+      "title": "v1.0#5订阅边界与死信：常败投递指数退避至dead",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 21,
+      "ms": 5217
+    },
+    {
+      "id": "D-13",
+      "title": "杀API重启：目标/待办/证据/回执全量持久，版本不变",
+      "severity": "P0",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 35,
+      "ms": 4316,
+      "failures": [
+        {
+          "msg": "create template 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "create template ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "create project 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "create project ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "instantiate collect 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "instantiate collect ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "instantiate review 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "instantiate review ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "证据 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "证据 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "claim 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "claim ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "complete 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "complete ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "人工待办 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "人工待办 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "candidate态跨重启",
+          "detail": "{\"expected\":\"candidate_ready\"}"
+        },
+        {
+          "msg": "重启后可写 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "重启后可写 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "重启后待办可回应 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "重启后待办可回应 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        }
+      ]
+    },
+    {
+      "id": "D-14",
+      "title": "重启DB容器：数据完整、API自动恢复、新写正常",
+      "severity": "P0",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 30,
+      "ms": 32534,
+      "failures": [
+        {
+          "msg": "create template 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "create template ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "create project 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "create project ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "instantiate collect 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "instantiate collect ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "instantiate review 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "instantiate review ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "证据 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "证据 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "claim 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "claim ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "complete 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "complete ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "人工待办 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "人工待办 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "DB重启后可写 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "DB重启后可写 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        }
+      ]
+    },
+    {
+      "id": "D-12",
+      "title": "运行中杀worker→恢复续跑：已回执步不重执行、unknown零盲重发（B侧）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 16,
+      "ms": 93099,
+      "failures": [
+        {
+          "msg": "模板 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "模板 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "项目 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "项目 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "实例化calc任务目标（params透传工具确定性输入,契约§2） 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "实例化calc任务目标（params透传工具确定性输入,契约§2） ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "提证触发ready（含calc工具输入+币种） 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "提证触发ready（含calc工具输入+币种） ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "杀worker后恢复续跑至candidate_ready",
+          "detail": "{\"expected\":\"candidate_ready\"}"
+        }
+      ]
+    },
+    {
+      "id": "D-15",
+      "title": "checkpoint与worker存储凭据零泄漏（B侧；A侧审计/事件面已由D-23覆盖）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "pass",
+      "assertions": 2,
+      "ms": 1
+    },
+    {
+      "id": "D-12b",
+      "title": "mid-flight击杀：model步8s延迟窗口内SIGKILL→重启→C mock恰收1次调用（零盲重发）+诚实终态",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 15,
+      "ms": 26615,
+      "failures": [
+        {
+          "msg": "模板 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "模板 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "项目 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "项目 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "实例化model目标 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "实例化model目标 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "提证 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "提证 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        }
+      ]
+    },
+    {
+      "id": "D-27b",
+      "title": "unknown人工恢复端到端：中断→零盲重发→无凭据resume被拒→带凭据retry_step恰一次重发→candidate",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 28,
+      "ms": 32610,
+      "failures": [
+        {
+          "msg": "模板 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "模板 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "项目 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "项目 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "实例化 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "实例化 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "提证 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "提证 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "第二项目（同模板goalKey唯一） 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "第二项目（同模板goalKey唯一） ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "第二个model目标 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "第二个model目标 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "提证2 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "提证2 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "人工授权重发恰一次（run2在resume后恰1次真实调用）",
+          "detail": "{\"actual\":0,\"expected\":1}"
+        },
+        {
+          "msg": "人工恢复后到达candidate_ready",
+          "detail": "{\"expected\":\"candidate_ready\"}"
+        },
+        {
+          "msg": "候选provider=simulation（真实经mock执行的候选）",
+          "detail": "{\"expected\":\"simulation\"}"
+        }
+      ]
+    },
+    {
+      "id": "D-16",
+      "title": "人工缺证等待：waiting_human不冻结无关目标；回应后恢复",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 43,
+      "ms": 4280
+    },
+    {
+      "id": "D-17",
+      "title": "人工待办跨重启持久：杀API重启后待办在、可回应生效",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 24,
+      "ms": 1131
+    },
+    {
+      "id": "D-18",
+      "title": "越权回应/验收拒绝：非requestedRole与不可信凭据均403且零状态变化",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 23,
+      "ms": 184
+    },
+    {
+      "id": "D-19",
+      "title": "v1.3两节点：accepted目标stale投影+下游传递可见+状态不变+历史保留",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 33,
+      "ms": 4114
+    },
+    {
+      "id": "D-19b",
+      "title": "v1.3非accepted命中路径：ready目标取代→invalidated→立即重绑回ready；下游随上游再验收恢复ready",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 32,
+      "ms": 368
+    },
+    {
+      "id": "D-19c",
+      "title": "v1.3三级链传递stale：root输入取代→root/middle/leaf全部stale可见，状态全部不变",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 57,
+      "ms": 555
+    },
+    {
+      "id": "D-19d",
+      "title": "v1.3复核门：stale目标accept/decide被409 UPSTREAM_STALE拦截（含staleRoots）→staleReviewAck放行→decided历史不改写",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 72,
+      "ms": 905
+    },
+    {
+      "id": "D-20",
+      "title": "非法操作边界：取代不存在证据404；重复取代409 EVIDENCE_SUPERSEDED；未知goalKey拒绝",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 26,
+      "ms": 265
+    },
+    {
+      "id": "D-21",
+      "title": "跨项目隔离：p1-bound principal对p2敏感写全403；正向控制p1可写；开放写按契约明示记录",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 38,
+      "ms": 4303
+    },
+    {
+      "id": "D-22",
+      "title": "提示注入不提权：content按契约不作禁用键扫描（惰性存储）；无任何状态/权限副作用",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 33,
+      "ms": 389
+    },
+    {
+      "id": "D-23",
+      "title": "凭据异常零泄漏：403响应不回显凭据；SUT日志/DB不落原始凭据",
+      "severity": "P0",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 19,
+      "ms": 51835
+    },
+    {
+      "id": "D-24",
+      "title": "模型未配置如实拒绝：real_http→409 MODEL_NOT_CONFIGURED；无静默mock成功",
+      "severity": "P0",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 0,
+      "ms": 4925,
+      "note": "exception",
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "Error: createdb v7d_g8_sut: createdb: error: database creation failed: ERROR:  database \"v7d_g8_sut\" already exists\n\n    at Module.createDb (file:///C:/Users/22673/Desktop/JW/Back/D/harness/pgctl.mjs:95:11)\n    at async Module.startSut (file:///C:/Users/22673/Desktop/JW/Back/D/harness/sutctl.mjs:31:3)\n    at async sut (file:///C:/Users/22673/Desktop/JW/Back/D/suites/g8_gateway.test.mjs:103:21)\n    at async Object.fn (file:///C:/Users/22673/Desktop/JW/Back/D/suites/g8_gateway.test.mjs:127:17)\n    at async runSuite (file:///C:/Users/22673/Desktop/JW/Back/D/harness/runner.mjs:46:7)"
+        }
+      ]
+    },
+    {
+      "id": "D-26",
+      "title": "mock/real来源强标记：provider字段落库可读；C假API响应带simulation标记头",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 26,
+      "ms": 942
+    },
+    {
+      "id": "D-23b",
+      "title": "C假API凭据纪律：请求体含key→anomaly标记；无效key→401掩码不泄漏",
+      "severity": "P1",
+      "owner": "C",
+      "state": "pass",
+      "assertions": 4,
+      "ms": 30
+    },
+    {
+      "id": "D-27p",
+      "title": "unknown探针就绪度：C假API断连场景可注入（D-27 B侧部分留门）",
+      "severity": "P1",
+      "owner": "D",
+      "state": "blocked",
+      "assertions": 2,
+      "ms": 12,
+      "note": "BLOCKED: D-27端到端需B worker（unknown零盲重发是B执行器行为）；探针就绪度已验证"
+    },
+    {
+      "id": "D-25a",
+      "title": "跨进程并发预算门：预算1/1，3 worker同抢3目标→恰1次mock调用，其余诚实失败",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 33,
+      "ms": 27336,
+      "failures": [
+        {
+          "msg": "并发预算门：恰1次模型调用（预算1/1，跨进程不绕过）",
+          "detail": "{\"actual\":0,\"expected\":1}"
+        }
+      ]
+    },
+    {
+      "id": "D-25b",
+      "title": "账本不可读失败关闭：costLogPath指向目录→0调用+目标诚实失败",
+      "severity": "P0",
+      "owner": "B",
+      "state": "pass",
+      "assertions": 14,
+      "ms": 16736
+    },
+    {
+      "id": "D-25c",
+      "title": "坏账本失败关闭：损坏行+超限有效行→0调用（不静默跳过放行）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "pass",
+      "assertions": 13,
+      "ms": 16742
+    },
+    {
+      "id": "D-25d",
+      "title": "非法预算失败关闭：maxTotalCost为字符串→worker构造即拒绝（exit≠0）且0调用",
+      "severity": "P0",
+      "owner": "B",
+      "state": "pass",
+      "assertions": 11,
+      "ms": 13119
+    },
+    {
+      "id": "D-25e",
+      "title": "预算重启持久：第一笔消耗后重启worker，第二目标BUDGET_EXCEEDED（账本持久不绕过）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "pass",
+      "assertions": 24,
+      "ms": 19273
+    },
+    {
+      "id": "D-28",
+      "title": "依赖manifest：assembly/manifest.json覆盖入口传递源图+package.json+lockfile",
+      "severity": "P0",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 7,
+      "ms": 19,
+      "failures": [
+        {
+          "msg": "传递源图全部在manifest（含两跳依赖）",
+          "detail": "{\"actual\":8,\"expected\":0}"
+        }
+      ]
+    },
+    {
+      "id": "D-29",
+      "title": "干净目录启动：manifest文件复制到D自有干净目录→安装→迁移→启动→健康",
+      "severity": "P0",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 3,
+      "ms": 4025,
+      "note": "exception",
+      "failures": [
+        {
+          "msg": "exception",
+          "detail": "Error: d-g9-clean-api exited early code=1; log=C:\\Users\\22673\\Desktop\\JW\\Back\\D\\evidence\\g04-full-regression\\g9-clean-api.log\n    at file:///C:/Users/22673/Desktop/JW/Back/D/harness/proc.mjs:32:51"
+        }
+      ]
+    }
+  ]
+}

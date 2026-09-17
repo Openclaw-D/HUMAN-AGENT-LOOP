@@ -1,0 +1,44 @@
+{
+  "suite": "g5_human_loop",
+  "results": [
+    {
+      "id": "D-16",
+      "title": "人工缺证等待：waiting_human不冻结无关目标；回应后恢复",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 43,
+      "failures": [],
+      "ms": 4280,
+      "note": ""
+    },
+    {
+      "id": "D-17",
+      "title": "人工待办跨重启持久：杀API重启后待办在、可回应生效",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 24,
+      "failures": [],
+      "ms": 1131,
+      "note": ""
+    },
+    {
+      "id": "D-18",
+      "title": "越权回应/验收拒绝：非requestedRole与不可信凭据均403且零状态变化",
+      "severity": "P1",
+      "owner": "A",
+      "state": "pass",
+      "assertions": 23,
+      "failures": [],
+      "ms": 184,
+      "note": ""
+    }
+  ],
+  "pass": 3,
+  "fail": 0,
+  "skip": 0,
+  "blocked": 0,
+  "totalAssertions": 90,
+  "runnerError": null
+}

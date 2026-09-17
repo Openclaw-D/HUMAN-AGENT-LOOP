@@ -344,3 +344,139 @@ CREATE TABLE IF NOT EXISTS disposition_log (
 CREATE INDEX IF NOT EXISTS idx_events_thread ON communication_events(thread_id, provider_timestamp);
 CREATE INDEX IF NOT EXISTS idx_artifacts_customer ON evidence_artifacts(tenant_id, customer_id);
 CREATE INDEX IF NOT EXISTS idx_inbox_status ON inbox_events(tenant_id, provider, status);
+
+-- ============================================================================
+-- goal-02 · 资料处理与尽调执行链（持久处理任务/解析缓存/四域预审结果/问题准备/成本）
+-- 原则：传输/解压/解析/分析/核验进度分开持久化；中断后从 stage 游标恢复；
+--       去重键含租户+客户+处理版本，不跨客户共用；预审结果=候选（authority=none）。
+-- ============================================================================
+
+-- 修正原件：声明取代关系（旧件保留不改写；下游材料集只取现行件）
+ALTER TABLE evidence_artifacts ADD COLUMN IF NOT EXISTS superseded_by TEXT;
+
+-- 持久处理任务：每登记一件材料一行；stage_cursor=下一待执行阶段
+CREATE TABLE IF NOT EXISTS processing_tasks (
+  task_id TEXT PRIMARY KEY,
+  tenant_id TEXT NOT NULL,
+  customer_id TEXT NOT NULL,
+  evidence_id TEXT NOT NULL,
+  kind TEXT NOT NULL,
+  depth INT NOT NULL DEFAULT 0,                     -- ZIP 解包深度（0=原件）
+  status TEXT NOT NULL DEFAULT 'queued',            -- queued|running|done|failed|needs_followup|skipped_duplicate
+  stage_cursor TEXT NOT NULL DEFAULT 'unzip',       -- unzip|parse|facts|analyze|questions|done
+  attempts INT NOT NULL DEFAULT 0,
+  max_attempts INT NOT NULL DEFAULT 3,
+  leased_until TIMESTAMPTZ,
+  leased_by TEXT,
+  failure_code TEXT,
+  last_error TEXT,
+  note TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (tenant_id, evidence_id)
+);
+CREATE INDEX IF NOT EXISTS idx_ptasks_due ON processing_tasks(status, leased_until);
+CREATE INDEX IF NOT EXISTS idx_ptasks_customer ON processing_tasks(tenant_id, customer_id, status);
+
+-- 阶段运行留痕：传输(HTTP 200)之外的解压/解析/事实/分析/提问/A登记逐段回执
+CREATE TABLE IF NOT EXISTS processing_stage_runs (
+  id BIGSERIAL PRIMARY KEY,
+  tenant_id TEXT NOT NULL,
+  task_id TEXT NOT NULL,
+  stage TEXT NOT NULL,                              -- unzip|parse|facts|analyze|questions|register_a
+  status TEXT NOT NULL,                             -- done|failed|skipped|skipped_duplicate|needs_followup|unknown
+  attempt INT NOT NULL DEFAULT 1,
+  detail JSONB NOT NULL DEFAULT '{}',
+  started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  finished_at TIMESTAMPTZ,
+  UNIQUE (task_id, stage, attempt)
+);
+
+-- 解析缓存：键=租户+客户+内容哈希+解析器版本（不跨客户共用）；同输入恒同产出
+CREATE TABLE IF NOT EXISTS parse_results (
+  parse_key TEXT PRIMARY KEY,
+  tenant_id TEXT NOT NULL,
+  customer_id TEXT NOT NULL,
+  sha256 TEXT NOT NULL,
+  parser_version TEXT NOT NULL,
+  format TEXT,
+  ok BOOLEAN NOT NULL,
+  result JSONB NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_parse_sha ON parse_results(tenant_id, customer_id, sha256);
+
+-- 四域预审域结果（候选，authority=none；键含输入哈希+规则版本+水位）
+CREATE TABLE IF NOT EXISTS domain_analyses (
+  analysis_id TEXT PRIMARY KEY,
+  tenant_id TEXT NOT NULL,
+  customer_id TEXT NOT NULL,
+  domain TEXT NOT NULL,
+  input_hash TEXT NOT NULL,                         -- 域消费面签名（该域实际消费的事实键状态+规则版本），非全量快照哈希
+  snapshot_hash TEXT,
+  watermark_generation INT NOT NULL,
+  ruleset_version TEXT NOT NULL,
+  result JSONB NOT NULL,
+  artifact_refs JSONB NOT NULL DEFAULT '[]',
+  recomputed_because JSONB NOT NULL DEFAULT '[]',
+  processed_version INT NOT NULL DEFAULT 1,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (tenant_id, customer_id, domain, input_hash, ruleset_version)
+);
+
+-- 四域收口（Gate/提问计划/金额候选/下一步）：同输入同规则=同收口（幂等复用）
+CREATE TABLE IF NOT EXISTS analysis_finalizations (
+  fin_id TEXT PRIMARY KEY,
+  tenant_id TEXT NOT NULL,
+  customer_id TEXT NOT NULL,
+  input_hash TEXT NOT NULL,
+  ruleset_version TEXT NOT NULL,
+  watermark_generation INT NOT NULL,
+  gate JSONB NOT NULL,
+  question_plan JSONB NOT NULL,
+  amount_candidate JSONB NOT NULL,
+  next_step JSONB NOT NULL,
+  artifact_refs JSONB NOT NULL DEFAULT '[]',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (tenant_id, customer_id, input_hash, ruleset_version)
+);
+
+-- 问题准备（去重键=对象或事实|期间|目的|受众|回答权限；question_key 为其哈希）
+CREATE TABLE IF NOT EXISTS prepared_questions (
+  question_key TEXT NOT NULL,
+  tenant_id TEXT NOT NULL,
+  customer_id TEXT NOT NULL,
+  binding JSONB NOT NULL,
+  tier TEXT NOT NULL,                               -- auto_outbound|human_gate
+  status TEXT NOT NULL DEFAULT 'suggested',         -- suggested|queued_outbound|sent_ok|send_failed|send_unknown|needs_human|outbound_paused|material_received|answered|verified|cancelled
+  dispatch_generation INT NOT NULL DEFAULT 0,
+  basis_input_hash TEXT,
+  stop_condition TEXT,
+  target_fact TEXT,
+  required_level TEXT,
+  merged_from JSONB NOT NULL DEFAULT '[]',
+  note TEXT,
+  first_seen_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (tenant_id, customer_id, question_key)
+);
+
+-- 成本台账：估算与实际分离；无账单 actual.billKnown=false（未知，不记 0）
+CREATE TABLE IF NOT EXISTS processing_costs (
+  id BIGSERIAL PRIMARY KEY,
+  tenant_id TEXT NOT NULL,
+  customer_id TEXT NOT NULL,
+  task_id TEXT,
+  stage TEXT NOT NULL,
+  estimate JSONB NOT NULL,
+  actual JSONB,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- 暂停旗标与派发代际（暂停=零新外发；在途单列）
+CREATE TABLE IF NOT EXISTS processing_flags (
+  flag_key TEXT PRIMARY KEY,                        -- 'tenant:<t>' | 'customer:<t>:<c>'
+  paused BOOLEAN NOT NULL DEFAULT FALSE,
+  dispatch_generation INT NOT NULL DEFAULT 0,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

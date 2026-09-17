@@ -59,3 +59,10 @@
 - **自验**（隔离栈 PG@15436 + A@17921 + Edge 随机端口；临时脚本在系统 Temp，不入库；不写 Back/Edge/test）：单元 11 项（分桶/撤权断流/反序提交窗口/BigInt 精度/回放分桶隔离）+ 集成 28 项全绿（CSRF 四态、会话交换、权威快照块、SSE 实时+双身份双桶、events-page、消息受众/外发门/目标校验/幂等、会话撤销 401/403、fixture events-page 501）。A 侧为任务01在途版内核（其 createCustomer 已要求可信 principal——消费面已兼容）。Front：typecheck 0 错、vite build 通过、dist 已重建、纯逻辑测试 8/8。
 - **提交任务01 的需求**（upstreamGaps 已登记 consumed-surface）：① 按客户列出 assessments/financing-requests 的权威 GET 端点；② events 的 seq 提交序语义或已提交水位/缺口检测（消除滞后窗口残余风险）。
 - **给任务04 的测试需求**见 `Back/Edge/delivery/TASK03_V02_FIX_REPORT.md` §5（不代写 Back/Edge/test）。
+
+## goal-03 轮（2026-09-17 晚；backend-upgrade 目标框架 · Edge 与工作台数据负责人）
+
+- **C1**：kernel-store 明细缓存（本身份桶内；事件失效+TTL `JW_EDGE_DETAIL_CACHE_MS`，客户主体/敞口/决策面/清单/会话不缓存每请求直查）、同 (客户×身份×凭据) 在途 workspace 合并、`_qCounters` 查询计数；**撤权断流补强**：A 对越权统一 404 → 曾可读桶遇 404 视同撤权 → `CUSTOMER_ACCESS_REVOKED` auth 帧 + 销桶（修复"中途撤权订阅静默失联"）。热 workspace 上游查询 10→7（-30%），热读 p95 295→234ms。
+- **C3**：`--serve-front` 同源受控前端（static.mjs 泛化根挂载 + edge-start 透传）；前端 3×P1 修复（收起按钮根因=line-clamp 下 scrollHeight 恒等于 clientHeight；重连回 live；connect 停旧流+epoch 代际守卫）+ P2（刷新竞态/退避/有界去重/unknown 同 requestId 幂等对账/服务端 availableActions/草稿隔离/定时器清理）；dist 重建（index-C4ixqN64.js）。
+- 验证：run-all 34/34（+7 新用例）、Front 19/19+typecheck、真实栈场景 S1–S6 全过（撤权/重启回补/慢客户端/并行写/后台重启）、真实浏览器回归 10 项（同源入口/回执/拒绝/切客户/刷新/撤权显示/P1-1 两轮稳定/T6=994ms）。
+- 交付文档：`docs/backend-upgrade/goal-03/`（DESIGN/CHANGELOG/TEST_RESULTS/PERF_BEFORE_AFTER/HANDOFF）；接口需求协调 `docs/backend-upgrade/INTERFACE_REQUESTS.md`（IR-03-A①②③ OPEN）。delivery-seed 与 A2 门冲突移交 goal-04（本轮以 `--allow-legacy-basis` 兼容核绕行）。

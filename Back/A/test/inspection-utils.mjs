@@ -180,10 +180,11 @@ export async function scaffold({ base, items = standardItems(), roster = fullRos
 }
 
 /** 注册客户工件（材料登记；回答 evidenceRefs 指向它）。 */
-export async function registerArtifact(base, customerId, kind, content = {}) {
+export async function registerArtifact(base, customerId, kind, content = {}, objectRef = undefined) {
   const call = client(base, T.asset);
   const r = await call('POST', `/api/v2/customers/${customerId}/artifacts`, {
     requestId: uid('art'), tenantId: 't-inspect', kind, content: { takenAt: '2026-09-17T10:00:00Z', ...content },
+    ...(objectRef === undefined ? {} : { objectRef }),
   });
   if (r.status !== 200) throw new Error(`registerArtifact(${kind}) 失败: ${JSON.stringify(r)}`);
   return r.json.artifactId;

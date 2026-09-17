@@ -1,0 +1,30 @@
+{
+  "tier": "D1",
+  "round": 2,
+  "startedAt": "2026-09-17T16:43:01.484Z",
+  "bootMs": 13421,
+  "chainTimersMs": {
+    "t_setup_probe": 121,
+    "t_intake": 96,
+    "t_artifact_register": 42,
+    "t_inspection": 493,
+    "t_gate": 71,
+    "t_package_freeze": 272,
+    "t_domain_result": 599,
+    "t_credit_chain": 230,
+    "t_reserve": 587,
+    "t_reserve_concurrent": 80,
+    "t_stale": 704,
+    "t_recovery": 581
+  },
+  "totalMs": 3877,
+  "meta": {
+    "customerId": "cust-mu5rdmay-dc76571a1742",
+    "facilityId": "fac-mu5rdnpn-9b9ae761ab25",
+    "sseFrames": 61
+  },
+  "latencies": {},
+  "errors": [],
+  "result": "PASS",
+  "finishedAt": "2026-09-17T16:43:31.260Z"
+}

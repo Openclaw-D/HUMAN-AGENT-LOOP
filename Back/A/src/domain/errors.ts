@@ -43,7 +43,9 @@ export type ErrorCode =
   | 'ANALYSIS_RUN_NOT_COMPLETED'   // 409 非完成态运行不得满足必需域（K09）
   | 'LIMIT_INCREASE_IN_FLIGHT'     // 409 客户级提额请求在途唯一（K17）
   | 'LIMIT_INCREASE_WINDOW'        // 409 提额次数窗口/再申请间隔未到（K17/K18）
-  | 'LIMIT_INCREASE_NO_NEW_EVIDENCE'; // 409 无实质新证据的再提额被拒（K17）
+  | 'LIMIT_INCREASE_NO_NEW_EVIDENCE' // 409 无实质新证据的再提额被拒（K17）
+  // ---- goal-01（A1 证据可信性：设备对象锚定匹配）----
+  | 'EVIDENCE_OBJECT_MISMATCH';   // 409 材料锚定对象与核验项锚定对象不一致：设备 B 的照片不满足设备 A 的核验
 
 const HTTP_STATUS: Record<ErrorCode, number> = {
   INVALID_INPUT: 400, FORBIDDEN_KEY: 400, DEPENDENCY_CYCLE: 400,
@@ -65,6 +67,7 @@ const HTTP_STATUS: Record<ErrorCode, number> = {
   REVIEW_REQUIRED: 409, REVIEW_EVIDENCE_REQUIRED: 409, GATE_BLOCKED: 409, COOLING_ACTIVE: 409,
   BASIS_PACKAGE_REQUIRED: 409, ANALYSIS_RUN_NOT_COMPLETED: 409,
   LIMIT_INCREASE_IN_FLIGHT: 409, LIMIT_INCREASE_WINDOW: 409, LIMIT_INCREASE_NO_NEW_EVIDENCE: 409,
+  EVIDENCE_OBJECT_MISMATCH: 409,
 };
 
 export class AppError extends Error {

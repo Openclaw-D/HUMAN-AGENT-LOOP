@@ -58,7 +58,7 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
 
   /** 冻结输入解析（create/revise 共用）。任务01 A2 版：
    *  检查收口引用由服务端解析；Gate 只接受可信服务回执（gateReceiptId）；必需域来自批准政策。 */
-  async function parseFreezeInput(tx: PoolClient, cfg: Config, customerId: string, frame: RequestFrame): Promise<{
+  async function parseFreezeInput(tx: PoolClient, cfg: Config, customerId: string, tenantId: string, frame: RequestFrame): Promise<{
     assessmentId: string | null; inspectionRevision: Record<string, unknown> | null;
     gate: GateInput | null; candidate: Record<string, unknown>; domainDeps: DomainDeps[];
     evidenceRefs: Record<string, unknown>[]; independentProofs: number; snapshotHash: string;
@@ -110,19 +110,38 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
     const policyRequired = new Set(
       (polRows.rows as { domain: string; required: boolean }[]).filter((r) => r.required).map((r) => r.domain),
     );
+    // goal-01 G1（不变量 2）：豁免只收服务端登记引用 {exemptionId}——真实、有效、有权批准的记录。
+    // 自报 approvedBy/domain/scope 字段一律拒绝；批准人/有效期/政策版本由服务端从登记行冻结进包。
     const exemptions: Record<string, unknown>[] = [];
     const exemptedDomains = new Set<string>();
     if (frame.exemptions !== undefined && frame.exemptions !== null) {
       if (!Array.isArray(frame.exemptions)) throw invalid('exemptions 必须是数组');
       for (const e of frame.exemptions as unknown[]) {
         const obj = reqObject(e, 'exemptions[]');
-        const domain = reqString(obj.domain, 'exemptions[].domain', 16);
-        if (!policyRequired.has(domain)) throw invalid(`exemptions[].domain ${domain} 不是政策必需域（无需豁免）`);
+        if (obj.approvedBy !== undefined || obj.domain !== undefined || obj.scope !== undefined) {
+          throw invalid('exemptions[] 只接受 {exemptionId, note?}：豁免不可自报（domain/approvedBy 以服务端登记为准）');
+        }
+        const exemptionId = reqString(obj.exemptionId, 'exemptions[].exemptionId', 64);
+        const rows = await tx.query(`SELECT * FROM domain_exemptions WHERE exemption_id=$1`, [exemptionId]);
+        if (rows.rows.length === 0) throw notFound(`豁免登记不存在：${exemptionId}`);
+        const row = rows.rows[0] as Record<string, unknown>;
+        if (row.tenant_id !== tenantId || row.customer_id !== customerId) throw notFound(`豁免登记不存在：${exemptionId}`);
+        if (row.status !== 'valid') {
+          throw conflict('POLICY_PENDING', `豁免 ${exemptionId} 已撤销：必需域须有结果或另行取得有效豁免`);
+        }
+        if (row.valid_until !== null && new Date(row.valid_until as string).getTime() <= Date.now()) {
+          throw conflict('POLICY_PENDING', `豁免 ${exemptionId} 已过期（validUntil=${row.valid_until}）：必需域须有结果或另行取得有效豁免`);
+        }
+        if (row.policy_version !== policyVersion) {
+          throw conflict('POLICY_PENDING', `豁免 ${exemptionId} 绑定政策 ${row.policy_version} ≠ 当前政策 ${policyVersion}`);
+        }
+        const domain = String(row.domain);
+        if (!policyRequired.has(domain)) throw invalid(`豁免 ${exemptionId} 的域 ${domain} 不是政策必需域（无需豁免）`);
         exemptions.push({
-          domain,
-          reason: reqString(obj.reason, 'exemptions[].reason', 500),
-          approvedBy: reqString(obj.approvedBy, 'exemptions[].approvedBy', 64),
-          scope: reqString(obj.scope ?? 'package', 'exemptions[].scope', 64),
+          exemptionId, domain, scope: row.scope, reason: row.reason,
+          approvedBy: row.approved_by, approvedByRoles: row.approved_by_roles,
+          validUntil: row.valid_until, policyVersion: row.policy_version,
+          note: obj.note === undefined || obj.note === null ? null : reqString(obj.note, 'exemptions[].note', 500),
         });
         exemptedDomains.add(domain);
       }
@@ -309,7 +328,7 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
         const stored = await ctx.replayed(tx);
         if (stored !== null) return stored;
         void customer;
-        const frozen = await parseFreezeInput(tx, cfgRef(), customerId, frame);
+        const frozen = await parseFreezeInput(tx, cfgRef(), customerId, tenantId, frame);
         const latest = await tx.query(
           `SELECT * FROM decision_packages WHERE customer_id=$1 ORDER BY revision DESC LIMIT 1`, [customerId],
         );
@@ -337,7 +356,7 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
         void customer;
         if (base.tenant_id !== tenantId) throw notFound('依据包不存在');
         if (base.status === 'superseded') throw conflict('NOT_READY', '依据包已被更新修订取代：请对最新修订操作');
-        const frozen = await parseFreezeInput(tx, cfgRef(), base.customer_id as string, frame);
+        const frozen = await parseFreezeInput(tx, cfgRef(), base.customer_id as string, tenantId, frame);
         const { packageId: newId_, revision, readiness } = await insertPackage(tx, h, ctx, base.customer_id as string, base, frozen);
         return {
           ok: true, packageId: newId_, revision, basisVersion: `${newId_}:${revision}`,

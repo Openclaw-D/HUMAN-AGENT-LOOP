@@ -48,6 +48,7 @@ export function createEdgeServer({
   messages = null,
   auditSink = null,
   staticHandler = null,
+  frontHandler = null, // goal-03 C3：同源受控前端（--serve-front <dir>；仅非 API 路径，SPA 回退 index.html）
   // CSRF 防护（D17）：额外允许的 Origin（如未来 staging 域名）；默认仅同源（Host 头比对）+ 无头非浏览器客户端
   allowedOrigins = [],
 }) {
@@ -347,6 +348,11 @@ export function createEdgeServer({
           return staticHandler.handle({ res, urlObj });
         }
 
+        // 同源受控前端（goal-03 C3）：只接管非 API/健康/审计路径；API 未知路径保持 JSON 404。
+        if (frontHandler && !pathname.startsWith('/api/') && pathname !== '/versionz' && !pathname.startsWith('/healthz')) {
+          return frontHandler.handle({ res, urlObj });
+        }
+
         return sendJson(res, 404, { ok: false, error: 'NOT_FOUND' });
       }
 
@@ -418,7 +424,7 @@ export async function startEdgeServer({
 }
 
 // 直接运行：node src/server.mjs [--port 48200] [--live] [--kernel-port 48180] [--db-port 15442]
-//           [--auth-file path] [--fixture-auth] [--marker xxx --heartbeat path]
+//           [--auth-file path] [--fixture-auth] [--serve-front <dir>] [--marker xxx --heartbeat path]
 // --live：真实内核投影（kernel-store）+ 会话必需 + 身份目录（--auth-file）+ 凭据服务端映射。
 //         缺 --auth-file 时会话交换失败关闭（不启用 --fixture-auth 即无合成身份）。
 // 默认（无 --live）：fixture 存储语义自检形态（E0 测试兼容），能力位如实标注 not_wired。
@@ -562,11 +568,18 @@ export async function main(argv) {
 
   const harnessDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'D', 'browser-harness', 'public');
   const staticHandler = createStaticHandler({ rootDir: harnessDir });
+  // goal-03 C3 同源受控入口：--serve-front <dir>（如 Front/dist）→ 由 Edge 同源托管前端构建产物。
+  // 默认关闭；CSP connect-src 'self' 不放宽，不改变任何认证/CSRF 语义（同源 POST 走既有判定）。
+  let frontHandler = null;
+  if (args['serve-front'] && typeof args['serve-front'] === 'string') {
+    const frontDir = path.resolve(String(args['serve-front']));
+    frontHandler = createStaticHandler({ rootDir: frontDir, urlPrefix: '' });
+  }
 
   const started = await startEdgeServer({
     port, seal, probes, store,
     auth: scopeAuth,
-    sessionStore, verifyCredential, proxy, messages, auditSink, staticHandler,
+    sessionStore, verifyCredential, proxy, messages, auditSink, staticHandler, frontHandler,
     // CSRF 额外允许源：--allowed-origin 可重复，或 JW_EDGE_ALLOWED_ORIGINS 逗号分隔（staging 域名用）
     allowedOrigins: [
       ...argv.flatMap((a, i) => (a === '--allowed-origin' && argv[i + 1] && !argv[i + 1].startsWith('--') ? [argv[i + 1]] : [])),
@@ -584,6 +597,7 @@ export async function main(argv) {
   }
   console.log('[edge] readiness 目标：A内核 /healthz(db=up) + PG TCP；当前环境未就绪时 /healthz/ready 会如实报 not ready');
   console.log(`[edge] harness: http://127.0.0.1:${started.port}/harness/  fixture-auth=${!live && fixtureVerifier ? 'ON(仅合成演示身份)' : 'OFF(失败关闭)'}`);
+  if (frontHandler) console.log(`[edge] 同源前端：http://127.0.0.1:${started.port}/ ← ${args['serve-front']}（CSP connect-src 'self'，同源部署无需 CORS 配置）`);
 }
 
 // 直接运行入口（node src/server.mjs --port ...）；被 import 时不启动。

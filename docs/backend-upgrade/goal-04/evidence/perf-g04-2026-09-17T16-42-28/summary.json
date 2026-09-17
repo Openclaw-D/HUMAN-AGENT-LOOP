@@ -1,0 +1,22 @@
+{
+  "at": "2026-09-17T16:42:28.729Z",
+  "head": "1ec0ee4 (见 baseline-HEAD.txt)",
+  "tiers": {
+    "D1": [
+      {
+        "round": 1,
+        "result": "PASS",
+        "bootMs": 14853,
+        "totalMs": 4150,
+        "errors": 0
+      },
+      {
+        "round": 2,
+        "result": "PASS",
+        "bootMs": 13421,
+        "totalMs": 3877,
+        "errors": 0
+      }
+    ]
+  }
+}

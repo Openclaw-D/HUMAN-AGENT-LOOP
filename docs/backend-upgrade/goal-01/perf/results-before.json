@@ -1,0 +1,1607 @@
+{
+  "label": "before",
+  "at": "2026-09-17T16:05:56.255Z",
+  "gitCommit": "1ec0ee4",
+  "nodeVersion": "v22.23.1",
+  "httpPort": 17930,
+  "dbUrl": "postgres://goal01:***@127.0.0.1:15446/goal01_perf",
+  "kernelArgs": "合成开发矩阵 matrix-dev-synthetic-1 / conc-dev-synthetic-1 / --allow-legacy-basis",
+  "load": {
+    "N_CUSTOMERS": 4,
+    "N_FRS_EACH": 60,
+    "N_FACILITIES_BIG": 20,
+    "BIG_FAC_AMOUNT": 40000000,
+    "PROPOSE_N": 40,
+    "PROPOSE_AMOUNT": 1000000,
+    "FR_AMOUNT": 100000,
+    "CYCLES": 60,
+    "READ_N": 100,
+    "CONC_DISTINCT": 24,
+    "CONC_SAME_FR": 12
+  },
+  "phases": {
+    "w1_use_chain": {
+      "chains": 60,
+      "wallMs": 5875,
+      "latencies": {
+        "reserve": {
+          "n": 60,
+          "mean": 22.434,
+          "p50": 21.923,
+          "p90": 23.475,
+          "p95": 25.526,
+          "p99": 39.227,
+          "max": 39.227
+        },
+        "commit": {
+          "n": 60,
+          "mean": 26.848,
+          "p50": 27.608,
+          "p90": 28.888,
+          "p95": 29.277,
+          "p99": 30.571,
+          "max": 30.571
+        },
+        "disburse": {
+          "n": 60,
+          "mean": 26.583,
+          "p50": 30.244,
+          "p90": 31.361,
+          "p95": 31.684,
+          "p99": 39.133,
+          "max": 39.133
+        },
+        "settle": {
+          "n": 60,
+          "mean": 21.927,
+          "p50": 26.942,
+          "p90": 28.248,
+          "p95": 28.604,
+          "p99": 29.958,
+          "max": 29.958
+        }
+      },
+      "errors": 0
+    },
+    "w2_approve_activate": {
+      "latencies": {
+        "approve": {
+          "n": 40,
+          "mean": 16.233,
+          "p50": 16.076,
+          "p90": 17.49,
+          "p95": 17.835,
+          "p99": 21.461,
+          "max": 21.461
+        },
+        "activate": {
+          "n": 40,
+          "mean": 14.391,
+          "p50": 14.383,
+          "p90": 15.117,
+          "p95": 15.381,
+          "p99": 18.458,
+          "max": 18.458
+        }
+      },
+      "errors": 0
+    },
+    "r_reads": {
+      "customer_get": {
+        "n": 100,
+        "mean": 14.413,
+        "p50": 15.354,
+        "p90": 16.001,
+        "p95": 16.275,
+        "p99": 16.362,
+        "max": 16.611,
+        "errors": 0
+      },
+      "exposure_normal_1fac": {
+        "n": 100,
+        "mean": 14.235,
+        "p50": 15.27,
+        "p90": 16.06,
+        "p95": 16.311,
+        "p99": 17.23,
+        "max": 17.503,
+        "errors": 0
+      },
+      "exposure_big_20fac": {
+        "n": 100,
+        "mean": 91.092,
+        "p50": 91.656,
+        "p90": 95.685,
+        "p95": 97.042,
+        "p99": 105.513,
+        "max": 114.478,
+        "errors": 0
+      },
+      "artifacts_list_big": {
+        "n": 100,
+        "mean": 14.563,
+        "p50": 15.371,
+        "p90": 16.083,
+        "p95": 16.445,
+        "p99": 19.031,
+        "max": 19.399,
+        "errors": 0
+      },
+      "facility_get": {
+        "n": 100,
+        "mean": 14.166,
+        "p50": 15.269,
+        "p90": 15.831,
+        "p95": 16.007,
+        "p99": 16.417,
+        "max": 16.593,
+        "errors": 0
+      },
+      "use_readiness": {
+        "n": 100,
+        "mean": 13.573,
+        "p50": 15.306,
+        "p90": 15.978,
+        "p95": 16.184,
+        "p99": 16.825,
+        "max": 16.851,
+        "errors": 0
+      },
+      "decision_status": {
+        "n": 100,
+        "mean": 14.682,
+        "p50": 15.408,
+        "p90": 15.789,
+        "p95": 16.176,
+        "p99": 17.214,
+        "max": 19.715,
+        "errors": 0
+      }
+    },
+    "db_writes_total": {
+      "topByTime": [
+        {
+          "query": "INSERT INTO outbox_events (event_id, event_type, customer_id, payload) VALUES ($1,$2,$3,$4)",
+          "calls": 760,
+          "totalMs": 25.595,
+          "avgMs": 0.034
+        },
+        {
+          "query": "SELECT entry_type, SUM(amount_minor)::bigint AS total FROM exposure_entries WHERE facility_id=$1 GROUP BY entry_type",
+          "calls": 360,
+          "totalMs": 20.781,
+          "avgMs": 0.058
+        },
+        {
+          "query": "INSERT INTO exposure_entries (entry_id, tenant_id, customer_id, facility_id, fr_id, entry_type, amount_minor, currency, request_scope, reque",
+          "calls": 240,
+          "totalMs": 12.897,
+          "avgMs": 0.054
+        },
+        {
+          "query": "SELECT * FROM credit_facilities WHERE facility_id=$1 FOR UPDATE",
+          "calls": 320,
+          "totalMs": 7.916,
+          "avgMs": 0.025
+        },
+        {
+          "query": "INSERT INTO v2_idempotency (scope_hash, request_id, tenant_id, principal_id, action, payload_sha256, response) VALUES ($1,$2,$3,$4,$5,$6,$7)",
+          "calls": 320,
+          "totalMs": 7.053,
+          "avgMs": 0.022
+        },
+        {
+          "query": "SELECT * FROM financing_requests WHERE fr_id=$1",
+          "calls": 240,
+          "totalMs": 5.404,
+          "avgMs": 0.023
+        },
+        {
+          "query": "INSERT INTO audit_events (actor_principal_id, action, target_type, target_id, project_id, summary, payload_sha256) VALUES ($1,$2,$3,$4,$5,$6",
+          "calls": 320,
+          "totalMs": 5.133,
+          "avgMs": 0.016
+        },
+        {
+          "query": "SELECT * FROM customers WHERE customer_id=$1 FOR UPDATE",
+          "calls": 320,
+          "totalMs": 4.694,
+          "avgMs": 0.015
+        },
+        {
+          "query": "SELECT * FROM financing_requests WHERE fr_id=$1 FOR UPDATE",
+          "calls": 240,
+          "totalMs": 3.647,
+          "avgMs": 0.015
+        },
+        {
+          "query": "SELECT stale, status FROM credit_assessments WHERE assessment_id=$1",
+          "calls": 240,
+          "totalMs": 3.442,
+          "avgMs": 0.014
+        },
+        {
+          "query": "SELECT response, payload_sha256 FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2",
+          "calls": 320,
+          "totalMs": 3.193,
+          "avgMs": 0.01
+        },
+        {
+          "query": "UPDATE financing_requests SET status=$3, external_state=$4, external_ref=$2, version=version+$5, updated_at=now() WHERE fr_id=$1",
+          "calls": 60,
+          "totalMs": 2.575,
+          "avgMs": 0.043
+        },
+        {
+          "query": "UPDATE financing_requests SET status=$2, reserved_until=$3, version=version+$4, updated_at=now() WHERE fr_id=$1",
+          "calls": 60,
+          "totalMs": 2.567,
+          "avgMs": 0.043
+        },
+        {
+          "query": "UPDATE financing_requests SET status=$2, version=version+$3, updated_at=now() WHERE fr_id=$1",
+          "calls": 60,
+          "totalMs": 2.551,
+          "avgMs": 0.043
+        },
+        {
+          "query": "UPDATE financing_requests SET status=$3, reserved_until = CASE WHEN $2::int IS NULL THEN $4 ELSE now() + make_interval(secs => $2::int) END,",
+          "calls": 60,
+          "totalMs": 2.479,
+          "avgMs": 0.041
+        },
+        {
+          "query": "SELECT payload_sha256, response FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2 FOR UPDATE",
+          "calls": 320,
+          "totalMs": 2.316,
+          "avgMs": 0.007
+        },
+        {
+          "query": "SELECT request_scope, request_id FROM exposure_entries WHERE fr_id=$1 AND entry_type=$2 ORDER BY seq DESC LIMIT $3",
+          "calls": 180,
+          "totalMs": 2.3,
+          "avgMs": 0.013
+        },
+        {
+          "query": "WITH victims AS ( SELECT fr.fr_id, e.amount_minor, e.request_scope, e.request_id, e.actor FROM financing_requests fr JOIN exposure_entries e",
+          "calls": 60,
+          "totalMs": 2.225,
+          "avgMs": 0.037
+        },
+        {
+          "query": "INSERT INTO decision_records (decision_id, tenant_id, actor_principal, actor_kind, role_ref, permission_ref, action, subject_type, subject_i",
+          "calls": 80,
+          "totalMs": 1.405,
+          "avgMs": 0.018
+        },
+        {
+          "query": "UPDATE credit_facilities SET status=$3, approval_chain=$2::jsonb, version=version+$4, updated_at=now() WHERE facility_id=$1",
+          "calls": 40,
+          "totalMs": 1.327,
+          "avgMs": 0.033
+        },
+        {
+          "query": "UPDATE credit_facilities SET status=$2, version=version+$3, updated_at=now() WHERE facility_id=$1",
+          "calls": 40,
+          "totalMs": 1.301,
+          "avgMs": 0.033
+        },
+        {
+          "query": "SELECT tenant_id, customer_id FROM credit_facilities WHERE facility_id=$1",
+          "calls": 80,
+          "totalMs": 1.204,
+          "avgMs": 0.015
+        },
+        {
+          "query": "SELECT status, stale, snapshot_hash FROM credit_assessments WHERE assessment_id=$1 FOR UPDATE",
+          "calls": 80,
+          "totalMs": 1.028,
+          "avgMs": 0.013
+        },
+        {
+          "query": "SELECT COALESCE(SUM(approved_amount_minor),$3)::bigint AS total FROM credit_facilities WHERE customer_id=$1 AND status IN ($4,$5,$6,$7) AND ",
+          "calls": 40,
+          "totalMs": 0.951,
+          "avgMs": 0.024
+        },
+        {
+          "query": "SELECT role, max_amount_minor FROM permission_matrix WHERE matrix_version=$1 AND action=$2 AND allowed=$4 AND role = ANY($3) ORDER BY max_am",
+          "calls": 80,
+          "totalMs": 0.94,
+          "avgMs": 0.012
+        }
+      ],
+      "topByCalls": [
+        {
+          "query": "INSERT INTO outbox_events (event_id, event_type, customer_id, payload) VALUES ($1,$2,$3,$4)",
+          "calls": 760,
+          "totalMs": 25.595,
+          "avgMs": 0.034
+        },
+        {
+          "query": "SELECT entry_type, SUM(amount_minor)::bigint AS total FROM exposure_entries WHERE facility_id=$1 GROUP BY entry_type",
+          "calls": 360,
+          "totalMs": 20.781,
+          "avgMs": 0.058
+        },
+        {
+          "query": "SELECT * FROM credit_facilities WHERE facility_id=$1 FOR UPDATE",
+          "calls": 320,
+          "totalMs": 7.916,
+          "avgMs": 0.025
+        },
+        {
+          "query": "INSERT INTO v2_idempotency (scope_hash, request_id, tenant_id, principal_id, action, payload_sha256, response) VALUES ($1,$2,$3,$4,$5,$6,$7)",
+          "calls": 320,
+          "totalMs": 7.053,
+          "avgMs": 0.022
+        },
+        {
+          "query": "INSERT INTO audit_events (actor_principal_id, action, target_type, target_id, project_id, summary, payload_sha256) VALUES ($1,$2,$3,$4,$5,$6",
+          "calls": 320,
+          "totalMs": 5.133,
+          "avgMs": 0.016
+        },
+        {
+          "query": "SELECT * FROM customers WHERE customer_id=$1 FOR UPDATE",
+          "calls": 320,
+          "totalMs": 4.694,
+          "avgMs": 0.015
+        },
+        {
+          "query": "SELECT response, payload_sha256 FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2",
+          "calls": 320,
+          "totalMs": 3.193,
+          "avgMs": 0.01
+        },
+        {
+          "query": "SELECT payload_sha256, response FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2 FOR UPDATE",
+          "calls": 320,
+          "totalMs": 2.316,
+          "avgMs": 0.007
+        },
+        {
+          "query": "BEGIN",
+          "calls": 320,
+          "totalMs": 0.208,
+          "avgMs": 0.001
+        },
+        {
+          "query": "COMMIT",
+          "calls": 320,
+          "totalMs": 0.187,
+          "avgMs": 0.001
+        },
+        {
+          "query": "SELECT finding_id, finding_type, impact_scope, rule_ref FROM decision_findings WHERE customer_id=$1 AND status=$2",
+          "calls": 260,
+          "totalMs": 0.684,
+          "avgMs": 0.003
+        },
+        {
+          "query": "INSERT INTO exposure_entries (entry_id, tenant_id, customer_id, facility_id, fr_id, entry_type, amount_minor, currency, request_scope, reque",
+          "calls": 240,
+          "totalMs": 12.897,
+          "avgMs": 0.054
+        },
+        {
+          "query": "SELECT * FROM financing_requests WHERE fr_id=$1",
+          "calls": 240,
+          "totalMs": 5.404,
+          "avgMs": 0.023
+        },
+        {
+          "query": "SELECT * FROM financing_requests WHERE fr_id=$1 FOR UPDATE",
+          "calls": 240,
+          "totalMs": 3.647,
+          "avgMs": 0.015
+        },
+        {
+          "query": "SELECT stale, status FROM credit_assessments WHERE assessment_id=$1",
+          "calls": 240,
+          "totalMs": 3.442,
+          "avgMs": 0.014
+        },
+        {
+          "query": "SELECT request_scope, request_id FROM exposure_entries WHERE fr_id=$1 AND entry_type=$2 ORDER BY seq DESC LIMIT $3",
+          "calls": 180,
+          "totalMs": 2.3,
+          "avgMs": 0.013
+        },
+        {
+          "query": "INSERT INTO decision_records (decision_id, tenant_id, actor_principal, actor_kind, role_ref, permission_ref, action, subject_type, subject_i",
+          "calls": 80,
+          "totalMs": 1.405,
+          "avgMs": 0.018
+        },
+        {
+          "query": "SELECT tenant_id, customer_id FROM credit_facilities WHERE facility_id=$1",
+          "calls": 80,
+          "totalMs": 1.204,
+          "avgMs": 0.015
+        },
+        {
+          "query": "SELECT status, stale, snapshot_hash FROM credit_assessments WHERE assessment_id=$1 FOR UPDATE",
+          "calls": 80,
+          "totalMs": 1.028,
+          "avgMs": 0.013
+        },
+        {
+          "query": "SELECT role, max_amount_minor FROM permission_matrix WHERE matrix_version=$1 AND action=$2 AND allowed=$4 AND role = ANY($3) ORDER BY max_am",
+          "calls": 80,
+          "totalMs": 0.94,
+          "avgMs": 0.012
+        },
+        {
+          "query": "SELECT evidence_snapshot FROM credit_assessments WHERE assessment_id=$1",
+          "calls": 80,
+          "totalMs": 0.819,
+          "avgMs": 0.01
+        },
+        {
+          "query": "UPDATE financing_requests SET status=$3, external_state=$4, external_ref=$2, version=version+$5, updated_at=now() WHERE fr_id=$1",
+          "calls": 60,
+          "totalMs": 2.575,
+          "avgMs": 0.043
+        },
+        {
+          "query": "UPDATE financing_requests SET status=$2, reserved_until=$3, version=version+$4, updated_at=now() WHERE fr_id=$1",
+          "calls": 60,
+          "totalMs": 2.567,
+          "avgMs": 0.043
+        },
+        {
+          "query": "UPDATE financing_requests SET status=$2, version=version+$3, updated_at=now() WHERE fr_id=$1",
+          "calls": 60,
+          "totalMs": 2.551,
+          "avgMs": 0.043
+        },
+        {
+          "query": "UPDATE financing_requests SET status=$3, reserved_until = CASE WHEN $2::int IS NULL THEN $4 ELSE now() + make_interval(secs => $2::int) END,",
+          "calls": 60,
+          "totalMs": 2.479,
+          "avgMs": 0.041
+        }
+      ],
+      "totalQueries": 5902,
+      "xactCommit": 635,
+      "xactRollback": 0,
+      "deadlocks": 0,
+      "blksRead": 0
+    },
+    "c1_barrier_distinct_fr": {
+      "workers": 24,
+      "wallMs": 385.524,
+      "outcomes": {
+        "200": 24
+      },
+      "reserveLatency": {
+        "n": 24,
+        "mean": 212.843,
+        "p50": 206.745,
+        "p90": 354.214,
+        "p95": 368.262,
+        "p99": 383.148,
+        "max": 383.148
+      },
+      "lockSampling": {
+        "intervalMs": 10,
+        "samples": 26,
+        "avgWaiting": 5.692,
+        "maxWaiting": 8,
+        "waitSampleMs": 1480,
+        "approxWaitRatio": 1
+      },
+      "db": {
+        "topByTime": [
+          {
+            "query": "SELECT * FROM customers WHERE customer_id=$1 FOR UPDATE",
+            "calls": 24,
+            "totalMs": 2481.132,
+            "avgMs": 103.381
+          },
+          {
+            "query": "INSERT INTO outbox_events (event_id, event_type, customer_id, payload) VALUES ($1,$2,$3,$4)",
+            "calls": 72,
+            "totalMs": 3.14,
+            "avgMs": 0.044
+          },
+          {
+            "query": "SELECT entry_type, SUM(amount_minor)::bigint AS total FROM exposure_entries WHERE facility_id=$1 GROUP BY entry_type",
+            "calls": 96,
+            "totalMs": 1.927,
+            "avgMs": 0.02
+          },
+          {
+            "query": "SELECT count(*)::int AS waiting FROM pg_stat_activity WHERE datname=$1 AND wait_event_type=$2",
+            "calls": 26,
+            "totalMs": 1.901,
+            "avgMs": 0.073
+          },
+          {
+            "query": "INSERT INTO exposure_entries (entry_id, tenant_id, customer_id, facility_id, fr_id, entry_type, amount_minor, currency, request_scope, reque",
+            "calls": 24,
+            "totalMs": 1.796,
+            "avgMs": 0.075
+          },
+          {
+            "query": "UPDATE financing_requests SET status=$3, reserved_until = CASE WHEN $2::int IS NULL THEN $4 ELSE now() + make_interval(secs => $2::int) END,",
+            "calls": 24,
+            "totalMs": 1.327,
+            "avgMs": 0.055
+          },
+          {
+            "query": "INSERT INTO v2_idempotency (scope_hash, request_id, tenant_id, principal_id, action, payload_sha256, response) VALUES ($1,$2,$3,$4,$5,$6,$7)",
+            "calls": 24,
+            "totalMs": 0.893,
+            "avgMs": 0.037
+          },
+          {
+            "query": "WITH victims AS ( SELECT fr.fr_id, e.amount_minor, e.request_scope, e.request_id, e.actor FROM financing_requests fr JOIN exposure_entries e",
+            "calls": 24,
+            "totalMs": 0.877,
+            "avgMs": 0.037
+          },
+          {
+            "query": "INSERT INTO audit_events (actor_principal_id, action, target_type, target_id, project_id, summary, payload_sha256) VALUES ($1,$2,$3,$4,$5,$6",
+            "calls": 24,
+            "totalMs": 0.755,
+            "avgMs": 0.031
+          },
+          {
+            "query": "SELECT * FROM credit_facilities WHERE facility_id=$1 FOR UPDATE",
+            "calls": 24,
+            "totalMs": 0.696,
+            "avgMs": 0.029
+          },
+          {
+            "query": "SELECT stale, status FROM credit_assessments WHERE assessment_id=$1",
+            "calls": 48,
+            "totalMs": 0.606,
+            "avgMs": 0.013
+          },
+          {
+            "query": "SELECT * FROM financing_requests WHERE fr_id=$1",
+            "calls": 24,
+            "totalMs": 0.512,
+            "avgMs": 0.021
+          },
+          {
+            "query": "SELECT * FROM financing_requests WHERE fr_id=$1 FOR UPDATE",
+            "calls": 24,
+            "totalMs": 0.501,
+            "avgMs": 0.021
+          },
+          {
+            "query": "SELECT response, payload_sha256 FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2",
+            "calls": 24,
+            "totalMs": 0.335,
+            "avgMs": 0.014
+          },
+          {
+            "query": "SELECT payload_sha256, response FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2 FOR UPDATE",
+            "calls": 24,
+            "totalMs": 0.191,
+            "avgMs": 0.008
+          },
+          {
+            "query": "SELECT query, calls, total_exec_time FROM pg_stat_statements",
+            "calls": 1,
+            "totalMs": 0.145,
+            "avgMs": 0.145
+          },
+          {
+            "query": "SELECT finding_id, finding_type, impact_scope, rule_ref FROM decision_findings WHERE customer_id=$1 AND status=$2",
+            "calls": 24,
+            "totalMs": 0.055,
+            "avgMs": 0.002
+          },
+          {
+            "query": "COMMIT",
+            "calls": 24,
+            "totalMs": 0.011,
+            "avgMs": 0
+          },
+          {
+            "query": "SELECT xact_commit, xact_rollback, deadlocks, blks_hit, blks_read FROM pg_stat_database WHERE datname=$1",
+            "calls": 1,
+            "totalMs": 0.011,
+            "avgMs": 0.011
+          },
+          {
+            "query": "BEGIN",
+            "calls": 24,
+            "totalMs": 0.009,
+            "avgMs": 0
+          }
+        ],
+        "topByCalls": [
+          {
+            "query": "SELECT entry_type, SUM(amount_minor)::bigint AS total FROM exposure_entries WHERE facility_id=$1 GROUP BY entry_type",
+            "calls": 96,
+            "totalMs": 1.927,
+            "avgMs": 0.02
+          },
+          {
+            "query": "INSERT INTO outbox_events (event_id, event_type, customer_id, payload) VALUES ($1,$2,$3,$4)",
+            "calls": 72,
+            "totalMs": 3.14,
+            "avgMs": 0.044
+          },
+          {
+            "query": "SELECT stale, status FROM credit_assessments WHERE assessment_id=$1",
+            "calls": 48,
+            "totalMs": 0.606,
+            "avgMs": 0.013
+          },
+          {
+            "query": "SELECT count(*)::int AS waiting FROM pg_stat_activity WHERE datname=$1 AND wait_event_type=$2",
+            "calls": 26,
+            "totalMs": 1.901,
+            "avgMs": 0.073
+          },
+          {
+            "query": "SELECT * FROM customers WHERE customer_id=$1 FOR UPDATE",
+            "calls": 24,
+            "totalMs": 2481.132,
+            "avgMs": 103.381
+          },
+          {
+            "query": "INSERT INTO exposure_entries (entry_id, tenant_id, customer_id, facility_id, fr_id, entry_type, amount_minor, currency, request_scope, reque",
+            "calls": 24,
+            "totalMs": 1.796,
+            "avgMs": 0.075
+          },
+          {
+            "query": "UPDATE financing_requests SET status=$3, reserved_until = CASE WHEN $2::int IS NULL THEN $4 ELSE now() + make_interval(secs => $2::int) END,",
+            "calls": 24,
+            "totalMs": 1.327,
+            "avgMs": 0.055
+          },
+          {
+            "query": "INSERT INTO v2_idempotency (scope_hash, request_id, tenant_id, principal_id, action, payload_sha256, response) VALUES ($1,$2,$3,$4,$5,$6,$7)",
+            "calls": 24,
+            "totalMs": 0.893,
+            "avgMs": 0.037
+          },
+          {
+            "query": "WITH victims AS ( SELECT fr.fr_id, e.amount_minor, e.request_scope, e.request_id, e.actor FROM financing_requests fr JOIN exposure_entries e",
+            "calls": 24,
+            "totalMs": 0.877,
+            "avgMs": 0.037
+          },
+          {
+            "query": "INSERT INTO audit_events (actor_principal_id, action, target_type, target_id, project_id, summary, payload_sha256) VALUES ($1,$2,$3,$4,$5,$6",
+            "calls": 24,
+            "totalMs": 0.755,
+            "avgMs": 0.031
+          },
+          {
+            "query": "SELECT * FROM credit_facilities WHERE facility_id=$1 FOR UPDATE",
+            "calls": 24,
+            "totalMs": 0.696,
+            "avgMs": 0.029
+          },
+          {
+            "query": "SELECT * FROM financing_requests WHERE fr_id=$1",
+            "calls": 24,
+            "totalMs": 0.512,
+            "avgMs": 0.021
+          },
+          {
+            "query": "SELECT * FROM financing_requests WHERE fr_id=$1 FOR UPDATE",
+            "calls": 24,
+            "totalMs": 0.501,
+            "avgMs": 0.021
+          },
+          {
+            "query": "SELECT response, payload_sha256 FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2",
+            "calls": 24,
+            "totalMs": 0.335,
+            "avgMs": 0.014
+          },
+          {
+            "query": "SELECT payload_sha256, response FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2 FOR UPDATE",
+            "calls": 24,
+            "totalMs": 0.191,
+            "avgMs": 0.008
+          },
+          {
+            "query": "SELECT finding_id, finding_type, impact_scope, rule_ref FROM decision_findings WHERE customer_id=$1 AND status=$2",
+            "calls": 24,
+            "totalMs": 0.055,
+            "avgMs": 0.002
+          },
+          {
+            "query": "COMMIT",
+            "calls": 24,
+            "totalMs": 0.011,
+            "avgMs": 0
+          },
+          {
+            "query": "BEGIN",
+            "calls": 24,
+            "totalMs": 0.009,
+            "avgMs": 0
+          },
+          {
+            "query": "SELECT query, calls, total_exec_time FROM pg_stat_statements",
+            "calls": 1,
+            "totalMs": 0.145,
+            "avgMs": 0.145
+          },
+          {
+            "query": "SELECT xact_commit, xact_rollback, deadlocks, blks_hit, blks_read FROM pg_stat_database WHERE datname=$1",
+            "calls": 1,
+            "totalMs": 0.011,
+            "avgMs": 0.011
+          }
+        ],
+        "totalQueries": 580,
+        "xactCommit": 9,
+        "xactRollback": 0,
+        "deadlocks": 0,
+        "blksRead": 0
+      }
+    },
+    "c2a_barrier_same_request_id": {
+      "workers": 12,
+      "wallMs": 65.311,
+      "outcomes": {
+        "200": 12
+      },
+      "reserveEntries": 1,
+      "reserveLatency": {
+        "n": 12,
+        "mean": 48.387,
+        "p50": 46.896,
+        "p90": 61.217,
+        "p95": 64.146,
+        "p99": 64.146,
+        "max": 64.146
+      },
+      "lockSampling": {
+        "intervalMs": 10,
+        "samples": 6,
+        "avgWaiting": 3.5,
+        "maxWaiting": 9,
+        "waitSampleMs": 210,
+        "approxWaitRatio": 1
+      },
+      "db": {
+        "topByTime": [
+          {
+            "query": "SELECT * FROM customers WHERE customer_id=$1 FOR UPDATE",
+            "calls": 12,
+            "totalMs": 288.418,
+            "avgMs": 24.035
+          },
+          {
+            "query": "SELECT count(*)::int AS waiting FROM pg_stat_activity WHERE datname=$1 AND wait_event_type=$2",
+            "calls": 6,
+            "totalMs": 0.412,
+            "avgMs": 0.069
+          },
+          {
+            "query": "SELECT * FROM credit_facilities WHERE facility_id=$1 FOR UPDATE",
+            "calls": 12,
+            "totalMs": 0.25,
+            "avgMs": 0.021
+          },
+          {
+            "query": "SELECT * FROM financing_requests WHERE fr_id=$1 FOR UPDATE",
+            "calls": 12,
+            "totalMs": 0.231,
+            "avgMs": 0.019
+          },
+          {
+            "query": "SELECT response, payload_sha256 FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2",
+            "calls": 23,
+            "totalMs": 0.213,
+            "avgMs": 0.009
+          },
+          {
+            "query": "SELECT payload_sha256, response FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2 FOR UPDATE",
+            "calls": 12,
+            "totalMs": 0.186,
+            "avgMs": 0.015
+          },
+          {
+            "query": "SELECT * FROM financing_requests WHERE fr_id=$1",
+            "calls": 12,
+            "totalMs": 0.179,
+            "avgMs": 0.015
+          },
+          {
+            "query": "INSERT INTO outbox_events (event_id, event_type, customer_id, payload) VALUES ($1,$2,$3,$4)",
+            "calls": 3,
+            "totalMs": 0.111,
+            "avgMs": 0.037
+          },
+          {
+            "query": "SELECT query, calls, total_exec_time FROM pg_stat_statements",
+            "calls": 1,
+            "totalMs": 0.103,
+            "avgMs": 0.103
+          },
+          {
+            "query": "SELECT entry_type, SUM(amount_minor)::bigint AS total FROM exposure_entries WHERE facility_id=$1 GROUP BY entry_type",
+            "calls": 4,
+            "totalMs": 0.086,
+            "avgMs": 0.021
+          },
+          {
+            "query": "INSERT INTO exposure_entries (entry_id, tenant_id, customer_id, facility_id, fr_id, entry_type, amount_minor, currency, request_scope, reque",
+            "calls": 1,
+            "totalMs": 0.05,
+            "avgMs": 0.05
+          },
+          {
+            "query": "UPDATE financing_requests SET status=$3, reserved_until = CASE WHEN $2::int IS NULL THEN $4 ELSE now() + make_interval(secs => $2::int) END,",
+            "calls": 1,
+            "totalMs": 0.041,
+            "avgMs": 0.041
+          },
+          {
+            "query": "WITH victims AS ( SELECT fr.fr_id, e.amount_minor, e.request_scope, e.request_id, e.actor FROM financing_requests fr JOIN exposure_entries e",
+            "calls": 1,
+            "totalMs": 0.032,
+            "avgMs": 0.032
+          },
+          {
+            "query": "SELECT stale, status FROM credit_assessments WHERE assessment_id=$1",
+            "calls": 2,
+            "totalMs": 0.024,
+            "avgMs": 0.012
+          },
+          {
+            "query": "INSERT INTO v2_idempotency (scope_hash, request_id, tenant_id, principal_id, action, payload_sha256, response) VALUES ($1,$2,$3,$4,$5,$6,$7)",
+            "calls": 1,
+            "totalMs": 0.018,
+            "avgMs": 0.018
+          },
+          {
+            "query": "INSERT INTO audit_events (actor_principal_id, action, target_type, target_id, project_id, summary, payload_sha256) VALUES ($1,$2,$3,$4,$5,$6",
+            "calls": 1,
+            "totalMs": 0.015,
+            "avgMs": 0.015
+          },
+          {
+            "query": "SELECT xact_commit, xact_rollback, deadlocks, blks_hit, blks_read FROM pg_stat_database WHERE datname=$1",
+            "calls": 1,
+            "totalMs": 0.01,
+            "avgMs": 0.01
+          },
+          {
+            "query": "BEGIN",
+            "calls": 12,
+            "totalMs": 0.006,
+            "avgMs": 0
+          },
+          {
+            "query": "ROLLBACK",
+            "calls": 11,
+            "totalMs": 0.006,
+            "avgMs": 0.001
+          },
+          {
+            "query": "SELECT finding_id, finding_type, impact_scope, rule_ref FROM decision_findings WHERE customer_id=$1 AND status=$2",
+            "calls": 1,
+            "totalMs": 0.003,
+            "avgMs": 0.003
+          },
+          {
+            "query": "COMMIT",
+            "calls": 1,
+            "totalMs": 0,
+            "avgMs": 0
+          }
+        ],
+        "topByCalls": [
+          {
+            "query": "SELECT response, payload_sha256 FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2",
+            "calls": 23,
+            "totalMs": 0.213,
+            "avgMs": 0.009
+          },
+          {
+            "query": "SELECT * FROM customers WHERE customer_id=$1 FOR UPDATE",
+            "calls": 12,
+            "totalMs": 288.418,
+            "avgMs": 24.035
+          },
+          {
+            "query": "SELECT * FROM credit_facilities WHERE facility_id=$1 FOR UPDATE",
+            "calls": 12,
+            "totalMs": 0.25,
+            "avgMs": 0.021
+          },
+          {
+            "query": "SELECT * FROM financing_requests WHERE fr_id=$1 FOR UPDATE",
+            "calls": 12,
+            "totalMs": 0.231,
+            "avgMs": 0.019
+          },
+          {
+            "query": "SELECT payload_sha256, response FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2 FOR UPDATE",
+            "calls": 12,
+            "totalMs": 0.186,
+            "avgMs": 0.015
+          },
+          {
+            "query": "SELECT * FROM financing_requests WHERE fr_id=$1",
+            "calls": 12,
+            "totalMs": 0.179,
+            "avgMs": 0.015
+          },
+          {
+            "query": "BEGIN",
+            "calls": 12,
+            "totalMs": 0.006,
+            "avgMs": 0
+          },
+          {
+            "query": "ROLLBACK",
+            "calls": 11,
+            "totalMs": 0.006,
+            "avgMs": 0.001
+          },
+          {
+            "query": "SELECT count(*)::int AS waiting FROM pg_stat_activity WHERE datname=$1 AND wait_event_type=$2",
+            "calls": 6,
+            "totalMs": 0.412,
+            "avgMs": 0.069
+          },
+          {
+            "query": "SELECT entry_type, SUM(amount_minor)::bigint AS total FROM exposure_entries WHERE facility_id=$1 GROUP BY entry_type",
+            "calls": 4,
+            "totalMs": 0.086,
+            "avgMs": 0.021
+          },
+          {
+            "query": "INSERT INTO outbox_events (event_id, event_type, customer_id, payload) VALUES ($1,$2,$3,$4)",
+            "calls": 3,
+            "totalMs": 0.111,
+            "avgMs": 0.037
+          },
+          {
+            "query": "SELECT stale, status FROM credit_assessments WHERE assessment_id=$1",
+            "calls": 2,
+            "totalMs": 0.024,
+            "avgMs": 0.012
+          },
+          {
+            "query": "SELECT query, calls, total_exec_time FROM pg_stat_statements",
+            "calls": 1,
+            "totalMs": 0.103,
+            "avgMs": 0.103
+          },
+          {
+            "query": "INSERT INTO exposure_entries (entry_id, tenant_id, customer_id, facility_id, fr_id, entry_type, amount_minor, currency, request_scope, reque",
+            "calls": 1,
+            "totalMs": 0.05,
+            "avgMs": 0.05
+          },
+          {
+            "query": "UPDATE financing_requests SET status=$3, reserved_until = CASE WHEN $2::int IS NULL THEN $4 ELSE now() + make_interval(secs => $2::int) END,",
+            "calls": 1,
+            "totalMs": 0.041,
+            "avgMs": 0.041
+          },
+          {
+            "query": "WITH victims AS ( SELECT fr.fr_id, e.amount_minor, e.request_scope, e.request_id, e.actor FROM financing_requests fr JOIN exposure_entries e",
+            "calls": 1,
+            "totalMs": 0.032,
+            "avgMs": 0.032
+          },
+          {
+            "query": "INSERT INTO v2_idempotency (scope_hash, request_id, tenant_id, principal_id, action, payload_sha256, response) VALUES ($1,$2,$3,$4,$5,$6,$7)",
+            "calls": 1,
+            "totalMs": 0.018,
+            "avgMs": 0.018
+          },
+          {
+            "query": "INSERT INTO audit_events (actor_principal_id, action, target_type, target_id, project_id, summary, payload_sha256) VALUES ($1,$2,$3,$4,$5,$6",
+            "calls": 1,
+            "totalMs": 0.015,
+            "avgMs": 0.015
+          },
+          {
+            "query": "SELECT xact_commit, xact_rollback, deadlocks, blks_hit, blks_read FROM pg_stat_database WHERE datname=$1",
+            "calls": 1,
+            "totalMs": 0.01,
+            "avgMs": 0.01
+          },
+          {
+            "query": "SELECT finding_id, finding_type, impact_scope, rule_ref FROM decision_findings WHERE customer_id=$1 AND status=$2",
+            "calls": 1,
+            "totalMs": 0.003,
+            "avgMs": 0.003
+          },
+          {
+            "query": "COMMIT",
+            "calls": 1,
+            "totalMs": 0,
+            "avgMs": 0
+          }
+        ],
+        "totalQueries": 130,
+        "xactCommit": 0,
+        "xactRollback": 0,
+        "deadlocks": 0,
+        "blksRead": 0
+      }
+    },
+    "c2b_barrier_same_fr_distinct_req": {
+      "workers": 12,
+      "wallMs": 90.049,
+      "outcomes": {
+        "200": 1,
+        "409": 11
+      },
+      "reserveEntries": 1,
+      "maxLatencyMs": 89.207,
+      "lockSampling": {
+        "intervalMs": 10,
+        "samples": 8,
+        "avgWaiting": 3.625,
+        "maxWaiting": 9,
+        "waitSampleMs": 290,
+        "approxWaitRatio": 1
+      },
+      "db": {
+        "topByTime": [
+          {
+            "query": "SELECT * FROM customers WHERE customer_id=$1 FOR UPDATE",
+            "calls": 12,
+            "totalMs": 420.068,
+            "avgMs": 35.006
+          },
+          {
+            "query": "SELECT count(*)::int AS waiting FROM pg_stat_activity WHERE datname=$1 AND wait_event_type=$2",
+            "calls": 8,
+            "totalMs": 0.474,
+            "avgMs": 0.059
+          },
+          {
+            "query": "WITH victims AS ( SELECT fr.fr_id, e.amount_minor, e.request_scope, e.request_id, e.actor FROM financing_requests fr JOIN exposure_entries e",
+            "calls": 12,
+            "totalMs": 0.362,
+            "avgMs": 0.03
+          },
+          {
+            "query": "SELECT entry_type, SUM(amount_minor)::bigint AS total FROM exposure_entries WHERE facility_id=$1 GROUP BY entry_type",
+            "calls": 15,
+            "totalMs": 0.336,
+            "avgMs": 0.022
+          },
+          {
+            "query": "SELECT * FROM credit_facilities WHERE facility_id=$1 FOR UPDATE",
+            "calls": 12,
+            "totalMs": 0.249,
+            "avgMs": 0.021
+          },
+          {
+            "query": "SELECT * FROM financing_requests WHERE fr_id=$1",
+            "calls": 12,
+            "totalMs": 0.232,
+            "avgMs": 0.019
+          },
+          {
+            "query": "INSERT INTO outbox_events (event_id, event_type, customer_id, payload) VALUES ($1,$2,$3,$4)",
+            "calls": 3,
+            "totalMs": 0.206,
+            "avgMs": 0.069
+          },
+          {
+            "query": "SELECT * FROM financing_requests WHERE fr_id=$1 FOR UPDATE",
+            "calls": 12,
+            "totalMs": 0.178,
+            "avgMs": 0.015
+          },
+          {
+            "query": "SELECT stale, status FROM credit_assessments WHERE assessment_id=$1",
+            "calls": 13,
+            "totalMs": 0.135,
+            "avgMs": 0.01
+          },
+          {
+            "query": "SELECT response, payload_sha256 FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2",
+            "calls": 12,
+            "totalMs": 0.098,
+            "avgMs": 0.008
+          },
+          {
+            "query": "SELECT query, calls, total_exec_time FROM pg_stat_statements",
+            "calls": 1,
+            "totalMs": 0.089,
+            "avgMs": 0.089
+          },
+          {
+            "query": "SELECT payload_sha256, response FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2 FOR UPDATE",
+            "calls": 12,
+            "totalMs": 0.08,
+            "avgMs": 0.007
+          },
+          {
+            "query": "INSERT INTO exposure_entries (entry_id, tenant_id, customer_id, facility_id, fr_id, entry_type, amount_minor, currency, request_scope, reque",
+            "calls": 1,
+            "totalMs": 0.049,
+            "avgMs": 0.049
+          },
+          {
+            "query": "UPDATE financing_requests SET status=$3, reserved_until = CASE WHEN $2::int IS NULL THEN $4 ELSE now() + make_interval(secs => $2::int) END,",
+            "calls": 1,
+            "totalMs": 0.043,
+            "avgMs": 0.043
+          },
+          {
+            "query": "ROLLBACK",
+            "calls": 11,
+            "totalMs": 0.032,
+            "avgMs": 0.003
+          },
+          {
+            "query": "INSERT INTO v2_idempotency (scope_hash, request_id, tenant_id, principal_id, action, payload_sha256, response) VALUES ($1,$2,$3,$4,$5,$6,$7)",
+            "calls": 1,
+            "totalMs": 0.018,
+            "avgMs": 0.018
+          },
+          {
+            "query": "INSERT INTO audit_events (actor_principal_id, action, target_type, target_id, project_id, summary, payload_sha256) VALUES ($1,$2,$3,$4,$5,$6",
+            "calls": 1,
+            "totalMs": 0.015,
+            "avgMs": 0.015
+          },
+          {
+            "query": "SELECT xact_commit, xact_rollback, deadlocks, blks_hit, blks_read FROM pg_stat_database WHERE datname=$1",
+            "calls": 1,
+            "totalMs": 0.009,
+            "avgMs": 0.009
+          },
+          {
+            "query": "BEGIN",
+            "calls": 12,
+            "totalMs": 0.005,
+            "avgMs": 0
+          },
+          {
+            "query": "SELECT finding_id, finding_type, impact_scope, rule_ref FROM decision_findings WHERE customer_id=$1 AND status=$2",
+            "calls": 1,
+            "totalMs": 0.003,
+            "avgMs": 0.003
+          },
+          {
+            "query": "COMMIT",
+            "calls": 1,
+            "totalMs": 0,
+            "avgMs": 0
+          }
+        ],
+        "topByCalls": [
+          {
+            "query": "SELECT entry_type, SUM(amount_minor)::bigint AS total FROM exposure_entries WHERE facility_id=$1 GROUP BY entry_type",
+            "calls": 15,
+            "totalMs": 0.336,
+            "avgMs": 0.022
+          },
+          {
+            "query": "SELECT stale, status FROM credit_assessments WHERE assessment_id=$1",
+            "calls": 13,
+            "totalMs": 0.135,
+            "avgMs": 0.01
+          },
+          {
+            "query": "SELECT * FROM customers WHERE customer_id=$1 FOR UPDATE",
+            "calls": 12,
+            "totalMs": 420.068,
+            "avgMs": 35.006
+          },
+          {
+            "query": "WITH victims AS ( SELECT fr.fr_id, e.amount_minor, e.request_scope, e.request_id, e.actor FROM financing_requests fr JOIN exposure_entries e",
+            "calls": 12,
+            "totalMs": 0.362,
+            "avgMs": 0.03
+          },
+          {
+            "query": "SELECT * FROM credit_facilities WHERE facility_id=$1 FOR UPDATE",
+            "calls": 12,
+            "totalMs": 0.249,
+            "avgMs": 0.021
+          },
+          {
+            "query": "SELECT * FROM financing_requests WHERE fr_id=$1",
+            "calls": 12,
+            "totalMs": 0.232,
+            "avgMs": 0.019
+          },
+          {
+            "query": "SELECT * FROM financing_requests WHERE fr_id=$1 FOR UPDATE",
+            "calls": 12,
+            "totalMs": 0.178,
+            "avgMs": 0.015
+          },
+          {
+            "query": "SELECT response, payload_sha256 FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2",
+            "calls": 12,
+            "totalMs": 0.098,
+            "avgMs": 0.008
+          },
+          {
+            "query": "SELECT payload_sha256, response FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2 FOR UPDATE",
+            "calls": 12,
+            "totalMs": 0.08,
+            "avgMs": 0.007
+          },
+          {
+            "query": "BEGIN",
+            "calls": 12,
+            "totalMs": 0.005,
+            "avgMs": 0
+          },
+          {
+            "query": "ROLLBACK",
+            "calls": 11,
+            "totalMs": 0.032,
+            "avgMs": 0.003
+          },
+          {
+            "query": "SELECT count(*)::int AS waiting FROM pg_stat_activity WHERE datname=$1 AND wait_event_type=$2",
+            "calls": 8,
+            "totalMs": 0.474,
+            "avgMs": 0.059
+          },
+          {
+            "query": "INSERT INTO outbox_events (event_id, event_type, customer_id, payload) VALUES ($1,$2,$3,$4)",
+            "calls": 3,
+            "totalMs": 0.206,
+            "avgMs": 0.069
+          },
+          {
+            "query": "SELECT query, calls, total_exec_time FROM pg_stat_statements",
+            "calls": 1,
+            "totalMs": 0.089,
+            "avgMs": 0.089
+          },
+          {
+            "query": "INSERT INTO exposure_entries (entry_id, tenant_id, customer_id, facility_id, fr_id, entry_type, amount_minor, currency, request_scope, reque",
+            "calls": 1,
+            "totalMs": 0.049,
+            "avgMs": 0.049
+          },
+          {
+            "query": "UPDATE financing_requests SET status=$3, reserved_until = CASE WHEN $2::int IS NULL THEN $4 ELSE now() + make_interval(secs => $2::int) END,",
+            "calls": 1,
+            "totalMs": 0.043,
+            "avgMs": 0.043
+          },
+          {
+            "query": "INSERT INTO v2_idempotency (scope_hash, request_id, tenant_id, principal_id, action, payload_sha256, response) VALUES ($1,$2,$3,$4,$5,$6,$7)",
+            "calls": 1,
+            "totalMs": 0.018,
+            "avgMs": 0.018
+          },
+          {
+            "query": "INSERT INTO audit_events (actor_principal_id, action, target_type, target_id, project_id, summary, payload_sha256) VALUES ($1,$2,$3,$4,$5,$6",
+            "calls": 1,
+            "totalMs": 0.015,
+            "avgMs": 0.015
+          },
+          {
+            "query": "SELECT xact_commit, xact_rollback, deadlocks, blks_hit, blks_read FROM pg_stat_database WHERE datname=$1",
+            "calls": 1,
+            "totalMs": 0.009,
+            "avgMs": 0.009
+          },
+          {
+            "query": "SELECT finding_id, finding_type, impact_scope, rule_ref FROM decision_findings WHERE customer_id=$1 AND status=$2",
+            "calls": 1,
+            "totalMs": 0.003,
+            "avgMs": 0.003
+          },
+          {
+            "query": "COMMIT",
+            "calls": 1,
+            "totalMs": 0,
+            "avgMs": 0
+          }
+        ],
+        "totalQueries": 154,
+        "xactCommit": 263,
+        "xactRollback": 1,
+        "deadlocks": 0,
+        "blksRead": 0
+      }
+    },
+    "c3_parallel_customers": {
+      "chains": 48,
+      "wallMs": 981.691,
+      "outcomes": {
+        "200": 48
+      },
+      "db": {
+        "topByTime": [
+          {
+            "query": "SELECT * FROM customers WHERE customer_id=$1 FOR UPDATE",
+            "calls": 144,
+            "totalMs": 7039.249,
+            "avgMs": 48.884
+          },
+          {
+            "query": "INSERT INTO outbox_events (event_id, event_type, customer_id, payload) VALUES ($1,$2,$3,$4)",
+            "calls": 432,
+            "totalMs": 15.271,
+            "avgMs": 0.035
+          },
+          {
+            "query": "SELECT entry_type, SUM(amount_minor)::bigint AS total FROM exposure_entries WHERE facility_id=$1 GROUP BY entry_type",
+            "calls": 288,
+            "totalMs": 7.817,
+            "avgMs": 0.027
+          },
+          {
+            "query": "INSERT INTO exposure_entries (entry_id, tenant_id, customer_id, facility_id, fr_id, entry_type, amount_minor, currency, request_scope, reque",
+            "calls": 144,
+            "totalMs": 7.752,
+            "avgMs": 0.054
+          },
+          {
+            "query": "SELECT * FROM credit_facilities WHERE facility_id=$1 FOR UPDATE",
+            "calls": 144,
+            "totalMs": 3.706,
+            "avgMs": 0.026
+          },
+          {
+            "query": "INSERT INTO v2_idempotency (scope_hash, request_id, tenant_id, principal_id, action, payload_sha256, response) VALUES ($1,$2,$3,$4,$5,$6,$7)",
+            "calls": 144,
+            "totalMs": 3.092,
+            "avgMs": 0.021
+          },
+          {
+            "query": "UPDATE financing_requests SET status=$3, reserved_until = CASE WHEN $2::int IS NULL THEN $4 ELSE now() + make_interval(secs => $2::int) END,",
+            "calls": 48,
+            "totalMs": 2.682,
+            "avgMs": 0.056
+          },
+          {
+            "query": "SELECT * FROM financing_requests WHERE fr_id=$1 FOR UPDATE",
+            "calls": 144,
+            "totalMs": 2.597,
+            "avgMs": 0.018
+          },
+          {
+            "query": "SELECT stale, status FROM credit_assessments WHERE assessment_id=$1",
+            "calls": 192,
+            "totalMs": 2.473,
+            "avgMs": 0.013
+          },
+          {
+            "query": "INSERT INTO audit_events (actor_principal_id, action, target_type, target_id, project_id, summary, payload_sha256) VALUES ($1,$2,$3,$4,$5,$6",
+            "calls": 144,
+            "totalMs": 2.471,
+            "avgMs": 0.017
+          },
+          {
+            "query": "UPDATE financing_requests SET status=$2, reserved_until=$3, version=version+$4, updated_at=now() WHERE fr_id=$1",
+            "calls": 48,
+            "totalMs": 2.245,
+            "avgMs": 0.047
+          },
+          {
+            "query": "SELECT * FROM financing_requests WHERE fr_id=$1",
+            "calls": 144,
+            "totalMs": 2.106,
+            "avgMs": 0.015
+          },
+          {
+            "query": "UPDATE financing_requests SET status=$3, external_state=$4, external_ref=$2, version=version+$5, updated_at=now() WHERE fr_id=$1",
+            "calls": 48,
+            "totalMs": 1.907,
+            "avgMs": 0.04
+          },
+          {
+            "query": "SELECT request_scope, request_id FROM exposure_entries WHERE fr_id=$1 AND entry_type=$2 ORDER BY seq DESC LIMIT $3",
+            "calls": 96,
+            "totalMs": 1.308,
+            "avgMs": 0.014
+          },
+          {
+            "query": "WITH victims AS ( SELECT fr.fr_id, e.amount_minor, e.request_scope, e.request_id, e.actor FROM financing_requests fr JOIN exposure_entries e",
+            "calls": 48,
+            "totalMs": 1.26,
+            "avgMs": 0.026
+          },
+          {
+            "query": "SELECT response, payload_sha256 FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2",
+            "calls": 144,
+            "totalMs": 1.203,
+            "avgMs": 0.008
+          },
+          {
+            "query": "SELECT payload_sha256, response FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2 FOR UPDATE",
+            "calls": 144,
+            "totalMs": 1.175,
+            "avgMs": 0.008
+          },
+          {
+            "query": "SELECT finding_id, finding_type, impact_scope, rule_ref FROM decision_findings WHERE customer_id=$1 AND status=$2",
+            "calls": 144,
+            "totalMs": 0.419,
+            "avgMs": 0.003
+          },
+          {
+            "query": "SELECT query, calls, total_exec_time FROM pg_stat_statements",
+            "calls": 1,
+            "totalMs": 0.066,
+            "avgMs": 0.066
+          },
+          {
+            "query": "COMMIT",
+            "calls": 144,
+            "totalMs": 0.063,
+            "avgMs": 0
+          },
+          {
+            "query": "BEGIN",
+            "calls": 144,
+            "totalMs": 0.053,
+            "avgMs": 0
+          },
+          {
+            "query": "SELECT xact_commit, xact_rollback, deadlocks, blks_hit, blks_read FROM pg_stat_database WHERE datname=$1",
+            "calls": 1,
+            "totalMs": 0.008,
+            "avgMs": 0.008
+          }
+        ],
+        "topByCalls": [
+          {
+            "query": "INSERT INTO outbox_events (event_id, event_type, customer_id, payload) VALUES ($1,$2,$3,$4)",
+            "calls": 432,
+            "totalMs": 15.271,
+            "avgMs": 0.035
+          },
+          {
+            "query": "SELECT entry_type, SUM(amount_minor)::bigint AS total FROM exposure_entries WHERE facility_id=$1 GROUP BY entry_type",
+            "calls": 288,
+            "totalMs": 7.817,
+            "avgMs": 0.027
+          },
+          {
+            "query": "SELECT stale, status FROM credit_assessments WHERE assessment_id=$1",
+            "calls": 192,
+            "totalMs": 2.473,
+            "avgMs": 0.013
+          },
+          {
+            "query": "SELECT * FROM customers WHERE customer_id=$1 FOR UPDATE",
+            "calls": 144,
+            "totalMs": 7039.249,
+            "avgMs": 48.884
+          },
+          {
+            "query": "INSERT INTO exposure_entries (entry_id, tenant_id, customer_id, facility_id, fr_id, entry_type, amount_minor, currency, request_scope, reque",
+            "calls": 144,
+            "totalMs": 7.752,
+            "avgMs": 0.054
+          },
+          {
+            "query": "SELECT * FROM credit_facilities WHERE facility_id=$1 FOR UPDATE",
+            "calls": 144,
+            "totalMs": 3.706,
+            "avgMs": 0.026
+          },
+          {
+            "query": "INSERT INTO v2_idempotency (scope_hash, request_id, tenant_id, principal_id, action, payload_sha256, response) VALUES ($1,$2,$3,$4,$5,$6,$7)",
+            "calls": 144,
+            "totalMs": 3.092,
+            "avgMs": 0.021
+          },
+          {
+            "query": "SELECT * FROM financing_requests WHERE fr_id=$1 FOR UPDATE",
+            "calls": 144,
+            "totalMs": 2.597,
+            "avgMs": 0.018
+          },
+          {
+            "query": "INSERT INTO audit_events (actor_principal_id, action, target_type, target_id, project_id, summary, payload_sha256) VALUES ($1,$2,$3,$4,$5,$6",
+            "calls": 144,
+            "totalMs": 2.471,
+            "avgMs": 0.017
+          },
+          {
+            "query": "SELECT * FROM financing_requests WHERE fr_id=$1",
+            "calls": 144,
+            "totalMs": 2.106,
+            "avgMs": 0.015
+          },
+          {
+            "query": "SELECT response, payload_sha256 FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2",
+            "calls": 144,
+            "totalMs": 1.203,
+            "avgMs": 0.008
+          },
+          {
+            "query": "SELECT payload_sha256, response FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2 FOR UPDATE",
+            "calls": 144,
+            "totalMs": 1.175,
+            "avgMs": 0.008
+          },
+          {
+            "query": "SELECT finding_id, finding_type, impact_scope, rule_ref FROM decision_findings WHERE customer_id=$1 AND status=$2",
+            "calls": 144,
+            "totalMs": 0.419,
+            "avgMs": 0.003
+          },
+          {
+            "query": "COMMIT",
+            "calls": 144,
+            "totalMs": 0.063,
+            "avgMs": 0
+          },
+          {
+            "query": "BEGIN",
+            "calls": 144,
+            "totalMs": 0.053,
+            "avgMs": 0
+          },
+          {
+            "query": "SELECT request_scope, request_id FROM exposure_entries WHERE fr_id=$1 AND entry_type=$2 ORDER BY seq DESC LIMIT $3",
+            "calls": 96,
+            "totalMs": 1.308,
+            "avgMs": 0.014
+          },
+          {
+            "query": "UPDATE financing_requests SET status=$3, reserved_until = CASE WHEN $2::int IS NULL THEN $4 ELSE now() + make_interval(secs => $2::int) END,",
+            "calls": 48,
+            "totalMs": 2.682,
+            "avgMs": 0.056
+          },
+          {
+            "query": "UPDATE financing_requests SET status=$2, reserved_until=$3, version=version+$4, updated_at=now() WHERE fr_id=$1",
+            "calls": 48,
+            "totalMs": 2.245,
+            "avgMs": 0.047
+          },
+          {
+            "query": "UPDATE financing_requests SET status=$3, external_state=$4, external_ref=$2, version=version+$5, updated_at=now() WHERE fr_id=$1",
+            "calls": 48,
+            "totalMs": 1.907,
+            "avgMs": 0.04
+          },
+          {
+            "query": "WITH victims AS ( SELECT fr.fr_id, e.amount_minor, e.request_scope, e.request_id, e.actor FROM financing_requests fr JOIN exposure_entries e",
+            "calls": 48,
+            "totalMs": 1.26,
+            "avgMs": 0.026
+          },
+          {
+            "query": "SELECT query, calls, total_exec_time FROM pg_stat_statements",
+            "calls": 1,
+            "totalMs": 0.066,
+            "avgMs": 0.066
+          },
+          {
+            "query": "SELECT xact_commit, xact_rollback, deadlocks, blks_hit, blks_read FROM pg_stat_database WHERE datname=$1",
+            "calls": 1,
+            "totalMs": 0.008,
+            "avgMs": 0.008
+          }
+        ],
+        "totalQueries": 2930,
+        "xactCommit": 279,
+        "xactRollback": 21,
+        "deadlocks": 0,
+        "blksRead": 0
+      }
+    },
+    "conservation_customer1": {
+      "facilityId": "fac-mu5q1m73-62b73790b8f5",
+      "reservedMinor": 2600000,
+      "entries": 26
+    }
+  },
+  "errors": [],
+  "pgVersion": "16.15 (Debian 16.15-1.pgdg13+2)",
+  "kernelLogTail": "[kernel] listening http://127.0.0.1:17930  db=postgres://goal01:***@127.0.0.1:15446/goal01_perf\n[kernel] principalVerifier=token-directory(3 principals)\n[kernel] modelTransport=not_configured（GLM-5.2 仅预留，0 真实调用）\n[reject] POST /api/v2/financing-requests/fr-mu5q1rfx-6f927bdca710/reserve → 409 NOT_READY: 申请当前 reserved：仅 submitted 可预占\n[reject] POST /api/v2/financing-requests/fr-mu5q1rfx-6f927bdca710/reserve → 409 NOT_READY: 申请当前 reserved：仅 submitted 可预占\n[reject] POST /api/v2/financing-requests/fr-mu5q1rfx-6f927bdca710/reserve → 409 NOT_READY: 申请当前 reserved：仅 submitted 可预占\n[reject] POST /api/v2/financing-requests/fr-mu5q1rfx-6f927bdca710/reserve → 409 NOT_READY: 申请当前 reserved：仅 submitted 可预占\n[reject] POST /api/v2/financing-requests/fr-mu5q1rfx-6f927bdca710/reserve → 409 NOT_READY: 申请当前 reserved：仅 submitted 可预占\n[reject] POST /api/v2/financing-requests/fr-mu5q1rfx-6f927bdca710/reserve → 409 NOT_READY: 申请当前 reserved：仅 submitted 可预占\n[reject] POST /api/v2/financing-requests/fr-mu5q1rfx-6f927bdca710/reserve → 409 NOT_READY: 申请当前 reserved：仅 submitted 可预占\n[reject] POST /api/v2/financing-requests/fr-mu5q1rfx-6f927bdca710/reserve → 409 NOT_READY: 申请当前 reserved：仅 submitted 可预占\n[reject] POST /api/v2/financing-requests/fr-mu5q1rfx-6f927bdca710/reserve → 409 NOT_READY: 申请当前 reserved：仅 submitted 可预占\n[reject] POST /api/v2/financing-requests/fr-mu5q1rfx-6f927bdca710/reserve → 409 NOT_READY: 申请当前 reserved：仅 submitted 可预占\n[reject] POST /api/v2/financing-requests/fr-mu5q1rfx-6f927bdca710/reserve → 409 NOT_READY: 申请当前 reserved：仅 submitted 可预占\n"
+}

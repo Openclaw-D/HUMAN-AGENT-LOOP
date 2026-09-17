@@ -1,0 +1,25 @@
+{
+  "#cursor": {
+    "eventSeq": 51
+  },
+  "v7d-b-worker:g-mu5tpr9y-ae2b7b4adebb:c1-1789667321743": {
+    "status": "recovered:held-unknown-for-retry",
+    "goalId": "g-mu5tpr9y-ae2b7b4adebb",
+    "fencingToken": 1,
+    "startedAt": "2026-09-17T17:48:41.789Z",
+    "leaseUntil": "2026-09-17T17:49:11.777Z",
+    "claimedAt": "2026-09-17T17:48:41.743Z",
+    "at": "2026-09-17T17:49:01.417Z"
+  },
+  "v7d-b-worker:g-mu5tq63i-9188b9ca7b15:c1-1789667343033": {
+    "status": "submitted",
+    "goalId": "g-mu5tq63i-9188b9ca7b15",
+    "fencingToken": 1,
+    "startedAt": "2026-09-17T17:49:03.075Z",
+    "leaseUntil": "2026-09-17T17:49:33.066Z",
+    "claimedAt": "2026-09-17T17:49:03.033Z",
+    "outcomeState": "candidate_ready",
+    "aGoalVersion": 4,
+    "at": "2026-09-17T17:49:09.155Z"
+  }
+}

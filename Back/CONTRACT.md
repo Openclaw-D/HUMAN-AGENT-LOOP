@@ -173,3 +173,20 @@ blocked ──(deps accepted+输入kind当前证据齐备)──▶ ready ──
 **旧测试适配（语义保留）**：decision-loop B01–B14 经新机器重放（Gate 回执+服务身份运行登记+政策必需域+真实收口会话，域结果由持域角色/服务身份登记）；customer-credit/ledger-property 等 legacy 用信流加 `--allow-legacy-basis`；A22 迁移清单更新为 001–007。新增测试：`trust-gates-a1/a2`（K01–K11）、`ledger-races-a3`（K12–K18，真实 PG 客户锁屏障并发）。全量回归 102 项：101 pass / 0 fail / 1 skip（crash 容器重启用例按边界守卫跳过）。
 
 **接口破坏提示（任务03/Edge 消费方）**：`GET /api/v1/events`、`/api/v1/receipts/:requestId`、`/api/v1/inspections/:id(+/next-actions)` 现要求 `X-Principal-Credential` 并按授权过滤；匿名调用 403。Edge 面板与 E1 需携带获准凭据后重跑（任务03 范围）。
+
+## 10｜v2.3 增量契约登记（2026-09-17，goal-01 集成 writer）
+
+来源：`docs/backend-upgrade/goal-01/`（并发正确收口 + 定向性能优化）。审核基线 1ec0ee4；设计/测试/性能证据在其目录。v1（§0–§7）与 §8/§9 语义除下述显式修订外不变。
+
+**证据对象锚定匹配（A1；验收"错设备材料"）**
+- 错误码新增 409 `EVIDENCE_OBJECT_MISMATCH`（errors.ts）。
+- 检查项锚定 objectRef 时：`answer.evidenceRefs` 引用显式锚定到**其他对象**的材料 → 409 `EVIDENCE_OBJECT_MISMATCH`（事务内零写入）；锚定项的**自动核实**（`requires_human_verification=false` → verified）与**晚到材料重开**只认 objectRef 匹配材料；未锚定材料仍可被引用并进入人工核验路径（to_verify 行为不变，人工核验权威不变）。next-actions 缺口按同口径展示。
+
+**豁免登记制（A2；验收"假豁免"）**
+- 新表 `domain_exemptions`（迁移 008；只新增对象，回退=保留对象停用入口）。
+- 新 API：`POST /api/v2/customers/:id/domain-exemptions`（登记）、`GET /api/v2/customers/:id/domain-exemptions`（列表）、`DELETE /api/v2/domain-exemptions/:id`（撤销；即刻生效只阻断新引用，历史冻结包不改写）。登记/撤销权限 = 人类 principal + permission_matrix 动作 `domain-exemption.grant`（矩阵未配置/无条目 → 409 POLICY_PENDING，fail-closed）。`approved_by` 由服务端从凭据解析，请求载荷无 approvedBy 字段。
+- **破坏性收紧**：`decision-packages.exemptions[]` 只接受 `{exemptionId, note?}`——出现自报 `domain/approvedBy/scope` → 400 INVALID_INPUT；引用须 valid、未过期、政策版本匹配、客户/租户匹配（否则 404 NOT_FOUND / 409 POLICY_PENDING）。`findings/:id/resolve` 的 not_applicable `waiverRef` 只接受 `{exemptionId}`（登记 scope 须覆盖差异类型/规则ID/'any'）；自报 `policyApproved/approvedBy/validUntil` → 400。旧行为（自报字符串可形成必需域豁免）作废。
+- server：DELETE 请求与 POST 一样解析 JSON body（原先仅 POST；存量无 HTTP DELETE 消费方，无迁移影响）。
+- 测试：`test/evidence-object-match.test.mjs`（G2-1..5）、`test/domain-exemptions.test.mjs`（X1..X7）；全量回归 **114/114**（自有隔离容器 jw-goal01-pg@15446，pg16）。
+
+**性能（A3；接口语义不变）**：getCustomerExposure 批量桶推导（O(1) 查询）、reserve 响应桶由门内快照+增量推导、reverifyBasis/提额证据批量取锁读——全部为读合并与重复消除；门序、锁序、事务边界、失败语义一律不变。量化对照见 `docs/backend-upgrade/goal-01/PERF_BEFORE_AFTER.md`。
