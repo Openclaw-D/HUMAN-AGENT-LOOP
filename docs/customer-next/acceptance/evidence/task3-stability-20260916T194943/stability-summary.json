@@ -1,0 +1,864 @@
+{
+  "schemaVersion": "jw.task3.stability.v1",
+  "startedAt": "2026-09-16T19:49:43.732Z",
+  "finishedAt": "2026-09-16T20:50:01.165Z",
+  "mode": "连续 60 分钟",
+  "totalRounds": 142,
+  "pass": 142,
+  "fail": 0,
+  "note": "每轮独立隔离库/端口，无人工改库补状态；结论只覆盖本次执行时段，不证明永久无故障",
+  "rounds": [
+    {
+      "round": 1,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-01.log"
+    },
+    {
+      "round": 2,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-02.log"
+    },
+    {
+      "round": 3,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-03.log"
+    },
+    {
+      "round": 4,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-04.log"
+    },
+    {
+      "round": 5,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-05.log"
+    },
+    {
+      "round": 6,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-06.log"
+    },
+    {
+      "round": 7,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-07.log"
+    },
+    {
+      "round": 8,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-08.log"
+    },
+    {
+      "round": 9,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-09.log"
+    },
+    {
+      "round": 10,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-10.log"
+    },
+    {
+      "round": 11,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-11.log"
+    },
+    {
+      "round": 12,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-12.log"
+    },
+    {
+      "round": 13,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-13.log"
+    },
+    {
+      "round": 14,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-14.log"
+    },
+    {
+      "round": 15,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-15.log"
+    },
+    {
+      "round": 16,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-16.log"
+    },
+    {
+      "round": 17,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-17.log"
+    },
+    {
+      "round": 18,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-18.log"
+    },
+    {
+      "round": 19,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-19.log"
+    },
+    {
+      "round": 20,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-20.log"
+    },
+    {
+      "round": 21,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-21.log"
+    },
+    {
+      "round": 22,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-22.log"
+    },
+    {
+      "round": 23,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-23.log"
+    },
+    {
+      "round": 24,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-24.log"
+    },
+    {
+      "round": 25,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-25.log"
+    },
+    {
+      "round": 26,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-26.log"
+    },
+    {
+      "round": 27,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-27.log"
+    },
+    {
+      "round": 28,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-28.log"
+    },
+    {
+      "round": 29,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-29.log"
+    },
+    {
+      "round": 30,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-30.log"
+    },
+    {
+      "round": 31,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-31.log"
+    },
+    {
+      "round": 32,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-32.log"
+    },
+    {
+      "round": 33,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-33.log"
+    },
+    {
+      "round": 34,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-34.log"
+    },
+    {
+      "round": 35,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-35.log"
+    },
+    {
+      "round": 36,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-36.log"
+    },
+    {
+      "round": 37,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-37.log"
+    },
+    {
+      "round": 38,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-38.log"
+    },
+    {
+      "round": 39,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-39.log"
+    },
+    {
+      "round": 40,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-40.log"
+    },
+    {
+      "round": 41,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-41.log"
+    },
+    {
+      "round": 42,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-42.log"
+    },
+    {
+      "round": 43,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-43.log"
+    },
+    {
+      "round": 44,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-44.log"
+    },
+    {
+      "round": 45,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-45.log"
+    },
+    {
+      "round": 46,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-46.log"
+    },
+    {
+      "round": 47,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-47.log"
+    },
+    {
+      "round": 48,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-48.log"
+    },
+    {
+      "round": 49,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-49.log"
+    },
+    {
+      "round": 50,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-50.log"
+    },
+    {
+      "round": 51,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-51.log"
+    },
+    {
+      "round": 52,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-52.log"
+    },
+    {
+      "round": 53,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-53.log"
+    },
+    {
+      "round": 54,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-54.log"
+    },
+    {
+      "round": 55,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-55.log"
+    },
+    {
+      "round": 56,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-56.log"
+    },
+    {
+      "round": 57,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-57.log"
+    },
+    {
+      "round": 58,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-58.log"
+    },
+    {
+      "round": 59,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-59.log"
+    },
+    {
+      "round": 60,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-60.log"
+    },
+    {
+      "round": 61,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-61.log"
+    },
+    {
+      "round": 62,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-62.log"
+    },
+    {
+      "round": 63,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-63.log"
+    },
+    {
+      "round": 64,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-64.log"
+    },
+    {
+      "round": 65,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-65.log"
+    },
+    {
+      "round": 66,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-66.log"
+    },
+    {
+      "round": 67,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-67.log"
+    },
+    {
+      "round": 68,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-68.log"
+    },
+    {
+      "round": 69,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-69.log"
+    },
+    {
+      "round": 70,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-70.log"
+    },
+    {
+      "round": 71,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-71.log"
+    },
+    {
+      "round": 72,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-72.log"
+    },
+    {
+      "round": 73,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-73.log"
+    },
+    {
+      "round": 74,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-74.log"
+    },
+    {
+      "round": 75,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-75.log"
+    },
+    {
+      "round": 76,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-76.log"
+    },
+    {
+      "round": 77,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-77.log"
+    },
+    {
+      "round": 78,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-78.log"
+    },
+    {
+      "round": 79,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-79.log"
+    },
+    {
+      "round": 80,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-80.log"
+    },
+    {
+      "round": 81,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-81.log"
+    },
+    {
+      "round": 82,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-82.log"
+    },
+    {
+      "round": 83,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-83.log"
+    },
+    {
+      "round": 84,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-84.log"
+    },
+    {
+      "round": 85,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-85.log"
+    },
+    {
+      "round": 86,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-86.log"
+    },
+    {
+      "round": 87,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-87.log"
+    },
+    {
+      "round": 88,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-88.log"
+    },
+    {
+      "round": 89,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-89.log"
+    },
+    {
+      "round": 90,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-90.log"
+    },
+    {
+      "round": 91,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-91.log"
+    },
+    {
+      "round": 92,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-92.log"
+    },
+    {
+      "round": 93,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-93.log"
+    },
+    {
+      "round": 94,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-94.log"
+    },
+    {
+      "round": 95,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-95.log"
+    },
+    {
+      "round": 96,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-96.log"
+    },
+    {
+      "round": 97,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-97.log"
+    },
+    {
+      "round": 98,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-98.log"
+    },
+    {
+      "round": 99,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-99.log"
+    },
+    {
+      "round": 100,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-100.log"
+    },
+    {
+      "round": 101,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-101.log"
+    },
+    {
+      "round": 102,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-102.log"
+    },
+    {
+      "round": 103,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-103.log"
+    },
+    {
+      "round": 104,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-104.log"
+    },
+    {
+      "round": 105,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-105.log"
+    },
+    {
+      "round": 106,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-106.log"
+    },
+    {
+      "round": 107,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-107.log"
+    },
+    {
+      "round": 108,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-108.log"
+    },
+    {
+      "round": 109,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-109.log"
+    },
+    {
+      "round": 110,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-110.log"
+    },
+    {
+      "round": 111,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-111.log"
+    },
+    {
+      "round": 112,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-112.log"
+    },
+    {
+      "round": 113,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-113.log"
+    },
+    {
+      "round": 114,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-114.log"
+    },
+    {
+      "round": 115,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-115.log"
+    },
+    {
+      "round": 116,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-116.log"
+    },
+    {
+      "round": 117,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-117.log"
+    },
+    {
+      "round": 118,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-118.log"
+    },
+    {
+      "round": 119,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-119.log"
+    },
+    {
+      "round": 120,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-120.log"
+    },
+    {
+      "round": 121,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-121.log"
+    },
+    {
+      "round": 122,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-122.log"
+    },
+    {
+      "round": 123,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-123.log"
+    },
+    {
+      "round": 124,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-124.log"
+    },
+    {
+      "round": 125,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-125.log"
+    },
+    {
+      "round": 126,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-126.log"
+    },
+    {
+      "round": 127,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-127.log"
+    },
+    {
+      "round": 128,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-128.log"
+    },
+    {
+      "round": 129,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-129.log"
+    },
+    {
+      "round": 130,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-130.log"
+    },
+    {
+      "round": 131,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-131.log"
+    },
+    {
+      "round": 132,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-132.log"
+    },
+    {
+      "round": 133,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-133.log"
+    },
+    {
+      "round": 134,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-134.log"
+    },
+    {
+      "round": 135,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-135.log"
+    },
+    {
+      "round": 136,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-136.log"
+    },
+    {
+      "round": 137,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-137.log"
+    },
+    {
+      "round": 138,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-138.log"
+    },
+    {
+      "round": 139,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-139.log"
+    },
+    {
+      "round": 140,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-140.log"
+    },
+    {
+      "round": 141,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-141.log"
+    },
+    {
+      "round": 142,
+      "pass": true,
+      "exitCode": 0,
+      "log": "docs\\customer-next\\acceptance\\evidence\\task3-stability-20260916T194943\\round-142.log"
+    }
+  ]
+}
