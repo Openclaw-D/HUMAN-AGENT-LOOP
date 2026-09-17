@@ -6,7 +6,7 @@ import type { PoolClient } from 'pg';
 import { AppError, conflict, forbidden, invalid, notFound } from './errors.ts';
 import { canonicalHash, sha256 } from './util.ts';
 import type { Config } from '../config.ts';
-import { authenticate, authorizeTenant, requireVerified } from './principal.ts';
+import { authenticate, authorizeCustomer, authorizeTenant, requireVerified } from './principal.ts';
 import type { Kernel } from './kernel.ts';
 
 /** 客户域金额上限（防溢出）：2^53-1 分。 */
@@ -64,9 +64,10 @@ export function optDate(v: unknown, label: string): string | null {
 
 export interface V2Ctx {
   actor: string;
-  kind: 'human' | 'agent';
+  kind: 'human' | 'agent' | 'service';
   roles: string[];
   tenantId: string;
+  customers: 'all' | 'grant';
   scopeHash: string;
   /** 锁内幂等复查（A08/A11）：并发同 requestId 时，后到事务在主锁内先查原效应，
    *  命中同载荷 → 返回原响应（外层 INSERT 幂等表 23505 → 统一 replayed 出口）；
@@ -93,7 +94,8 @@ async function v2CtxOf(kernel: Kernel, frame: RequestFrame, action: string, tena
   const scopeHash = sha256(canonicalHash({ tenant: tenantId, principal: auth.principal.principalId, action }));
   const payloadHash = hashOf(action, frame, resource);
   return {
-    actor: auth.principal.principalId, kind: auth.principal.kind, roles: [...auth.principal.roles], tenantId, scopeHash,
+    actor: auth.principal.principalId, kind: auth.principal.kind, roles: [...auth.principal.roles], tenantId,
+    customers: auth.principal.customers, scopeHash,
     replayed: async (tx: PoolClient): Promise<Record<string, unknown> | null> => {
       const r = await tx.query(
         `SELECT payload_sha256, response FROM v2_idempotency WHERE scope_hash=$1 AND request_id=$2 FOR UPDATE`,
@@ -132,7 +134,8 @@ export async function withCommandV2(
     if (row.payload_sha256 !== payloadHash) {
       throw conflict('IDEMPOTENCY_REPLAY_CONFLICT', `requestId ${requestId} 在本作用域已绑定不同载荷`, { requestId });
     }
-    return { ...row.response, replayed: true };
+    // A1.3/K02：外层命中不直接返回——落回事务，fn 的授权门（客户授权/角色/矩阵/状态）先重验，
+    // 再由 ctx.replayed 在锁内返回原回执。撤权/改派后重放不得借缓存绕权。
   }
   try {
     return await runTxV2(pool, async (tx) => {
@@ -245,14 +248,34 @@ export async function requireMatrixPermission(
   return { role: hit.role, ref: `${cfg.creditMatrixVersion}|${hit.role}|${action}` };
 }
 
-/** 行级租户鉴权：越权统一 NOT_FOUND（不泄露存在性，A10）。 */
-export async function scopeByRow(kernel: Kernel, frame: { credential?: unknown }, tenantId: string): Promise<void> {
+/** 行级租户+客户鉴权（A10 + 任务01 A1/K03）：越权统一 NOT_FOUND（不泄露存在性）。
+ *  customerId 提供时同时执行客户级授权（'grant' 模式查 principal_customer_grants，撤权即刻生效）。 */
+export async function scopeByRow(
+  kernel: Kernel, frame: { credential?: unknown }, tenantId: string, customerId?: string,
+): Promise<void> {
   const auth = await authenticate(kernel.verifierForV2(), frame.credential);
   requireVerified(auth);
   try {
     authorizeTenant(auth.principal, tenantId);
+    if (customerId !== undefined) await authorizeCustomer(auth.principal, customerId, kernel.pool);
   } catch {
     throw notFound('资源不存在');
+  }
+}
+
+/** 命令内客户级授权（create 型命令：customerId 在路径上、行锁后执行；'grant' 模式查登记表）。
+ *  越权统一 NOT_FOUND（A10/K03：不区分"不存在"与"无权"，不泄露存在性）。 */
+export async function requireCustomerScope(
+  ctx: V2Ctx, customerId: string,
+  q: { query(sql: string, values?: unknown[]): Promise<{ rows: unknown[] }> },
+): Promise<void> {
+  if (ctx.customers === 'all') return;
+  const r = await q.query(
+    `SELECT 1 FROM principal_customer_grants WHERE principal_id=$1 AND customer_id=$2`,
+    [ctx.actor, customerId],
+  );
+  if (r.rows.length === 0) {
+    throw notFound('客户不存在');
   }
 }
 
@@ -269,7 +292,7 @@ export async function lookupCustomer(kernel: Kernel, credential: unknown, custom
   const res = await kernel.pool.query(`SELECT * FROM customers WHERE customer_id=$1`, [customerId]);
   if (res.rows.length === 0) throw notFound('客户不存在');
   const row = res.rows[0] as Record<string, unknown>;
-  await scopeByRow(kernel, { credential }, row.tenant_id as string);
+  await scopeByRow(kernel, { credential }, row.tenant_id as string, customerId);
   return row;
 }
 

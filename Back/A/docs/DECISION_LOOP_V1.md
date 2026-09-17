@@ -34,7 +34,7 @@
 
 1. **同源不重复计证**（3.1/B01）：派生材料必须声明 `provenance.derivedFrom`；核验等级不得高于上游；独立证明按根归并计数（评估快照/依据包/清单三处一致）。
 2. **差异必须有结果**（3.2/B02–B04）：resolution ∈ explained_verified | adverse_confirmed | pending_evidence | not_applicable；关闭关键复核必须引用满足 `requiredAction`（kind 匹配 + 等级达标 + 现行）的证据；ack/口述/模型解释仅留痕；硬红线（ruleRef.nonWaivable）不接受 not_applicable，未批准例外政策 → POLICY_PENDING。
-3. **依据包冻结与当前性**（3.3/B05/B06）：包按修订冻结（不可变行，新材料进新修订）；域依赖声明 + 摘要在冻结/域结果登记时落定；读时逐域复算——依赖已变的域必须更新，未变域复用；required 域无结果记录 = 缺失；就绪 = 全域 current + Gate ∈ {CLEAR, HOLD_FOR_REVIEW} + 无阻断性未决差异 + 检查收口已知（closureStatus ∈ ready_for_assessment/closed，未知不当作通过）。
+3. **依据包冻结与当前性**（3.3/B05/B06）：包按修订冻结（不可变行，新材料进新修订）；域依赖声明 + 摘要在冻结/域结果登记时落定；读时逐域复算——依赖已变的域必须更新，未变域复用；required 域无结果记录 = 缺失；就绪 = 全域 current + Gate 结论可信且未被换版失效 + 无阻断性未决差异 + 检查收口已知（closureStatus ∈ ready_for_assessment/closed，未知不当作通过）。【2026-09-17 修订（PR#3 审核 F02，CONTRACT §9 v2.2）：HOLD_FOR_REVIEW 不再视为就绪通过——HOLD 产出 GATE_HOLD_FOR_REVIEW 缺口，须人工复核后以新回执重新登记；Gate 规则版本 ≠ 当前激活版本 → GATE_STALE_RULES。旧表述"Gate ∈ {CLEAR, HOLD_FOR_REVIEW}"作废。】
 4. **提交点复查**（3.4/B07/B08）：approve/activate/reserve 在事务内机械复查——客户级未决差异（动作级匹配）→ 依据包当前性/Gate → 现有额度/冷却校验；全部定案前零写入。批准完成后出现不利证据不改写历史，仅阻断后续用信。
 5. **提额冷却**（B11）：`--credit-cooling-seconds` 显式配置才启用（未配置=机制不存在，不编造默认）；对"已有非零批准额之上"的提额批准设置 cooling_until；期内差异复核照常、新动作先被 REVIEW_REQUIRED 阻断（复核不等待冷却），差异关闭后仍受 COOLING_ACTIVE 限制。
 6. **报告是投影**（3.5/B12/B13）：生成=纯读+追加一行；幂等键=(kind, subjectId, 业务状态哈希)，同状态重生成返回同一行；客户版服务端白名单组装，内部字段（gate/ruleIds/阈值/authority/金额）不进投影；customer-only principal 打内部报告/事件/证据地址一律 403。

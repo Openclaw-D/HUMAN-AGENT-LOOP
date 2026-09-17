@@ -144,3 +144,32 @@ blocked ──(deps accepted+输入kind当前证据齐备)──▶ ready ──
 - **v2.1 决策闭环**（任务02；客户授信之上的交付收口）：差异复核（decision_findings）、评估依据包（decision_packages/package_domain_results，冻结修订+逐域当前性）、会后授权视图（report_views，internal/customer 分受众）、对象显式重关联（object_relinks）、提额冷却（credit_facilities.cooling_until，`--credit-cooling-seconds` 显式配置才启用）。API/事件/语义见 `A/docs/DECISION_LOOP_V1.md`；错误码新增 REVIEW_REQUIRED / REVIEW_EVIDENCE_REQUIRED / GATE_BLOCKED / COOLING_ACTIVE（errors.ts）。迁移 004 号位归任务02；003 号位为任务一 `003_inspection_sessions.sql`。v1（§0–§7）语义不变。
 - **检查会话域**（任务一）：设计见 `A/docs/INSPECTION_SESSION_V1.md`（错误码 PLAN_CHANGED 等 11 项已在 errors.ts 登记）。
 - 本节为登记性指针，不改变 §0–§7 已冻结文字的效力。
+
+## 9｜v2.2 增量契约登记（2026-09-17，PR#3 审核修复轮·任务01 集成 writer）
+
+来源：`JW_PR3_independent_audit_and_four_tasks` 任务01（审核 F01/F02/F03/F04/F06/F10/F12；范围 Back/A/**、共享契约与迁移）。审核基线 870e149。v1（§0–§7）语义除下述显式修订外不变。
+
+**A1 权限与幂等（F01；迁移 005）**
+- 身份模型新增 `kind:"service"`（获准服务身份）与 `Principal.customers:'all'|'grant'`；`grant` 模式的可见客户以 `principal_customer_grants` 登记表为准（admin 经 `POST/DELETE /api/v2/customers/:id/grants` 管理），撤销即刻生效。
+- **幂等回执归属**：v1 `idempotency` 表新增 `principal_id/op` 列；鉴权先于任何缓存查询；同主体同载荷重放返回原回执，跨主体同 requestId 一律 409 `REQUEST_MISMATCH`（legacy 无主行仅 admin 可读）。v2 `withCommandV2` 外层命中不再直接返回——落回事务经该命令全部授权门后由锁内 `replayed` 出口返回（撤权后重放不得借缓存）。幂等载荷哈希绑定 principal。
+- **读口授权**：v1 项目/目标/待办/模板/事件/回执 GET 一律要求已验证身份并按项目/租户/客户授权；`GET /api/v1/events` 按 principal 的项目+租户+客户授权过滤（客户事件按 grants），全局事件（无 project/customer）对已验证主体可见。检查会话 GET/next-actions/summary 要求 verified + 项目/租户/客户授权 + 名册角色或 admin；匿名 403、越权统一 404（不泄露存在性）。
+- **客户级授权**：v2 全部读/写路径在租户校验之上增加客户校验（`scopeByRow` 增第四参 customerId；create 型命令 `requireCustomerScope`）；越权统一 NOT_FOUND。
+- 检查会话命令幂等键绑定主体；重放前按当前授权状态重验（owner/名册/客户授权）。`recordDomainResult` 要求对应域目录角色（policy/credit/commerce/asset）；证据核验等级提升仅限获准核验角色，客户申报恒为 unverified。
+
+**A2 可信依据（F02/F03/F06；迁移 006）**
+- **Gate 只来自可信回执**：新表 `rule_gate_receipts`；仅 kind=service 身份可登记（`POST /api/v2/customers/:id/rule-gate-receipts`），`rulesetVersion` 必须是当前激活版本；`createPackage/revisePackage/recordGateResult` 拒绝自由 JSON gate（400），只接受 `gateReceiptId`。规则版本激活：`POST /api/v2/rule-pack-versions/activate`（policy 或 admin 人类），同一时刻至多一个 active（`rule_pack_versions`）。
+- **分析运行登记**：新表 `analysis_runs`；service 身份 `POST .../analysis-runs/start`（A 按声明依赖对当时 DB 盖章 input_digest）→ `finish`；域结果登记只接受已登记且 `completed` 的运行（failed/timeout/not_configured → 409 `ANALYSIS_RUN_NOT_COMPLETED`，不产生 opinionVersion）；域水位=运行开始盖章摘要，晚到材料 → 该域读时判 `changed/deps_changed`，不重新盖章 current。
+- **必需域政策**：`--required-domains-policy <version>` 指向 `domain_requirement_policies`；未配置 → 冻结一律 409 `POLICY_PENDING`（fail-closed）；政策必需域不由调用者关闭，确不适用须显式 `exemptions[{domain,reason,approvedBy,scope}]` 入包可审计。收口引用只收 `inspectionRevision.sessionId`，修订/状态由服务端解析（假会话 404）。
+- **HOLD_FOR_REVIEW 是缺口不是通过**（修订 DECISION_LOOP_V1 §2.3 旧表述）：evaluateReadiness 对 HOLD 产出 `GATE_HOLD_FOR_REVIEW` 缺口；Gate 规则版本 ≠ 激活版本 → `GATE_STALE_RULES`（域级 reason `rule_version_changed`）；两者在提交点分别映射 GATE_BLOCKED / STALE_BASIS。换版后允许在同一包上按"当前激活版本"重登记该域结果（域状态随结果推进版本）。
+- **正式路径必须绑定依据包**：`proposeFacility` 无 `packageId` → 409 `BASIS_PACKAGE_REQUIRED`；存量无包 basis 的批准/激活/用信默认阻断（旧行只读保留），显式 `--allow-legacy-basis` 兼容核才放行（走评估复查路径）。派生工件冻结时上游缺失/被取代 → 拒绝并给出 `upstream_missing/upstream_superseded` 具体缺口；`GET .../artifacts` 返回 `derivationGaps` 逐件可见。
+
+**A3 台账与提额（F04/F10/F12；迁移 007）**
+- 用信命令（reserve/release/commit/disburse/settle/confirm-external）在客户锁/设施锁之后强制重读申请行（FOR UPDATE）；`exposure_entries` 新增部分唯一索引 `(fr_id, entry_type)`（同一申请同一业务迁移至多一条账目，第二层去重）。
+- commit/disburse 提交点机械复查：设施硬状态（暂停/过期/超限/依据失效，`FACILITY_NOT_ACTIVE`/`STALE_BASIS`）→ 客户级未决差异（REVIEW_REQUIRED）→ 依据包当前性（commit 及 reserve；**disburse 为已承诺敞口的执行，不重复当前性门**——新承诺已在 commit 拦截，后来不利信息不追溯冻结既有负债）。
+- **冷却口径收窄（修订 B11 旧表述）**：`cooling_active` 仅如实展示并硬阻断"激活/恢复"与"客户级向上提额申请"；不再冻结既有合法用信的可用额、不再阻断 reserve（无说明扩大被移除）。既有合同不被自动改写；负面核验与差异复核不受冷却阻挡。
+- **客户级提额（再评估）请求**（新表 `credit_limit_requests`）：`POST /api/v2/customers/:id/limit-increase-requests`（human business/credit）——冷却内不受理（COOLING_ACTIVE）、在途唯一（`LIMIT_INCREASE_IN_FLIGHT`）、再申请间隔与次数窗口（`LIMIT_INCREASE_WINDOW`+`nextEligibleAt`，`--limit-increase-retry-hours/-window-days/-max-per-window` 显式配置）、实质新证据（引用本客户历史请求未用过的现行工件，否则 `LIMIT_INCREASE_NO_NEW_EVIDENCE`）；`POST /api/v2/limit-increase-requests/:requestId/resolve`（credit/approver 人类）处置并写 next_eligible_at；限制客户级持久、跨渠道/业务员不可绕行、重试经 requestId 幂等不重复计数、非法载荷零写入。
+- 账目聚合遇超安全整数 → 500 INTERNAL 显式失败（不静默舍入）；检查会话提问/回答沿用会话乐观版本语义（提问 +1）。
+
+**旧测试适配（语义保留）**：decision-loop B01–B14 经新机器重放（Gate 回执+服务身份运行登记+政策必需域+真实收口会话，域结果由持域角色/服务身份登记）；customer-credit/ledger-property 等 legacy 用信流加 `--allow-legacy-basis`；A22 迁移清单更新为 001–007。新增测试：`trust-gates-a1/a2`（K01–K11）、`ledger-races-a3`（K12–K18，真实 PG 客户锁屏障并发）。全量回归 102 项：101 pass / 0 fail / 1 skip（crash 容器重启用例按边界守卫跳过）。
+
+**接口破坏提示（任务03/Edge 消费方）**：`GET /api/v1/events`、`/api/v1/receipts/:requestId`、`/api/v1/inspections/:id(+/next-actions)` 现要求 `X-Principal-Credential` 并按授权过滤；匿名调用 403。Edge 面板与 E1 需携带获准凭据后重跑（任务03 范围）。

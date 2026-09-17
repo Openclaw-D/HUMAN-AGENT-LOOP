@@ -113,18 +113,18 @@ export function startHttpServer(kernel: Kernel, port: number): Promise<Server> {
     const cred = (body: Record<string, unknown> | undefined, req: IncomingMessage): unknown =>
       req.headers['x-principal-credential'] ??
       (body !== null && typeof body === 'object' ? (body as Record<string, unknown>).principalCredential : undefined);
-    route('GET', '/api/v1/templates/:templateId', async (_q, _s, p) => k.getTemplate(S(p.templateId)));
+    route('GET', '/api/v1/templates/:templateId', async (_q, _s, p, _sp, body) => k.getTemplate(S(p.templateId), cred(body, _q)));
     route('POST', '/api/v1/templates', async (_q, _s, _p, _sp, body) => k.createTemplate(F(body)));
     route('POST', '/api/v1/projects', async (_q, _s, _p, _sp, body) => k.createProject(F(body)));
-    route('GET', '/api/v1/projects/:projectId', async (_q, _s, p) => k.getProject(S(p.projectId)));
+    route('GET', '/api/v1/projects/:projectId', async (_q, _s, p, _sp, body) => k.getProject(S(p.projectId), cred(body, _q)));
     route('POST', '/api/v1/projects/:projectId/goals', async (_q, _s, p, _sp, body) => k.createGoal(F(body), S(p.projectId)));
-    route('GET', '/api/v1/projects/:projectId/human-requests', async (_q, _s, p) => k.listHumanRequests(S(p.projectId)));
+    route('GET', '/api/v1/projects/:projectId/human-requests', async (_q, _s, p, _sp, body) => k.listHumanRequests(S(p.projectId), cred(body, _q)));
     route('POST', '/api/v1/projects/:projectId/human-requests', async (_q, _s, p, _sp, body) => k.createHumanRequest(F(body), S(p.projectId)));
     route('POST', '/api/v1/projects/:projectId/evidence', async (_q, _s, p, _sp, body) => k.submitEvidence(F(body), S(p.projectId)));
     route('POST', '/api/v1/projects/:projectId/evidence/:evidenceId/supersede', async (_q, _s, p, _sp, body) => k.supersedeEvidence(F(body), S(p.projectId), S(p.evidenceId)));
     route('POST', '/api/v1/projects/:projectId/pause', async (_q, _s, p, _sp, body) => k.projectPause(F(body), S(p.projectId)));
     route('POST', '/api/v1/projects/:projectId/resume', async (_q, _s, p, _sp, body) => k.projectResume(F(body), S(p.projectId)));
-    route('GET', '/api/v1/goals/:goalId', async (_q, _s, p) => k.getGoal(S(p.goalId)));
+    route('GET', '/api/v1/goals/:goalId', async (_q, _s, p, _sp, body) => k.getGoal(S(p.goalId), cred(body, _q)));
     route('POST', '/api/v1/goals/:goalId/claim', async (_q, _s, p, _sp, body) => k.claim(F(body), S(p.goalId)));
     route('POST', '/api/v1/goals/:goalId/complete', async (_q, _s, p, _sp, body) => k.complete(F(body), S(p.goalId)));
     route('POST', '/api/v1/goals/:goalId/fail', async (_q, _s, p, _sp, body) => k.failExecution(F(body), S(p.goalId)));
@@ -135,20 +135,22 @@ export function startHttpServer(kernel: Kernel, port: number): Promise<Server> {
     route('POST', '/api/v1/goals/:goalId/takeover', async (_q, _s, p, _sp, body) => k.takeover(F(body), S(p.goalId)));
     route('POST', '/api/v1/human-requests/:hrequestId/respond', async (_q, _s, p, _sp, body) => k.respondHumanRequest(F(body), S(p.hrequestId)));
     route('POST', '/api/v1/human-requests/:hrequestId/cancel', async (_q, _s, p, _sp, body) => k.cancelHumanRequest(F(body), S(p.hrequestId)));
-    route('GET', '/api/v1/events', async (_q, _s, _p, sp) => {
+    route('GET', '/api/v1/events', async (_q, _s, _p, sp, body) => {
         const after = Number(sp.get('after') ?? 0);
         const limit = Number(sp.get('limit') ?? 100);
         if (!Number.isFinite(after) || !Number.isFinite(limit)) {
-            throw new AppError('INVALID_INPUT', 'after/limit 必须是数字');
+          throw new AppError('INVALID_INPUT', 'after/limit 必须是数字');
         }
-        return k.pullEvents(after, limit);
-    });
+        return k.pullEvents(cred(body, _q), after, limit);
+      });
     route('POST', '/api/v1/subscriptions', async (_q, _s, _p, _sp, body) => k.subscribe(F(body)));
-    route('GET', '/api/v1/receipts/:requestId', async (_q, _s, p) => k.getReceipt(S(p.requestId)));
+    route('GET', '/api/v1/receipts/:requestId', async (_q, _s, p, _sp, body) => k.getReceipt(S(p.requestId), cred(body, _q)));
 
     // ---- v2 客户授信内核（任务01；契约见 docs/customer-next/S1_API_V2_SCHEMA_PROPOSAL.md）----
     const C = k.v2;
     route('POST', '/api/v2/customers', async (_q, _s, _p, _sp, body) => C.createCustomer(F(body)));
+    route('POST', '/api/v2/customers/:customerId/grants', async (_q, _s, p, _sp, body) => C.grantCustomerAccess(F(body), S(p.customerId)));
+    route('DELETE', '/api/v2/customers/:customerId/grants/:principalId', async (_q, _s, p, _sp, body) => C.revokeCustomerAccess(F(body), S(p.customerId), S(p.principalId)));
     route('GET', '/api/v2/customers/:customerId', async (_q, _s, p, _sp, body) => C.getCustomer(cred(body, _q), S(p.customerId)));
     route('POST', '/api/v2/customers/:customerId/relationships', async (_q, _s, p, _sp, body) => C.declareRelationship(F(body), S(p.customerId)));
     route('GET', '/api/v2/customers/:customerId/relationships', async (_q, _s, p, _sp, body) => C.listRelationships(cred(body, _q), S(p.customerId)));
@@ -204,11 +206,21 @@ export function startHttpServer(kernel: Kernel, port: number): Promise<Server> {
     route('GET', '/api/v2/reports/:reportId', async (_q, _s, p, sp, body) => C.getReport(cred(body, _q), S(p.reportId), sp.get('format')));
     route('GET', '/api/v2/financing-requests/:frId/use-readiness', async (_q, _s, p, _sp, body) => C.getUseReadiness(cred(body, _q), S(p.frId)));
 
+    route('POST', '/api/v2/customers/:customerId/limit-increase-requests', async (_q, _s, p, _sp, body) => C.createLimitIncreaseRequest(F(body), S(p.customerId)));
+    route('POST', '/api/v2/limit-increase-requests/:requestId/resolve', async (_q, _s, p, _sp, body) => C.resolveLimitIncreaseRequest(F(body), S(p.requestId)));
+
+    // ---- 任务01 A2 可信规则回执通道 ----
+    const AN = k.analysis;
+    route('POST', '/api/v2/rule-pack-versions/activate', async (_q, _s, _p, _sp, body) => AN.activateRulePack(F(body)));
+    route('POST', '/api/v2/customers/:customerId/rule-gate-receipts', async (_q, _s, p, _sp, body) => AN.registerGateReceipt(F(body), S(p.customerId)));
+    route('POST', '/api/v2/customers/:customerId/analysis-runs/start', async (_q, _s, p, _sp, body) => AN.startAnalysisRun(F(body), S(p.customerId)));
+    route('POST', '/api/v2/analysis-runs/:runId/finish', async (_q, _s, p, _sp, body) => AN.finishAnalysisRun(F(body), S(p.runId)));
+
     // ---- 检查会话（任务一；契约见 Back/A/docs/INSPECTION_SESSION_V1.md）----
     const IX = k.ix;
     route('POST', '/api/v1/projects/:projectId/inspections', async (_q, _s, p, _sp, body) => IX.createSession(F(body), S(p.projectId)));
-    route('GET', '/api/v1/inspections/:sessionId', async (_q, _s, p) => IX.getSession(S(p.sessionId)));
-    route('GET', '/api/v1/inspections/:sessionId/next-actions', async (_q, _s, p) => IX.getNextActions(S(p.sessionId)));
+    route('GET', '/api/v1/inspections/:sessionId', async (_q, _s, p, _sp, body) => IX.getSession(S(p.sessionId), cred(body, _q)));
+    route('GET', '/api/v1/inspections/:sessionId/next-actions', async (_q, _s, p, _sp, body) => IX.getNextActions(S(p.sessionId), cred(body, _q)));
     route('POST', '/api/v1/inspections/:sessionId/plan', async (_q, _s, p, _sp, body) => IX.revisePlan(F(body), S(p.sessionId)));
     route('POST', '/api/v1/inspections/:sessionId/scene', async (_q, _s, p, _sp, body) => IX.reviseScene(F(body), S(p.sessionId)));
     route('POST', '/api/v1/inspections/:sessionId/start', async (_q, _s, p, _sp, body) => IX.startSession(F(body), S(p.sessionId)));

@@ -5,7 +5,7 @@
 import type { PoolClient } from 'pg';
 import { AppError, conflict, forbidden, invalid, notFound } from './errors.ts';
 import { canonicalHash, newId, sha256, uuid } from './util.ts';
-import { authenticate, authorizeProject, requireAdmin, requireVerified, type Auth } from './principal.ts';
+import { authenticate, authorizeCustomer, authorizeProject, authorizeTenant, requireAdmin, requireVerified, type Auth } from './principal.ts';
 import type { Kernel } from './kernel.ts';
 
 const RUN_STATUSES = ['preparing', 'ready', 'in_progress', 'suspended', 'ended'] as const;
@@ -149,36 +149,51 @@ function isUniqueViolation(error: unknown): boolean {
   return typeof error === 'object' && error !== null && (error as { code?: string }).code === '23505';
 }
 
+/** 会话命令统一入口（任务01 A1.3；X03 反例关闭）：鉴权先于任何缓存回执；
+ *  幂等归属绑定 principal（跨主体同 requestId → REQUEST_MISMATCH）；重放路径经 guard 按当前
+ *  授权状态重验（撤权/改派后不得借缓存绕权；A1.4：有效重放返回同一业务回执，不重做历史交易）。 */
 async function withIxCommand(
   kernel: Kernel, frame: RequestFrame, op: string, resource: Record<string, unknown>,
   fn: (tx: PoolClient, h: IxHelpers, auth: Auth) => Promise<Record<string, unknown>>,
+  guard?: (auth: Auth) => Promise<void>,
 ): Promise<Record<string, unknown>> {
   const { requestId } = frame;
   if (typeof requestId !== 'string' || requestId.length < 1 || requestId.length > 128) {
     throw invalid('requestId 必须是 1..128 长度的 string');
   }
-  const payloadHash = canonicalHash({ op, resource, payload: withoutRequestCred(frame) });
-  const prior = await kernel.pool.query(`SELECT payload_sha256, response FROM idempotency WHERE request_id = $1`, [requestId]);
+  const auth = await kernel.authOf(frame.credential);
+  const principalId = auth.principal.principalId;
+  const isAdmin = auth.principal.roles.includes('admin');
+  const payloadHash = canonicalHash({ op, resource, payload: withoutRequestCred(frame), principal: principalId });
+  const prior = await kernel.pool.query(`SELECT payload_sha256, response, principal_id FROM idempotency WHERE request_id = $1`, [requestId]);
   if (prior.rows.length > 0) {
-    const row = prior.rows[0] as { payload_sha256: string; response: Record<string, unknown> };
+    const row = prior.rows[0] as { payload_sha256: string; response: Record<string, unknown>; principal_id: string | null };
+    ixReplayOwnership(row, principalId, requestId, isAdmin);
     if (row.payload_sha256 !== payloadHash) throw conflict('REQUEST_MISMATCH', `requestId ${requestId} 已绑定不同载荷（幂等一致性保护）`);
+    if (guard !== undefined) await guard(auth);
     return { ...row.response, replayed: true };
   }
   try {
     return await runIxTx(kernel, async (tx) => {
-      const auth = await kernel.authOf(frame.credential);
       const h = ixHelpers(tx);
       const response = await fn(tx, h, auth);
-      await tx.query(`INSERT INTO idempotency (request_id, payload_sha256, response) VALUES ($1,$2,$3)`, [requestId, payloadHash, JSON.stringify(response)]);
+      await tx.query(
+        `INSERT INTO idempotency (request_id, payload_sha256, response, principal_id, op) VALUES ($1,$2,$3,$4,$5)`,
+        [requestId, payloadHash, JSON.stringify(response), principalId, op],
+      );
       return response;
     });
   } catch (error) {
     if (error instanceof AppError) throw error;
     if (isUniqueViolation(error)) {
-      const again = await kernel.pool.query(`SELECT payload_sha256, response FROM idempotency WHERE request_id = $1`, [requestId]);
+      const again = await kernel.pool.query(`SELECT payload_sha256, response, principal_id FROM idempotency WHERE request_id = $1`, [requestId]);
       if (again.rows.length > 0) {
-        const row = again.rows[0] as { payload_sha256: string; response: Record<string, unknown> };
-        if (row.payload_sha256 === payloadHash) return { ...row.response, replayed: true };
+        const row = again.rows[0] as { payload_sha256: string; response: Record<string, unknown>; principal_id: string | null };
+        ixReplayOwnership(row, principalId, requestId, isAdmin);
+        if (row.payload_sha256 === payloadHash) {
+          if (guard !== undefined) await guard(auth);
+          return { ...row.response, replayed: true };
+        }
         throw conflict('REQUEST_MISMATCH', `requestId ${requestId} 已绑定不同载荷（幂等一致性保护）`);
       }
     }
@@ -186,32 +201,70 @@ async function withIxCommand(
   }
 }
 
+/** 幂等回执归属（A1.3）：同主体可重放；异主体/legacy 无主行 → REQUEST_MISMATCH（admin 豁免 legacy）。 */
+function ixReplayOwnership(row: { principal_id: string | null }, principalId: string, requestId: string, isAdmin: boolean): void {
+  if (row.principal_id === principalId) return;
+  if (row.principal_id === null && isAdmin) return;
+  void requestId;
+  throw conflict('REQUEST_MISMATCH', `requestId 属于其他 principal：不泄露他人回执`);
+}
+
+/** 会话访问授权（A1.1/A1.2）：verified + 项目授权 + 租户授权；越权统一 NOT_FOUND（不泄露存在性）。 */
+  async function authorizeSessionAccess(
+    q: { query(sql: string, values?: unknown[]): Promise<{ rows: unknown[] }> },
+    auth: Auth, sessionId: string, forUpdate: boolean,
+  ): Promise<SessionRow> {
+    const session = await sessionOr404(q, sessionId, forUpdate);
+    requireVerified(auth);
+    try {
+      authorizeProject(auth.principal, session.project_id);
+      authorizeTenant(auth.principal, session.tenant_id);
+      await authorizeCustomer(auth.principal, session.customer_id, q);
+    } catch {
+      throw notFound('检查会话不存在');
+    }
+    return session;
+  }
+
+/** 名册任一角色（提问/协作面）：principal 至少持有会话名册中的一个角色。 */
+function requireRosterAny(auth: Auth, session: SessionRow): void {
+  requireVerified(auth);
+  if (session.roles.some((r) => auth.principal.roles.includes(r.roleKey))) return;
+  throw forbidden('ROLE_FORBIDDEN', 'principal 不在会话名册中');
+}
+
 // ---------------------------------------------------------------------------
 // 行加载与会话守卫
 // ---------------------------------------------------------------------------
 
-async function sessionOr404(tx: PoolClient, sessionId: string, forUpdate = false): Promise<SessionRow> {
+/** 最小查询面（Pool 与 PoolClient 皆满足）：只读辅助不再强制事务连接。 */
+interface IxQueryable { query(sql: string, values?: unknown[]): Promise<{ rows: unknown[] }> }
+
+async function sessionOr404(
+  tx: { query(sql: string, values?: unknown[]): Promise<{ rows: unknown[] }> },
+  sessionId: string, forUpdate = false,
+): Promise<SessionRow> {
   const res = await tx.query(forUpdate ? `SELECT * FROM inspection_sessions WHERE session_id = $1 FOR UPDATE` : `SELECT * FROM inspection_sessions WHERE session_id = $1`, [sessionId]);
   if (res.rows.length === 0) throw notFound('检查会话不存在');
-  return res.rows[0] as unknown as SessionRow;
+  return res.rows[0] as SessionRow;
 }
 
-async function loadItems(tx: PoolClient, sessionId: string): Promise<ItemRow[]> {
+async function loadItems(tx: IxQueryable, sessionId: string): Promise<ItemRow[]> {
   const res = await tx.query(`SELECT * FROM inspection_items WHERE session_id = $1 ORDER BY created_at`, [sessionId]);
   return res.rows as unknown as ItemRow[];
 }
 
-async function loadQuestions(tx: PoolClient, sessionId: string): Promise<QuestionRow[]> {
+async function loadQuestions(tx: IxQueryable, sessionId: string): Promise<QuestionRow[]> {
   const res = await tx.query(`SELECT * FROM inspection_questions WHERE session_id = $1 ORDER BY created_at`, [sessionId]);
   return res.rows as unknown as QuestionRow[];
 }
 
-async function loadOutbound(tx: PoolClient, sessionId: string): Promise<OutboundRow[]> {
+async function loadOutbound(tx: IxQueryable, sessionId: string): Promise<OutboundRow[]> {
   const res = await tx.query(`SELECT * FROM inspection_outbound WHERE session_id = $1 ORDER BY created_at`, [sessionId]);
   return res.rows as unknown as OutboundRow[];
 }
 
-async function loadFollowups(tx: PoolClient, sessionId: string): Promise<FollowupRow[]> {
+async function loadFollowups(tx: IxQueryable, sessionId: string): Promise<FollowupRow[]> {
   const res = await tx.query(`SELECT * FROM inspection_followups WHERE session_id = $1 ORDER BY created_at`, [sessionId]);
   return res.rows as unknown as FollowupRow[];
 }
@@ -275,7 +328,7 @@ function availableActionsOf(session: SessionRow): string[] {
 // 核验项状态推导与收口推导（唯一事实源：items/questions/evidence_artifacts）
 // ---------------------------------------------------------------------------
 
-async function currentArtifactKinds(tx: PoolClient, customerId: string): Promise<Set<string>> {
+async function currentArtifactKinds(tx: IxQueryable, customerId: string): Promise<Set<string>> {
   const res = await tx.query(
     `SELECT kind FROM evidence_artifacts WHERE customer_id = $1 AND superseded_by IS NULL AND duplicate_of IS NULL`,
     [customerId],
@@ -522,8 +575,8 @@ async function touchEventSeq(tx: PoolClient, sessionId: string): Promise<void> {
 
 export interface InspectionApi {
   createSession(frame: RequestFrame, projectId: string): Promise<Record<string, unknown>>;
-  getSession(sessionId: string): Promise<Record<string, unknown>>;
-  getNextActions(sessionId: string): Promise<Record<string, unknown>>;
+  getSession(sessionId: string, credential: unknown): Promise<Record<string, unknown>>;
+  getNextActions(sessionId: string, credential: unknown): Promise<Record<string, unknown>>;
   revisePlan(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>>;
   reviseScene(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>>;
   startSession(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>>;
@@ -549,9 +602,21 @@ export interface InspectionApi {
 }
 
 export function buildInspectionCommands(kernel: Kernel): InspectionApi {
+  /** 重放守卫工厂：缓存回执返回前按当前授权状态重验（A1.3/A1.4；撤权后不得借缓存）。 */
+  const ownerGuard = (sessionId: string) => async (auth: Auth): Promise<void> => {
+    const s = await authorizeSessionAccess(kernel.pool, auth, sessionId, false);
+    requireOwner(auth, s);
+  };
+  const accessGuard = (sessionId: string) => async (auth: Auth): Promise<void> => {
+    await authorizeSessionAccess(kernel.pool, auth, sessionId, false);
+  };
   // ---- 会话生命周期 ---------------------------------------------------------
 
   async function createSession(frame: RequestFrame, projectId: string): Promise<Record<string, unknown>> {
+    const guard = async (auth: Auth): Promise<void> => {
+      requireVerified(auth);
+      authorizeProject(auth.principal, projectId);
+    };
     return withIxCommand(kernel, frame, 'inspection-create', { projectId }, async (tx, h, auth) => {
       requireVerified(auth);
       authorizeProject(auth.principal, projectId);
@@ -602,20 +667,24 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       });
       await touchEventSeq(tx, sessionId);
       return { ok: true, sessionId, runStatus: 'preparing', closureStatus: 'open', planVersion: 1 };
-    });
+    }, guard);
   }
 
-  async function getSession(sessionId: string): Promise<Record<string, unknown>> {
-    const client = await kernel.pool.connect();
-    try {
-      const session = await sessionOr404(client, sessionId);
-      return { ok: true, snapshot: await snapshotOf(client, session) };
-    } finally {
-      client.release();
-    }
+  /** 读会话授权（A1.2/K01）：verified + 项目/租户授权 + 名册角色或 admin；越权统一 404。 */
+  async function readSessionAuthorized(credential: unknown, sessionId: string): Promise<SessionRow> {
+    const auth = await kernel.authOf(credential);
+    const session = await authorizeSessionAccess(kernel.pool, auth, sessionId, false);
+    const isRoster = auth.principal.roles.includes('admin') || session.roles.some((r) => auth.principal.roles.includes(r.roleKey));
+    if (!isRoster) throw notFound('检查会话不存在');
+    return session;
   }
 
-  async function snapshotOf(tx: PoolClient, session: SessionRow): Promise<Record<string, unknown>> {
+  async function getSession(sessionId: string, credential: unknown): Promise<Record<string, unknown>> {
+    const session = await readSessionAuthorized(credential, sessionId);
+    return { ok: true, snapshot: await snapshotOf(kernel.pool, session) };
+  }
+
+  async function snapshotOf(tx: IxQueryable, session: SessionRow): Promise<Record<string, unknown>> {
     const items = await loadItems(tx, session.session_id);
     const questions = await loadQuestions(tx, session.session_id);
     const outbound = await loadOutbound(tx, session.session_id);
@@ -666,10 +735,10 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
   }
 
   /** 缺口驱动的下一步：由必要核验项/依赖/负责角色/目标回答人/当前证据版本推导；不由动画或固定脚本驱动。 */
-  async function getNextActions(sessionId: string): Promise<Record<string, unknown>> {
-    const client = await kernel.pool.connect();
-    try {
-      const session = await sessionOr404(client, sessionId);
+  async function getNextActions(sessionId: string, credential: unknown): Promise<Record<string, unknown>> {
+    const session = await readSessionAuthorized(credential, sessionId);
+    const client = kernel.pool;
+    {
       const items = await loadItems(client, session.session_id);
       const questions = await loadQuestions(client, session.session_id);
       const followups = await loadFollowups(client, session.session_id);
@@ -740,8 +809,6 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
         verifiedCount: actions.filter((a) => a.status === 'verified').length,
         blockedReasons: sessionBlocked,
       };
-    } finally {
-      client.release();
     }
   }
 
@@ -749,7 +816,7 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
 
   async function revisePlan(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>> {
     return withIxCommand(kernel, frame, 'inspection-plan', { sessionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireOwner(auth, session);
       requireNotClosed(session);
       if (session.run_status === 'ended' || session.run_status === 'suspended') {
@@ -797,12 +864,12 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       });
       await touchEventSeq(tx, sessionId);
       return { ok: true, planVersion: newVersion, sessionVersion: session.version + 1 };
-    });
+    }, ownerGuard(sessionId));
   }
 
   async function reviseScene(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>> {
     return withIxCommand(kernel, frame, 'inspection-scene', { sessionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireOwner(auth, session);
       requireNotClosed(session);
       const sceneVersion = reqString(frame.sceneVersion, 'sceneVersion', 120);
@@ -831,14 +898,14 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       });
       await touchEventSeq(tx, sessionId);
       return { ok: true, sceneVersion, staleReviewItems: anchored.map((i) => i.item_id), sessionVersion: session.version + 1 };
-    });
+    }, ownerGuard(sessionId));
   }
 
   // ---- 开始/暂停/恢复/结束/收口 ------------------------------------------------
 
   async function startSession(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>> {
     return withIxCommand(kernel, frame, 'inspection-start', { sessionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireOwner(auth, session);
       requireVersion(session, frame.expectedVersion);
       if (session.run_status !== 'preparing' && session.run_status !== 'ready') {
@@ -876,12 +943,12 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       });
       await touchEventSeq(tx, sessionId);
       return { ok: true, runStatus: 'in_progress', sessionVersion: session.version + 1 };
-    });
+    }, ownerGuard(sessionId));
   }
 
   async function pauseSession(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>> {
     return withIxCommand(kernel, frame, 'inspection-pause', { sessionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireOwner(auth, session);
       requireVersion(session, frame.expectedVersion);
       if (session.run_status !== 'in_progress') {
@@ -905,12 +972,12 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       });
       await touchEventSeq(tx, sessionId);
       return { ok: true, runStatus: 'suspended', dispatchGeneration: generation, checkpointId, sessionVersion: session.version + 1 };
-    });
+    }, ownerGuard(sessionId));
   }
 
   async function resumeSession(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>> {
     return withIxCommand(kernel, frame, 'inspection-resume', { sessionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireOwner(auth, session);
       requireVersion(session, frame.expectedVersion);
       if (session.run_status !== 'suspended') {
@@ -954,12 +1021,12 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       });
       await touchEventSeq(tx, sessionId);
       return { ok: true, runStatus: 'in_progress', drift, staleReviewItems, sessionVersion: session.version + 1 };
-    });
+    }, ownerGuard(sessionId));
   }
 
   async function endSession(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>> {
     return withIxCommand(kernel, frame, 'inspection-end', { sessionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireOwner(auth, session);
       requireVersion(session, frame.expectedVersion);
       if (session.run_status === 'ended') throw conflict('NOT_READY', '会话已结束');
@@ -1009,12 +1076,12 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       });
       await touchEventSeq(tx, sessionId);
       return { ok: true, runStatus: 'ended', closureStatus: closure ?? session.closure_status, followups: followupIds, sessionVersion: session.version + 1 };
-    });
+    }, ownerGuard(sessionId));
   }
 
   async function closeSession(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>> {
     return withIxCommand(kernel, frame, 'inspection-close', { sessionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireOwner(auth, session);
       requireVersion(session, frame.expectedVersion);
       if (session.run_status !== 'ended') throw conflict('NOT_READY', `会话当前 ${session.run_status}：会议结束后才能收口`);
@@ -1032,14 +1099,19 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       });
       await touchEventSeq(tx, sessionId);
       return { ok: true, closureStatus: 'closed', sessionVersion: session.version + 1 };
-    });
+    }, ownerGuard(sessionId));
   }
 
   // ---- 在线/接管 --------------------------------------------------------------
 
   async function setPresence(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>> {
+    const guard = async (a: Auth): Promise<void> => {
+      const s = await authorizeSessionAccess(kernel.pool, a, sessionId, false);
+      if (a.principal.roles.includes('admin')) { requireVerified(a); return; }
+      requireRosterRole(a, s, reqString(frame.role, 'role', 64));
+    };
     return withIxCommand(kernel, frame, 'inspection-presence', { sessionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       const role = reqString(frame.role, 'role', 64);
       if (auth.principal.roles.includes('admin') === false) requireRosterRole(auth, session, role);
       else requireVerified(auth);
@@ -1055,12 +1127,12 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
         projectId: session.project_id, summary: `${role} ${present ? '上线' : '暂离'}`, payload: { role, present },
       });
       return { ok: true, role, present, sessionVersion: session.version + 1 };
-    });
+    }, guard);
   }
 
   async function takeoverSession(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>> {
     return withIxCommand(kernel, frame, 'inspection-takeover', { sessionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireOwner(auth, session);
       if (session.run_status !== 'in_progress' && session.run_status !== 'suspended') {
         throw conflict('NOT_READY', `会话当前 ${session.run_status}：无可接管状态`);
@@ -1083,14 +1155,14 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       });
       await touchEventSeq(tx, sessionId);
       return { ok: true, takeoverBy: auth.principal.principalId, dispatchGeneration: generation, sessionVersion: session.version + 1 };
-    });
+    }, ownerGuard(sessionId));
   }
 
   // ---- 核验项动作 --------------------------------------------------------------
 
   async function addItem(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>> {
     return withIxCommand(kernel, frame, 'inspection-item-add', { sessionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireOwner(auth, session);
       requireNotClosed(session);
       const entries = parsePlanItems([frame]);
@@ -1106,12 +1178,18 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
         projectId: session.project_id, summary: `增补核验项 ${entry.itemKey}`, payload: { itemKey: entry.itemKey },
       });
       return { ok: true, itemKey: entry.itemKey, sessionVersion: session.version + 1 };
-    });
+    }, ownerGuard(sessionId));
   }
 
   async function verifyItem(frame: RequestFrame, sessionId: string, itemId: string): Promise<Record<string, unknown>> {
+    const guard = async (a: Auth): Promise<void> => {
+      const s = await authorizeSessionAccess(kernel.pool, a, sessionId, false);
+      const it = await kernel.pool.query(`SELECT responsible_role FROM inspection_items WHERE item_id = $1 AND session_id = $2`, [itemId, sessionId]);
+      if (it.rows.length === 0) throw notFound('核验项不存在');
+      requireRosterRole(a, s, (it.rows[0] as { responsible_role: string }).responsible_role);
+    };
     return withIxCommand(kernel, frame, 'inspection-verify', { sessionId, itemId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireNotClosed(session);
       const item = await tx.query(`SELECT * FROM inspection_items WHERE item_id = $1 AND session_id = $2 FOR UPDATE`, [itemId, sessionId]);
       if (item.rows.length === 0) throw notFound('核验项不存在');
@@ -1145,12 +1223,18 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       await storeSummaries(tx, after);
       await touchEventSeq(tx, sessionId);
       return { ok: true, itemStatus: next, closureStatus: closure ?? session.closure_status, sessionVersion: session.version + 1 };
-    });
+    }, guard);
   }
 
   async function rebindItem(frame: RequestFrame, sessionId: string, itemId: string): Promise<Record<string, unknown>> {
+    const guard = async (a: Auth): Promise<void> => {
+      const s = await authorizeSessionAccess(kernel.pool, a, sessionId, false);
+      const it = await kernel.pool.query(`SELECT responsible_role FROM inspection_items WHERE item_id = $1 AND session_id = $2`, [itemId, sessionId]);
+      if (it.rows.length === 0) throw notFound('核验项不存在');
+      requireRosterRole(a, s, (it.rows[0] as { responsible_role: string }).responsible_role);
+    };
     return withIxCommand(kernel, frame, 'inspection-rebind', { sessionId, itemId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireNotClosed(session);
       const item = await tx.query(`SELECT * FROM inspection_items WHERE item_id = $1 AND session_id = $2 FOR UPDATE`, [itemId, sessionId]);
       if (item.rows.length === 0) throw notFound('核验项不存在');
@@ -1179,12 +1263,12 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
         payload: { sessionId, itemId, itemKey: it.item_key, from: 'stale_review', to: 'pending', reboundTo: objectRef },
       });
       return { ok: true, itemStatus: 'pending', anchors, sessionVersion: session.version + 1 };
-    });
+    }, guard);
   }
 
   async function reassignItem(frame: RequestFrame, sessionId: string, itemId: string): Promise<Record<string, unknown>> {
     return withIxCommand(kernel, frame, 'inspection-reassign', { sessionId, itemId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireOwner(auth, session);
       requireNotClosed(session);
       const item = await tx.query(`SELECT * FROM inspection_items WHERE item_id = $1 AND session_id = $2 FOR UPDATE`, [itemId, sessionId]);
@@ -1204,7 +1288,7 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
         payload: { fromRole, toRole, reason },
       });
       return { ok: true, fromRole, toRole, sessionVersion: session.version + 1 };
-    });
+    }, ownerGuard(sessionId));
   }
 
   // ---- 问题/回答/追问 -----------------------------------------------------------
@@ -1215,10 +1299,15 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
   }
 
   async function createQuestion(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>> {
+    const guard = async (a: Auth): Promise<void> => {
+      const s = await authorizeSessionAccess(kernel.pool, a, sessionId, false);
+      requireRosterAny(a, s);
+    };
     return withIxCommand(kernel, frame, 'inspection-question-create', { sessionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireNotClosed(session);
       requireRunning(session);
+      requireRosterAny(auth, session);
       const audience = frame.audience;
       if (audience !== 'customer' && audience !== 'internal') throw invalid('audience 必须 customer|internal');
       const targetRole = reqString(frame.targetRole, 'targetRole', 64);
@@ -1257,18 +1346,26 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
          frame.factKey === undefined || frame.factKey === null ? null : reqString(frame.factKey, 'factKey', 200),
          auth.principal.principalId],
       );
+      // 提问推进会话版本（乐观锁反映会话内容变化；A2 契约冻结的行为）
+      await tx.query(`UPDATE inspection_sessions SET version = version + 1, updated_at = now() WHERE session_id = $1`, [sessionId]);
       if (itemId !== null) await refreshItems(tx, session, h, auth.principal.principalId);
       await h.audit({
         actor: auth.principal.principalId, action: 'inspection_question_created', targetType: 'inspection_question', targetId: questionId,
         projectId: session.project_id, summary: `问题（${audience}/${targetRole}${requiresHuman ? '/需真人' : ''}）`, payload: { itemId, purpose },
       });
       return { ok: true, duplicate: false, questionId, sessionVersion: session.version + 1 };
-    });
+    }, guard);
   }
 
   async function answerQuestion(frame: RequestFrame, sessionId: string, questionId: string): Promise<Record<string, unknown>> {
+    const guard = async (a: Auth): Promise<void> => {
+      const s = await authorizeSessionAccess(kernel.pool, a, sessionId, false);
+      const qr = await kernel.pool.query(`SELECT target_role FROM inspection_questions WHERE question_id = $1 AND session_id = $2`, [questionId, sessionId]);
+      if (qr.rows.length === 0) throw notFound('问题不存在');
+      requireRosterRole(a, s, (qr.rows[0] as { target_role: string }).target_role);
+    };
     return withIxCommand(kernel, frame, 'inspection-question-answer', { sessionId, questionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireNotClosed(session);
       const qr = await tx.query(`SELECT * FROM inspection_questions WHERE question_id = $1 AND session_id = $2 FOR UPDATE`, [questionId, sessionId]);
       if (qr.rows.length === 0) throw notFound('问题不存在');
@@ -1323,12 +1420,12 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       });
       await touchEventSeq(tx, sessionId);
       return { ok: true, status: 'answered', sessionVersion: session.version + 1 };
-    });
+    }, guard);
   }
 
   async function reaskQuestion(frame: RequestFrame, sessionId: string, questionId: string): Promise<Record<string, unknown>> {
     return withIxCommand(kernel, frame, 'inspection-question-reask', { sessionId, questionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireRunning(session);
       requireNotClosed(session);
       requireRosterRole(auth, session, session.owner_role);
@@ -1356,14 +1453,14 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
         projectId: session.project_id, summary: `追问（第 ${q.follow_up_count + 1} 次）`, payload: {},
       });
       return { ok: true, followUpCount: q.follow_up_count + 1, questionStatus: 'open', sessionVersion: session.version + 1 };
-    });
+    }, ownerGuard(sessionId));
   }
 
   // ---- 外发授权（A04/A05 的发送控制点） -------------------------------------------
 
   async function grantOutbound(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>> {
     return withIxCommand(kernel, frame, 'inspection-outbound-grant', { sessionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireVerified(auth);
       // 调度者（agent）或会话人类角色都可申请；但必须携带当前调度代际
       if (session.outbound_paused) {
@@ -1403,12 +1500,12 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
         payload: { sessionId, sendId, questionId, generation, channel },
       });
       return { ok: true, sendId, questionId, generation, status: 'authorized', sessionVersion: session.version };
-    });
+    }, accessGuard(sessionId));
   }
 
   async function outboundResult(frame: RequestFrame, sessionId: string, sendId: string): Promise<Record<string, unknown>> {
     return withIxCommand(kernel, frame, 'inspection-outbound-result', { sessionId, sendId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireVerified(auth);
       const or = await tx.query(`SELECT * FROM inspection_outbound WHERE send_id = $1 AND session_id = $2 FOR UPDATE`, [sendId, sessionId]);
       if (or.rows.length === 0) throw notFound('外发记录不存在');
@@ -1435,14 +1532,14 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       });
       // unknown 保持问题 sent 态：等待对账，不盲重问
       return { ok: true, sendId, status: outcome };
-    });
+    }, accessGuard(sessionId));
   }
 
   // ---- 等待/追问边界（A07） ------------------------------------------------------
 
   async function sweep(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>> {
     return withIxCommand(kernel, frame, 'inspection-sweep', { sessionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireVerified(auth);
       requireNotClosed(session);
       const questions = await loadQuestions(tx, sessionId);
@@ -1493,14 +1590,14 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
         return { ok: true, deferred, closureStatus: closure ?? session.closure_status };
       }
       return { ok: true, deferred: [] };
-    });
+    }, accessGuard(sessionId));
   }
 
   // ---- 会后接续（A10） -----------------------------------------------------------
 
   async function addLateEvidence(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>> {
     return withIxCommand(kernel, frame, 'inspection-late-evidence', { sessionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireOwner(auth, session);
       requireNotClosed(session);
       const artifactId = reqString(frame.artifactId, 'artifactId', 64);
@@ -1549,12 +1646,12 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       }
       await touchEventSeq(tx, sessionId);
       return { ok: true, reopened, closureRevision: newRevision, closureStatus: closure ?? session.closure_status, sessionVersion: session.version + 1 };
-    });
+    }, ownerGuard(sessionId));
   }
 
   async function writeCheckpointCommand(frame: RequestFrame, sessionId: string): Promise<Record<string, unknown>> {
     return withIxCommand(kernel, frame, 'inspection-checkpoint', { sessionId }, async (tx, h, auth) => {
-      const session = await sessionOr404(tx, sessionId, true);
+      const session = await authorizeSessionAccess(tx, auth, sessionId, true);
       requireOwner(auth, session);
       const checkpointId = await writeCheckpoint(tx, session, 'manual');
       await h.audit({
@@ -1562,42 +1659,31 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
         projectId: session.project_id, summary: `手动 checkpoint ${checkpointId}`, payload: { checkpointId },
       });
       return { ok: true, checkpointId, lastEventSeq: Number(session.last_event_seq) };
-    });
+    }, ownerGuard(sessionId));
   }
 
   async function getSummaries(sessionId: string, audience: string | null, revision: number | null, credential: unknown): Promise<Record<string, unknown>> {
-    const client = await kernel.pool.connect();
-    try {
-      const session = await sessionOr404(client, sessionId);
-      const wanted = audience === null || audience === undefined ? null : reqString(audience, 'audience', 16);
-      if (wanted !== null && wanted !== 'internal' && wanted !== 'customer') throw invalid('audience 必须 internal|customer');
-      // 内部版含获准风险依据：仅 admin 或会话名册角色可读；客户版放开给已验证身份
-      if (wanted !== 'customer') {
-        const auth = await kernel.authOf(credential);
-        requireVerified(auth);
-        const isRoster = auth.principal.roles.includes('admin') || session.roles.some((r) => auth.principal.roles.includes(r.roleKey));
-        if (!isRoster) throw forbidden('ROLE_FORBIDDEN', '内部小结仅会话名册角色/admin 可读');
-      }
-      const rows = await client.query(
-        `SELECT summary_id, closure_revision, audience, content, created_at FROM inspection_summaries
-         WHERE session_id = $1 ${wanted !== null ? 'AND audience = $2' : ''} ORDER BY closure_revision, audience`,
-        wanted !== null ? [sessionId, wanted] : [sessionId],
-      );
-      // 契约：响应一律驼峰投影（不外泄蛇形列名）
-      let list = (rows.rows as Record<string, unknown>[]).map((r) => ({
-        summaryId: r.summary_id,
-        closureRevision: Number(r.closure_revision),
-        audience: r.audience,
-        content: r.content,
-        createdAt: r.created_at,
-      }));
-      if (revision !== null && revision !== undefined && Number.isFinite(revision)) {
-        list = list.filter((r) => r.closureRevision === revision);
-      }
-      return { ok: true, summaries: list };
-    } finally {
-      client.release();
+    // A1.2/K01：小结读面统一走授权（verified + 项目/租户 + 名册或 admin）；客户版不再匿名开放
+    const session = await readSessionAuthorized(credential, sessionId);
+    const wanted = audience === null || audience === undefined ? null : reqString(audience, 'audience', 16);
+    if (wanted !== null && wanted !== 'internal' && wanted !== 'customer') throw invalid('audience 必须 internal|customer');
+    const rows = await kernel.pool.query(
+      `SELECT summary_id, closure_revision, audience, content, created_at FROM inspection_summaries
+       WHERE session_id = $1 ${wanted !== null ? 'AND audience = $2' : ''} ORDER BY closure_revision, audience`,
+      wanted !== null ? [sessionId, wanted] : [sessionId],
+    );
+    // 契约：响应一律驼峰投影（不外泄蛇形列名）
+    let list = (rows.rows as Record<string, unknown>[]).map((r) => ({
+      summaryId: r.summary_id,
+      closureRevision: Number(r.closure_revision),
+      audience: r.audience,
+      content: r.content,
+      createdAt: r.created_at,
+    }));
+    if (revision !== null && revision !== undefined && Number.isFinite(revision)) {
+      list = list.filter((r) => r.closureRevision === revision);
     }
+    return { ok: true, summaries: list };
   }
 
   return {

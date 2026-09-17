@@ -11,8 +11,8 @@ import type { Kernel } from './kernel.ts';
 import { authenticate, requireVerified } from './principal.ts';
 import {
   reqString, reqInt, reqPosInt, reqObject, reqCurrency, optDate, gradeRank,
-  withCommandV2, withoutRequestCred, requireHuman, requireDirectoryRole, requireMatrixPermission,
-  scopeByRow, lockCustomer, lookupCustomer, insertDecision,
+  withCommandV2, withoutRequestCred, requireHuman, requireDirectoryRole, requireMatrixPermission, requireCustomerScope,
+  scopeByRow, lockCustomer, lookupCustomer, insertDecision, runTxV2,
   FACT_GRADES, MAX_AMOUNT,
   type RequestFrame, type V2Helpers,
 } from './v2kit.ts';
@@ -53,11 +53,13 @@ async function lazyExpire(tx: PoolClient, facilityId: string, currency: string, 
   );
   let n = 0;
   for (const row of expired.rows as Record<string, unknown>[]) {
-    await tx.query(
-      `INSERT INTO exposure_entries (entry_id, tenant_id, customer_id, facility_id, fr_id, entry_type, amount_minor, currency, request_scope, request_id, tx_id, actor)
-       VALUES ($1,(SELECT tenant_id FROM credit_facilities WHERE facility_id=$4),$2,$4,$5,'reserve_expire',$6,$7,$8,$9,$10,$11)`,
-      [newId('le'), customerId, null, facilityId, row.fr_id, Number(row.amount_minor), currency, row.request_scope, row.request_id, uuid(), row.actor],
-    );
+      const tenantRow = await tx.query(`SELECT tenant_id FROM credit_facilities WHERE facility_id=$1`, [facilityId]);
+      const tenantId = (tenantRow.rows[0] as { tenant_id: string }).tenant_id;
+      await tx.query(
+        `INSERT INTO exposure_entries (entry_id, tenant_id, customer_id, facility_id, fr_id, entry_type, amount_minor, currency, request_scope, request_id, tx_id, actor)
+         VALUES ($1,$2,$3,$4,$5,'reserve_expire',$6,$7,$8,$9,$10,$11)`,
+        [newId('le'), tenantId, customerId, facilityId, row.fr_id, Number(row.amount_minor), currency, row.request_scope, row.request_id, uuid(), row.actor],
+      );
     await h.emit('RESERVATION_EXPIRED', customerId, { frId: row.fr_id, facilityId, amountMinor: Number(row.amount_minor) });
     n += 1;
   }
@@ -71,7 +73,14 @@ export async function computeBuckets(tx: PoolClient, facilityId: string): Promis
     [facilityId],
   );
   const sum: Record<string, number> = {};
-  for (const r of res.rows as { entry_type: string; total: string }[]) sum[r.entry_type] = Number(r.total);
+  for (const r of res.rows as { entry_type: string; total: string }[]) {
+    const n = Number(r.total);
+    // F12/K16：bigint 聚合不得无条件转不安全 Number——显式失败优于静默舍入
+    if (!Number.isSafeInteger(n)) {
+      throw new AppError('INTERNAL', `账目聚合超出安全整数范围（facility ${facilityId}，${r.entry_type}）：拒绝推导，不静默舍入`);
+    }
+    sum[r.entry_type] = n;
+  }
   const n = (k: string): number => sum[k] ?? 0;
   const reserved = n('reserve') - n('reserve_release') - n('reserve_expire') - n('reserve_commit');
   const committed = n('reserve_commit') - n('commit_cancel') - n('disburse');
@@ -119,11 +128,12 @@ export async function facilityView(tx: PoolClient, facilityRow: Record<string, u
   const blockers: string[] = [];
   if (status !== 'active') blockers.push(`facility_status:${status}`);
   if (overLimit) blockers.push('over_limit');
-  // 任务02 B11：提额冷却未到 → 新增支用可用额为 0（存量展示保留；冷却不豁免差异复核）
+  // 任务02 B11：提额冷却未到 → cooling_active 如实展示（激活/向上申请另有 COOLING_ACTIVE 硬门）；
+  // 任务01 A3/K18：冷却不再冻结既有合法用信的可用额——hardBlockers 才清零可用
   const coolingUntil = facilityRow.cooling_until as string | Date | null | undefined;
-  if (coolingUntil !== null && coolingUntil !== undefined && new Date(coolingUntil).getTime() > Date.now()) {
-    blockers.push('cooling_active');
-  }
+  const coolingActive = coolingUntil !== null && coolingUntil !== undefined && new Date(coolingUntil).getTime() > Date.now();
+  if (coolingActive) blockers.push('cooling_active');
+  const hardBlockers = blockers.filter((b) => b !== 'cooling_active');
   // 依据失效阻断新增支用（S4）：basis 评估 stale/非待审 → 新支用 0
   const basis = facilityRow.basis as { assessmentId?: string } | null;
   if (basis?.assessmentId) {
@@ -138,7 +148,7 @@ export async function facilityView(tx: PoolClient, facilityRow: Record<string, u
     approvedAmountMinor: approved,
     currency: facilityRow.currency as string,
     status,
-    availableForNewDrawMinor: blockers.length === 0 ? Math.max(0, rawAvailable) : 0,
+    availableForNewDrawMinor: hardBlockers.length === 0 ? Math.max(0, rawAvailable) : 0,
     overLimit,
     staleBlockers: blockers,
   };
@@ -152,6 +162,9 @@ export type V2Frame = Record<string, unknown> & { credential?: unknown; requestI
 
 export interface CreditV2Api {
   createCustomer(frame: V2Frame): Promise<Record<string, unknown>>;
+  /** 任务01 A1：客户级授权登记/撤销（admin；'grant' 模式 principal 的可见客户）。 */
+  grantCustomerAccess(frame: V2Frame, customerId: string): Promise<Record<string, unknown>>;
+  revokeCustomerAccess(frame: V2Frame, customerId: string, granteePrincipalId: string): Promise<Record<string, unknown>>;
   getCustomer(credential: unknown, customerId: string): Promise<Record<string, unknown>>;
   declareRelationship(frame: V2Frame, customerId: string): Promise<Record<string, unknown>>;
   listRelationships(credential: unknown, customerId: string): Promise<Record<string, unknown>>;
@@ -180,6 +193,9 @@ export interface CreditV2Api {
   getCustomerExposure(credential: unknown, customerId: string): Promise<Record<string, unknown>>;
   listCustomerEvents(credential: unknown, customerId: string, afterSeq: number, limit: number): Promise<Record<string, unknown>>;
   getV2Receipt(credential: unknown, requestId: string): Promise<Record<string, unknown>>;
+  /** 任务01 A3.7/F10/K17：客户级提额（再评估）请求。 */
+  createLimitIncreaseRequest(frame: V2Frame, customerId: string): Promise<Record<string, unknown>>;
+  resolveLimitIncreaseRequest(frame: V2Frame, requestId: string): Promise<Record<string, unknown>>;
 }
 
 export function buildCreditCommands(kernel: Kernel): CreditV2Api {
@@ -230,6 +246,55 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       });
     },
 
+    /** A1.1/K03：客户级授权登记（admin）。'grant' 模式 principal 仅可见登记客户；撤销即刻生效。 */
+    grantCustomerAccess: (frame: V2Frame, customerId: string) => {
+      const tenantId = reqString(frame.tenantId, 'tenantId', 64);
+      return withCommandV2(kernel, frame, 'customer.grant', tenantId, async (tx, h, ctx) => {
+        requireHuman(ctx, 'customer.grant');
+        requireDirectoryRole(ctx, ['admin'], 'customer.grant');
+        const customer = await lockCustomer(tx, customerId, tenantId);
+        const stored = await ctx.replayed(tx);
+        if (stored !== null) return stored;
+        void customer;
+        const grantee = reqString(frame.principalId, 'principalId', 64);
+        await tx.query(
+          `INSERT INTO principal_customer_grants (tenant_id, principal_id, customer_id, created_by)
+           VALUES ($1,$2,$3,$4) ON CONFLICT DO NOTHING`,
+          [ctx.tenantId, grantee, customerId, ctx.actor],
+        );
+        await h.audit({
+          actor: ctx.actor, action: 'customer_grant_created', targetType: 'customer', targetId: customerId,
+          summary: `客户授权登记 → ${grantee}`, payload: { grantee },
+        });
+        return { ok: true, customerId, principalId: grantee };
+      });
+    },
+
+    revokeCustomerAccess: async (frame: V2Frame, customerId: string, granteePrincipalId: string) => {
+      const f = (frame ?? {}) as V2Frame;
+      const auth = await authenticate(kernel.verifierForV2(), f.credential);
+      requireVerified(auth);
+      if (!auth.principal.roles.includes('admin')) {
+        throw forbidden('ROLE_FORBIDDEN', '仅 admin 可撤销客户授权');
+      }
+      const c = await kernel.pool.query(`SELECT tenant_id FROM customers WHERE customer_id=$1`, [customerId]);
+      if (c.rows.length === 0) throw notFound('客户不存在');
+      const tenantId = (c.rows[0] as { tenant_id: string }).tenant_id;
+      if (auth.principal.tenants !== 'all' && !auth.principal.tenants.includes(tenantId)) {
+        throw notFound('客户不存在');
+      }
+      const grantee = reqString(granteePrincipalId, 'principalId', 64);
+      return await runTxV2(kernel.pool, async (tx) => {
+        await tx.query(`DELETE FROM principal_customer_grants WHERE customer_id=$1 AND principal_id=$2`, [customerId, grantee]);
+        await tx.query(
+          `INSERT INTO audit_events (actor_principal_id, action, target_type, target_id, project_id, summary, payload_sha256)
+           VALUES ($1,'customer_grant_revoked','customer',$2,NULL,$3,$4)`,
+          [auth.principal.principalId, customerId, `客户授权撤销 → ${grantee}`, canonicalHash({ grantee })],
+        );
+        return { ok: true, customerId, principalId: grantee, revoked: true };
+      });
+    },
+
     getCustomer: async (credential: unknown, customerId: string) => {
       const row = await lookupCustomer(kernel, credential, customerId);
       return { ok: true, customer: projectCustomer(row) };
@@ -239,6 +304,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       return withCommandV2(kernel, frame, 'relationship.declare', frame.tenantId as string, async (tx, h, ctx) => {
         requireHuman(ctx, 'relationship.declare');
         const customer = await lockCustomer(tx, customerId, ctx.tenantId);
+        await requireCustomerScope(ctx, customerId, tx);
         const stored = await ctx.replayed(tx);
         if (stored !== null) return stored;
         const tenantId = customer.tenant_id as string;
@@ -295,6 +361,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       return withCommandV2(kernel, frame, 'artifact.register', frame.tenantId as string, async (tx, h, ctx) => {
         requireHuman(ctx, 'artifact.register');
         const customer = await lockCustomer(tx, customerId, ctx.tenantId);
+        await requireCustomerScope(ctx, customerId, tx);
         const stored = await ctx.replayed(tx);
         if (stored !== null) return stored;
         const tenantId = customer.tenant_id as string;
@@ -303,6 +370,11 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
         const content = reqObject(frame.content, 'content');
         const grade = frame.grade === undefined || frame.grade === null ? 'unverified' : reqString(frame.grade, 'grade', 32);
         if (!FACT_GRADES.includes(grade as never)) throw invalid(`grade 必须 ${FACT_GRADES.join('/')}`);
+        // A1.5/K04：核验等级提升只能来自获准核验角色；客户申报不产生等级（未核验声明恒为 unverified）
+        const GRADE_AUTHORITY_ROLES = ['credit', 'business', 'policy', 'commerce', 'asset', 'admin'];
+        if (gradeRank(grade) > gradeRank('unverified') && !ctx.roles.some((r) => GRADE_AUTHORITY_ROLES.includes(r))) {
+          throw forbidden('PERMISSION_DENIED', '核验等级提升需要获准核验角色（客户申报材料不产生等级）');
+        }
         // 任务02 3.1：同源派生 / 对象绑定 / 材料口径元数据（全部可选；旧调用零变更）
         let provenance: Record<string, unknown> | null = null;
         if (frame.provenance !== undefined && frame.provenance !== null) {
@@ -435,6 +507,23 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
         `SELECT artifact_id, kind, fact_key, provenance, superseded_by, duplicate_of
          FROM evidence_artifacts WHERE customer_id=$1`, [customerId],
       );
+      // A2.9/K11：派生缺口具体可见——上游被取代/缺失的派生件逐件列出（不把派生件当新根掩盖）
+      const statusById = new Map<string, { superseded_by: string | null; duplicate_of: string | null }>();
+      for (const r of allArts.rows as Record<string, unknown>[]) {
+        statusById.set(String(r.artifact_id), { superseded_by: (r.superseded_by as string | null), duplicate_of: (r.duplicate_of as string | null) });
+      }
+      const derivationGaps: Record<string, unknown>[] = [];
+      for (const r of allArts.rows as Record<string, unknown>[]) {
+        const provenance = (r.provenance ?? null) as { derivedFrom?: string[] } | null;
+        for (const up of provenance?.derivedFrom ?? []) {
+          const st = statusById.get(String(up));
+          if (st === undefined) {
+            derivationGaps.push({ artifactId: String(r.artifact_id), reason: 'upstream_missing', upstreamArtifactId: String(up) });
+          } else if (st.superseded_by !== null || st.duplicate_of !== null) {
+            derivationGaps.push({ artifactId: String(r.artifact_id), reason: 'upstream_superseded', upstreamArtifactId: String(up) });
+          }
+        }
+      }
       const independentProofs = independentProofCount((allArts.rows as Record<string, unknown>[]).map((a) => ({
         artifactId: String(a.artifact_id), sha256: '', kind: String(a.kind),
         factKey: a.fact_key === null ? null : String(a.fact_key), grade: 'unverified',
@@ -460,6 +549,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
         })),
         factConflicts: (conflictRes.rows as Record<string, unknown>[]).map((r) => ({ factKey: r.fact_key, assertionCount: Number(r.n) })),
         independentProofs,
+        derivationGaps,
       };
     },
 
@@ -470,6 +560,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
         requireHuman(ctx, 'assessment.create');
         requireDirectoryRole(ctx, ['credit'], 'assessment.create');
         const customer = await lockCustomer(tx, customerId, ctx.tenantId);
+        await requireCustomerScope(ctx, customerId, tx);
         const stored = await ctx.replayed(tx);
         if (stored !== null) return stored;
         const tenantId = customer.tenant_id as string;
@@ -512,7 +603,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
         const a = await tx.query(`SELECT * FROM credit_assessments WHERE assessment_id=$1 FOR UPDATE`, [assessmentId]);
         if (a.rows.length === 0) throw notFound('评估不存在');
         const row = a.rows[0] as Record<string, unknown>;
-        await scopeByRow(kernel, frame, row.tenant_id as string);
+        await scopeByRow(kernel, frame, row.tenant_id as string, row.customer_id as string);
         // 候选可由 agent/模型 principal 产出（A18）：authority=none 由服务端强制，正式动作另有通道
         const storedCand = await ctx.replayed(tx);
         if (storedCand !== null) return storedCand;
@@ -557,7 +648,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
         const a = await tx.query(`SELECT * FROM credit_assessments WHERE assessment_id=$1 FOR UPDATE`, [assessmentId]);
         if (a.rows.length === 0) throw notFound('评估不存在');
         const row = a.rows[0] as Record<string, unknown>;
-        await scopeByRow(kernel, frame, row.tenant_id as string);
+        await scopeByRow(kernel, frame, row.tenant_id as string, row.customer_id as string);
         requireHuman(ctx, 'assessment.submit-review');
         requireDirectoryRole(ctx, ['credit'], 'assessment.submit-review');
         const storedReview = await ctx.replayed(tx);
@@ -579,7 +670,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
         const a = await tx.query(`SELECT * FROM credit_assessments WHERE assessment_id=$1 FOR UPDATE`, [assessmentId]);
         if (a.rows.length === 0) throw notFound('评估不存在');
         const row = a.rows[0] as Record<string, unknown>;
-        await scopeByRow(kernel, frame, row.tenant_id as string);
+        await scopeByRow(kernel, frame, row.tenant_id as string, row.customer_id as string);
         requireHuman(ctx, 'assessment.decide');
         requireDirectoryRole(ctx, ['credit'], 'assessment.decide');
         const storedDecide = await ctx.replayed(tx);
@@ -612,7 +703,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       const res = await kernel.pool.query(`SELECT * FROM credit_assessments WHERE assessment_id=$1`, [assessmentId]);
       if (res.rows.length === 0) throw notFound('评估不存在');
       const row = res.rows[0] as Record<string, unknown>;
-      await scopeByRow(kernel, { credential }, row.tenant_id as string);
+      await scopeByRow(kernel, { credential }, row.tenant_id as string, row.customer_id as string);
       return {
         ok: true,
         assessment: {
@@ -635,7 +726,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
         if (storedProp !== null) return storedProp;
         const tenantId = customer.tenant_id as string;
         const assessmentId = reqString(frame.assessmentId, 'assessmentId', 64);
-        // 任务02 3.4：提案可绑定评估依据包（批准事务按包做提交点复查；不绑定则走原复查路径）
+        // 任务02 3.4 + 任务01 A2/K07：提案必须绑定依据包；legacy 通道只在显式兼容核开启
         let packageId: string | null = null;
         let basisVersion: string | null = null;
         if (frame.packageId !== undefined && frame.packageId !== null) {
@@ -645,6 +736,9 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
           const pr = pk.rows[0] as { customer_id: string; revision: number };
           if (pr.customer_id !== customerId) throw notFound('依据包不属于该客户');
           basisVersion = `${packageId}:${Number(pr.revision)}`;
+        } else if (!cfgRef().allowLegacyBasis) {
+          throw conflict('BASIS_PACKAGE_REQUIRED',
+            '正式提案必须绑定依据包（packageId）：不能通过省略绕过新权威门（兼容核需显式 --allow-legacy-basis）');
         }
         const a = await tx.query(`SELECT status, stale, customer_id, rule_version, snapshot_hash FROM credit_assessments WHERE assessment_id=$1`, [assessmentId]);
         if (a.rows.length === 0) throw notFound('依据评估不存在');
@@ -678,7 +772,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       return withCommandV2(kernel, frame, 'facility.approve', frame.tenantId as string, async (tx, h, ctx) => {
         const f0 = await tx.query(`SELECT tenant_id, customer_id FROM credit_facilities WHERE facility_id=$1`, [facilityId]);
         if (f0.rows.length === 0) throw notFound('额度设施不存在');
-        await scopeByRow(kernel, frame, (f0.rows[0] as Record<string, unknown>).tenant_id as string);
+        await scopeByRow(kernel, frame, (f0.rows[0] as Record<string, unknown>).tenant_id as string, (f0.rows[0] as Record<string, unknown>).customer_id as string);
         await lockCustomer(tx, (f0.rows[0] as Record<string, unknown>).customer_id as string); // 固定锁序：客户 → 设施
         const facilityRow = await lockFacility(tx, facilityId);
         const rationale = reqString(frame.rationale ?? '', 'rationale', 2000, 0);
@@ -715,10 +809,13 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
         await reverifyBasis(tx, facilityRow);
         // 6.4) 客户级未决差异（3.2/B11）：阻断当前动作，不等待冷却；包绑定与否一律机械复查
         await assertNoBlockingFindings(tx, facilityRow.customer_id as string, 'approve_facility');
-        // 6.5) 依据包提交点复查（任务02 3.4/B07）：当前性、Gate、未决差异在批准事务内重算（零不合法正式效果）
+        // 6.5) 依据包提交点复查（任务02 3.4/B07 + 任务01 A2/K07）：当前性、Gate、未决差异在批准事务内重算
         const pkgBasis = facilityRow.basis as { packageId?: string } | null;
         if (pkgBasis?.packageId) {
           await checkPackageForAction(tx, facilityRow.customer_id as string, pkgBasis.packageId, 'approve_facility');
+        } else if (!cfg.allowLegacyBasis) {
+          throw conflict('BASIS_PACKAGE_REQUIRED',
+            '存量依据未绑定依据包：批准阻断（旧数据只读可解释；兼容核需显式 --allow-legacy-basis）');
         }
         // 6.6) 提额冷却（B11；冷却秒数未配置=机制未启用，不编造默认）：提额批准进入冷却
         if (cfg.creditCoolingSeconds !== null && cfg.creditCoolingSeconds > 0) {
@@ -766,7 +863,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       return withCommandV2(kernel, frame, 'facility.activate', frame.tenantId as string, async (tx, h, ctx) => {
         const f0 = await tx.query(`SELECT tenant_id, customer_id FROM credit_facilities WHERE facility_id=$1`, [facilityId]);
         if (f0.rows.length === 0) throw notFound('额度设施不存在');
-        await scopeByRow(kernel, frame, (f0.rows[0] as Record<string, unknown>).tenant_id as string);
+        await scopeByRow(kernel, frame, (f0.rows[0] as Record<string, unknown>).tenant_id as string, (f0.rows[0] as Record<string, unknown>).customer_id as string);
         await lockCustomer(tx, (f0.rows[0] as Record<string, unknown>).customer_id as string);
         const facilityRow = await lockFacility(tx, facilityId);
         const rationale = reqString(frame.rationale ?? '', 'rationale', 2000, 0);
@@ -776,10 +873,13 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
         if (storedAct !== null) return storedAct;
         await requireConcentrationOk(tx, cfg, facilityRow);
         await reverifyBasis(tx, facilityRow);
-        // 任务02 3.4：绑定依据包的激活同样按包复查当前性（B08：不能沿用旧批准绕过当前 Gate）
+        // 任务02 3.4 + 任务01 A2/K07：绑定依据包的激活按包复查当前性（B08：不能沿用旧批准绕过当前 Gate）；
+        // 未绑定包的存量在默认核下阻断（K07），显式兼容核按评估复查路径放行
         const pkgBasisAct = facilityRow.basis as { packageId?: string } | null;
         if (pkgBasisAct?.packageId) {
           await checkPackageForAction(tx, facilityRow.customer_id as string, pkgBasisAct.packageId, 'activate_facility');
+        } else if (!cfg.allowLegacyBasis) {
+          throw conflict('BASIS_PACKAGE_REQUIRED', '存量依据未绑定依据包：激活阻断（兼容核需显式 --allow-legacy-basis）');
         }
         // B11：未决差异先于冷却阻断（复核不等待冷却）；冷却未到 → 激活/恢复不得生效
         await assertNoBlockingFindings(tx, facilityRow.customer_id as string, 'activate_facility');
@@ -818,7 +918,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       return withCommandV2(kernel, frame, 'facility.suspend', frame.tenantId as string, async (tx, h, ctx) => {
         const f0 = await tx.query(`SELECT tenant_id, customer_id FROM credit_facilities WHERE facility_id=$1`, [facilityId]);
         if (f0.rows.length === 0) throw notFound('额度设施不存在');
-        await scopeByRow(kernel, frame, (f0.rows[0] as Record<string, unknown>).tenant_id as string);
+        await scopeByRow(kernel, frame, (f0.rows[0] as Record<string, unknown>).tenant_id as string, (f0.rows[0] as Record<string, unknown>).customer_id as string);
         await lockCustomer(tx, (f0.rows[0] as Record<string, unknown>).customer_id as string);
         const facilityRow = await lockFacility(tx, facilityId);
         const rationale = reqString(frame.rationale ?? '', 'rationale', 2000, 0);
@@ -852,7 +952,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       return withCommandV2(kernel, frame, 'facility.reduce', frame.tenantId as string, async (tx, h, ctx) => {
         const f0 = await tx.query(`SELECT tenant_id, customer_id FROM credit_facilities WHERE facility_id=$1`, [facilityId]);
         if (f0.rows.length === 0) throw notFound('额度设施不存在');
-        await scopeByRow(kernel, frame, (f0.rows[0] as Record<string, unknown>).tenant_id as string);
+        await scopeByRow(kernel, frame, (f0.rows[0] as Record<string, unknown>).tenant_id as string, (f0.rows[0] as Record<string, unknown>).customer_id as string);
         await lockCustomer(tx, (f0.rows[0] as Record<string, unknown>).customer_id as string);
         const facilityRow = await lockFacility(tx, facilityId);
         const rationale = reqString(frame.rationale ?? '', 'rationale', 2000, 0);
@@ -894,7 +994,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       const f0 = await kernel.pool.query(`SELECT * FROM credit_facilities WHERE facility_id=$1`, [facilityId]);
       if (f0.rows.length === 0) throw notFound('额度设施不存在');
       const facility = f0.rows[0] as Record<string, unknown>;
-      await scopeByRow(kernel, { credential }, facility.tenant_id as string);
+      await scopeByRow(kernel, { credential }, facility.tenant_id as string, facility.customer_id as string);
       const client = await kernel.pool.connect();
       try {
         const view = await facilityView(client, facility, { expire: false });
@@ -911,6 +1011,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
         requireHuman(ctx, 'fr.create');
         requireDirectoryRole(ctx, ['business', 'credit'], 'fr.create');
         const customer = await lockCustomer(tx, customerId, ctx.tenantId);
+        await requireCustomerScope(ctx, customerId, tx);
         const storedFr = await ctx.replayed(tx);
         if (storedFr !== null) return storedFr;
         const tenantId = customer.tenant_id as string;
@@ -953,23 +1054,24 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       return withCommandV2(kernel, frame, 'fr.reserve', frame.tenantId as string, async (tx, h, ctx) => {
         const fr = await tx.query(`SELECT * FROM financing_requests WHERE fr_id=$1`, [frId]);
         if (fr.rows.length === 0) throw notFound('融资申请不存在');
-        const frRow = fr.rows[0] as Record<string, unknown>;
-        await scopeByRow(kernel, frame, frRow.tenant_id as string);
+        const frLoc = fr.rows[0] as Record<string, unknown>;
+        await scopeByRow(kernel, frame, frLoc.tenant_id as string, frLoc.customer_id as string);
         requireHuman(ctx, 'fr.reserve');
         requireDirectoryRole(ctx, ['business', 'credit'], 'fr.reserve');
-        await lockCustomer(tx, frRow.customer_id as string); // A07/A24：客户级串行点
-        const facilityRow = await lockFacility(tx, frRow.facility_id as string);
+        await lockCustomer(tx, frLoc.customer_id as string); // A07/A24：客户级串行点
+        const facilityRow = await lockFacility(tx, frLoc.facility_id as string);
+        const frRow = await lockFr(tx, frId); // A3.1：锁内新读
         const storedReserve = await ctx.replayed(tx);
         if (storedReserve !== null) return storedReserve;
         const view = await facilityView(tx, facilityRow, { expire: true, helpers: h, customerId: frRow.customer_id as string });
         if (frRow.status !== 'submitted') throw conflict('NOT_READY', `申请当前 ${frRow.status}：仅 submitted 可预占`);
         if (frRow.currency !== facilityRow.currency) throw conflict('CURRENCY_MISMATCH', '申请与设施币种不一致');
-        if (view.staleBlockers.length > 0) {
+        // 冷却不在硬阻断列（K18：只影响向上申请/发布）；状态/超限/依据失效才是
+        const hardBlockers = view.staleBlockers.filter((b) => b !== 'cooling_active');
+        if (hardBlockers.length > 0) {
           throw conflict(
-            view.staleBlockers.includes('stale_basis') ? 'STALE_BASIS'
-              : view.staleBlockers.includes('cooling_active') ? 'COOLING_ACTIVE'
-                : 'FACILITY_NOT_ACTIVE',
-            `额度不可用：${view.staleBlockers.join(', ')}`, { blockers: view.staleBlockers });
+            hardBlockers.includes('stale_basis') ? 'STALE_BASIS' : 'FACILITY_NOT_ACTIVE',
+            `额度不可用：${hardBlockers.join(', ')}`, { blockers: hardBlockers });
         }
         const amount = Number(frRow.amount_minor);
         if (amount > view.availableForNewDrawMinor) {
@@ -977,12 +1079,8 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
             `可用额不足：请求 ${amount} 分，可用 ${view.availableForNewDrawMinor} 分`,
             { requestedMinor: amount, availableMinor: view.availableForNewDrawMinor, currency: frRow.currency });
         }
-        // 任务02 3.4/B08：用信按"当前"依据复查——客户级未决差异先行阻断（不改历史批准）
-        await assertNoBlockingFindings(tx, frRow.customer_id as string, 'use_of_funds');
-        const pkgBasisRes = facilityRow.basis as { packageId?: string } | null;
-        if (pkgBasisRes?.packageId) {
-          await checkPackageForAction(tx, frRow.customer_id as string, pkgBasisRes.packageId, 'use_of_funds');
-        }
+        // A3.4：预占提交点复查——未决差异先行（REVIEW_REQUIRED），再按依据包/兼容核拦截
+        await assertFrUseGates(tx, cfgRef(), facilityRow, frRow, 'reserve');
         const txId = uuid();
         const ttl = facilityRow.reserve_ttl_seconds as number | null;
         const after0 = await computeBuckets(tx, frRow.facility_id as string);
@@ -1013,12 +1111,13 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       return withCommandV2(kernel, frame, 'fr.release', frame.tenantId as string, async (tx, h, ctx) => {
         const fr = await tx.query(`SELECT * FROM financing_requests WHERE fr_id=$1`, [frId]);
         if (fr.rows.length === 0) throw notFound('融资申请不存在');
-        const frRow = fr.rows[0] as Record<string, unknown>;
-        await scopeByRow(kernel, frame, frRow.tenant_id as string);
+        const frLoc = fr.rows[0] as Record<string, unknown>;
+        await scopeByRow(kernel, frame, frLoc.tenant_id as string, frLoc.customer_id as string);
         requireHuman(ctx, 'fr.release');
         requireDirectoryRole(ctx, ['business', 'credit'], 'fr.release');
-        await lockCustomer(tx, frRow.customer_id as string);
-        await lockFacility(tx, frRow.facility_id as string);
+        await lockCustomer(tx, frLoc.customer_id as string);
+        await lockFacility(tx, frLoc.facility_id as string);
+        const frRow = await lockFr(tx, frId); // A3.1：锁内新读
         const storedRelease = await ctx.replayed(tx);
         if (storedRelease !== null) return storedRelease;
         if (frRow.status !== 'reserved' && frRow.status !== 'submitted') {
@@ -1065,15 +1164,18 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       return withCommandV2(kernel, frame, 'fr.commit', frame.tenantId as string, async (tx, h, ctx) => {
         const fr = await tx.query(`SELECT * FROM financing_requests WHERE fr_id=$1`, [frId]);
         if (fr.rows.length === 0) throw notFound('融资申请不存在');
-        const frRow = fr.rows[0] as Record<string, unknown>;
-        await scopeByRow(kernel, frame, frRow.tenant_id as string);
+        const frLoc = fr.rows[0] as Record<string, unknown>;
+        await scopeByRow(kernel, frame, frLoc.tenant_id as string, frLoc.customer_id as string);
         requireHuman(ctx, 'fr.commit');
         requireDirectoryRole(ctx, ['business'], 'fr.commit');
-        await lockCustomer(tx, frRow.customer_id as string);
-        await lockFacility(tx, frRow.facility_id as string);
+        await lockCustomer(tx, frLoc.customer_id as string);
+        const facilityRow = await lockFacility(tx, frLoc.facility_id as string);
+        const frRow = await lockFr(tx, frId); // A3.1：锁内新读
         const storedCommit = await ctx.replayed(tx);
         if (storedCommit !== null) return storedCommit;
         if (frRow.status !== 'reserved') throw conflict('NOT_READY', `申请当前 ${frRow.status}：仅 reserved 可承诺`);
+        // A3.4/K14/K15：提交点机械复查——设施状态/依据当前性/未决差异（复核先提交则后续动作被阻断）
+        await assertFrUseGates(tx, kernel.configForV2(), facilityRow, frRow, 'commit');
         const o = await lastEntryScope(tx, frId, 'reserve');
         const txId = uuid();
         await insertEntry(tx, {
@@ -1097,15 +1199,18 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       return withCommandV2(kernel, frame, 'fr.disburse', frame.tenantId as string, async (tx, h, ctx) => {
         const fr = await tx.query(`SELECT * FROM financing_requests WHERE fr_id=$1`, [frId]);
         if (fr.rows.length === 0) throw notFound('融资申请不存在');
-        const frRow = fr.rows[0] as Record<string, unknown>;
-        await scopeByRow(kernel, frame, frRow.tenant_id as string);
+        const frLoc = fr.rows[0] as Record<string, unknown>;
+        await scopeByRow(kernel, frame, frLoc.tenant_id as string, frLoc.customer_id as string);
         requireHuman(ctx, 'fr.disburse');
         requireDirectoryRole(ctx, ['business'], 'fr.disburse');
-        await lockCustomer(tx, frRow.customer_id as string);
-        await lockFacility(tx, frRow.facility_id as string);
+        await lockCustomer(tx, frLoc.customer_id as string);
+        const facilityRow = await lockFacility(tx, frLoc.facility_id as string);
+        const frRow = await lockFr(tx, frId); // A3.1：锁内新读
         const storedDisburse = await ctx.replayed(tx);
         if (storedDisburse !== null) return storedDisburse;
         if (frRow.status !== 'committed') throw conflict('NOT_READY', `申请当前 ${frRow.status}：仅 committed 可出账`);
+        // A3.4/K14：出账提交点同门（模拟与实际资金明确区分；unknown 不动桶）
+        await assertFrUseGates(tx, kernel.configForV2(), facilityRow, frRow, 'disburse');
         // P-07：本轮只对接受控模拟适配器；simulationMode=unknown 模拟"已发送、结果未知"
         const mode = frame.simulationMode === 'unknown' ? 'unknown' : 'succeed';
         const txId = uuid();
@@ -1147,12 +1252,13 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       return withCommandV2(kernel, frame, 'fr.settle', frame.tenantId as string, async (tx, h, ctx) => {
         const fr = await tx.query(`SELECT * FROM financing_requests WHERE fr_id=$1`, [frId]);
         if (fr.rows.length === 0) throw notFound('融资申请不存在');
-        const frRow = fr.rows[0] as Record<string, unknown>;
-        await scopeByRow(kernel, frame, frRow.tenant_id as string);
+        const frLoc = fr.rows[0] as Record<string, unknown>;
+        await scopeByRow(kernel, frame, frLoc.tenant_id as string, frLoc.customer_id as string);
         requireHuman(ctx, 'fr.settle');
         requireDirectoryRole(ctx, ['business'], 'fr.settle');
-        await lockCustomer(tx, frRow.customer_id as string);
-        await lockFacility(tx, frRow.facility_id as string);
+        await lockCustomer(tx, frLoc.customer_id as string);
+        await lockFacility(tx, frLoc.facility_id as string);
+        const frRow = await lockFr(tx, frId); // A3.1：锁内新读
         const storedSettle = await ctx.replayed(tx);
         if (storedSettle !== null) return storedSettle;
         if (frRow.status !== 'disbursed') {
@@ -1180,16 +1286,17 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       return withCommandV2(kernel, frame, 'fr.confirm-external', frame.tenantId as string, async (tx, h, ctx) => {
         const fr = await tx.query(`SELECT * FROM financing_requests WHERE fr_id=$1`, [frId]);
         if (fr.rows.length === 0) throw notFound('融资申请不存在');
-        const frRow = fr.rows[0] as Record<string, unknown>;
-        await scopeByRow(kernel, frame, frRow.tenant_id as string);
+        const frLoc = fr.rows[0] as Record<string, unknown>;
+        await scopeByRow(kernel, frame, frLoc.tenant_id as string, frLoc.customer_id as string);
         const outcome = frame.outcome;
         if (outcome !== 'confirmed' && outcome !== 'release_after_review') {
           throw invalid('outcome 必须 confirmed|release_after_review（unknown 不允许无人工复核的第三路径）');
         }
         const cfg = cfgRef();
-        const perm = await requireMatrixPermission(tx, cfg, ctx, 'fr.confirm-external', Number(frRow.amount_minor));
-        await lockCustomer(tx, frRow.customer_id as string);
-        await lockFacility(tx, frRow.facility_id as string);
+        const perm = await requireMatrixPermission(tx, cfg, ctx, 'fr.confirm-external', Number(frLoc.amount_minor));
+        await lockCustomer(tx, frLoc.customer_id as string);
+        await lockFacility(tx, frLoc.facility_id as string);
+        const frRow = await lockFr(tx, frId); // A3.1：锁内新读
         const storedConfirm = await ctx.replayed(tx);
         if (storedConfirm !== null) return storedConfirm;
         if (frRow.status !== 'disbursing_unknown') throw conflict('NOT_READY', `申请当前 ${frRow.status}：仅 disbursing_unknown 可对账确认`);
@@ -1243,7 +1350,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       const fr = await kernel.pool.query(`SELECT * FROM financing_requests WHERE fr_id=$1`, [frId]);
       if (fr.rows.length === 0) throw notFound('融资申请不存在');
       const row = fr.rows[0] as Record<string, unknown>;
-      await scopeByRow(kernel, { credential }, row.tenant_id as string);
+      await scopeByRow(kernel, { credential }, row.tenant_id as string, row.customer_id as string);
       return { ok: true, financingRequest: projectFr(row) };
     },
 
@@ -1252,7 +1359,7 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       const fr = await kernel.pool.query(`SELECT * FROM financing_requests WHERE fr_id=$1`, [frId]);
       if (fr.rows.length === 0) throw notFound('融资申请不存在');
       const frRow = fr.rows[0] as Record<string, unknown>;
-      await scopeByRow(kernel, { credential }, frRow.tenant_id as string);
+      await scopeByRow(kernel, { credential }, frRow.tenant_id as string, frRow.customer_id as string);
       const fac = await kernel.pool.query(`SELECT * FROM credit_facilities WHERE facility_id=$1`, [frRow.facility_id as string]);
       if (fac.rows.length === 0) throw notFound('额度设施不存在');
       const facilityRow = fac.rows[0] as Record<string, unknown>;
@@ -1362,12 +1469,173 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       if (res.rows.length === 0) return { ok: true, found: false };
       return { ok: true, found: true, receipt: res.rows[0] };
     },
+
+    /** A3.7/F10/K17：客户级提额（再评估）请求——在途唯一、次数窗口、实质新证据、next_eligible_at；
+     *  客户级限制跨渠道/业务员不可绕行；重试经 requestId 幂等不重复计数；非法载荷零写入不扣次数。 */
+    createLimitIncreaseRequest: (frame: V2Frame, customerId: string) => {
+      const tenantId = reqString(frame.tenantId, 'tenantId', 64);
+      return withCommandV2(kernel, frame, 'limit-increase.request', tenantId, async (tx, h, ctx) => {
+        requireHuman(ctx, 'limit-increase.request');
+        requireDirectoryRole(ctx, ['business', 'credit'], 'limit-increase.request');
+        const customer = await lockCustomer(tx, customerId, tenantId);
+        await requireCustomerScope(ctx, customerId, tx);
+        const stored = await ctx.replayed(tx);
+        if (stored !== null) return stored;
+        void customer;
+        const cfg = cfgRef();
+        const amountMinor = reqPosInt(frame.requestedAmountMinor, 'requestedAmountMinor');
+        const currency = reqCurrency(frame.currency);
+        // 1) 冷却期内不受理向上申请（K18；既有合法用信与差异复核不受冷却影响）
+        const cooling = await tx.query(
+          `SELECT facility_id FROM credit_facilities WHERE customer_id=$1 AND cooling_until IS NOT NULL AND cooling_until > now() LIMIT 1`,
+          [customerId],
+        );
+        if (cooling.rows.length > 0) {
+          throw conflict('COOLING_ACTIVE', '提额冷却期内：向上申请不受理（既有合法用信不受影响）');
+        }
+        // 2) 在途唯一（客户级；跨业务员/渠道同一约束）
+        const inflight = await tx.query(
+          `SELECT request_id FROM credit_limit_requests WHERE customer_id=$1 AND status='open'`, [customerId]);
+        if (inflight.rows.length > 0) {
+          throw conflict('LIMIT_INCREASE_IN_FLIGHT', '已存在在途提额请求（客户级唯一）',
+            { requestId: (inflight.rows[0] as { request_id: string }).request_id });
+        }
+        // 3) 再申请间隔与次数窗口
+        const lastResolved = await tx.query(
+          `SELECT next_eligible_at FROM credit_limit_requests
+           WHERE customer_id=$1 AND status <> 'open' AND next_eligible_at IS NOT NULL
+           ORDER BY resolved_at DESC LIMIT 1`, [customerId]);
+        const ne = (lastResolved.rows[0] as { next_eligible_at: string | null } | undefined)?.next_eligible_at;
+        if (ne !== null && ne !== undefined && new Date(ne).getTime() > Date.now()) {
+          throw conflict('LIMIT_INCREASE_WINDOW', `再申请间隔未到（至 ${new Date(ne).toISOString()}）`,
+            { nextEligibleAt: new Date(ne).toISOString() });
+        }
+        const windowDays = cfg.limitIncreaseWindowDays;
+        const maxPerWindow = cfg.limitIncreaseMaxPerWindow;
+        if (maxPerWindow !== null && windowDays !== null) {
+          const inWindow = await tx.query(
+            `SELECT created_at FROM credit_limit_requests
+             WHERE customer_id=$1 AND created_at > now() - make_interval(days => $2::int)`, [customerId, windowDays]);
+          if (inWindow.rows.length >= maxPerWindow) {
+            const times = (inWindow.rows as { created_at: string }[]).map((r) => new Date(r.created_at).getTime()).sort((a, b) => a - b);
+            const oldest = times[0];
+            if (oldest === undefined) throw conflict('LIMIT_INCREASE_WINDOW', '提额次数窗口已用尽', {});
+            const nextAt = new Date(oldest + windowDays * 86_400_000).toISOString();
+            throw conflict('LIMIT_INCREASE_WINDOW', `提额次数窗口（${maxPerWindow} 次/${windowDays} 天）已用尽`, { nextEligibleAt: nextAt });
+          }
+        }
+        // 4) 实质新证据：至少一件未在本客户任何历史提额请求中引用过的现行工件
+        const evidenceRefs = Array.isArray(frame.evidenceRefs) ? frame.evidenceRefs : [];
+        if (evidenceRefs.length === 0) throw invalid('evidenceRefs 必须是非空数组（提额请求须引用实质依据）');
+        const priorUsed = await tx.query(`SELECT evidence_refs FROM credit_limit_requests WHERE customer_id=$1`, [customerId]);
+        const used = new Set<string>();
+        for (const row of priorUsed.rows as { evidence_refs: string[] }[]) {
+          for (const e of row.evidence_refs ?? []) used.add(String(e));
+        }
+        const normalizedRefs: string[] = [];
+        let hasNew = false;
+        for (const ref of evidenceRefs) {
+          const artifactId = reqString(typeof ref === 'string' ? ref : reqObject(ref, 'evidenceRefs[]').artifactId, 'evidenceRefs[]', 64);
+          const art = await tx.query(
+            `SELECT customer_id, superseded_by, duplicate_of FROM evidence_artifacts WHERE artifact_id=$1`, [artifactId]);
+          if (art.rows.length === 0) throw notFound(`证据工件不存在：${artifactId}`);
+          const a = art.rows[0] as Record<string, unknown>;
+          if (a.customer_id !== customerId) throw notFound('证据工件不属于该客户');
+          if (a.superseded_by !== null || a.duplicate_of !== null) throw conflict('ARTIFACT_SUPERSEDED', `证据工件已失效：${artifactId}`);
+          normalizedRefs.push(artifactId);
+          if (!used.has(artifactId)) hasNew = true;
+        }
+        if (!hasNew) {
+          throw conflict('LIMIT_INCREASE_NO_NEW_EVIDENCE', '无实质新证据：重试不得重复计数，须引用新证据');
+        }
+        const lirId = newId('lir');
+        await tx.query(
+          `INSERT INTO credit_limit_requests (request_id, tenant_id, customer_id, requested_amount_minor, currency, evidence_refs, requested_by)
+           VALUES ($1,$2,$3,$4,$5,$6::jsonb,$7)`,
+          [lirId, tenantId, customerId, amountMinor, currency, JSON.stringify(normalizedRefs), ctx.actor],
+        );
+        await h.audit({
+          actor: ctx.actor, action: 'limit_increase_requested', targetType: 'credit_limit_request', targetId: lirId,
+          summary: `提额请求 ${amountMinor} 分（证据 ${normalizedRefs.length} 件）`, payload: { amountMinor },
+        });
+        await h.emit('LIMIT_INCREASE_REQUESTED', customerId, { requestId: lirId, amountMinor, currency });
+        return { ok: true, requestId: lirId, status: 'open' };
+      });
+    },
+
+    /** A3.7/K17：提额请求处置（credit/approver 人类）；驳回按配置写 next_eligible_at。 */
+    resolveLimitIncreaseRequest: (frame: V2Frame, requestId: string) => {
+      const tenantId = reqString(frame.tenantId, 'tenantId', 64);
+      return withCommandV2(kernel, frame, 'limit-increase.resolve', tenantId, async (tx, h, ctx) => {
+        requireHuman(ctx, 'limit-increase.resolve');
+        requireDirectoryRole(ctx, ['credit', 'approver'], 'limit-increase.resolve');
+        const r0 = await tx.query(`SELECT * FROM credit_limit_requests WHERE request_id=$1 FOR UPDATE`, [requestId]);
+        if (r0.rows.length === 0) throw notFound('提额请求不存在');
+        const row = r0.rows[0] as Record<string, unknown>;
+        if (row.tenant_id !== tenantId) throw notFound('提额请求不存在');
+        await requireCustomerScope(ctx, row.customer_id as string, tx);
+        const stored = await ctx.replayed(tx);
+        if (stored !== null) return stored;
+        if (row.status !== 'open') throw conflict('NOT_READY', `提额请求当前 ${row.status}：仅 open 可处置`);
+        const outcome = reqString(frame.outcome, 'outcome', 16);
+        if (!['approved', 'rejected', 'withdrawn'].includes(outcome)) {
+          throw invalid('outcome 必须 approved|rejected|withdrawn');
+        }
+        const note = reqString(frame.note ?? '', 'note', 2000, 0);
+        const retryHours = cfgRef().limitIncreaseRetryHours;
+        const nextEligible = outcome === 'rejected' && retryHours !== null
+          ? new Date(Date.now() + retryHours * 3_600_000)
+          : null;
+        await tx.query(
+          `UPDATE credit_limit_requests SET status=$2, resolved_at=now(), resolved_by=$3, resolution_note=$4, next_eligible_at=$5
+           WHERE request_id=$1`,
+          [requestId, outcome, ctx.actor, note, nextEligible],
+        );
+        await h.audit({
+          actor: ctx.actor, action: 'limit_increase_resolved', targetType: 'credit_limit_request', targetId: requestId,
+          summary: `提额请求处置 ${outcome}${note ? `：${note}` : ''}`, payload: { outcome },
+        });
+        await h.emit('LIMIT_INCREASE_RESOLVED', row.customer_id as string,
+          { requestId, status: outcome, nextEligibleAt: nextEligible === null ? null : nextEligible.toISOString() });
+        return {
+          ok: true, requestId, status: outcome,
+          nextEligibleAt: nextEligible === null ? null : nextEligible.toISOString(),
+        };
+      });
+    },
   };
 }
 
 // ---------------------------------------------------------------------------
 // 内部辅助
 // ---------------------------------------------------------------------------
+
+/** A3.4/K14/K15：用信提交点机械复查。次序：客户级未决差异（REVIEW_REQUIRED 先行，复核不等待冷却）
+ *  → 依据包当前性/Gate（commit 及 reserve；disburse 为已承诺义务的执行，不再重复当前性门）。
+ *  冷却不在其列：只影响向上申请/发布（K18），不冻结既有合法用信。 */
+async function assertFrUseGates(
+  tx: PoolClient, cfg: Config, facilityRow: Record<string, unknown>, frRow: Record<string, unknown>,
+  action: 'reserve' | 'commit' | 'disburse',
+): Promise<void> {
+  // 设施硬状态（冷却不在其列）：暂停/过期/超限/依据失效 → 无新用信动作
+  const view = await facilityView(tx, facilityRow, { expire: true });
+  const hard = view.staleBlockers.filter((b) => b !== 'cooling_active');
+  if (hard.length > 0) {
+    throw conflict(
+      hard.some((b) => b.startsWith('facility_status')) ? 'FACILITY_NOT_ACTIVE'
+        : hard.includes('stale_basis') ? 'STALE_BASIS' : 'FACILITY_NOT_ACTIVE',
+      `额度不可用：${hard.join(', ')}`, { blockers: hard });
+  }
+  await assertNoBlockingFindings(tx, frRow.customer_id as string, 'use_of_funds');
+  const basis = facilityRow.basis as { packageId?: string } | null;
+  if (action === 'disburse') return; // 已承诺敞口的执行：不回写历史决定，也不以当前性追溯冻结（K14c）
+  if (basis?.packageId) {
+    await checkPackageForAction(tx, frRow.customer_id as string, basis.packageId, 'use_of_funds');
+  } else if (!cfg.allowLegacyBasis) {
+    throw conflict('BASIS_PACKAGE_REQUIRED',
+      '存量依据未绑定依据包：用信正式动作阻断（兼容核需显式 --allow-legacy-basis；旧数据只读保留）');
+  }
+}
 
 /** 集中度（P-03）：政策版本未配置 → POLICY_PENDING；有关联组且配置组上限 → 合计校验。 */
 async function requireConcentrationOk(tx: PoolClient, cfg: Config, facilityRow: Record<string, unknown>): Promise<void> {
@@ -1407,7 +1675,12 @@ async function reverifyBasis(tx: PoolClient, facilityRow: Record<string, unknown
   if (ar.status !== 'awaiting_human_review' || ar.stale) {
     throw conflict('STALE_BASIS', `依据评估状态 ${ar.status}${ar.stale ? '（stale）' : ''}：须重新评估后再批准`);
   }
-  if (ar.snapshot_hash !== basis.snapshotHash) throw conflict('STALE_BASIS', '依据快照哈希已变化：须重新评估');
+  if (ar.snapshot_hash !== basis.snapshotHash) {
+    // legacy 导入行（--allow-legacy-basis）的 basis 不携带快照哈希：按评估状态+工件现行复查，不做哈希比对
+    if (!(basis.snapshotHash === undefined || basis.snapshotHash === null)) {
+      throw conflict('STALE_BASIS', '依据快照哈希已变化：须重新评估');
+    }
+  }
   const snap = await tx.query(`SELECT evidence_snapshot FROM credit_assessments WHERE assessment_id=$1`, [basis.assessmentId]);
   const snapshot = (snap.rows[0] as { evidence_snapshot: { artifactId: string }[] }).evidence_snapshot ?? [];
   for (const ref of snapshot) {
@@ -1468,6 +1741,14 @@ function projectFr(row: Record<string, unknown>): Record<string, unknown> {
     externalState: row.external_state, reservedUntil: row.reserved_until, version: Number(row.version),
     createdAt: row.created_at, updatedAt: row.updated_at,
   };
+}
+
+/** A3.1/K12：加锁后重读申请行——首次读仅用于定位/授权；业务合法性判断一律用客户锁内新读
+ *  （Read Committed 下，加锁前缓存的状态不得用于门判断）。 */
+async function lockFr(tx: PoolClient, frId: string): Promise<Record<string, unknown>> {
+  const res = await tx.query(`SELECT * FROM financing_requests WHERE fr_id=$1 FOR UPDATE`, [frId]);
+  if (res.rows.length === 0) throw notFound('融资申请不存在');
+  return res.rows[0] as Record<string, unknown>;
 }
 
 async function lockFacility(tx: PoolClient, facilityId: string): Promise<Record<string, unknown>> {

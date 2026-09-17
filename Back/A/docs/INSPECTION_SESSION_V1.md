@@ -94,3 +94,33 @@ B 路（A2 范围）：`Back/B/src/schedule/inspection-dispatcher.mjs` —— �
 - 并发写说明：任务二执行者同期在 A 内新增 `review.ts/v2kit.ts/decision-support.ts/004_decision_loop.sql`；`errors.ts` 出现过一次联合类型分号冲突（任务一/二先后插入所致），已合并为继续联合，两边错误码均保留。本路 typecheck 范围内的文件零错误；`review.ts/v2kit.ts` 存在任务二在途错误，未代改（每文件一个 writer）。
 - 已知取舍：checkpoint 为暂停/结束/接管/手动时的快照投影（真相源是各业务表+游标）；恢复时与 checkpoint 对比给出 drift 报告，不基于 checkpoint 回滚。外发授权 = A 内记录授权事实；真实渠道外发与结果回执由渠道执行器调用 outbound/result 登记。
 - 回归台账闭合（02:4x 复跑）：任务二对 customer-credit.test.mjs 编辑稳定（mtime 02:02 后无改动）后复跑 `node --test test/customer-credit.test.mjs test/integration-crash.test.mjs` → 退出码 0，26 tests / 25 pass / 1 skip / 0 fail。此前"permission_matrix does not exist"确认系对方编辑中间态，非本路 003 迁移回归；crash 套件第 2 项"PostgreSQL 容器整机重启"为带守卫的 SKIP（未设置 JW_A_TEST_PG_CONTAINER/JW_A_TEST_PG_ISREADY，避免重启非本测试的容器），SIGKILL 内核重启用例真实通过。A22（迁移中断/重复运行）在 003+004 并存下通过，直接断言迁移兼容性。
+
+## 7｜任务01（授信内核修复轮）对本域的变更（2026-09-17 第二轮；契约冻结点）
+
+注意：本文件 §5 的"A1/A2/A3 提交边界"是检查会话轮的编号；本节的 A1/A2/A3 指 PR #3 审核后四目标修复轮的任务01阶段，两者互不通用。
+
+### 7.1 读口鉴权（审核 F01；验收 K01）
+
+- `GET /api/v1/inspections/:sessionId`、`/next-actions`、`/summary` 一律要求真实身份：
+  - 无凭据/凭据无效 → **403 `PRINCIPAL_UNTRUSTED`**（匿名不返回任何会话内容，包括存在性）；
+  - 已验证但无该会话的项目/租户/客户授权 → **404 `NOT_FOUND`**（与"会话不存在"同响应，不泄露存在性）；
+  - 会话名册角色（含客户角色）对快照可读；`summary?audience=internal` 仍限名册角色/admin，`audience=customer` 对已验证身份放开（语义不变）。
+- v1 项目/事件/回执读口同步收紧：`GET /api/v1/projects/:id`、`/api/v1/events`、`/api/v1/receipts/:requestId` 均需已验证身份并按 principal 的项目/租户/客户授权过滤；事件流不出现未授权客户的事件。
+
+### 7.2 幂等归属（验收 K02/K02b）
+
+`withIxCommand`：身份验证先于任何缓存回执查询；幂等行绑定 principal（迁移 005 `idempotency.principal_id`）；跨主体同 requestId → **409 `REQUEST_MISMATCH`**（不泄露他人回执）；重放路径经当前授权状态重验（撤权/改派后不得借缓存绕权），有效重放仍返回同一业务回执、不重做历史交易。
+
+### 7.3 会话访问控制（K03 配套）
+
+会话命令在名册角色校验之前增加会话级访问授权（verified + 项目授权 + 租户/客户授权）；越权统一 404，不区分"不存在"与"无权"。客户级授权走 `principal_customer_grants`（'grant' 模式 principal；撤销即刻生效）。
+
+### 7.4 收口引用服务端解析（A2.1；验收 K05）
+
+评估依据包冻结（`POST /api/v2/customers/:id/decision-packages`、revisions）中的 `inspectionRevision` 只接受 `{sessionId, summaryRef?}` 引用；服务端从持久化会话解析 `closureRevision/closureStatus/checkedAt` 并冻结进包（调用者自报的 closureStatus/closureRevision 一律忽略）：
+
+- sessionId 不存在或不属于该客户 → **404**；
+- 会话收口状态的服务端真值参与就绪判定（仅 `ready_for_assessment`/`closed` 视为可评估；`pending_evidence`/`pending_review`/`open` → 包保持 draft，缺口 `INSPECTION_NOT_CLOSED`）；
+- 晚到材料推进 closure_revision 后，旧包引用不失效（历史冻结），当前性复查以包内冻结引用为准；需新收口请发新修订。
+
+测试锚点：`test/trust-gates-a1.test.mjs`（K01/K02/K03）、`test/trust-gates-a2.test.mjs`（K05；含真实会话 helper `inspectionReadySession`）。

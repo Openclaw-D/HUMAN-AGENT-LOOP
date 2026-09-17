@@ -7,7 +7,7 @@ import { conflict, invalid, notFound } from './errors.ts';
 import { canonicalHash, newId, sha256 } from './util.ts';
 import type { Kernel } from './kernel.ts';
 import {
-  reqString, withCommandV2, requireDirectoryRole, lockCustomer, scopeByRow,
+  reqString, withCommandV2, requireDirectoryRole, requireCustomerScope, lockCustomer, scopeByRow,
   type RequestFrame,
 } from './v2kit.ts';
 
@@ -41,6 +41,7 @@ export function buildReportCommands(kernel: Kernel): ReportsApi {
       const tenantId = reqString(frame.tenantId, 'tenantId', 64);
       return withCommandV2(kernel, frame, 'report.generate', tenantId, async (tx, h, ctx) => {
         const customer = await lockCustomer(tx, customerId, tenantId);
+        await requireCustomerScope(ctx, customerId, tx);
         const stored = await ctx.replayed(tx);
         if (stored !== null) return stored;
         void customer;
@@ -101,8 +102,9 @@ export function buildReportCommands(kernel: Kernel): ReportsApi {
       const auth = await authenticate(kernel.verifierForV2(), credential);
       requireVerified(auth);
       try {
-        const { authorizeTenant } = await import('./principal.ts');
+        const { authorizeTenant, authorizeCustomer } = await import('./principal.ts');
         authorizeTenant(auth.principal, String(row.tenant_id));
+        await authorizeCustomer(auth.principal, String(row.customer_id), kernel.pool);
       } catch {
         throw notFound('报告不存在');
       }
@@ -126,7 +128,7 @@ export function buildReportCommands(kernel: Kernel): ReportsApi {
     listReports: async (credential: unknown, customerId: string) => {
       const c = await kernel.pool.query(`SELECT tenant_id FROM customers WHERE customer_id=$1`, [customerId]);
       if (c.rows.length === 0) throw notFound('客户不存在');
-      await scopeByRow(kernel, { credential }, (c.rows[0] as { tenant_id: string }).tenant_id);
+      await scopeByRow(kernel, { credential }, (c.rows[0] as { tenant_id: string }).tenant_id, customerId);
       const { authenticate, requireVerified } = await import('./principal.ts');
       const auth = await authenticate(kernel.verifierForV2(), credential);
       requireVerified(auth);

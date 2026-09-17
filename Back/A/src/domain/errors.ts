@@ -37,7 +37,13 @@ export type ErrorCode =
   | 'REVIEW_REQUIRED'              // 409 差异复核/域依赖更新未完成：正式动作阻断，返回具体缺口
   | 'REVIEW_EVIDENCE_REQUIRED'     // 409 无所需证据不能关闭关键复核；ack/口述不算核验（B04）
   | 'GATE_BLOCKED'                 // 409 Gate HARD_BLOCK/NEEDS_EVIDENCE：无通用放行（3.4/B04）
-  | 'COOLING_ACTIVE';              // 409 提额冷却期内：新动作不得生效（B11；冷却不豁免复核）
+  | 'COOLING_ACTIVE'               // 409 提额冷却期内：新动作不得生效（B11；冷却不豁免复核）
+  // ---- 任务01 A2/A3（审核 F02/F03/F06/F10/F12 修复）----
+  | 'BASIS_PACKAGE_REQUIRED'       // 409 正式路径未绑定依据包（兼容核需显式开启）
+  | 'ANALYSIS_RUN_NOT_COMPLETED'   // 409 非完成态运行不得满足必需域（K09）
+  | 'LIMIT_INCREASE_IN_FLIGHT'     // 409 客户级提额请求在途唯一（K17）
+  | 'LIMIT_INCREASE_WINDOW'        // 409 提额次数窗口/再申请间隔未到（K17/K18）
+  | 'LIMIT_INCREASE_NO_NEW_EVIDENCE'; // 409 无实质新证据的再提额被拒（K17）
 
 const HTTP_STATUS: Record<ErrorCode, number> = {
   INVALID_INPUT: 400, FORBIDDEN_KEY: 400, DEPENDENCY_CYCLE: 400,
@@ -57,6 +63,8 @@ const HTTP_STATUS: Record<ErrorCode, number> = {
   QUESTION_CLOSED: 409, FOLLOWUP_LIMIT_REACHED: 409, ANSWER_REQUIRES_HUMAN: 403,
   SCENE_ANCHOR_STALE: 409, SESSION_NOT_RUNNING: 409, INSPECTION_CLOSED: 409,
   REVIEW_REQUIRED: 409, REVIEW_EVIDENCE_REQUIRED: 409, GATE_BLOCKED: 409, COOLING_ACTIVE: 409,
+  BASIS_PACKAGE_REQUIRED: 409, ANALYSIS_RUN_NOT_COMPLETED: 409,
+  LIMIT_INCREASE_IN_FLIGHT: 409, LIMIT_INCREASE_WINDOW: 409, LIMIT_INCREASE_NO_NEW_EVIDENCE: 409,
 };
 
 export class AppError extends Error {

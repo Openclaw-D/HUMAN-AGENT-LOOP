@@ -1,0 +1,5 @@
+{
+  "seed": 20260917,
+  "ops": [],
+  "message": "error: relation \"permission_matrix\" does not exist"
+}

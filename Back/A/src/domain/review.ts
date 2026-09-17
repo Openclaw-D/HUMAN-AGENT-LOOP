@@ -8,7 +8,7 @@ import { conflict, invalid, notFound } from './errors.ts';
 import { newId } from './util.ts';
 import type { Kernel } from './kernel.ts';
 import {
-  reqObject, reqString, reqInt, withCommandV2, requireHuman, requireDirectoryRole, lockCustomer, scopeByRow, gradeRank,
+  reqObject, reqString, reqInt, withCommandV2, requireHuman, requireDirectoryRole, requireCustomerScope, lockCustomer, scopeByRow, gradeRank,
   type RequestFrame, type V2Ctx,
 } from './v2kit.ts';
 
@@ -41,6 +41,7 @@ export function buildReviewCommands(kernel: Kernel): ReviewApi {
       const tenantId = reqString(frame.tenantId, 'tenantId', 64);
       return withCommandV2(kernel, frame, 'finding.create', tenantId, async (tx, h, ctx) => {
         const customer = await lockCustomer(tx, customerId, tenantId);
+        await requireCustomerScope(ctx, customerId, tx);
         const stored = await ctx.replayed(tx);
         if (stored !== null) return stored;
         const findingType = reqString(frame.findingType, 'findingType', 40);
@@ -93,18 +94,12 @@ export function buildReviewCommands(kernel: Kernel): ReviewApi {
     },
 
     listFindings: async (credential: unknown, customerId: string) => {
+      // A1：读口统一从客户授权出发（'grant' 模式 principal 未授权该客户 → 404，不泄露空列表）
+      await lookupCustomerForRead(kernel, credential, customerId);
       const res = await kernel.pool.query(
         `SELECT * FROM decision_findings WHERE customer_id=$1 ORDER BY created_at`, [customerId],
       );
       const findings = (res.rows as FindingRow[]).map(projectFinding);
-      // 行级租户鉴权（A10）：先取任一行租户做 scope 检查
-      if (findings.length > 0) {
-        const t = await kernel.pool.query(`SELECT tenant_id FROM decision_findings WHERE customer_id=$1 LIMIT 1`, [customerId]);
-        const tenantId = (t.rows[0] as { tenant_id: string } | undefined)?.tenant_id;
-        if (tenantId !== undefined) await scopeByRow(kernel, { credential }, tenantId);
-      } else {
-        await lookupCustomerForRead(kernel, credential, customerId);
-      }
       const open = findings.filter((f) => f.status === 'open')
         .sort((a, b) => (SEVERITY_RANK[b.severity as string] ?? 0) - (SEVERITY_RANK[a.severity as string] ?? 0));
       return { ok: true, reviewQueue: open, findings };
@@ -118,6 +113,7 @@ export function buildReviewCommands(kernel: Kernel): ReviewApi {
         requireHuman(ctx, 'object.relink');
         requireDirectoryRole(ctx, ['business', 'credit', 'asset'], 'object.relink');
         const customer = await lockCustomer(tx, customerId, tenantId);
+        await requireCustomerScope(ctx, customerId, tx);
         const stored = await ctx.replayed(tx);
         if (stored !== null) return stored;
         void customer;
@@ -153,7 +149,7 @@ export function buildReviewCommands(kernel: Kernel): ReviewApi {
     listObjectInventory: async (credential: unknown, customerId: string) => {
       const cust = await kernel.pool.query(`SELECT tenant_id FROM customers WHERE customer_id=$1`, [customerId]);
       if (cust.rows.length === 0) throw notFound('客户不存在');
-      await scopeByRow(kernel, { credential }, (cust.rows[0] as { tenant_id: string }).tenant_id);
+      await scopeByRow(kernel, { credential }, (cust.rows[0] as { tenant_id: string }).tenant_id, customerId);
       const arts = await kernel.pool.query(
         `SELECT artifact_id, object_ref, superseded_by, duplicate_of FROM evidence_artifacts
          WHERE customer_id=$1 AND object_ref IS NOT NULL ORDER BY created_at`, [customerId],
@@ -203,7 +199,7 @@ export function buildReviewCommands(kernel: Kernel): ReviewApi {
         const f0 = await tx.query(`SELECT tenant_id, customer_id FROM decision_findings WHERE finding_id=$1`, [findingId]);
         if (f0.rows.length === 0) throw notFound('差异记录不存在');
         const owner = f0.rows[0] as { tenant_id: string; customer_id: string };
-        await scopeByRow(kernel, frame, owner.tenant_id);
+        await scopeByRow(kernel, frame, owner.tenant_id, owner.customer_id);
         const customer = await lockCustomer(tx, owner.customer_id, owner.tenant_id); // 固定锁序：客户 → 差异
         void customer;
         const f1 = await tx.query(`SELECT * FROM decision_findings WHERE finding_id=$1 FOR UPDATE`, [findingId]);
@@ -367,14 +363,14 @@ async function lookupFinding(kernel: Kernel, credential: unknown, findingId: str
   const res = await kernel.pool.query(`SELECT * FROM decision_findings WHERE finding_id=$1`, [findingId]);
   if (res.rows.length === 0) throw notFound('差异记录不存在');
   const row = res.rows[0] as FindingRow;
-  await scopeByRow(kernel, { credential }, row.tenant_id);
+  await scopeByRow(kernel, { credential }, row.tenant_id, row.customer_id);
   return row;
 }
 
 async function lookupCustomerForRead(kernel: Kernel, credential: unknown, customerId: string): Promise<void> {
   const res = await kernel.pool.query(`SELECT tenant_id FROM customers WHERE customer_id=$1`, [customerId]);
   if (res.rows.length === 0) throw notFound('客户不存在');
-  await scopeByRow(kernel, { credential }, (res.rows[0] as { tenant_id: string }).tenant_id);
+  await scopeByRow(kernel, { credential }, (res.rows[0] as { tenant_id: string }).tenant_id, customerId);
 }
 
 function projectFinding(row: FindingRow): Record<string, unknown> {

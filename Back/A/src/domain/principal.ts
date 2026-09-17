@@ -21,6 +21,7 @@ export const ANONYMOUS: Principal = {
   roles: [],
   projects: 'all',
   tenants: 'all',
+  customers: 'all',
 };
 
 export interface Auth {
@@ -63,6 +64,22 @@ export function authorizeTenant(principal: Principal, tenantId: string): void {
   if (principal.tenants === 'all') return;
   if (!principal.tenants.includes(tenantId)) {
     throw forbidden('CUSTOMER_SCOPE_VIOLATION', 'principal 无该租户授权');
+  }
+}
+
+/** 客户级范围校验（任务01 A1/K03）：customers='grant' → 必须 principal_customer_grants 在册。
+ *  DB 查询面由调用方传入（pool/tx 均可）；撤销授权即刻生效（重放路径同样经过此处）。 */
+export async function authorizeCustomer(
+  principal: Principal, customerId: string,
+  q: { query(sql: string, values?: unknown[]): Promise<{ rows: unknown[] }> },
+): Promise<void> {
+  if (principal.customers === 'all') return;
+  const r = await q.query(
+    `SELECT 1 FROM principal_customer_grants WHERE principal_id=$1 AND customer_id=$2`,
+    [principal.principalId, customerId],
+  );
+  if (r.rows.length === 0) {
+    throw forbidden('CUSTOMER_SCOPE_VIOLATION', 'principal 无该客户授权');
   }
 }
 

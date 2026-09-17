@@ -20,13 +20,24 @@ const V2_SPEC = [
   'tok-app2=app2:human:approver:all:t1',
   'tok-agent1=agent1:agent:business:all:t1',
   'tok-cust1=cust1:human:customer:all:t1',
+  'tok-policy=paul:human:policy:all:t1',
+  'tok-svc=svc1:service:policy+credit+commerce+asset:all:t1',
 ].join(',');
 
+const POLICY_VERSION = 'domreq-loop-synthetic';
+const PACK = 'sim-pack-1';
+
 async function startLoopKernel(opts = {}) {
-  const extra = ['--credit-matrix', 'matrix-dev-synthetic-1', '--credit-concentration', 'conc-dev-synthetic-1'];
+  const extra = ['--credit-matrix', 'matrix-dev-synthetic-1', '--credit-concentration', 'conc-dev-synthetic-1',
+    '--required-domains-policy', POLICY_VERSION, '--allow-legacy-basis'];
   if (opts.cooling !== undefined) extra.push('--credit-cooling-seconds', String(opts.cooling));
   const k = await startKernel({ extraArgs: extra, principalSpec: V2_SPEC, dbUrl: opts.dbUrl ?? null, keepDb: opts.keepDb ?? false });
   await seedMatrix(k.pool);
+  // 合成必需域政策（四域必需；A2 后必需域来自政策，不由调用者关闭）
+  await k.pool.query(
+    `INSERT INTO domain_requirement_policies (policy_version, domain, required) VALUES
+       ($1,'policy',true),($1,'credit',true),($1,'commerce',true),($1,'asset',true)
+     ON CONFLICT DO NOTHING`, [POLICY_VERSION]);
   return k;
 }
 
@@ -51,6 +62,8 @@ function app2(k) { return client(k.base, 'tok-app2'); }
 function agent1(k) { return client(k.base, 'tok-agent1'); }
 function cust1(k) { return client(k.base, 'tok-cust1'); }
 function root(k) { return client(k.base, 'tok-root'); }
+function policyP(k) { return client(k.base, 'tok-policy'); }
+function svc(k) { return client(k.base, 'tok-svc'); }
 
 async function makeCustomer(b, tenantId = T1) {
   const r = await b('POST', '/api/v2/customers', {
@@ -68,8 +81,95 @@ async function reg(b, customerId, payload) {
   return r.json;
 }
 
-const GATE_CLEAR = { result: 'CLEAR', reasonCodes: [], ruleIds: [], rulePackVersion: 'sim-pack-1', evaluatedAt: '2026-09-17T08:00:00Z', blockedActions: [] };
-const INSPECTION_OK = { sessionId: 'sess-1', closureRevision: 1, closureStatus: 'ready_for_assessment', checkedAt: '2026-09-17T08:00:00Z' };
+const GATE_CLEAR = { result: 'CLEAR', reasonCodes: [], ruleIds: [], rulePackVersion: PACK, evaluatedAt: '2026-09-17T08:00:00Z', blockedActions: [] };
+
+/** 激活合成规则版本（A2：规则当前性的服务端事实源）。 */
+async function activatePack(k, version = PACK) {
+  const r = await policyP(k)('POST', '/api/v2/rule-pack-versions/activate', { requestId: newId('r'), tenantId: T1, version });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+}
+
+/** 真实检查会话走到 ready_for_assessment（A2：收口引用由服务端解析，假会话 404）。 */
+async function inspectionReadySession(k, customerId) {
+  const a = root(k);
+  const tpl = await a('POST', '/api/v1/templates', {
+    requestId: newId('tpl'), name: 'tpl-loop',
+    roles: [{ roleKey: 'business', title: '业务', isHumanRole: true }],
+    goals: [{ goalKey: 'g1', title: 'g', responsibleRole: 'business', executorKind: 'human', acceptanceRole: 'business', decisionRole: 'business', inputEvidenceKinds: [], dependsOn: [], params: {} }],
+  });
+  assert.equal(tpl.status, 200, JSON.stringify(tpl.json));
+  const proj = await a('POST', '/api/v1/projects', { requestId: newId('proj'), templateId: tpl.json.templateId, name: 'proj-loop' });
+  assert.equal(proj.status, 200, JSON.stringify(proj.json));
+  const s = await biz(k)('POST', `/api/v1/projects/${proj.json.projectId}/inspections`, {
+    requestId: newId('sess'), customerId, title: '收口会话',
+    roles: [{ roleKey: 'business', kind: 'human' }], ownerRole: 'business',
+    items: [{ itemKey: 'it1', title: '核验', required: true, responsibleRole: 'business', targetRole: 'business', requiresHumanVerification: false, expectedEvidenceKinds: [] }],
+  });
+  assert.equal(s.status, 200, JSON.stringify(s.json));
+  const sessionId = s.json.sessionId;
+  const st = await biz(k)('POST', `/api/v1/inspections/${sessionId}/start`, { requestId: newId('st'), expectedVersion: 1 });
+  assert.equal(st.status, 200, JSON.stringify(st.json));
+  const snap = await biz(k)('GET', `/api/v1/inspections/${sessionId}`);
+  assert.equal(snap.status, 200, JSON.stringify(snap.json));
+  const itemId = snap.json.snapshot.items[0].itemId;
+  const q = await biz(k)('POST', `/api/v1/inspections/${sessionId}/questions`, {
+    requestId: newId('q'), audience: 'internal', targetRole: 'business', question: '确认?', purpose: 'verify', itemId,
+  });
+  assert.equal(q.status, 200, JSON.stringify(q.json));
+  const ans = await biz(k)('POST', `/api/v1/inspections/${sessionId}/questions/${q.json.questionId}/answer`, {
+    requestId: newId('ans'), answer: { text: '确认无误' },
+  });
+  assert.equal(ans.status, 200, JSON.stringify(ans.json));
+  const end = await biz(k)('POST', `/api/v1/inspections/${sessionId}/end`, { requestId: newId('end'), expectedVersion: 3 });
+  assert.equal(end.status, 200, JSON.stringify(end.json));
+  assert.equal(end.json.closureStatus, 'ready_for_assessment', JSON.stringify(end.json));
+  return { sessionId, closureRevision: end.json.closureRevision ?? 1 };
+}
+
+/** 登记可信 Gate 回执（service 身份）。 */
+async function gateReceiptId(k, customerId, { result = 'CLEAR', ruleIds = [], reasonCodes = [], version = PACK } = {}) {
+  const r = await svc(k)('POST', `/api/v2/customers/${customerId}/rule-gate-receipts`, {
+    requestId: newId('gr'), tenantId: T1, result, rulesetVersion: version, ruleIds, reasonCodes,
+  });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  return r.json.receiptId;
+}
+
+/** 服务身份完成一次域分析运行并登记结果（A2：运行开始即盖章输入摘要）。 */
+async function runAndRecord(k, customerId, packageId, domain, { artifactIds = [], factKeys = [], version = PACK } = {}) {
+  const run = await svc(k)('POST', `/api/v2/customers/${customerId}/analysis-runs/start`, {
+    requestId: newId('run'), tenantId: T1, domain, deps: { artifactIds, factKeys, rulePackVersion: version },
+  });
+  assert.equal(run.status, 200, JSON.stringify(run.json));
+  const fin = await svc(k)('POST', `/api/v2/analysis-runs/${run.json.runId}/finish`, {
+    requestId: newId('fin'), tenantId: T1, executionStatus: 'completed',
+  });
+  assert.equal(fin.status, 200, JSON.stringify(fin.json));
+  const rr = await svc(k)('POST', `/api/v2/decision-packages/${packageId}/domain-results`, {
+    requestId: newId('dr'), tenantId: T1, domain,
+    analysisRun: { runId: run.json.runId, rulesetVersion: version },
+    opinion: { findingType: 'observation', summary: `${domain} 域合成意见`, domain, authority: 'none' },
+    deps: { artifactIds, factKeys, rulePackVersion: version },
+  });
+  assert.equal(rr.status, 200, JSON.stringify(rr.json));
+}
+
+/** 冻结依据包（A2 机器：可信 Gate 回执 + 服务端解析收口引用）。 */
+async function freezePackage(k, customerId, { assessmentId, domainDeps = [], candidate, gateResult = 'CLEAR', gatePatch = {} } = {}) {
+  await activatePack(k);
+  const receiptId = await gateReceiptId(k, customerId, { result: gateResult, ...gatePatch });
+  const insp = await inspectionReadySession(k, customerId);
+  const deps = domainDeps.map((d) => ({
+    domain: d.domain, artifactIds: d.artifactIds ?? [], factKeys: d.factKeys ?? [],
+    rulePackVersion: d.rulePackVersion ?? PACK,
+  }));
+  const created = await biz(k)('POST', `/api/v2/customers/${customerId}/decision-packages`, {
+    requestId: newId('r'), tenantId: T1, assessmentId, domainDeps: deps, gateReceiptId: receiptId,
+    inspectionRevision: { sessionId: insp.sessionId }, candidate,
+  });
+  assert.equal(created.status, 200, JSON.stringify(created.json));
+  return { packageId: created.json.packageId, receiptId, insp };
+}
 
 /** 评估走到 awaiting_human_review（候选 tendency=do）。 */
 async function assessmentAwaiting(c, customerId, artifactIds, amountMinor = wan(50)) {
@@ -89,23 +189,16 @@ async function assessmentAwaiting(c, customerId, artifactIds, amountMinor = wan(
   return assessmentId;
 }
 
-/** 冻结依据包并为全部声明域登记结果（各自水位不同也允许）。 */
-async function packageReady(c, customerId, { assessmentId, domainDeps, gate = GATE_CLEAR, inspection = INSPECTION_OK, candidate } = {}) {
-  const created = await c('POST', `/api/v2/customers/${customerId}/decision-packages`, {
-    requestId: newId('r'), tenantId: T1, assessmentId, domainDeps, gate, inspectionRevision: inspection, candidate,
-  });
-  assert.equal(created.status, 200, JSON.stringify(created.json));
-  const packageId = created.json.packageId;
-  for (const d of domainDeps) {
-    const rr = await c('POST', `/api/v2/decision-packages/${packageId}/domain-results`, {
-      requestId: newId('r'), tenantId: T1, domain: d.domain,
-      analysisRun: { runId: `run-${d.domain}-${newId('x')}`, inputHash: `hash-${d.domain}`, inputWatermark: `wm-${d.domain}`, rulesetVersion: d.rulePackVersion ?? gate.rulePackVersion, executionStatus: 'completed' },
-      opinion: { findingType: 'observation', summary: `${d.domain} 域合成意见`, domain: d.domain, authority: 'none', stale: false, evidenceRefs: [], knownFacts: [], unknowns: [], contradictions: [], findingsSuspicion: [], ruleRefs: [] },
-      deps: { artifactIds: d.artifactIds, factKeys: d.factKeys, rulePackVersion: d.rulePackVersion ?? gate.rulePackVersion },
-    });
-    assert.equal(rr.status, 200, JSON.stringify(rr.json));
+/** 冻结依据包并为全部必需域登记结果（A2 机器：Gate 回执 + 服务身份运行登记）。 */
+async function packageReady(k, customerId, { assessmentId, domainDeps, gate, inspection, candidate } = {}) {
+  void gate; void inspection; // 旧签名兼容：Gate 一律走可信回执；收口一律服务端解析（假收口在 A2 下不可自证）
+  const { packageId } = await freezePackage(k, customerId, { assessmentId, domainDeps, candidate });
+  const depsByDomain = new Map((domainDeps ?? []).map((d) => [d.domain, d]));
+  for (const domain of ['policy', 'credit', 'commerce', 'asset']) {
+    const d = depsByDomain.get(domain) ?? {};
+    await runAndRecord(k, customerId, packageId, domain, { artifactIds: d.artifactIds ?? [], factKeys: d.factKeys ?? [] });
   }
-  const got = await c('GET', `/api/v2/decision-packages/${packageId}`);
+  const got = await biz(k)('GET', `/api/v2/decision-packages/${packageId}`);
   assert.equal(got.status, 200, JSON.stringify(got.json));
   assert.equal(got.json.decisionReadiness, true, `包应就绪：${JSON.stringify(got.json.gaps)}`);
   return { packageId, basisVersion: got.json.package.basisVersion, revision: got.json.package.revision };
@@ -182,12 +275,11 @@ test('B01 材料、生成场景及截图同源：不增加独立证明；真实�
 
     const c = cred(k);
     const assessmentId = await assessmentAwaiting(c, custId, [decl.artifactId, scene.artifactId, render.artifactId]);
-    const pkg = await c('POST', `/api/v2/customers/${custId}/decision-packages`, {
-      requestId: newId('r'), tenantId: T1, assessmentId, gate: GATE_CLEAR, inspectionRevision: INSPECTION_OK,
-      domainDeps: [{ domain: 'asset', artifactIds: [decl.artifactId, scene.artifactId, render.artifactId], factKeys: [], required: true }],
+    const { packageId } = await freezePackage(k, custId, {
+      assessmentId,
+      domainDeps: [{ domain: 'asset', artifactIds: [decl.artifactId, scene.artifactId, render.artifactId], factKeys: [] }],
     });
-    assert.equal(pkg.status, 200, JSON.stringify(pkg.json));
-    const got = await c('GET', `/api/v2/decision-packages/${pkg.json.packageId}`);
+    const got = await c('GET', `/api/v2/decision-packages/${packageId}`);
     assert.equal(got.json.package.independentProofs, 1, '包层独立证明同样按根归并');
 
     // 真实核验缺口仍在：unverified 截图不能关闭"需 confirmed 现场核验"的差异
@@ -199,7 +291,7 @@ test('B01 材料、生成场景及截图同源：不增加独立证明；真实�
     });
     assert.equal(deny.status, 409, JSON.stringify(deny.json));
     assert.equal(deny.json.error, 'REVIEW_EVIDENCE_REQUIRED');
-    const got2 = await c('GET', `/api/v2/decision-packages/${pkg.json.packageId}`);
+    const got2 = await c('GET', `/api/v2/decision-packages/${packageId}`);
     assert.equal(got2.json.decisionReadiness, false, '关键复核未关闭：包不得就绪');
     assert.ok(got2.json.gaps.some((g) => g.code === 'OPEN_BLOCKING_REVIEW'));
   } finally { await k.stop(); }
@@ -306,7 +398,7 @@ test('B05 某域依赖已变：该域必须更新，未变域允许复用，不�
     const custId = await makeCustomer(b);
     const rev = await reg(b, custId, { kind: 'income_statement', factKey: 'revenue_2025', content: { amountMinor: wan(1200) }, grade: 'source_supported' });
     const own = await reg(b, custId, { kind: 'nameplate', factKey: 'ownership', content: { owner: 'synth-mfg' }, grade: 'confirmed' });
-    const { packageId, revision } = await packageReady(c, custId, {
+    const { packageId, revision } = await packageReady(k, custId, {
       domainDeps: [
         { domain: 'credit', artifactIds: [rev.artifactId], factKeys: ['revenue_2025'], required: true },
         { domain: 'asset', artifactIds: [own.artifactId], factKeys: ['ownership'], required: true },
@@ -326,13 +418,7 @@ test('B05 某域依赖已变：该域必须更新，未变域允许复用，不�
     // credit 域更新后包复就绪；asset 结果版本不变（未重跑、未混入新判断）
     const assetBefore = await c('GET', `/api/v2/decision-packages/${packageId}`);
     const assetVer = assetBefore.json.domainResults.find((r) => r.domain === 'asset').opinionVersion;
-    const rr = await c('POST', `/api/v2/decision-packages/${packageId}/domain-results`, {
-      requestId: newId('r'), tenantId: T1, domain: 'credit',
-      analysisRun: { runId: `run-credit-${newId('x')}`, inputHash: 'h2', inputWatermark: 'w2', rulesetVersion: 'sim-pack-1', executionStatus: 'completed' },
-      opinion: { findingType: 'observation', summary: 'credit 域按新证据重跑', domain: 'credit', authority: 'none', stale: false, evidenceRefs: [], knownFacts: [], unknowns: [], contradictions: [], findingsSuspicion: [], ruleRefs: [] },
-      deps: { artifactIds: [rev.artifactId], factKeys: ['revenue_2025'], rulePackVersion: 'sim-pack-1' },
-    });
-    assert.equal(rr.status, 200, JSON.stringify(rr.json));
+    await runAndRecord(k, custId, packageId, 'credit', { artifactIds: [rev.artifactId], factKeys: ['revenue_2025'] });
     const after = await c('GET', `/api/v2/decision-packages/${packageId}`);
     assert.equal(after.json.decisionReadiness, true, '仅更新了变化的域即可复就绪');
     assert.equal(after.json.package.status, 'ready');
@@ -349,7 +435,7 @@ test('B06 无关留言不全量重算；相关不利材料只影响真实依赖�
     const custId = await makeCustomer(b);
     const rev = await reg(b, custId, { kind: 'income_statement', factKey: 'revenue_2025', content: { amountMinor: wan(1200) }, grade: 'source_supported' });
     const own = await reg(b, custId, { kind: 'nameplate', factKey: 'ownership', content: { owner: 'synth-mfg' }, grade: 'confirmed' });
-    const { packageId } = await packageReady(c, custId, {
+    const { packageId } = await packageReady(k, custId, {
       domainDeps: [
         { domain: 'credit', artifactIds: [rev.artifactId], factKeys: ['revenue_2025'], required: true },
         { domain: 'asset', artifactIds: [own.artifactId], factKeys: ['ownership'], required: true },
@@ -383,7 +469,7 @@ test('B07 新证据先提交、旧审批随后提交：正式命令失败，零�
     const custId = await makeCustomer(b);
     const rev = await reg(b, custId, { kind: 'income_statement', factKey: 'revenue_2025', content: { amountMinor: wan(1200) }, grade: 'source_supported' });
     const assessmentId = await assessmentAwaiting(c, custId, [rev.artifactId]);
-    const { packageId } = await packageReady(c, custId, {
+    const { packageId } = await packageReady(k, custId, {
       assessmentId,
       domainDeps: [{ domain: 'credit', artifactIds: [rev.artifactId], factKeys: ['revenue_2025'], required: true }],
       candidate: { producedBy: 'test-harness', amountMinor: wan(50), currency: 'CNY' },
@@ -416,7 +502,7 @@ test('B08 批准先完成、随后不利证据：历史不变；新用信按当�
     const rev = await reg(b, custId, { kind: 'income_statement', factKey: 'revenue_2025', content: { amountMinor: wan(1200) }, grade: 'source_supported' });
     const own = await reg(b, custId, { kind: 'nameplate', factKey: 'ownership', content: { owner: 'synth-mfg' }, grade: 'confirmed' });
     const assessmentId = await assessmentAwaiting(c, custId, [rev.artifactId, own.artifactId]);
-    const { packageId } = await packageReady(c, custId, {
+    const { packageId } = await packageReady(k, custId, {
       assessmentId,
       domainDeps: [
         { domain: 'credit', artifactIds: [rev.artifactId], factKeys: ['revenue_2025'], required: true },
@@ -629,10 +715,10 @@ test('B13 客户请求内部报告/事件/证据地址：服务端拒绝，元�
     const custId = await makeCustomer(b);
     const rev = await reg(b, custId, { kind: 'income_statement', factKey: 'revenue_2025', content: { amountMinor: wan(1200) }, grade: 'source_supported' });
     const assessmentId = await assessmentAwaiting(c, custId, [rev.artifactId]);
-    const { packageId } = await packageReady(c, custId, {
+    const { packageId } = await packageReady(k, custId, {
       assessmentId,
       domainDeps: [{ domain: 'credit', artifactIds: [rev.artifactId], factKeys: ['revenue_2025'], required: true }],
-      gate: { ...GATE_CLEAR, ruleIds: ['SIM-CASH-COVERAGE-01'], reasonCodes: ['INTERNAL_REASON'] },
+      gatePatch: { ruleIds: ['SIM-CASH-COVERAGE-01'], reasonCodes: ['INTERNAL_REASON'] },
     });
     const rep = await b('POST', `/api/v2/customers/${custId}/reports`, {
       requestId: newId('r'), tenantId: T1, kind: 'internal_summary', subjectId: packageId,
@@ -674,7 +760,7 @@ test('B14 场景对象重命名/重新导入：旧依据可追溯；显式重关
       objectRef: { objectId: 'obj-press-A', sceneVersion: 'v1' },
     });
     const assessmentId = await assessmentAwaiting(c, custId, [press.artifactId]);
-    const { packageId } = await packageReady(c, custId, {
+    const { packageId } = await packageReady(k, custId, {
       assessmentId,
       domainDeps: [{ domain: 'asset', artifactIds: [press.artifactId], factKeys: ['ownership'], required: true }],
     });
@@ -717,21 +803,19 @@ test('B-EX 事件契约：五类决策闭环事件齐备（AssessmentBasisRevise
     const custId = await makeCustomer(b);
     const rev = await reg(b, custId, { kind: 'income_statement', factKey: 'revenue_2025', content: { amountMinor: wan(1200) }, grade: 'source_supported' });
     const assessmentId = await assessmentAwaiting(c, custId, [rev.artifactId]);
-    const { packageId } = await packageReady(c, custId, {
+    const { packageId } = await packageReady(k, custId, {
       assessmentId,
       domainDeps: [{ domain: 'credit', artifactIds: [rev.artifactId], factKeys: ['revenue_2025'], required: true }],
     });
     const { facilityId } = await activeFacility(k, custId, wan(50), { packageId });
     const frId = await makeFR(b, custId, facilityId, wan(20));
     assert.equal((await reserve(b, frId)).status, 200);
-    // 依据修订（显式新修订）+ 未决差异
-    const rev2 = await c('POST', `/api/v2/decision-packages/${packageId}/revisions`, {
-      requestId: newId('r'), tenantId: T1, assessmentId,
-      domainDeps: [{ domain: 'credit', artifactIds: [rev.artifactId], factKeys: ['revenue_2025'], required: true }],
-      gate: GATE_CLEAR, inspectionRevision: INSPECTION_OK,
+    // 依据修订（显式新修订：A2 机器下同样走可信 Gate 回执 + 服务端解析收口）+ 未决差异
+    const rev2p = await freezePackage(k, custId, {
+      assessmentId,
+      domainDeps: [{ domain: 'credit', artifactIds: [rev.artifactId], factKeys: ['revenue_2025'] }],
     });
-    assert.equal(rev2.status, 200, JSON.stringify(rev2.json));
-    const pkg2 = rev2.json.packageId;
+    const pkg2 = rev2p.packageId;
     await addFinding(b, custId);
     // §4 消费面直接断言：candidate / approved / available / reportRefs / reviewQueue
     const rep = await b('POST', `/api/v2/customers/${custId}/reports`, {

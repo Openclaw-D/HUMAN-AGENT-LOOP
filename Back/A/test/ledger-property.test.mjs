@@ -37,7 +37,7 @@ function modelBuckets(f) {
 
 test(`账本属性：随机操作序列下金额守恒、占用不超限、状态跃迁合法（seed=${SEED}）`, async (t) => {
   const rand = prng(SEED);
-  const k = await startKernel({ extraArgs: ['--credit-matrix', 'matrix-dev-synthetic-1', '--credit-concentration', 'conc-dev-synthetic-1'], principalSpec: V2_SPEC });
+  const k = await startKernel({ extraArgs: ['--credit-matrix', 'matrix-dev-synthetic-1', '--credit-concentration', 'conc-dev-synthetic-1', '--allow-legacy-basis'], principalSpec: V2_SPEC });
   const ops = [];
   try {
     await k.pool.query(

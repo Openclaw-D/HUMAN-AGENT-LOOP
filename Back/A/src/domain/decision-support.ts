@@ -124,6 +124,12 @@ export async function computeDomainDigest(tx: Queryable, customerId: string, dep
 
 export type DomainCurrency = 'current' | 'changed' | 'missing';
 
+/** 当前激活规则版本（rule_pack_versions；登记表无行 = 未启用版本登记 → null）。 */
+export async function activeRulePackVersionOf(tx: Queryable): Promise<string | null> {
+  const r = await tx.query(`SELECT version FROM rule_pack_versions WHERE status='active' LIMIT 1`);
+  return (r.rows[0] as { version: string } | undefined)?.version ?? null;
+}
+
 export interface DomainVerdict {
   domain: string;
   required: boolean;
@@ -136,13 +142,20 @@ export interface DomainVerdict {
   analysisRunRef: string | null;
 }
 
-/** 读时逐域判定：依赖已变的域必须更新；依赖未变的域允许复用（不为水位一致强迫全量重跑）。 */
+/** 读时逐域判定：依赖已变的域必须更新；依赖未变的域允许复用（不为水位一致强迫全量重跑）。
+ *  任务01 A2.7/K10：规则当前性查询实际已激活版本（rule_pack_versions）；冻结声明中的规则版本
+ *  不再是现行版本 → 该域 changed（reason: rule_version_changed），旧意见/Gate 随之失效。 */
 export async function evaluateDomainCurrency(tx: Queryable, customerId: string, frozen: FrozenDomainState[]): Promise<DomainVerdict[]> {
+  const activeRes = await tx.query(`SELECT version FROM rule_pack_versions WHERE status='active' LIMIT 1`);
+  const activeVersion = (activeRes.rows[0] as { version: string } | undefined)?.version ?? null;
   const verdicts: DomainVerdict[] = [];
   for (const f of frozen) {
     const reasons: string[] = [];
     let currency: DomainCurrency = 'current';
-    if (f.depsDigest === '') {
+    if (activeVersion !== null && f.rulePackVersion !== null && f.rulePackVersion !== activeVersion) {
+      currency = 'changed';
+      reasons.push('rule_version_changed');
+    } else if (f.depsDigest === '') {
       // 无域结果记录：required 域 = 缺失；非 required 域 = 未声明（不阻断）
       currency = f.required ? 'missing' : 'current';
       if (f.required) reasons.push('domain_state_missing');
@@ -226,6 +239,8 @@ export interface ReadinessInput {
   inspectionRevision: Record<string, unknown> | null;
   /** 提交审批面向的动作（默认 approve_facility）。 */
   action: string;
+  /** 当前激活规则版本（rule_pack_versions）；null = 未启用版本登记（不参与 Gate 失效判定）。 */
+  activeRulePackVersion?: string | null;
 }
 
 export interface ReadinessVerdict {
@@ -252,11 +267,24 @@ export function evaluateReadiness(input: ReadinessInput): ReadinessVerdict {
   if (gate === null) {
     gaps.push({ code: 'GATE_NOT_RECORDED', detail: '依据包未记录任何 Gate 结论' });
     requiredActions.add('record_gate_result');
-  } else if (gate.result === 'HARD_BLOCK') {
-    gaps.push({ code: 'GATE_HARD_BLOCK', detail: (gate.ruleIds ?? []).join(','), });
-    for (const a of gate.blockedActions ?? []) blockedActions.add(a);
-  } else if (gate.result === 'NEEDS_EVIDENCE') {
-    gaps.push({ code: 'GATE_NEEDS_EVIDENCE', detail: (gate.reasonCodes ?? []).join(',') });
+  } else {
+    if (gate.result === 'HARD_BLOCK') {
+      gaps.push({ code: 'GATE_HARD_BLOCK', detail: (gate.ruleIds ?? []).join(','), });
+      for (const a of gate.blockedActions ?? []) blockedActions.add(a);
+    } else if (gate.result === 'NEEDS_EVIDENCE') {
+      gaps.push({ code: 'GATE_NEEDS_EVIDENCE', detail: (gate.reasonCodes ?? []).join(',') });
+    } else if (gate.result === 'HOLD_FOR_REVIEW') {
+      // 任务01 A2.4/K06：HOLD 是"待人工复核"，不是通过——不得静默产生 ready/正式效果
+      gaps.push({ code: 'GATE_HOLD_FOR_REVIEW', detail: (gate.reasonCodes ?? []).join(',') });
+      for (const a of gate.blockedActions ?? []) blockedActions.add(a);
+      requiredActions.add('resolve_hold_review');
+    }
+    // A2.7/K10：Gate 所依据的规则版本已被正式换版 → Gate 失效（须按新版本重新评估）
+    if (input.activeRulePackVersion !== null && input.activeRulePackVersion !== undefined
+      && gate.rulePackVersion !== input.activeRulePackVersion) {
+      gaps.push({ code: 'GATE_STALE_RULES', detail: `gate@${gate.rulePackVersion} ≠ active@${input.activeRulePackVersion}` });
+      requiredActions.add('rerecord_gate_result');
+    }
   }
   if (input.inspectionRevision === null) {
     gaps.push({ code: 'INSPECTION_REVISION_UNKNOWN', detail: '缺少任务一检查收口修订引用：未知不当作通过' });

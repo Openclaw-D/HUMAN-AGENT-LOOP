@@ -4,7 +4,7 @@ import type { Pool, PoolClient } from 'pg';
 import { AppError, conflict, forbidden, invalid, notFound } from './errors.ts';
 import { assertNoForbiddenKeys, canonicalHash, newId, sha256, uuid } from './util.ts';
 import type { Config, Principal } from '../config.ts';
-import { authenticate, authorizeProject, requireAdmin, requireRole, requireSensitive, type Auth, type PrincipalVerifier } from './principal.ts';
+import { authenticate, authorizeProject, requireAdmin, requireRole, requireSensitive, requireVerified, type Auth, type PrincipalVerifier } from './principal.ts';
 import { type GoalRow } from './status.ts';
 import { findCycle, invalidateForEvidence, loadGoals, recomputeReady, type TxHelpers } from './recompute.ts';
 import { computeStaleMap, type StaleInfo } from './staleness.ts';
@@ -12,6 +12,7 @@ import { buildCreditCommands, type CreditV2Api } from './credit.ts';
 import { buildReviewCommands, type ReviewApi } from './review.ts';
 import { buildPackageCommands, type PackageApi } from './package.ts';
 import { buildReportCommands, type ReportsApi } from './reports.ts';
+import { buildAnalysisCommands, type AnalysisApi } from './analysis.ts';
 import { buildInspectionCommands, type InspectionApi } from './inspection.ts';
 
 const MAX_BODY_JSON = 1 << 20;      // 1MB 请求体上限
@@ -63,8 +64,10 @@ function projectHumanRequestRow(h: Record<string, unknown>): Record<string, unkn
   };
 }
 
-/** 幂等统一入口（CONTRACT §3.3）：miss → 执行写事务；同载荷重放 → 原响应+replayed；
- *  异载荷 → REQUEST_MISMATCH。写入后唯一键冲突（并发同 requestId）→ 回滚本事务，重读重放。 */
+/** 幂等统一入口（CONTRACT §3.3 + 任务01 A1.3）：鉴权先于任何缓存回执（X03 反例关闭）；
+ *  幂等归属绑定 principal（跨主体同 requestId → REQUEST_MISMATCH，不得读取他人回执）；
+ *  miss → 执行写事务；同主体同载荷重放 → 原响应+replayed；异载荷/异主体 → REQUEST_MISMATCH。
+ *  写入后唯一键冲突（并发同 requestId）→ 回滚本事务，重读重放（同一主体才可重放）。 */
 async function withCommand<T extends object>(
   kernel: Kernel, frame: RequestFrame, op: string,
   fn: (tx: PoolClient, helpers: TxHelpers, actor: string | null) => Promise<Record<string, unknown>>,
@@ -74,11 +77,16 @@ async function withCommand<T extends object>(
   if (typeof requestId !== 'string' || requestId.length < 1 || requestId.length > 128) {
     throw invalid('requestId 必须是 1..128 长度的 string');
   }
-  const payloadHash = canonicalHash({ op, payload });
+  // A1.3：身份验证先于缓存查询；无效凭据在此失败（403），匿名按 'unverified' 主体参与归属
+  const auth = await kernel.authOf(credential);
+  const principalId = auth.principal.principalId;
+  const isAdmin = auth.principal.roles.includes('admin');
+  const payloadHash = canonicalHash({ op, payload, principal: principalId });
   const pool = kernel.pool;
-  const prior = await pool.query(`SELECT payload_sha256, response FROM idempotency WHERE request_id = $1`, [requestId]);
+  const prior = await pool.query(`SELECT payload_sha256, response, principal_id FROM idempotency WHERE request_id = $1`, [requestId]);
   if (prior.rows.length > 0) {
-    const row = prior.rows[0] as { payload_sha256: string; response: Record<string, unknown> };
+    const row = prior.rows[0] as { payload_sha256: string; response: Record<string, unknown>; principal_id: string | null };
+    replayOwnership(row, principalId, requestId, isAdmin);
     if (row.payload_sha256 !== payloadHash) {
       throw conflict('REQUEST_MISMATCH', `requestId ${requestId} 已绑定不同载荷（幂等一致性保护）`);
     }
@@ -90,23 +98,32 @@ async function withCommand<T extends object>(
       const helpers = await txHelpers(tx, actor);
       const response = await fn(tx, helpers, actor);
       await tx.query(
-        `INSERT INTO idempotency (request_id, payload_sha256, response) VALUES ($1,$2,$3)`,
-        [requestId, payloadHash, JSON.stringify(response)],
+        `INSERT INTO idempotency (request_id, payload_sha256, response, principal_id, op) VALUES ($1,$2,$3,$4,$5)`,
+        [requestId, payloadHash, JSON.stringify(response), principalId, op],
       );
       return response;
     });
   } catch (error) {
     if (error instanceof AppError) throw error;
     if (isUniqueViolation(error)) {
-      const again = await pool.query(`SELECT payload_sha256, response FROM idempotency WHERE request_id = $1`, [requestId]);
+      const again = await pool.query(`SELECT payload_sha256, response, principal_id FROM idempotency WHERE request_id = $1`, [requestId]);
       if (again.rows.length > 0) {
-        const row = again.rows[0] as { payload_sha256: string; response: Record<string, unknown> };
+        const row = again.rows[0] as { payload_sha256: string; response: Record<string, unknown>; principal_id: string | null };
+        replayOwnership(row, principalId, requestId, isAdmin);
         if (row.payload_sha256 === payloadHash) return { ...row.response, replayed: true };
         throw conflict('REQUEST_MISMATCH', `requestId ${requestId} 已绑定不同载荷（幂等一致性保护）`);
       }
     }
     throw error;
   }
+}
+
+/** 幂等回执归属（A1.3/A1.4）：同主体可重放查看；异主体/legacy 无主行 → REQUEST_MISMATCH（admin 豁免查看 legacy）。 */
+function replayOwnership(row: { principal_id: string | null }, principalId: string, requestId: string, isAdmin: boolean): void {
+  if (row.principal_id === principalId) return;
+  if (row.principal_id === null && isAdmin) return; // legacy 行（迁移前）仅 admin 可读
+  void requestId;
+  throw conflict('REQUEST_MISMATCH', `requestId 属于其他 principal：不泄露他人回执`);
 }
 
 function isUniqueViolation(error: unknown): boolean {
@@ -176,10 +193,12 @@ export class Kernel {
   readonly pool: Pool;
   private readonly config: Config;
   private readonly verifier: PrincipalVerifier | null;
-  /** v2 客户授信 + 决策闭环命令面（任务01 授信 + 任务02 评审/依据包/报告；共用 pool/config/verifier）。 */
-  readonly v2: CreditV2Api & ReviewApi & PackageApi & ReportsApi;
+  /** v2 客户授信 + 决策闭环命令面（任务01 授信 + 任务02 评审/依据包/报告 + 任务01 A2 可信回执通道）。 */
+  readonly v2: CreditV2Api & ReviewApi & PackageApi & ReportsApi & AnalysisApi;
   /** 检查会话命令面（任务一；联合尽调会话的运行/收口/调度/恢复）。 */
   readonly ix: InspectionApi;
+  /** 可信规则回执通道（任务01 A2）：规则版本激活/Gate 回执/分析运行登记。 */
+  readonly analysis: AnalysisApi;
 
   constructor(pool: Pool, options: KernelOptions) {
     this.pool = pool;
@@ -190,8 +209,9 @@ export class Kernel {
       ...buildReviewCommands(this),
       ...buildPackageCommands(this),
       ...buildReportCommands(this),
-    } as CreditV2Api & ReviewApi & PackageApi & ReportsApi;
+    } as CreditV2Api & ReviewApi & PackageApi & ReportsApi & AnalysisApi;
     this.ix = buildInspectionCommands(this);
+    this.analysis = buildAnalysisCommands(this);
   }
 
   /** v2 授信域访问可信身份源与配置（credit.ts 只经此读取，保持单一 Kernel 实例）。 */
@@ -287,7 +307,9 @@ export class Kernel {
     });
   }
 
-  async getTemplate(templateId: string) {
+  async getTemplate(templateId: string, credential: unknown) {
+    const auth = await this.authOf(credential);
+    requireVerified(auth);
     const row = await this.pool.query(`SELECT * FROM goal_templates WHERE template_id = $1`, [templateId]);
     if (row.rows.length === 0) throw notFound('模板不存在');
     const r = row.rows[0] as Record<string, unknown>;
@@ -321,7 +343,10 @@ export class Kernel {
     });
   }
 
-  async getProject(projectId: string) {
+  async getProject(projectId: string, credential: unknown) {
+    const auth = await this.authOf(credential);
+    requireVerified(auth);
+    authorizeProject(auth.principal, projectId);
     const pr = await this.pool.query(`SELECT * FROM projects WHERE project_id = $1`, [projectId]);
     if (pr.rows.length === 0) throw notFound('项目不存在');
     const project = pr.rows[0] as Record<string, unknown>;
@@ -1055,13 +1080,19 @@ export class Kernel {
     });
   }
 
-  async listHumanRequests(projectId: string) {
+  async listHumanRequests(projectId: string, credential: unknown) {
+    const auth = await this.authOf(credential);
+    requireVerified(auth);
+    authorizeProject(auth.principal, projectId);
     const res = await this.pool.query(`SELECT * FROM human_requests WHERE project_id = $1 ORDER BY created_at`, [projectId]);
     return { ok: true, humanRequests: (res.rows as Record<string, unknown>[]).map(projectHumanRequestRow) };
   }
 
-  async getGoal(goalId: string) {
+  async getGoal(goalId: string, credential: unknown) {
     const goal = await this.goalOr404(this.pool, goalId);
+    const auth = await this.authOf(credential);
+    requireVerified(auth);
+    authorizeProject(auth.principal, goal.project_id);
     const smap = await this.staleMap(this.pool, goal.project_id);
     const receipts = await this.pool.query(
       `SELECT receipt_id, kind, actor_principal_id, fencing_token, output, note, at
@@ -1095,12 +1126,29 @@ export class Kernel {
 
   // ---- 事件 / 回执 / 订阅 / 健康 ------------------------------------------------
 
-  async pullEvents(afterSeq: number, limit: number) {
+  /** 事件拉取（任务01 A1.2）：必须已验证身份；按 principal 的项目/租户/客户授权过滤——
+   *  旧匿名全量事件口不得成为客户级数据旁路（F01/K03）。无 project/customer 的全局事件对所有已验证主体可见。 */
+  async pullEvents(credential: unknown, afterSeq: number, limit: number) {
+    const auth = await this.authOf(credential);
+    requireVerified(auth);
+    const p = auth.principal;
+    const projects = p.projects === 'all' ? null : p.projects;
+    const tenants = p.tenants === 'all' ? null : p.tenants;
     const res = await this.pool.query(
       `SELECT seq, event_id AS "eventId", at, event_type AS "eventType", project_id AS "projectId",
-              goal_id AS "goalId", payload, dispatch_state AS "dispatchState"
-       FROM outbox_events WHERE seq > $1 ORDER BY seq LIMIT $2`,
-      [afterSeq, Math.min(Math.max(limit, 1), 500)],
+              customer_id AS "customerId", goal_id AS "goalId", payload, dispatch_state AS "dispatchState"
+       FROM outbox_events o WHERE o.seq > $1 AND (
+         (o.project_id IS NULL AND o.customer_id IS NULL)
+         OR (o.project_id IS NOT NULL AND ($2::text IS NULL OR o.project_id = ANY($3::text[])))
+         OR (o.customer_id IS NOT NULL AND EXISTS (
+               SELECT 1 FROM customers c WHERE c.customer_id = o.customer_id
+                 AND ($4::text IS NULL OR c.tenant_id = ANY($5::text[]))
+                 AND ($6::text = 'all' OR EXISTS (
+                       SELECT 1 FROM principal_customer_grants g
+                       WHERE g.principal_id = $7 AND g.customer_id = c.customer_id))))
+       ) ORDER BY o.seq LIMIT $8`,
+      [afterSeq, projects, projects ?? [], tenants, tenants ?? [], p.customers, p.principalId,
+       Math.min(Math.max(limit, 1), 500)],
     );
     return { ok: true, events: res.rows };
   }
@@ -1131,13 +1179,22 @@ export class Kernel {
     });
   }
 
-  async getReceipt(requestId: string) {
-    const res = await this.pool.query(
-      `SELECT request_id AS "requestId", payload_sha256, response, created_at FROM idempotency WHERE request_id = $1`,
-      [requestId],
-    );
-    if (res.rows.length === 0) return { ok: true, found: false };
-    return { ok: true, found: true, receipt: res.rows[0] };
+  /** 回执查询（A1.3/A1.4）：查看旧回执的权限与重新执行命令的权限分开——回执按归属 principal 过滤。 */
+  async getReceipt(requestId: string, credential: unknown) {
+    const auth = await this.authOf(credential);
+    requireVerified(auth);
+    const rows = auth.principal.roles.includes('admin')
+      ? await this.pool.query(
+          `SELECT request_id AS "requestId", payload_sha256, response, created_at FROM idempotency WHERE request_id = $1`,
+          [requestId],
+        )
+      : await this.pool.query(
+          `SELECT request_id AS "requestId", payload_sha256, response, created_at FROM idempotency
+           WHERE request_id = $1 AND principal_id = $2`,
+          [requestId, auth.principal.principalId],
+        );
+    if (rows.rows.length === 0) return { ok: true, found: false };
+    return { ok: true, found: true, receipt: rows.rows[0] };
   }
 
   async health() {

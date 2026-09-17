@@ -19,11 +19,14 @@ export function envInt(name: string, fallback: number): number {
 export interface Principal {
   principalId: string;
   displayName: string;
-  kind: 'human' | 'agent';
+  kind: 'human' | 'agent' | 'service';
   roles: string[];
   projects: 'all' | string[];
   /** v2 授信域租户范围（'all' 仅限合成测试目录；生产必须显式列出）。缺省 'all' 保持 v1 行为。 */
   tenants: 'all' | string[];
+  /** 客户级范围（任务01 A1）：'all'=租户内全部客户（合成目录/旧行为）；'grant'=仅 principal_customer_grants
+   *  登记的客户（可撤销；撤权后重放不借缓存）。缺省 'all'。 */
+  customers: 'all' | 'grant';
 }
 
 export interface Config {
@@ -49,6 +52,17 @@ export interface Config {
   // ---- 任务02 决策闭环 ----
   /** 提额冷却秒数；NULL=冷却机制未配置（不启用，也不编造默认值；B11 测试用显式合成值）。 */
   creditCoolingSeconds: number | null;
+  // ---- 任务01 A2/A3（审核 F02/F03/F06/F10 修复）----
+  /** 必需域政策版本（domain_requirement_policies）；NULL=未配置 → 依据包冻结一律 POLICY_PENDING（fail-closed）。 */
+  requiredDomainsPolicyVersion: string | null;
+  /** 显式兼容核：允许无依据包的存量（legacy）basis 走评估复查路径批准/用信。默认拒绝。 */
+  allowLegacyBasis: boolean;
+  /** 提额（再评估）请求窗口限制：窗口天数内最多次数；NULL=不按次数限制。 */
+  limitIncreaseMaxPerWindow: number | null;
+  /** 提额请求次数窗口（天）。 */
+  limitIncreaseWindowDays: number | null;
+  /** 提额被驳回后的再申请间隔（小时）→ next_eligible_at；NULL=不设。 */
+  limitIncreaseRetryHours: number | null;
 }
 
 /** --principal-tokens 语法（合成测试身份，服务端仅存 sha256）：
@@ -62,15 +76,16 @@ export function parsePrincipalTokens(spec: string | undefined): Config['principa
     if (eq <= 0) throw new Error(`principal-tokens 条目缺少 "="：${entry.slice(0, 12)}…`);
     const credential = entry.slice(0, eq);
     const parts = entry.slice(eq + 1).split(':');
-    const [principalId, kind, rolesSpec, projectsSpec, tenantsSpec] = parts;
-    if (!principalId || !kind || !rolesSpec) throw new Error('principal-tokens 条目需要 credential=id:kind:roles[:projects[:tenants]]');
-    if (kind !== 'human' && kind !== 'agent') throw new Error(`kind 必须 human|agent：${kind}`);
+    const [principalId, kind, rolesSpec, projectsSpec, tenantsSpec, customersSpec] = parts;
+    if (!principalId || !kind || !rolesSpec) throw new Error('principal-tokens 条目需要 credential=id:kind:roles[:projects[:tenants[:customers]]]');
+    if (kind !== 'human' && kind !== 'agent' && kind !== 'service') throw new Error(`kind 必须 human|agent|service：${kind}`);
     const roles = rolesSpec === '-' ? [] : rolesSpec.split('+');
     const projects: 'all' | string[] = !projectsSpec || projectsSpec === 'all' ? 'all' : projectsSpec.split('+');
     const tenants: 'all' | string[] = !tenantsSpec || tenantsSpec === 'all' ? 'all' : tenantsSpec.split('+');
+    const customers: 'all' | 'grant' = !customersSpec || customersSpec === 'all' ? 'all' : customersSpec === 'grant' ? 'grant' : 'all';
     out.push({
       credentialSha256: createHash('sha256').update(credential).digest('hex'),
-      principal: { principalId, displayName: principalId, kind, roles, projects, tenants },
+      principal: { principalId, displayName: principalId, kind, roles, projects, tenants, customers },
     });
   }
   return out;
@@ -106,6 +121,11 @@ export function loadConfig(argv: string[]): Config {
       : (process.env.V7NEXT_A_CREDIT_COOLING_SECONDS !== undefined && process.env.V7NEXT_A_CREDIT_COOLING_SECONDS !== ''
           ? Number(process.env.V7NEXT_A_CREDIT_COOLING_SECONDS)
           : null),
+    requiredDomainsPolicyVersion: arg('required-domains-policy') ?? process.env.V7NEXT_A_REQUIRED_DOMAINS_POLICY ?? null,
+    allowLegacyBasis: argv.includes('--allow-legacy-basis'),
+    limitIncreaseMaxPerWindow: arg('limit-increase-max-per-window') !== undefined ? Number(arg('limit-increase-max-per-window')) : null,
+    limitIncreaseWindowDays: arg('limit-increase-window-days') !== undefined ? Number(arg('limit-increase-window-days')) : null,
+    limitIncreaseRetryHours: arg('limit-increase-retry-hours') !== undefined ? Number(arg('limit-increase-retry-hours')) : null,
   };
 }
 

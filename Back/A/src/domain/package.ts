@@ -3,21 +3,27 @@
 // 新材料进新修订（revision+1，旧行保留当时依据），正式动作在提交点按包重算当前性（3.4）。
 // 本模块不承载任何规则语义：Gate 结论由 C 路规则包产出（A 只做结构消费与机械复查）。
 import type { PoolClient } from 'pg';
-import { conflict, invalid, notFound } from './errors.ts';
+import { conflict, invalid, notFound, AppError } from './errors.ts';
 import { canonicalHash, newId } from './util.ts';
+import type { Config } from '../config.ts';
 import type { Kernel } from './kernel.ts';
 import {
-  reqInt, reqObject, reqString, reqCurrency, withCommandV2, requireHuman, requireDirectoryRole, lockCustomer, scopeByRow,
+  reqInt, reqObject, reqString, reqCurrency, withCommandV2, requireHuman, requireDirectoryRole, requireCustomerScope,
+  lockCustomer, scopeByRow,
   type RequestFrame,
 } from './v2kit.ts';
 import type { ArtifactLite } from './decision-support.ts';
 import {
-  computeDomainDigest, evaluateDomainCurrency, evaluateReadiness, independentProofCount, provenanceRoots,
-  validateGateInput, DOMAINS, type DomainDeps, type FrozenDomainState, type GateInput, type OpenFindingLite,
+  activeRulePackVersionOf, computeDomainDigest, evaluateDomainCurrency, evaluateReadiness, independentProofCount, provenanceRoots,
+  GATE_RESULTS, DOMAINS, type DomainDeps, type FrozenDomainState, type GateInput, type OpenFindingLite,
 } from './decision-support.ts';
 
 const MAX_DOMAIN_DEPS = 16;
-const OPEN_CLOSURE_STATUSES = ['ready_for_assessment', 'closed', 'pending_evidence', 'pending_review', 'open'];
+/** A1.5/K04：域结果登记要求对应域目录角色（human/agent/service 皆可持域角色出具候选意见；authority 恒 none；
+ *  正式采用仍仅人类）。载荷声明的域身份无效。 */
+const DOMAIN_RESULT_ROLES: Record<string, string[]> = {
+  policy: ['policy'], credit: ['credit'], commerce: ['commerce'], asset: ['asset'],
+};
 
 interface PackageRow extends Record<string, unknown> {
   package_id: string; tenant_id: string; customer_id: string; revision: number; prev_package_id: string | null;
@@ -38,6 +44,7 @@ export interface PackageApi {
 }
 
 export function buildPackageCommands(kernel: Kernel): PackageApi {
+  const cfgRef = (): Config => kernel.configForV2();
   const loadPkg = async (tx: PoolClient, packageId: string): Promise<PackageRow> => {
     const r = await tx.query(`SELECT * FROM decision_packages WHERE package_id=$1 FOR UPDATE`, [packageId]);
     if (r.rows.length === 0) throw notFound('依据包不存在');
@@ -49,14 +56,19 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
     return r.rows[0] as PackageRow;
   };
 
-  /** 冻结输入解析（create/revise 共用）。 */
-  async function parseFreezeInput(tx: PoolClient, customerId: string, frame: RequestFrame): Promise<{
+  /** 冻结输入解析（create/revise 共用）。任务01 A2 版：
+   *  检查收口引用由服务端解析；Gate 只接受可信服务回执（gateReceiptId）；必需域来自批准政策。 */
+  async function parseFreezeInput(tx: PoolClient, cfg: Config, customerId: string, frame: RequestFrame): Promise<{
     assessmentId: string | null; inspectionRevision: Record<string, unknown> | null;
     gate: GateInput | null; candidate: Record<string, unknown>; domainDeps: DomainDeps[];
     evidenceRefs: Record<string, unknown>[]; independentProofs: number; snapshotHash: string;
     unknownCosts: string[]; openItems: Record<string, unknown>[]; requiredReviews: Record<string, unknown>[];
-    domainStates: FrozenDomainState[];
+    domainStates: FrozenDomainState[]; exemptions: Record<string, unknown>[];
   }> {
+    // A2.3/K05a：自由 JSON Gate 一律拒绝（不得把载荷里的 CLEAR/HOLD 当结论）
+    if (frame.gate !== undefined && frame.gate !== null) {
+      throw invalid('gate 不得自带 JSON：Gate 结论只能引用获准服务身份登记的回执（gateReceiptId）');
+    }
     let assessmentId: string | null = null;
     if (frame.assessmentId !== undefined && frame.assessmentId !== null) {
       assessmentId = reqString(frame.assessmentId, 'assessmentId', 64);
@@ -66,24 +78,57 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
       if (ar.customer_id !== customerId) throw notFound('评估不属于该客户');
       if (ar.stale === true) throw conflict('STALE_BASIS', '评估依据已失效：请重评后再冻结依据包');
     }
+    // A2.1/K05b：收口引用只收 sessionId；修订/状态由服务端解析已持久化会话，载荷声明无效
     let inspectionRevision: Record<string, unknown> | null = null;
     if (frame.inspectionRevision !== undefined && frame.inspectionRevision !== null) {
       const obj = reqObject(frame.inspectionRevision, 'inspectionRevision');
-      const closureStatus = reqString(obj.closureStatus, 'inspectionRevision.closureStatus', 32);
-      if (!OPEN_CLOSURE_STATUSES.includes(closureStatus)) {
-        throw invalid(`inspectionRevision.closureStatus 必须 ${OPEN_CLOSURE_STATUSES.join('/')}`);
-      }
+      const sessionId = reqString(obj.sessionId, 'inspectionRevision.sessionId', 64);
+      const s = await tx.query(
+        `SELECT session_id, customer_id, closure_revision, closure_status, updated_at FROM inspection_sessions WHERE session_id=$1`,
+        [sessionId],
+      );
+      if (s.rows.length === 0) throw notFound('检查会话不存在');
+      const sr = s.rows[0] as Record<string, unknown>;
+      if (sr.customer_id !== customerId) throw notFound('检查会话不存在');
       inspectionRevision = {
-        sessionId: obj.sessionId === undefined || obj.sessionId === null ? null : reqString(obj.sessionId, 'inspectionRevision.sessionId', 64),
-        closureRevision: obj.closureRevision === undefined || obj.closureRevision === null ? null : reqInt(obj.closureRevision, 'inspectionRevision.closureRevision', 1_000_000),
-        closureStatus,
+        sessionId,
+        closureRevision: Number(sr.closure_revision),
+        closureStatus: String(sr.closure_status),
+        checkedAt: sr.updated_at,
         summaryRef: obj.summaryRef === undefined || obj.summaryRef === null ? null : reqString(obj.summaryRef, 'inspectionRevision.summaryRef', 128),
-        checkedAt: obj.checkedAt === undefined || obj.checkedAt === null ? null : reqString(obj.checkedAt, 'inspectionRevision.checkedAt', 64),
       };
     }
-    const gate = frame.gate === undefined || frame.gate === null ? null : validateGateInput(frame.gate);
+    // A2.2：必需域来自批准政策（fail-closed）；不适用域必须显式豁免（范围+理由+批准人）
+    const policyVersion = cfg.requiredDomainsPolicyVersion;
+    if (policyVersion === null) {
+      throw conflict('POLICY_PENDING', '必需域政策未配置：依据包冻结拒绝（fail-closed；启动须显式 --required-domains-policy）');
+    }
+    const polRows = await tx.query(`SELECT domain, required FROM domain_requirement_policies WHERE policy_version=$1`, [policyVersion]);
+    if (polRows.rows.length === 0) {
+      throw conflict('POLICY_PENDING', `必需域政策 ${policyVersion} 无登记行：冻结拒绝（fail-closed）`);
+    }
+    const policyRequired = new Set(
+      (polRows.rows as { domain: string; required: boolean }[]).filter((r) => r.required).map((r) => r.domain),
+    );
+    const exemptions: Record<string, unknown>[] = [];
+    const exemptedDomains = new Set<string>();
+    if (frame.exemptions !== undefined && frame.exemptions !== null) {
+      if (!Array.isArray(frame.exemptions)) throw invalid('exemptions 必须是数组');
+      for (const e of frame.exemptions as unknown[]) {
+        const obj = reqObject(e, 'exemptions[]');
+        const domain = reqString(obj.domain, 'exemptions[].domain', 16);
+        if (!policyRequired.has(domain)) throw invalid(`exemptions[].domain ${domain} 不是政策必需域（无需豁免）`);
+        exemptions.push({
+          domain,
+          reason: reqString(obj.reason, 'exemptions[].reason', 500),
+          approvedBy: reqString(obj.approvedBy, 'exemptions[].approvedBy', 64),
+          scope: reqString(obj.scope ?? 'package', 'exemptions[].scope', 64),
+        });
+        exemptedDomains.add(domain);
+      }
+    }
     const candidate = normalizeCandidate(frame.candidate);
-    // 域依赖声明（各域允许不同水位与依赖集合；本轮"要求的域"以 required=true 声明）
+    // 域依赖声明（各域允许不同水位与依赖集合；必需性以政策为准，调用者不可关闭）
     const depsIn = frame.domainDeps === undefined || frame.domainDeps === null ? [] : frame.domainDeps;
     if (!Array.isArray(depsIn) || depsIn.length > MAX_DOMAIN_DEPS) throw invalid(`domainDeps 必须是 ≤${MAX_DOMAIN_DEPS} 的数组`);
     const domainDeps: DomainDeps[] = [];
@@ -98,10 +143,13 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
       const factKeys = stringArray(obj.factKeys, `domainDeps[${domain}].factKeys`, 128);
       domainDeps.push({
         domain, artifactIds, factKeys,
-        rulePackVersion: obj.rulePackVersion === undefined || obj.rulePackVersion === null ? gate?.rulePackVersion ?? null : reqString(obj.rulePackVersion, 'rulePackVersion', 64),
-        required: obj.required !== false,
+        rulePackVersion: obj.rulePackVersion === undefined || obj.rulePackVersion === null ? null : reqString(obj.rulePackVersion, 'rulePackVersion', 64),
+        required: policyRequired.has(domain) && !exemptedDomains.has(domain),
       });
     }
+    const gate = frame.gateReceiptId === undefined || frame.gateReceiptId === null
+      ? null
+      : await loadGateReceipt(tx, customerId, reqString(frame.gateReceiptId, 'gateReceiptId', 64));
     // 证据集 = 域依赖工件 ∪ 评估快照工件 ∪ 显式附加（全部须属本客户且未被取代/重复）
     const artifactIdSet = new Set<string>();
     for (const d of domainDeps) for (const id of d.artifactIds) artifactIdSet.add(id);
@@ -124,6 +172,18 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
       if (a.superseded_by !== null || a.duplicate_of !== null) {
         throw conflict('ARTIFACT_SUPERSEDED', `依据包不能引用已失效工件：${id}（请先补正后再冻结）`, { artifactId: id });
       }
+      // A2.9/K11：派生件的上游必须现行——缺失/被取代/环都不得把派生件当新根冻结
+      const provenance = (a.provenance ?? null) as { derivedFrom?: string[] } | null;
+      for (const up of provenance?.derivedFrom ?? []) {
+        const u = await tx.query(`SELECT superseded_by, duplicate_of FROM evidence_artifacts WHERE artifact_id=$1`, [up]);
+        if (u.rows.length === 0) {
+          throw conflict('ARTIFACT_SUPERSEDED', `派生工件 ${id} 的上游缺失（upstream_missing）：${up}`, { artifactId: id, upstreamArtifactId: up, reason: 'upstream_missing' });
+        }
+        const ur = u.rows[0] as { superseded_by: string | null; duplicate_of: string | null };
+        if (ur.superseded_by !== null || ur.duplicate_of !== null) {
+          throw conflict('ARTIFACT_SUPERSEDED', `派生工件 ${id} 的上游已失效（upstream_superseded）：${up}`, { artifactId: id, upstreamArtifactId: up, reason: 'upstream_superseded' });
+        }
+      }
       artifacts.push({
         artifactId: String(a.artifact_id), sha256: String(a.sha256), kind: String(a.kind),
         factKey: a.fact_key === null ? null : String(a.fact_key), grade: String(a.grade),
@@ -139,14 +199,23 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
     const independentProofs = independentProofCount(artifacts);
     const snapshotHash = canonicalHash({ evidenceRefs, domainDeps, assessmentId });
     // 冻结各域摘要（允许各域依赖不同；就绪判定读时逐域复算）
+    const activeVersion = await activeRulePackVersionOf(tx);
     const domainStates: FrozenDomainState[] = [];
     for (const d of domainDeps) {
       const depsDigest = (d.artifactIds.length === 0 && d.factKeys.length === 0)
-        ? await computeDomainDigest(tx, customerId, { artifactIds: [], factKeys: [], rulePackVersion: d.rulePackVersion })
+        ? ''
         : await computeDomainDigest(tx, customerId, d);
       domainStates.push({
         domain: d.domain, required: d.required, artifactIds: d.artifactIds, factKeys: d.factKeys,
         rulePackVersion: d.rulePackVersion, depsDigest, analysisRunRef: null, opinionVersion: 0,
+      });
+    }
+    // 政策必需但未声明的域：以空依赖占位（depsDigest='' → 当前性=missing，登记结果后才可就绪）
+    for (const domain of policyRequired) {
+      if (exemptedDomains.has(domain) || seen.has(domain)) continue;
+      domainStates.push({
+        domain, required: true, artifactIds: [], factKeys: [],
+        rulePackVersion: gate?.rulePackVersion ?? activeVersion, depsDigest: '', analysisRunRef: null, opinionVersion: 0,
       });
     }
     const unknownCosts = stringArray(frame.unknownCosts ?? [], 'unknownCosts', 500);
@@ -154,8 +223,28 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
     const requiredReviews = objectArray(frame.requiredReviews ?? [], 'requiredReviews');
     return {
       assessmentId, inspectionRevision, gate, candidate, domainDeps, evidenceRefs,
-      independentProofs, snapshotHash, unknownCosts, openItems, requiredReviews, domainStates,
+      independentProofs, snapshotHash, unknownCosts, openItems, requiredReviews, domainStates, exemptions,
     };
+  }
+
+  /** A2.3：Gate 输入只来自可信服务回执（rule_gate_receipts），结构校验后仍以登记表为唯一来源。 */
+  async function loadGateReceipt(tx: PoolClient, customerId: string, receiptId: string): Promise<GateInput> {
+    const r = await tx.query(`SELECT * FROM rule_gate_receipts WHERE receipt_id=$1`, [receiptId]);
+    if (r.rows.length === 0) throw notFound('Gate 回执不存在');
+    const g = r.rows[0] as Record<string, unknown>;
+    if (g.customer_id !== customerId) throw notFound('Gate 回执不存在');
+    const result = String(g.result);
+    if (!(GATE_RESULTS as readonly string[]).includes(result)) throw invalid('Gate 回执 result 非法');
+    return {
+      result: result as GateInput['result'],
+      reasonCodes: (g.reason_codes ?? []) as string[],
+      ruleIds: (g.rule_ids ?? []) as string[],
+      rulePackVersion: String(g.ruleset_version),
+      evaluatedAt: g.evaluated_at === null || g.evaluated_at === undefined ? undefined : String(g.evaluated_at),
+      blockedActions: (g.blocked_actions ?? []) as string[],
+      evidenceRefs: (g.evidence_refs ?? []) as unknown[],
+      receiptId,
+    } as GateInput & { receiptId: string };
   }
 
   /** 冻结写入（create/revise 共用）：包行不可变（除 status/gate/domain_states 的版本引用）。 */
@@ -175,19 +264,21 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
       openFindings,
       inspectionRevision: frozen.inspectionRevision,
       action: 'approve_facility',
+      activeRulePackVersion: await activeRulePackVersionOf(tx),
     });
     const status = readiness.decisionReadiness ? 'ready' : 'draft';
     await tx.query(
       `INSERT INTO decision_packages
          (package_id, tenant_id, customer_id, revision, prev_package_id, status, assessment_id, inspection_revision,
           evidence_refs, independent_proofs, snapshot_hash, gate, candidate, unknown_costs, domain_states,
-          required_reviews, open_items, created_by)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10,$11,$12::jsonb,$13::jsonb,$14::jsonb,$15::jsonb,$16::jsonb,$17::jsonb,$18)`,
+          required_reviews, open_items, created_by, exemptions)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10,$11,$12::jsonb,$13::jsonb,$14::jsonb,$15::jsonb,$16::jsonb,$17::jsonb,$18,$19::jsonb)`,
       [packageId, ctx.tenantId, customerId, revision, prev?.package_id ?? null, status, frozen.assessmentId,
        JSON.stringify(frozen.inspectionRevision), JSON.stringify(frozen.evidenceRefs), frozen.independentProofs,
        frozen.snapshotHash, JSON.stringify(frozen.gate), JSON.stringify(frozen.candidate),
        JSON.stringify(frozen.unknownCosts), JSON.stringify(domainStates),
-       JSON.stringify(frozen.requiredReviews), JSON.stringify(frozen.openItems), ctx.actor],
+       JSON.stringify(frozen.requiredReviews), JSON.stringify(frozen.openItems), ctx.actor,
+       JSON.stringify(frozen.exemptions)],
     );
     if (prev !== null) {
       await tx.query(`UPDATE decision_packages SET status='superseded' WHERE package_id=$1 AND status <> 'superseded'`, [prev.package_id]);
@@ -214,10 +305,11 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
         requireHuman(ctx, 'package.create');
         requireDirectoryRole(ctx, ['credit', 'business'], 'package.create');
         const customer = await lockCustomer(tx, customerId, tenantId);
+        await requireCustomerScope(ctx, customerId, tx);
         const stored = await ctx.replayed(tx);
         if (stored !== null) return stored;
         void customer;
-        const frozen = await parseFreezeInput(tx, customerId, frame);
+        const frozen = await parseFreezeInput(tx, cfgRef(), customerId, frame);
         const latest = await tx.query(
           `SELECT * FROM decision_packages WHERE customer_id=$1 ORDER BY revision DESC LIMIT 1`, [customerId],
         );
@@ -239,12 +331,13 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
         requireDirectoryRole(ctx, ['credit', 'business'], 'package.revise');
         const base = await loadPkg(tx, packageId);
         const customer = await lockCustomer(tx, base.customer_id as string, tenantId);
+        await requireCustomerScope(ctx, base.customer_id as string, tx);
         const stored = await ctx.replayed(tx);
         if (stored !== null) return stored;
         void customer;
         if (base.tenant_id !== tenantId) throw notFound('依据包不存在');
         if (base.status === 'superseded') throw conflict('NOT_READY', '依据包已被更新修订取代：请对最新修订操作');
-        const frozen = await parseFreezeInput(tx, base.customer_id as string, frame);
+        const frozen = await parseFreezeInput(tx, cfgRef(), base.customer_id as string, frame);
         const { packageId: newId_, revision, readiness } = await insertPackage(tx, h, ctx, base.customer_id as string, base, frozen);
         return {
           ok: true, packageId: newId_, revision, basisVersion: `${newId_}:${revision}`,
@@ -260,7 +353,7 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
       const tenantId = reqString(frame.tenantId, 'tenantId', 64);
       return withCommandV2(kernel, frame, 'package.domain-result', tenantId, async (tx, h, ctx) => {
         const base = await loadPkg(tx, packageId);
-        await scopeByRow(kernel, frame, base.tenant_id as string);
+        await scopeByRow(kernel, frame, base.tenant_id as string, base.customer_id as string);
         const customer = await lockCustomer(tx, base.customer_id as string, base.tenant_id as string);
         const stored = await ctx.replayed(tx);
         if (stored !== null) return stored;
@@ -268,11 +361,7 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
         if (base.status === 'superseded') throw conflict('NOT_READY', '依据包已被更新修订取代');
         const domain = reqString(frame.domain, 'domain', 16);
         if (!(DOMAINS as readonly string[]).includes(domain)) throw invalid(`domain 必须 ${DOMAINS.join('/')}`);
-        const analysisRun = validateAnalysisRunShallow(reqObject(frame.analysisRun, 'analysisRun'), domain);
-        const opinion = reqObject(frame.opinion, 'opinion');
-        if (opinion.authority !== undefined && opinion.authority !== 'none') {
-          throw invalid('opinion.authority 必须恒为 none（服务端强制；候选意见无正式效力）');
-        }
+        requireDirectoryRole(ctx, DOMAIN_RESULT_ROLES[domain] ?? [], `package.domain-result:${domain}`);
         const deps = reqObject(frame.deps ?? {}, 'deps');
         const declared = (base.domain_states as FrozenDomainState[]).find((s) => s.domain === domain);
         if (declared === undefined) {
@@ -290,7 +379,41 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
           throw invalid('deps.factKeys 与冻结声明不一致：域结果必须登记在其声明依赖上');
         }
         if ((resultDeps.rulePackVersion ?? null) !== (declared.rulePackVersion ?? null)) {
-          throw invalid('deps.rulePackVersion 与冻结声明不一致：规则版本变化请发布新修订');
+          // A2.7/K10：规则正式换版后，允许按"当前激活版本"在同一包上重登记该域（域状态随结果推进到新版本）；
+          // 除此之外必须发布新修订
+          const activeNow = await activeRulePackVersionOf(tx);
+          if (resultDeps.rulePackVersion === null || resultDeps.rulePackVersion !== activeNow) {
+            throw invalid('deps.rulePackVersion 与冻结声明不一致：规则版本变化请发布新修订');
+          }
+        }
+        // A2.6/K08/K09：analysisRun 只接受运行登记表中已完成且属于本包/本客户/本域的运行；
+        // 摘要以"执行开始盖章的 input_digest"为准——晚到结果不得按当前 DB 重新盖章为 current。
+        const runRef = reqObject(frame.analysisRun, 'analysisRun');
+        const runId = reqString(runRef.runId, 'analysisRun.runId', 64);
+        const runRows = await tx.query(`SELECT * FROM analysis_runs WHERE run_id=$1`, [runId]);
+        if (runRows.rows.length === 0) throw notFound(`分析运行不存在：${runId}（须先经 analysis-runs/start 登记并盖章输入）`);
+        const run = runRows.rows[0] as Record<string, unknown>;
+        if (run.tenant_id !== base.tenant_id || run.customer_id !== base.customer_id) throw notFound('分析运行不存在');
+        if (run.domain !== domain) throw invalid('analysisRun.runId 与登记域不一致');
+        if (String(run.rule_version) !== (resultDeps.rulePackVersion ?? '')) {
+          throw invalid('run.rule_version 与 deps.rulePackVersion 不一致');
+        }
+        if (runRef.rulesetVersion !== undefined && String(runRef.rulesetVersion) !== String(run.rule_version)) {
+          throw invalid('analysisRun.rulesetVersion 与运行登记不一致');
+        }
+        if (String(run.status) !== 'completed') {
+          throw conflict('ANALYSIS_RUN_NOT_COMPLETED',
+            `运行状态 ${run.status}：failed/timeout/not_configured/input_invalid 无资格满足必需域`, { runId, status: String(run.status) });
+        }
+        const inputDigest = String(run.input_digest);
+        const analysisRun = {
+          runId, domain, inputHash: inputDigest, inputWatermark: run.input_snapshot_id ?? null,
+          rulesetVersion: String(run.rule_version), executionStatus: 'completed',
+          providerMode: String(run.provider_mode ?? 'simulation'), completedAt: run.completed_at ?? new Date().toISOString(),
+        };
+        const opinion = reqObject(frame.opinion, 'opinion');
+        if (opinion.authority !== undefined && opinion.authority !== 'none') {
+          throw invalid('opinion.authority 必须恒为 none（服务端强制；候选意见无正式效力）');
         }
         let adoption: Record<string, unknown> | null = null;
         if (frame.adoption !== undefined && frame.adoption !== null) {
@@ -302,20 +425,20 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
           [packageId, domain],
         );
         const opinionVersion = Number((verRes.rows[0] as { v: string | number }).v) + 1;
-        // 结果自带水位：登记时按"当前"依赖重新冻结该域摘要（历史冻结保留在上一版结果行中，可追溯）
-        const currentDigest = await computeDomainDigest(tx, base.customer_id as string, resultDeps);
+        // 域水位 = 运行开始时盖章的输入摘要（非登记时当前摘要）：材料晚到 → 该域读时判 changed
         const resultId = newId('dres');
         await tx.query(
           `INSERT INTO package_domain_results
              (result_id, package_id, domain, analysis_run, opinion, opinion_version, deps, adoption, created_by)
            VALUES ($1,$2,$3,$4::jsonb,$5::jsonb,$6,$7::jsonb,$8::jsonb,$9)`,
           [resultId, packageId, domain, JSON.stringify(analysisRun), JSON.stringify(opinion), opinionVersion,
-           JSON.stringify({ ...resultDeps, required: declared.required, depsDigest: currentDigest }),
+           JSON.stringify({ ...resultDeps, required: declared.required, depsDigest: inputDigest, inputDigestAtStart: inputDigest }),
            JSON.stringify(adoption), ctx.actor],
         );
-        // 包内域状态推进到本结果的引用与新水位（旧行保留在 package_domain_results，不改写）
+        // 包内域状态推进到本结果的引用与运行盖章水位（规则换版重登记时版本随结果推进；旧行保留不改写）
         const newStates = (base.domain_states as FrozenDomainState[]).map((s) => s.domain === domain
-          ? { ...s, opinionVersion, analysisRunRef: String(analysisRun.runId), depsDigest: currentDigest }
+          ? { ...s, opinionVersion, analysisRunRef: String(analysisRun.runId), depsDigest: inputDigest,
+              rulePackVersion: resultDeps.rulePackVersion ?? s.rulePackVersion }
           : s);
         await tx.query(`UPDATE decision_packages SET domain_states=$2::jsonb WHERE package_id=$1`, [packageId, JSON.stringify(newStates)]);
         // 就绪重判（required 域补齐后可能就绪）
@@ -325,6 +448,7 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
           domains: verdicts, gate: (base.gate ?? null) as GateInput | null, openFindings,
           inspectionRevision: (base.inspection_revision ?? null) as Record<string, unknown> | null,
           action: 'approve_facility',
+          activeRulePackVersion: await activeRulePackVersionOf(tx),
         });
         const newStatus = readiness.decisionReadiness ? 'ready' : 'draft';
         if (newStatus !== base.status && base.status !== 'superseded') {
@@ -350,7 +474,7 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
         requireHuman(ctx, 'package.adopt');
         requireDirectoryRole(ctx, ['credit', 'business', 'policy', 'commerce', 'asset'], 'package.adopt');
         const base = await loadPkg(tx, packageId);
-        await scopeByRow(kernel, frame, base.tenant_id as string);
+        await scopeByRow(kernel, frame, base.tenant_id as string, base.customer_id as string);
         const customer = await lockCustomer(tx, base.customer_id as string, base.tenant_id as string);
         const stored = await ctx.replayed(tx);
         if (stored !== null) return stored;
@@ -379,7 +503,7 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
         requireHuman(ctx, 'package.record-gate');
         requireDirectoryRole(ctx, ['credit', 'business', 'policy'], 'package.record-gate');
         const base = await loadPkg(tx, packageId);
-        await scopeByRow(kernel, frame, base.tenant_id as string);
+        await scopeByRow(kernel, frame, base.tenant_id as string, base.customer_id as string);
         const customer = await lockCustomer(tx, base.customer_id as string, base.tenant_id as string);
         const stored = await ctx.replayed(tx);
         if (stored !== null) return stored;
@@ -387,7 +511,10 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
         if (base.gate !== null && base.gate !== undefined) {
           throw conflict('NOT_READY', '该包已记录 Gate 结论：规则/Gate 变化请发布新修订（包依据不可改写）');
         }
-        const gate = validateGateInput(frame.gate);
+        const gate = frame.gateReceiptId === undefined || frame.gateReceiptId === null
+          ? null
+          : await loadGateReceipt(tx, base.customer_id as string, reqString(frame.gateReceiptId, 'gateReceiptId', 64));
+        if (gate === null) throw invalid('gate 结论只能引用可信服务回执：请提供 gateReceiptId');
         await tx.query(`UPDATE decision_packages SET gate=$2::jsonb WHERE package_id=$1`, [packageId, JSON.stringify(gate)]);
         const openFindings = await openBlockingFindings(tx, base.customer_id as string);
         const verdicts = await evaluateDomainCurrency(tx, base.customer_id as string, base.domain_states as FrozenDomainState[]);
@@ -395,6 +522,7 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
           domains: verdicts, gate, openFindings,
           inspectionRevision: (base.inspection_revision ?? null) as Record<string, unknown> | null,
           action: 'approve_facility',
+          activeRulePackVersion: await activeRulePackVersionOf(tx),
         });
         const newStatus = readiness.decisionReadiness ? 'ready' : 'draft';
         if (newStatus !== base.status) {
@@ -423,7 +551,7 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
       const tenantId = reqString(frame.tenantId, 'tenantId', 64);
       return withCommandV2(kernel, frame, 'package.refresh', tenantId, async (tx, h, ctx) => {
         const base = await loadPkg(tx, packageId);
-        await scopeByRow(kernel, frame, base.tenant_id as string);
+        await scopeByRow(kernel, frame, base.tenant_id as string, base.customer_id as string);
         const customer = await lockCustomer(tx, base.customer_id as string, base.tenant_id as string);
         const stored = await ctx.replayed(tx);
         if (stored !== null) return stored;
@@ -436,6 +564,7 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
           domains: verdicts, gate: (base.gate ?? null) as GateInput | null, openFindings,
           inspectionRevision: (base.inspection_revision ?? null) as Record<string, unknown> | null,
           action: 'approve_facility',
+          activeRulePackVersion: await activeRulePackVersionOf(tx),
         });
         const newStatus = readiness.decisionReadiness ? 'ready' : 'draft';
         const changedRequired = verdicts.filter((v) => v.required && v.currency !== 'current');
@@ -466,13 +595,14 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
 
     getPackage: async (credential: unknown, packageId: string) => {
       const base = await loadPkgRead(packageId);
-      await scopeByRow(kernel, { credential }, base.tenant_id as string);
+      await scopeByRow(kernel, { credential }, base.tenant_id as string, base.customer_id as string);
       const verdicts = await evaluateDomainCurrency(kernel.pool, base.customer_id as string, base.domain_states as FrozenDomainState[]);
       const openFindings = await openBlockingFindings(kernel.pool, base.customer_id as string);
       const readiness = evaluateReadiness({
         domains: verdicts, gate: (base.gate ?? null) as GateInput | null, openFindings,
         inspectionRevision: (base.inspection_revision ?? null) as Record<string, unknown> | null,
         action: 'approve_facility',
+        activeRulePackVersion: await activeRulePackVersionOf(kernel.pool),
       });
       const results = await kernel.pool.query(
         `SELECT domain, analysis_run, opinion, opinion_version, adoption, created_at FROM package_domain_results
@@ -507,7 +637,7 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
     getCustomerDecisionStatus: async (credential: unknown, customerId: string) => {
       const c = await kernel.pool.query(`SELECT tenant_id FROM customers WHERE customer_id=$1`, [customerId]);
       if (c.rows.length === 0) throw notFound('客户不存在');
-      await scopeByRow(kernel, { credential }, (c.rows[0] as { tenant_id: string }).tenant_id);
+      await scopeByRow(kernel, { credential }, (c.rows[0] as { tenant_id: string }).tenant_id, customerId);
       const latest = await kernel.pool.query(
         `SELECT * FROM decision_packages WHERE customer_id=$1 AND status <> 'superseded' ORDER BY revision DESC LIMIT 1`,
         [customerId],
@@ -522,6 +652,7 @@ export function buildPackageCommands(kernel: Kernel): PackageApi {
           domains: currency, gate: (pkg.gate ?? null) as GateInput | null, openFindings,
           inspectionRevision: (pkg.inspection_revision ?? null) as Record<string, unknown> | null,
           action: 'approve_facility',
+          activeRulePackVersion: await activeRulePackVersionOf(kernel.pool),
         });
       }
       const fac = await kernel.pool.query(
@@ -649,25 +780,6 @@ function normalizeAdoption(v: unknown, actor: string): Record<string, unknown> {
   };
 }
 
-/** AnalysisRun 浅校验（对齐 C domains/schema.mjs 必填项；语义由 C 负责）。 */
-function validateAnalysisRunShallow(v: Record<string, unknown>, domain: string): Record<string, unknown> {
-  for (const k of ['runId', 'inputHash', 'inputWatermark', 'rulesetVersion']) {
-    if (typeof v[k] !== 'string' || (v[k] as string).length === 0) throw invalid(`analysisRun.${k} 必须为非空 string`);
-  }
-  if (v.domain !== undefined && v.domain !== domain) throw invalid(`analysisRun.domain 与登记域不一致`);
-  const status = v.executionStatus === undefined || v.executionStatus === null ? 'completed' : String(v.executionStatus);
-  if (!['completed', 'failed', 'timeout', 'not_configured', 'input_invalid'].includes(status)) {
-    throw invalid('analysisRun.executionStatus 必须 completed|failed|timeout|not_configured|input_invalid');
-  }
-  return {
-    runId: String(v.runId), domain, inputHash: String(v.inputHash),
-    inputWatermark: v.inputWatermark, rulesetVersion: String(v.rulesetVersion),
-    executionStatus: status,
-    providerMode: v.providerMode === undefined ? 'simulation' : String(v.providerMode),
-    completedAt: v.completedAt === undefined ? new Date().toISOString() : String(v.completedAt),
-  };
-}
-
 // ---------------------------------------------------------------------------
 // 提交点复查（3.4）：正式命令与用信准备共用的机械闸门。
 // 判定全部来自包内冻结声明 + 当前 DB 事实；不带任何政策语义（规则在 C 路规则包）。
@@ -676,10 +788,10 @@ function validateAnalysisRunShallow(v: Record<string, unknown>, domain: string):
 export interface ActionBlocker { code: 'STALE_BASIS' | 'REVIEW_REQUIRED' | 'GATE_BLOCKED' | 'NOT_FOUND'; message: string; gap?: string }
 
 function gapToBlocker(gap: { code: string; detail?: string; domain?: string; findingId?: string }): ActionBlocker {
-  if (gap.code === 'DOMAIN_DEPS_CHANGED' || gap.code === 'REQUIRED_DOMAIN_MISSING') {
+  if (gap.code === 'DOMAIN_DEPS_CHANGED' || gap.code === 'REQUIRED_DOMAIN_MISSING' || gap.code === 'GATE_STALE_RULES') {
     return { code: 'STALE_BASIS', message: `有效依据已变更（${gap.domain ?? gap.code}${gap.detail ? `：${gap.detail}` : ''}）：须更新后再正式动作`, gap: gap.code };
   }
-  if (gap.code === 'GATE_HARD_BLOCK' || gap.code === 'GATE_NEEDS_EVIDENCE') {
+  if (gap.code === 'GATE_HARD_BLOCK' || gap.code === 'GATE_NEEDS_EVIDENCE' || gap.code === 'GATE_HOLD_FOR_REVIEW') {
     return { code: 'GATE_BLOCKED', message: `Gate 阻断（${gap.code}${gap.detail ? `：${gap.detail}` : ''}）：事实纠正重算或治理更新规则，无通用放行`, gap: gap.code };
   }
   return { code: 'REVIEW_REQUIRED', message: `复核未完成（${gap.code}${gap.detail ? `：${gap.detail}` : ''}）`, gap: gap.code };
@@ -701,6 +813,7 @@ export async function packageActionBlockers(
     domains: verdicts, gate: (pkg.gate ?? null) as GateInput | null, openFindings,
     inspectionRevision: (pkg.inspection_revision ?? null) as Record<string, unknown> | null,
     action,
+    activeRulePackVersion: await activeRulePackVersionOf(q),
   });
   return readiness.gaps.map(gapToBlocker);
 }
