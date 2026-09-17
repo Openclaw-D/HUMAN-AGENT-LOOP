@@ -6,8 +6,10 @@ import type { PoolClient } from 'pg';
 import { conflict, forbidden, invalid, notFound } from './errors.ts';
 import { newId } from './util.ts';
 import type { Kernel } from './kernel.ts';
+import { authenticate, authorizeCustomer, requireVerified } from './principal.ts';
 import {
   reqString, reqObject, withCommandV2, requireHuman, requireDirectoryRole, requireCustomerScope,
+  requireMatrixPermission, lockCustomer,
   type RequestFrame,
 } from './v2kit.ts';
 import { computeDomainDigest } from './decision-support.ts';
@@ -17,6 +19,10 @@ export interface AnalysisApi {
   registerGateReceipt(frame: RequestFrame, customerId: string): Promise<Record<string, unknown>>;
   startAnalysisRun(frame: RequestFrame, customerId: string): Promise<Record<string, unknown>>;
   finishAnalysisRun(frame: RequestFrame, runId: string): Promise<Record<string, unknown>>;
+  /** goal-01 G1：豁免登记（人类 + 矩阵动作 domain-exemption.grant；approved_by 从凭据解析）。 */
+  registerDomainExemption(frame: RequestFrame, customerId: string): Promise<Record<string, unknown>>;
+  revokeDomainExemption(frame: RequestFrame, exemptionId: string): Promise<Record<string, unknown>>;
+  listDomainExemptions(credential: unknown, customerId: string): Promise<Record<string, unknown>>;
 }
 
 const GATE_RESULTS = ['CLEAR', 'NEEDS_EVIDENCE', 'HOLD_FOR_REVIEW', 'HARD_BLOCK'] as const;
@@ -178,8 +184,107 @@ export function buildAnalysisCommands(kernel: Kernel): AnalysisApi {
         return { ok: true, runId, status: executionStatus };
       });
     },
+
+    /** goal-01 G1：登记必需域/政策豁免。批准人从凭据解析（approvedBy 载荷字段不存在）；
+     *  权限=人类+矩阵动作 domain-exemption.grant（未配置 → POLICY_PENDING fail-closed）。 */
+    registerDomainExemption: (frame: RequestFrame, customerId: string) => {
+      const tenantId = reqString(frame.tenantId, 'tenantId', 64);
+      return withCommandV2(kernel, frame, 'domain-exemption.grant', tenantId, async (tx, h, ctx) => {
+        requireHuman(ctx, 'domain-exemption.grant');
+        const customer = await lockCustomer(tx, customerId, tenantId);
+        await requireCustomerScope(ctx, customerId, tx);
+        const stored = await ctx.replayed(tx);
+        if (stored !== null) return stored;
+        void customer;
+        const domain = reqString(frame.domain, 'domain', 16);
+        if (!['policy', 'credit', 'commerce', 'asset'].includes(domain)) throw invalid('domain 必须 policy|credit|commerce|asset');
+        const scope = reqString(frame.scope ?? 'package', 'scope', 64);
+        const reason = reqString(frame.reason, 'reason', 500);
+        const cfg = cfgRef();
+        if (cfg.requiredDomainsPolicyVersion === null) {
+          throw conflict('POLICY_PENDING', '必需域政策未配置：豁免登记拒绝（fail-closed）');
+        }
+        // 权限矩阵：豁免是正式例外授予，必须有公司批准的条目（不是目录角色即可为）
+        const perm = await requireMatrixPermission(tx, cfg, ctx, 'domain-exemption.grant', null);
+        const validUntil = frame.validUntil === undefined || frame.validUntil === null
+          ? null
+          : reqString(frame.validUntil, 'validUntil', 32);
+        if (validUntil !== null) {
+          const t = new Date(validUntil).getTime();
+          if (Number.isNaN(t)) throw invalid('validUntil 必须是可解析的时间戳');
+          if (t <= Date.now()) throw invalid('validUntil 已是过去时间：不得登记即时过期的豁免');
+        }
+        const exemptionId = newId('exm');
+        await tx.query(
+          `INSERT INTO domain_exemptions
+             (exemption_id, tenant_id, customer_id, domain, scope, reason, policy_version, approved_by, approved_by_roles, valid_until)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10)`,
+          [exemptionId, tenantId, customerId, domain, scope, reason, cfg.requiredDomainsPolicyVersion,
+           ctx.actor, JSON.stringify(ctx.roles), validUntil],
+        );
+        await h.audit({
+          actor: ctx.actor, action: 'domain_exemption_granted', targetType: 'domain_exemption', targetId: exemptionId,
+          summary: `豁免登记 ${domain}/${scope}（政策 ${cfg.requiredDomainsPolicyVersion}）`,
+          payload: { domain, scope, permissionRef: perm.ref },
+        });
+        await h.emit('FORMAL_DECISION_RECORDED', customerId, {
+          kind: 'domain_exemption_granted', exemptionId, domain, scope, approvedBy: ctx.actor,
+          policyVersion: cfg.requiredDomainsPolicyVersion, validUntil,
+        });
+        return { ok: true, exemptionId, domain, scope, status: 'valid',
+          policyVersion: cfg.requiredDomainsPolicyVersion, validUntil };
+      });
+    },
+
+    /** goal-01 G1：撤销豁免（即刻生效；历史已冻结包不受影响——只阻断新引用）。 */
+    revokeDomainExemption: (frame: RequestFrame, exemptionId: string) => {
+      const tenantId = reqString(frame.tenantId, 'tenantId', 64);
+      return withCommandV2(kernel, frame, 'domain-exemption.revoke', tenantId, async (tx, h, ctx) => {
+        requireHuman(ctx, 'domain-exemption.revoke');
+        const r0 = await tx.query(`SELECT tenant_id, customer_id, status FROM domain_exemptions WHERE exemption_id=$1`, [exemptionId]);
+        if (r0.rows.length === 0) throw notFound('豁免登记不存在');
+        const owner = r0.rows[0] as { tenant_id: string; customer_id: string; status: string };
+        if (owner.tenant_id !== tenantId) throw notFound('豁免登记不存在');
+        await requireCustomerScope(ctx, owner.customer_id, tx);
+        const stored = await ctx.replayed(tx);
+        if (stored !== null) return stored;
+        const cfg = cfgRef();
+        await requireMatrixPermission(tx, cfg, ctx, 'domain-exemption.grant', null);
+        const r1 = await tx.query(`SELECT * FROM domain_exemptions WHERE exemption_id=$1 FOR UPDATE`, [exemptionId]);
+        const row = r1.rows[0] as Record<string, unknown>;
+        if (row.status !== 'valid') throw conflict('NOT_READY', `豁免当前 ${row.status}：仅 valid 可撤销`);
+        await tx.query(
+          `UPDATE domain_exemptions SET status='revoked', revoked_at=now(), revoked_by=$2 WHERE exemption_id=$1`,
+          [exemptionId, ctx.actor],
+        );
+        await h.audit({
+          actor: ctx.actor, action: 'domain_exemption_revoked', targetType: 'domain_exemption', targetId: exemptionId,
+          summary: `豁免撤销（即刻生效；新引用被拒）`, payload: {},
+        });
+        await h.emit('FORMAL_DECISION_RECORDED', row.customer_id as string,
+          { kind: 'domain_exemption_revoked', exemptionId, revokedBy: ctx.actor });
+        return { ok: true, exemptionId, status: 'revoked' };
+      });
+    },
+
+    listDomainExemptions: async (credential: unknown, customerId: string) => {
+      const auth = await authenticate(kernel.verifierForV2(), credential);
+      requireVerified(auth);
+      await authorizeCustomer(auth.principal, customerId, kernel.pool);
+      const res = await kernel.pool.query(
+        `SELECT exemption_id AS "exemptionId", tenant_id AS "tenantId", customer_id AS "customerId", domain, scope,
+                reason, policy_version AS "policyVersion", approved_by AS "approvedBy", approved_by_roles AS "approvedByRoles",
+                valid_until AS "validUntil", status, revoked_at AS "revokedAt", revoked_by AS "revokedBy", created_at AS "createdAt"
+         FROM domain_exemptions WHERE customer_id=$1 ORDER BY created_at DESC LIMIT 200`, [customerId]);
+      return { ok: true, exemptions: res.rows };
+    },
   };
 }
+
+// ---------------------------------------------------------------------------
+// goal-01 G1：豁免登记（不变量 2——豁免必须引用真实、有效且有权批准的记录）
+// 批准人=服务端从凭据解析的 principal，载荷声明无效；消费端（依据包/差异处理）只收引用。
+// ---------------------------------------------------------------------------
 
 async function lockCustomerRow(tx: PoolClient, customerId: string, tenantId: string): Promise<Record<string, unknown>> {
   const r = await tx.query(`SELECT * FROM customers WHERE customer_id=$1 FOR UPDATE`, [customerId]);

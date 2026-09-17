@@ -328,12 +328,33 @@ function availableActionsOf(session: SessionRow): string[] {
 // 核验项状态推导与收口推导（唯一事实源：items/questions/evidence_artifacts）
 // ---------------------------------------------------------------------------
 
-async function currentArtifactKinds(tx: IxQueryable, customerId: string): Promise<Set<string>> {
+/** 现行工件索引：kind 集合 + 对象锚定→kind 集合（goal-01 G2：锚定核验项只认对象匹配材料）。 */
+interface ArtifactIndex { kinds: Set<string>; byObject: Map<string, Set<string>> }
+async function currentArtifactIndex(tx: IxQueryable, customerId: string): Promise<ArtifactIndex> {
   const res = await tx.query(
-    `SELECT kind FROM evidence_artifacts WHERE customer_id = $1 AND superseded_by IS NULL AND duplicate_of IS NULL`,
+    `SELECT kind, object_ref FROM evidence_artifacts WHERE customer_id = $1 AND superseded_by IS NULL AND duplicate_of IS NULL`,
     [customerId],
   );
-  return new Set((res.rows as { kind: string }[]).map((r) => r.kind));
+  const kinds = new Set<string>();
+  const byObject = new Map<string, Set<string>>();
+  for (const r of res.rows as { kind: string; object_ref: { objectId?: string } | null }[]) {
+    kinds.add(r.kind);
+    const oid = r.object_ref !== null && typeof r.object_ref === 'object' ? r.object_ref.objectId : undefined;
+    if (typeof oid === 'string' && oid.length > 0) {
+      if (!byObject.has(oid)) byObject.set(oid, new Set());
+      byObject.get(oid)!.add(r.kind);
+    }
+  }
+  return { kinds, byObject };
+}
+
+/** 工件锚定对象（objectRef.objectId）；未锚定 → null。 */
+function artifactObjectId(objectRef: unknown): string | null {
+  if (objectRef !== null && typeof objectRef === 'object') {
+    const oid = (objectRef as { objectId?: unknown }).objectId;
+    if (typeof oid === 'string' && oid.length > 0) return oid;
+  }
+  return null;
 }
 
 /** 写后重算：非终态核验项按 开放问题/已答问题/材料齐备 三事实推导状态。
@@ -341,20 +362,25 @@ async function currentArtifactKinds(tx: IxQueryable, customerId: string): Promis
 async function refreshItems(tx: PoolClient, session: SessionRow, h: IxHelpers, actorLabel: string | null): Promise<string[]> {
   const items = await loadItems(tx, session.session_id);
   const questions = await loadQuestions(tx, session.session_id);
-  const kinds = await currentArtifactKinds(tx, session.customer_id);
+  const index = await currentArtifactIndex(tx, session.customer_id);
   const changed: string[] = [];
   for (const it of items) {
     if (['verified', 'conflict', 'deferred', 'stale_review', 'to_verify'].includes(it.status)) continue;
     const openQ = questions.find((q) => q.item_id === it.item_id && (q.status === 'open' || q.status === 'sent'));
     const answeredQ = questions.filter((q) => q.item_id === it.item_id && q.status === 'answered').pop();
-    const allPresent = it.expected_evidence_kinds.every((k) => kinds.has(k));
+    const kindPresent = it.expected_evidence_kinds.every((k) => index.kinds.has(k));
+    // goal-01 G2：锚定项的"自动核实"只认对象匹配材料（未锚定材料仅供人工核验，不满足自动推导）
+    const objectSatisfied = it.object_ref === null
+      ? kindPresent
+      : it.expected_evidence_kinds.some((k) => index.byObject.get(it.object_ref!)?.has(k) ?? false);
     let next: ItemStatus = it.status;
     if (openQ !== undefined) {
       next = 'waiting_answer';
     } else if (answeredQ !== undefined) {
-      if (!allPresent) next = 'waiting_evidence';
+      if (!kindPresent) next = 'waiting_evidence';
       else if (it.requires_human_verification) next = 'to_verify';
-      else next = 'verified';
+      else if (objectSatisfied) next = 'verified';
+      else next = 'waiting_evidence';
     } else {
       next = 'pending';
     }
@@ -742,13 +768,17 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       const items = await loadItems(client, session.session_id);
       const questions = await loadQuestions(client, session.session_id);
       const followups = await loadFollowups(client, session.session_id);
-      const kinds = await currentArtifactKinds(client, session.customer_id);
+      const index = await currentArtifactIndex(client, session.customer_id);
       const present = (role: string): boolean => session.participants[role]?.present !== false;
       const actions = items.map((it) => {
         const itemQs = questions.filter((q) => q.item_id === it.item_id);
         const openQ = itemQs.find((q) => q.status === 'open' || q.status === 'sent');
         const answered = itemQs.some((q) => q.status === 'answered');
-        const missingKinds = it.expected_evidence_kinds.filter((k) => !kinds.has(k));
+        // goal-01 G2：锚定项缺口按对象匹配口径展示（与状态推导一致）
+        const missingKinds = it.expected_evidence_kinds.filter((k) =>
+          it.object_ref === null
+            ? !index.kinds.has(k)
+            : !(index.byObject.get(it.object_ref)?.has(k) ?? false));
         let blockedReason: string | null = null;
         let waitingFor: Record<string, unknown> | null = null;
         if (it.status === 'verified') {
@@ -921,7 +951,7 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       const prerequisites = Array.isArray((session.plan_snapshot as { prerequisites?: unknown }).prerequisites)
         ? ((session.plan_snapshot as { prerequisites: unknown[] }).prerequisites as unknown[]).map(String)
         : [];
-      const kinds = await currentArtifactKinds(tx, session.customer_id);
+      const kinds = (await currentArtifactIndex(tx, session.customer_id)).kinds;
       const missing = prerequisites.filter((k) => !kinds.has(k));
       if (missing.length > 0) {
         throw conflict('NOT_READY', `计划必要前提未满足：缺材料 ${missing.join(', ')}`, { missing });
@@ -1392,14 +1422,31 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       const text = reqString(answerIn.text ?? '', 'answer.text', 4000, 0);
       const conflictFlag = reqBool(answerIn.conflict, 'answer.conflict', false);
       const refs: { artifactId: string }[] = [];
+      const artRows: { artifact_id: string; object_ref: unknown }[] = [];
       for (const ref of Array.isArray(answerIn.evidenceRefs) ? answerIn.evidenceRefs as unknown[] : []) {
         const artifactId = reqString(typeof ref === 'string' ? ref : reqObject(ref, 'evidenceRefs[]').artifactId, 'artifactId', 64);
         const art = await tx.query(
-          `SELECT artifact_id FROM evidence_artifacts WHERE artifact_id = $1 AND customer_id = $2 AND superseded_by IS NULL`,
+          `SELECT artifact_id, object_ref FROM evidence_artifacts WHERE artifact_id = $1 AND customer_id = $2 AND superseded_by IS NULL`,
           [artifactId, session.customer_id],
         );
         if (art.rows.length === 0) throw invalid(`answer.evidenceRefs 引用不存在/已取代的材料：${artifactId}`);
+        artRows.push(art.rows[0] as { artifact_id: string; object_ref: unknown });
         refs.push({ artifactId });
+      }
+      // goal-01 G2：问题归属的核验项已锚定对象时，显式锚定到其他对象的材料一律拒绝（设备 B ≠ 设备 A）
+      if (q.item_id !== null) {
+        const itRow = await tx.query(`SELECT object_ref FROM inspection_items WHERE item_id = $1`, [q.item_id]);
+        const itemRef = (itRow.rows[0] as { object_ref: string | null } | undefined)?.object_ref ?? null;
+        if (typeof itemRef === 'string' && itemRef.length > 0) {
+          for (const a of artRows) {
+            const oid = artifactObjectId(a.object_ref);
+            if (oid !== null && oid !== itemRef) {
+              throw conflict('EVIDENCE_OBJECT_MISMATCH',
+                `材料 ${a.artifact_id} 锚定对象 ${oid} ≠ 核验项锚定对象 ${itemRef}：设备 B 的照片不满足设备 A 的核验`,
+                { artifactId: a.artifact_id, artifactObject: oid, itemObject: itemRef });
+            }
+          }
+        }
       }
       const answer = { text, evidenceRefs: refs, conflict: conflictFlag, answeredBy: auth.principal.principalId, answeredAt: new Date().toISOString() };
       await tx.query(
@@ -1602,15 +1649,18 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       requireNotClosed(session);
       const artifactId = reqString(frame.artifactId, 'artifactId', 64);
       const art = await tx.query(
-        `SELECT artifact_id, kind FROM evidence_artifacts WHERE artifact_id = $1 AND customer_id = $2 AND superseded_by IS NULL AND duplicate_of IS NULL`,
+        `SELECT artifact_id, kind, object_ref FROM evidence_artifacts WHERE artifact_id = $1 AND customer_id = $2 AND superseded_by IS NULL AND duplicate_of IS NULL`,
         [artifactId, session.customer_id],
       );
       if (art.rows.length === 0) throw notFound('材料不存在或已被取代');
       const kind = (art.rows[0] as { kind: string }).kind;
-      // 只重开受影响事项：期望材料 kind 命中且当前处于等待材料/已转待办状态
+      const artObjectId = artifactObjectId((art.rows[0] as { object_ref: unknown }).object_ref);
+      // 只重开受影响事项：期望 kind 命中且当前处于等待材料/已转待办状态；
+      // goal-01 G2：锚定项只认对象匹配材料（未锚定/锚定其他对象不重开锚定项）
       const items = await loadItems(tx, sessionId);
       const affected = items.filter((i) =>
-        i.expected_evidence_kinds.includes(kind) && ['waiting_evidence', 'deferred', 'answered'].includes(i.status));
+        i.expected_evidence_kinds.includes(kind) && ['waiting_evidence', 'deferred', 'answered'].includes(i.status)
+        && (i.object_ref === null || (artObjectId !== null && artObjectId === i.object_ref)));
       const reopened: string[] = [];
       for (const it of affected) {
         await tx.query(

@@ -1,0 +1,14 @@
+{
+  "#cursor": {
+    "eventSeq": 37
+  },
+  "v7d-b-worker:g-mu5tp6pz-88105ffd09a0:c1-1789667295072": {
+    "status": "recovered:held-unknown-for-retry",
+    "goalId": "g-mu5tp6pz-88105ffd09a0",
+    "fencingToken": 1,
+    "startedAt": "2026-09-17T17:48:15.116Z",
+    "leaseUntil": "2026-09-17T17:48:45.106Z",
+    "claimedAt": "2026-09-17T17:48:15.072Z",
+    "at": "2026-09-17T17:48:19.756Z"
+  }
+}

@@ -74,6 +74,12 @@ const server = await startServer(svc, {
   trtcCallbackKey: config.trtcCallbackKey ?? config.signingSecret,
   serviceToken: config.serviceToken,
 });
+// goal-02：资料处理常驻驱动（解压/解析/分析/提问持久任务；关闭恢复依赖任务表+租约）
+if (svc.processing) {
+  const intervalMs = Number(fileCfg.processing?.driverIntervalMs ?? 2000);
+  svc.processing.startDriver(intervalMs);
+  console.log(`[connectors] 处理驱动已启动（interval=${intervalMs}ms, policy=${svc.processing._cfg.outboundPolicy}, 规则包=${svc.processing.rulesetVersion}）；恢复扫描内建于 tick`);
+}
 console.log(`[connectors] listening http://127.0.0.1:${config.port} ; healthz: /healthz`);
 console.log('[connectors] E2 真实链路（企微存档/微信客服/TRTC）= blocked_external_access，不因本服务启动而改变');
 

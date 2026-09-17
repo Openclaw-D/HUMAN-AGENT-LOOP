@@ -181,6 +181,8 @@ export default function HomeOverview() {
               onDismissPendingMessage={() => {}}
               resolvingPending={false}
               recoveryPersistFailed={false}
+              draftStorageKey={live ? 'jw:v5-preview:draft:chat:live' : 'jw:v5-preview:draft:chat:training'}
+              countNote={live ? '（真实后台回执）' : undefined}
               inputPlaceholder={live
                 ? (chatAudience === 'customer'
                   ? '发往客户（真实后台；服务端回执为准，不显示本地假成功）'

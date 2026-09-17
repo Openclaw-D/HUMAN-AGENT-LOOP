@@ -1,0 +1,3 @@
+this-is-garbage-not-json
+{"amount": "not-a-number"}
+{"type":"reserve","amount":999}

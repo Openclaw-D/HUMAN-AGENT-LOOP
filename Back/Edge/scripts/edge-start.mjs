@@ -78,6 +78,7 @@ async function main() {
   const kernelPort = arg('kernel-port', process.env.JW_A_PORT || 48180);
   const dbPort = arg('db-port', process.env.JW_PG_PORT || 15442);
   // live 模式（任务三 C2）：透传 --live/--auth-file/--allowed-origin；fixture-auth 仅非 live 时启用。
+  // goal-03 C3：透传 --serve-front <dir>（同源受控前端托管，默认关闭）。
   const live = process.argv.includes('--live');
   const extraArgs = [];
   if (live) {
@@ -88,6 +89,8 @@ async function main() {
       if (process.argv[i] === '--allowed-origin' && process.argv[i + 1]) extraArgs.push('--allowed-origin', process.argv[i + 1]);
     }
   }
+  const serveFront = arg('serve-front', null);
+  if (serveFront) extraArgs.push('--serve-front', serveFront);
   const { spawn } = await import('node:child_process');
   const out = openSync(DAEMON_LOG, 'a');
   const child = spawn(process.execPath, [

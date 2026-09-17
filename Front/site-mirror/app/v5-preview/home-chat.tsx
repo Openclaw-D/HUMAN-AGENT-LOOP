@@ -49,6 +49,8 @@ export function HomeChat({
   recoveryPersistFailed,
   remoteHref,
   inputPlaceholder,
+  draftStorageKey,
+  countNote,
 }: {
   messages: readonly OverviewMessage[];
   messageExtras?: HomeOverviewExtras;
@@ -61,10 +63,15 @@ export function HomeChat({
   remoteHref?: string;
   /** F 轮：随所选角色变化的输入提示（只改提示文案，不改变消息归属逻辑）。 */
   inputPlaceholder?: string;
+  /** goal-03：草稿存储键按模式隔离（训练/live 不共享草稿槽，与隔离纪律一致）。 */
+  draftStorageKey?: string;
+  /** goal-03：计数注记按模式如实标注（默认合成；live 传真实后台回执注记，不失真）。 */
+  countNote?: string;
 }) {
+  const draftKey = draftStorageKey ?? 'jw:v5-preview:draft:chat';
   // R1：沟通/待办由下半底部页签切换，面板内不再提供折叠开关（旧 chat-open 持久化删除）。
   const [input, setInput] = useState(() => {
-    try { return window.sessionStorage.getItem('jw:v5-preview:draft:chat') ?? ''; } catch { return ''; }
+    try { return window.sessionStorage.getItem(draftKey) ?? ''; } catch { return ''; }
   });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -77,7 +84,7 @@ export function HomeChat({
 
   function clearInput() {
     setInput('');
-    try { window.sessionStorage.removeItem('jw:v5-preview:draft:chat'); } catch { /* 忽略 */ }
+    try { window.sessionStorage.removeItem(draftKey); } catch { /* 忽略 */ }
     setError(null);
     setConflictHint(null);
   }
@@ -118,7 +125,7 @@ export function HomeChat({
   return (
     <section className={styles.chatSection} aria-label="项目沟通">
       <div className={styles.chatToolbar}>
-        <span className={styles.chatToggleCount}>业务与风控共同跟进 · {messages.length} 条（合成）</span>
+        <span className={styles.chatToggleCount}>业务与风控共同跟进 · {messages.length} 条{countNote ?? '（合成）'}</span>
         {remoteHref !== undefined ? (
           <a className={styles.remoteLink} href={remoteHref}>
             <VideoIcon size={11} />
@@ -160,7 +167,7 @@ export function HomeChat({
               onChange={(e) => {
                 setInput(e.target.value);
                 inputRevisionRef.current += 1;
-                try { window.sessionStorage.setItem('jw:v5-preview:draft:chat', e.target.value); } catch { /* 忽略 */ }
+                try { window.sessionStorage.setItem(draftKey, e.target.value); } catch { /* 忽略 */ }
               }}
             />
             <button type="submit" className={styles.btnPrimary} disabled={busy || input.trim() === ''}>
@@ -184,16 +191,27 @@ function ChatMessageItem({ message }: { message: HomeMessage }) {
   const hasSummary = typeof message.summary === 'string' && message.summary.trim() !== '';
 
   // 无摘要时检测正文是否超过两行（视觉折叠，DOM 全文保留；摘要模式不检测——摘要+展开即入口）。
+  // 修复（goal-03 P1-1）：1) 展开态不测量——展开时 clamp 已移除，测得"无溢出"会卸载"收起"按钮；
+  // 2) 检测本身修正——-webkit-line-clamp 生效时 Chromium 的 scrollHeight==clientHeight（钳制后高度），
+  //    常规比较恒判"无溢出"（旧按钮只是首测竞态的产物）。测量时先记钳制高，再临时解除 clamp 读
+  //    完整 scrollHeight，比较后立即恢复；同步执行，不产生中间绘制。
   useEffect(() => {
-    if (hasSummary) return;
+    if (hasSummary || expanded) return;
     const el = textRef.current;
     if (el === null) return;
-    const measure = () => setOverflowing(el.scrollHeight > el.clientHeight + 1);
+    const measure = () => {
+      const clampedH = el.clientHeight;
+      const prev = el.style.webkitLineClamp;
+      el.style.webkitLineClamp = 'none';
+      const fullH = el.scrollHeight;
+      el.style.webkitLineClamp = prev;
+      setOverflowing(fullH > clampedH + 1);
+    };
     measure();
     const ro = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
     ro?.observe(el);
     return () => ro?.disconnect();
-  }, [hasSummary, message.text]);
+  }, [hasSummary, expanded, message.text]);
 
   const showToggle = hasSummary || overflowing;
 

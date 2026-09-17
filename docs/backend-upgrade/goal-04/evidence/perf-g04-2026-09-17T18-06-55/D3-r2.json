@@ -1,0 +1,10 @@
+{
+  "tier": "D3",
+  "round": 2,
+  "startedAt": "2026-09-17T18:10:46.228Z",
+  "bootMs": 14408,
+  "errors": [],
+  "result": "FAIL",
+  "error": "TypeError: r.json is not a function\n    at file:///C:/Users/22673/Desktop/JW/Back/Edge/scripts/perf-g04.mjs:274:138\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async timed (file:///C:/Users/22673/Desktop/JW/Back/Edge/scripts/perf-g04.mjs:41:16)\n    at async d3Scenario (file:///C:/Users/22673/Desktop/JW/Back/Edge/scripts/perf-g04.mjs:274:7)\n    at async main (file:///C:/Users/22673/Desktop/JW/Back/Edge/scripts/perf-g04.mjs:356:22)",
+  "finishedAt": "2026-09-17T18:12:06.624Z"
+}

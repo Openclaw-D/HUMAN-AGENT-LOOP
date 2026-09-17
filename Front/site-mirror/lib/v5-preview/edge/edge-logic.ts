@@ -46,6 +46,7 @@ export interface EdgeSnapshotShapes {
   }>;
   session?: {
     sessionId?: string; version?: number; runStatus?: string; closureStatus?: string; title?: string;
+    availableActions?: string[];
     outbound?: { paused?: boolean; dispatchGeneration?: number; inFlight?: Array<{ status?: string }> } | null;
     openQuestions?: number;
     followups?: Array<{ followupId?: string; ownerRole?: string; reason?: string; nextAction?: string }>;
@@ -86,21 +87,25 @@ export function toLiveChatMessage(m: EdgeLiveMessage): {
   };
 }
 
-/** SSE 原始文本 → 帧数组（event/data/id）。增量输入可反复调用（调用方持有缓冲）。 */
+/** SSE 原始文本 → 帧数组（event/data/id）。增量输入可反复调用（调用方持有缓冲）。
+ *  按规范兼容 CRLF/CR 行尾与多行 data:（多行以 \n 连接）；行内冒号后可选单个空格。 */
 export function parseSseFrames(buffer: string): { frames: Array<{ event: string; data: string; id: string | null }>; rest: string } {
   const frames: Array<{ event: string; data: string; id: string | null }> = [];
-  let rest = buffer;
+  // 规范化行尾（幂等）：\r\n → \n，孤立 \r → \n。调用方持 rest 跨调用，重复规范化安全。
+  let rest = buffer.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   let idx: number;
   while ((idx = rest.indexOf('\n\n')) !== -1) {
     const raw = rest.slice(0, idx);
     rest = rest.slice(idx + 2);
     const frame = { event: '', data: '', id: null as string | null };
+    const dataLines: string[] = [];
     for (const line of raw.split('\n')) {
       if (line.startsWith(':')) continue; // 心跳/注释
-      if (line.startsWith('event:')) frame.event = line.slice(6).trim();
-      else if (line.startsWith('data:')) frame.data = line.slice(5).trim();
+      if (line.startsWith('data:')) dataLines.push(line.slice(5).replace(/^ /, ''));
+      else if (line.startsWith('event:')) frame.event = line.slice(6).trim();
       else if (line.startsWith('id:')) frame.id = line.slice(3).trim();
     }
+    frame.data = dataLines.join('\n');
     if (frame.event) frames.push(frame);
   }
   return { frames, rest };
@@ -117,16 +122,38 @@ export function nextPhase(current: EdgePhase, ev: { type: 'connect' | 'opened' |
   }
 }
 
-/** 会话操作条：由服务端快照推导可发起的命令（拒绝仍可能来自服务端，UI 只做发起）。 */
-export function deriveSessionActions(session: NonNullable<EdgeSnapshotShapes['session']>): Array<{ key: string; label: string; kind: 'primary' | 'normal' }> {
+/** 会话操作条动作定义（key 与服务端 availableActions 及动作代理路径对齐）。 */
+export const SESSION_ACTION_DEFS: Record<string, { key: string; label: string; kind: 'primary' | 'normal' }> = {
+  start: { key: 'start', label: '开始会话', kind: 'primary' },
+  pause: { key: 'pause', label: '暂停自动提问', kind: 'primary' },
+  resume: { key: 'resume', label: '恢复会话', kind: 'primary' },
+  end: { key: 'end', label: '结束本轮', kind: 'normal' },
+  close: { key: 'close', label: '收口归档', kind: 'normal' },
+};
+
+export interface SessionActionsResult {
+  acts: Array<{ key: string; label: string; kind: 'primary' | 'normal' }>;
+  /** true=按服务端 availableActions 投影（契约要求以服务端为准）；false=服务端未提供，本地推导兜底。 */
+  fromServer: boolean;
+}
+
+/** 会话操作条：优先投影服务端 availableActions（UI 只做发起，拒绝来自服务端）；
+ *  服务端未提供该字段时按 runStatus 本地推导兜底并如实标注 fromServer=false。 */
+export function deriveSessionActions(session: NonNullable<EdgeSnapshotShapes['session']>): SessionActionsResult {
+  const server = Array.isArray((session as { availableActions?: unknown }).availableActions)
+    ? ((session as { availableActions: unknown[] }).availableActions.filter((k): k is string => typeof k === 'string'))
+    : null;
+  if (server !== null) {
+    return { acts: server.map((k) => SESSION_ACTION_DEFS[k]).filter(Boolean), fromServer: true };
+  }
   const run = session.runStatus;
   const acts: Array<{ key: string; label: string; kind: 'primary' | 'normal' }> = [];
-  if (run === 'preparing' || run === 'ready') acts.push({ key: 'start', label: '开始会话', kind: 'primary' });
-  if (run === 'in_progress') acts.push({ key: 'pause', label: '暂停自动提问', kind: 'primary' });
-  if (run === 'suspended') acts.push({ key: 'resume', label: '恢复会话', kind: 'primary' });
-  if (run === 'in_progress' || run === 'suspended') acts.push({ key: 'end', label: '结束本轮', kind: 'normal' });
-  if (run === 'ended' && session.closureStatus !== 'closed') acts.push({ key: 'close', label: '收口归档', kind: 'normal' });
-  return acts;
+  if (run === 'preparing' || run === 'ready') acts.push(SESSION_ACTION_DEFS.start);
+  if (run === 'in_progress') acts.push(SESSION_ACTION_DEFS.pause);
+  if (run === 'suspended') acts.push(SESSION_ACTION_DEFS.resume);
+  if (run === 'in_progress' || run === 'suspended') acts.push(SESSION_ACTION_DEFS.end);
+  if (run === 'ended' && session.closureStatus !== 'closed') acts.push(SESSION_ACTION_DEFS.close);
+  return { acts: acts.filter(Boolean), fromServer: false };
 }
 
 /** 等待原因（只回显服务端状态，不推测结论）。 */

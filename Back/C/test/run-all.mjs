@@ -16,6 +16,7 @@ const files = [
   'rule-negative.test.mjs',
   'gate-adapter.test.mjs',
   'intake-normalize.test.mjs',
+  'parse-adapters.test.mjs',
   'eval-discipline.test.mjs',
 ].map((f) => path.join(here, f));
 

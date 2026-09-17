@@ -1,0 +1,26 @@
+{
+  "root": "C:\\Users\\22673\\AppData\\Local\\Temp\\goal01-baseline-tree\\Back\\A",
+  "at": "2026-09-17T17:32:58.024Z",
+  "requests": 100,
+  "wallMs": 3219.055,
+  "queriesPerRequest": 42,
+  "totalQueries": 4200,
+  "statements": [
+    {
+      "query": "SELECT entry_type, SUM(amount_minor)::bigint AS total FROM exposure_entries WHERE facility_id=$1 GROUP BY entry_type",
+      "calls": 2000
+    },
+    {
+      "query": "SELECT stale, status FROM credit_assessments WHERE assessment_id=$1",
+      "calls": 2000
+    },
+    {
+      "query": "SELECT * FROM credit_facilities WHERE customer_id=$1 ORDER BY created_at",
+      "calls": 100
+    },
+    {
+      "query": "SELECT * FROM customers WHERE customer_id=$1",
+      "calls": 100
+    }
+  ]
+}

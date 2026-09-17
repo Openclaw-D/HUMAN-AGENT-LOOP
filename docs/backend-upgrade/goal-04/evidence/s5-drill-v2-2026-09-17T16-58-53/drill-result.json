@@ -1,0 +1,576 @@
+{
+  "schemaVersion": "jw.s5-drill.v2",
+  "drilledAt": "2026-09-17T16:59:46.118Z",
+  "isolation": {
+    "containerPrefix": "v7d-",
+    "port": 15439,
+    "kernelPort": 17927,
+    "dataDir": "Back/Edge/.run/drill-v2-pg",
+    "note": "不触碰 v7next-a-pg / jw-v01-pg / jw-cc-kernel-pg / Dify；仅销毁本演练容器"
+  },
+  "database": {
+    "name": "v7d_drill2",
+    "migrations": "内核启动自动应用（001..00N 全量）",
+    "seedMode": "真实业务 API（合成身份；零手写 INSERT）"
+  },
+  "steps": [
+    {
+      "name": "1 建自有隔离PG容器(v7d-,15439)",
+      "ok": true,
+      "detail": {
+        "name": "v7d-pg-c2bfdb114e",
+        "port": 15439,
+        "host": "127.0.0.1",
+        "user": "v7next",
+        "password": "v7next",
+        "dsn": "postgres://v7next:v7next@127.0.0.1:15439/v7d_boot"
+      },
+      "ms": 9378
+    },
+    {
+      "name": "2 建演练库(幂等丢弃残留)",
+      "ok": true,
+      "detail": {
+        "db": "v7d_drill2"
+      },
+      "ms": 3801
+    },
+    {
+      "name": "3 启动A内核(dsn=演练库;合成身份;--required-domains-policy)",
+      "ok": true,
+      "detail": {
+        "syntheticSeeds": [
+          "permission_matrix",
+          "domain_requirement_policies"
+        ]
+      },
+      "ms": 1817
+    },
+    {
+      "name": "  ↳ 提额请求面",
+      "ok": true,
+      "detail": {
+        "status": 400,
+        "error": "INVALID_INPUT"
+      },
+      "ms": 0
+    },
+    {
+      "name": "  ↳ 报告投影面",
+      "ok": true,
+      "detail": {
+        "status": 404,
+        "error": "NOT_FOUND"
+      },
+      "ms": 0
+    },
+    {
+      "name": "4 真实API产生业务种子(全业务域非空关联)",
+      "ok": true,
+      "detail": {
+        "customerId": "cust-mu5ry19f-52da4799b925",
+        "frId": "fr-mu5ry1z0-0cac4cddeddc",
+        "reserveRid": "res-mu5ry1ze-2vp25b",
+        "sessionId": "ins-mu5ry1e0-15b5b750832e",
+        "packageId": "pkg-mu5ry1n9-e08861b296e9",
+        "facilityId": "fac-mu5ry1ws-3347ee907bf6"
+      },
+      "ms": 1027
+    },
+    {
+      "name": "5 备份前逐表行数+全行指纹",
+      "ok": true,
+      "detail": {
+        "analysis_runs": {
+          "rows": 4,
+          "md5": "234d63732bf8f879c15b7104bbab1bce"
+        },
+        "audit_events": {
+          "rows": 41,
+          "md5": "bcc4945162009e6de6070947253df263"
+        },
+        "credit_assessments": {
+          "rows": 1,
+          "md5": "944de5449a12dcf8b737de404b48aee8"
+        },
+        "credit_facilities": {
+          "rows": 1,
+          "md5": "2be7ec4f6f58f8a376a0fd1577b4a96b"
+        },
+        "credit_limit_requests": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "customer_relationships": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "customers": {
+          "rows": 1,
+          "md5": "8ca3634c59c1fdd4c68c9b487d63a921"
+        },
+        "decision_findings": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "decision_packages": {
+          "rows": 1,
+          "md5": "8e6d0873a03e0f21d8cca5bcfdb47709"
+        },
+        "decision_records": {
+          "rows": 2,
+          "md5": "1e0a7c8e6731abff43412d94863edc7e"
+        },
+        "domain_exemptions": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "domain_requirement_policies": {
+          "rows": 4,
+          "md5": "30a1f0aac7e3c7b4b23e481ed0a105e1"
+        },
+        "evidence": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "evidence_artifacts": {
+          "rows": 3,
+          "md5": "32d87b2cd283e6ffa17ff095dc8b55c8"
+        },
+        "execution_receipts": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "exposure_entries": {
+          "rows": 1,
+          "md5": "385c473ddbb52c59e696abaec6aa7ccc"
+        },
+        "fact_assertions": {
+          "rows": 3,
+          "md5": "327ea8559f93ea046a89328490f03ca2"
+        },
+        "financing_requests": {
+          "rows": 1,
+          "md5": "cb2771414a61c58ea4e55f6d59960b74"
+        },
+        "goal_templates": {
+          "rows": 1,
+          "md5": "92d9cf4d711bbed3c8da9ecba7f7c67a"
+        },
+        "goals": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "human_requests": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "idempotency": {
+          "rows": 10,
+          "md5": "debed1d2142c3757024a2561ea0934fa"
+        },
+        "inspection_checkpoints": {
+          "rows": 1,
+          "md5": "3e78c847d74807851053a1ffa752bd93"
+        },
+        "inspection_followups": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "inspection_items": {
+          "rows": 1,
+          "md5": "33a1678a1c38abe0f06227d8e6798a99"
+        },
+        "inspection_outbound": {
+          "rows": 1,
+          "md5": "a82a8f063241dd1ad4e1c15f494391e9"
+        },
+        "inspection_questions": {
+          "rows": 1,
+          "md5": "eb9d5e97e2227d6cd1f1b58bc1b4fd67"
+        },
+        "inspection_sessions": {
+          "rows": 1,
+          "md5": "0aebb16d63605219b8dd8c3788d37dec"
+        },
+        "inspection_summaries": {
+          "rows": 2,
+          "md5": "b690944088a4c32123acddc82d01cc9b"
+        },
+        "object_relinks": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "outbox_deliveries": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "outbox_events": {
+          "rows": 31,
+          "md5": "f7d087bfc3afee0f7c835d4d7176c953"
+        },
+        "package_domain_results": {
+          "rows": 4,
+          "md5": "9e89afca792edaebffe474c3e4510600"
+        },
+        "permission_matrix": {
+          "rows": 3,
+          "md5": "0bdaafbf4ff1b38b56a8cf9b0a350ca3"
+        },
+        "principal_customer_grants": {
+          "rows": 1,
+          "md5": "8aa8938efecd837fd21366be962f5e54"
+        },
+        "projects": {
+          "rows": 1,
+          "md5": "be7c5898bf4f06595ae968b6e579d16b"
+        },
+        "report_views": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "rule_gate_receipts": {
+          "rows": 1,
+          "md5": "7b65f6eb0c1035f8c1946c003d167437"
+        },
+        "rule_pack_versions": {
+          "rows": 1,
+          "md5": "2b4d9c5b34a5d448e4d225d78b5da87b"
+        },
+        "schema_migrations": {
+          "rows": 8,
+          "md5": "d2c9963fe5afc5a3771e0fd469ba5019"
+        },
+        "subscriptions": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "task_assignments": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "v2_idempotency": {
+          "rows": 28,
+          "md5": "6eee473297159084f2e2172d52104e42"
+        }
+      },
+      "ms": 12563
+    },
+    {
+      "name": "6 备份前关系计数",
+      "ok": true,
+      "detail": {
+        "package->domain_results": 4,
+        "domain_result->analysis_run(jsonb runId)": 4,
+        "fr->exposure_entries": 1,
+        "session->questions": 1,
+        "grants->customers": 1,
+        "gate_receipt->package(jsonb receiptId)": 1,
+        "assessment->facility": 1,
+        "artifacts->facts": 3
+      },
+      "ms": 1188
+    },
+    {
+      "name": "7 备份前外部动作账(outbox/外发状态)",
+      "ok": true,
+      "detail": {
+        "outbox_deliveries": "",
+        "inspection_outbound": "sent|1"
+      },
+      "ms": 328
+    },
+    {
+      "name": "8 pg_dump -Fc 备份",
+      "ok": true,
+      "detail": {
+        "dump": "Back\\Edge\\.run\\drill-v2-pg\\drill2-backup-2026-09-17T16-58-53.dump"
+      },
+      "ms": 492
+    },
+    {
+      "name": "9 模拟损毁 DROP DATABASE",
+      "ok": true,
+      "detail": null,
+      "ms": 2115
+    },
+    {
+      "name": "10 重建空库",
+      "ok": true,
+      "detail": null,
+      "ms": 1459
+    },
+    {
+      "name": "11 pg_restore 恢复",
+      "ok": true,
+      "detail": {
+        "restored": true
+      },
+      "ms": 1928
+    },
+    {
+      "name": "12 恢复后逐表行数+全行指纹",
+      "ok": true,
+      "detail": {
+        "analysis_runs": {
+          "rows": 4,
+          "md5": "234d63732bf8f879c15b7104bbab1bce"
+        },
+        "audit_events": {
+          "rows": 41,
+          "md5": "bcc4945162009e6de6070947253df263"
+        },
+        "credit_assessments": {
+          "rows": 1,
+          "md5": "944de5449a12dcf8b737de404b48aee8"
+        },
+        "credit_facilities": {
+          "rows": 1,
+          "md5": "2be7ec4f6f58f8a376a0fd1577b4a96b"
+        },
+        "credit_limit_requests": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "customer_relationships": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "customers": {
+          "rows": 1,
+          "md5": "8ca3634c59c1fdd4c68c9b487d63a921"
+        },
+        "decision_findings": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "decision_packages": {
+          "rows": 1,
+          "md5": "8e6d0873a03e0f21d8cca5bcfdb47709"
+        },
+        "decision_records": {
+          "rows": 2,
+          "md5": "1e0a7c8e6731abff43412d94863edc7e"
+        },
+        "domain_exemptions": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "domain_requirement_policies": {
+          "rows": 4,
+          "md5": "30a1f0aac7e3c7b4b23e481ed0a105e1"
+        },
+        "evidence": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "evidence_artifacts": {
+          "rows": 3,
+          "md5": "32d87b2cd283e6ffa17ff095dc8b55c8"
+        },
+        "execution_receipts": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "exposure_entries": {
+          "rows": 1,
+          "md5": "385c473ddbb52c59e696abaec6aa7ccc"
+        },
+        "fact_assertions": {
+          "rows": 3,
+          "md5": "327ea8559f93ea046a89328490f03ca2"
+        },
+        "financing_requests": {
+          "rows": 1,
+          "md5": "cb2771414a61c58ea4e55f6d59960b74"
+        },
+        "goal_templates": {
+          "rows": 1,
+          "md5": "92d9cf4d711bbed3c8da9ecba7f7c67a"
+        },
+        "goals": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "human_requests": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "idempotency": {
+          "rows": 10,
+          "md5": "debed1d2142c3757024a2561ea0934fa"
+        },
+        "inspection_checkpoints": {
+          "rows": 1,
+          "md5": "3e78c847d74807851053a1ffa752bd93"
+        },
+        "inspection_followups": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "inspection_items": {
+          "rows": 1,
+          "md5": "33a1678a1c38abe0f06227d8e6798a99"
+        },
+        "inspection_outbound": {
+          "rows": 1,
+          "md5": "a82a8f063241dd1ad4e1c15f494391e9"
+        },
+        "inspection_questions": {
+          "rows": 1,
+          "md5": "eb9d5e97e2227d6cd1f1b58bc1b4fd67"
+        },
+        "inspection_sessions": {
+          "rows": 1,
+          "md5": "0aebb16d63605219b8dd8c3788d37dec"
+        },
+        "inspection_summaries": {
+          "rows": 2,
+          "md5": "b690944088a4c32123acddc82d01cc9b"
+        },
+        "object_relinks": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "outbox_deliveries": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "outbox_events": {
+          "rows": 31,
+          "md5": "f7d087bfc3afee0f7c835d4d7176c953"
+        },
+        "package_domain_results": {
+          "rows": 4,
+          "md5": "9e89afca792edaebffe474c3e4510600"
+        },
+        "permission_matrix": {
+          "rows": 3,
+          "md5": "0bdaafbf4ff1b38b56a8cf9b0a350ca3"
+        },
+        "principal_customer_grants": {
+          "rows": 1,
+          "md5": "8aa8938efecd837fd21366be962f5e54"
+        },
+        "projects": {
+          "rows": 1,
+          "md5": "be7c5898bf4f06595ae968b6e579d16b"
+        },
+        "report_views": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "rule_gate_receipts": {
+          "rows": 1,
+          "md5": "7b65f6eb0c1035f8c1946c003d167437"
+        },
+        "rule_pack_versions": {
+          "rows": 1,
+          "md5": "2b4d9c5b34a5d448e4d225d78b5da87b"
+        },
+        "schema_migrations": {
+          "rows": 8,
+          "md5": "d2c9963fe5afc5a3771e0fd469ba5019"
+        },
+        "subscriptions": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "task_assignments": {
+          "rows": 0,
+          "md5": "EMPTY"
+        },
+        "v2_idempotency": {
+          "rows": 28,
+          "md5": "6eee473297159084f2e2172d52104e42"
+        }
+      },
+      "ms": 12754
+    },
+    {
+      "name": "13 指纹比对",
+      "ok": true,
+      "detail": {
+        "tables": 43,
+        "verdict": "ALL_MATCH",
+        "emptyButRelated": [
+          "credit_limit_requests",
+          "customer_relationships",
+          "decision_findings",
+          "domain_exemptions",
+          "evidence",
+          "execution_receipts",
+          "goals",
+          "human_requests",
+          "inspection_followups",
+          "object_relinks",
+          "outbox_deliveries",
+          "report_views",
+          "subscriptions",
+          "task_assignments"
+        ]
+      },
+      "ms": 1
+    },
+    {
+      "name": "14 恢复后关系计数比对",
+      "ok": true,
+      "detail": {
+        "relations": 8,
+        "verdict": "ALL_MATCH",
+        "counts": {
+          "package->domain_results": 4,
+          "domain_result->analysis_run(jsonb runId)": 4,
+          "fr->exposure_entries": 1,
+          "session->questions": 1,
+          "grants->customers": 1,
+          "gate_receipt->package(jsonb receiptId)": 1,
+          "assessment->facility": 1,
+          "artifacts->facts": 3
+        }
+      },
+      "ms": 1197
+    },
+    {
+      "name": "15 外部动作账恢复比对（不重放前提）",
+      "ok": true,
+      "detail": {
+        "verdict": "STATE_PRESERVED",
+        "outbox_deliveries": "",
+        "inspection_outbound": "sent|1"
+      },
+      "ms": 346
+    },
+    {
+      "name": "16 恢复库上重启内核(同一DSN)",
+      "ok": true,
+      "detail": {
+        "readyOk": true
+      },
+      "ms": 1229
+    },
+    {
+      "name": "17 恢复后可续办：同requestId重放幂等 + 新预占成功 + 外发不重发",
+      "ok": true,
+      "detail": {
+        "replayed": true,
+        "newReserve": true,
+        "inspection_outbound": "sent|1",
+        "note": "恢复未触发任何外部动作重发（dispatch 由业务显式触发，恢复零自动外发）"
+      },
+      "ms": 256
+    },
+    {
+      "name": "18 销毁自有容器",
+      "ok": true,
+      "detail": "v7d-pg-c2bfdb114e",
+      "ms": 0
+    }
+  ],
+  "verdict": "PASS",
+  "notes": [
+    "代码回滚不等于数据库回滚；不可逆迁移需向前修复方案",
+    "恢复校验覆盖：全表指纹、关系计数、外部动作账、同requestId幂等重放、新业务可续办",
+    "真实客户数据/正式环境的备份演练需获准环境与授权（E2/E3 门）"
+  ]
+}

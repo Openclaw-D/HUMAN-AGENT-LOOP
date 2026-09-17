@@ -1,0 +1,157 @@
+{
+  "tier": "D3",
+  "round": 2,
+  "startedAt": "2026-09-17T18:15:39.486Z",
+  "bootMs": 13122,
+  "errors": [],
+  "seedAndStressMs": 88861,
+  "sse": {
+    "reconnects": 3,
+    "resumedWithoutResync": 2,
+    "lastId": "45bade20-db40-44d6-8694-bb8e103c925d",
+    "cursorSeen": [
+      "45bade20-db40-44d6-8694-bb8e103c925d"
+    ]
+  },
+  "dbSegment": {
+    "method": "pg_stat_database deltas + pg_stat_activity lock-wait sampling（synthetic-approx，未装 pg_stat_statements）",
+    "xactCommitDelta": 19909,
+    "tupInsertedDelta": 2811,
+    "tupFetchedDelta": 227371,
+    "deadlocks": 0,
+    "lockWaitSamples": [
+      {
+        "at": 1789668960688,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789668963690,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789668966690,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789668969725,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789668972698,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789668975708,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789668978710,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789668981713,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789668984719,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789668987742,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789668990742,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789668993751,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789668996755,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789668999794,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789669002767,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789669005772,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789669008787,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789669011783,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789669014786,
+        "lockWaiting": 0
+      },
+      {
+        "at": 1789669017796,
+        "lockWaiting": 0
+      }
+    ],
+    "lockWaitPeak": 0
+  },
+  "slowRequestMethod": "standalone-proxy-120ms（BASELINE §2 D3 冻结首选方式）",
+  "rssPeakKernel": 99823616,
+  "rssPeakEdge": 118960128,
+  "restart1": {
+    "detectDownMs": 3,
+    "recoverOkMs": 350
+  },
+  "restart2": {
+    "detectDownMs": 2,
+    "recoverOkMs": 342
+  },
+  "latencies": {
+    "read": {
+      "n": 1592,
+      "min": 22,
+      "median": 43,
+      "max": 160,
+      "p50": 43,
+      "p95": 67,
+      "note": "n>=20"
+    },
+    "write": {
+      "n": 544,
+      "min": 13,
+      "median": 36,
+      "max": 142,
+      "p50": 36,
+      "p95": 49,
+      "note": "n>=20"
+    },
+    "replay": {
+      "n": 20,
+      "min": 15,
+      "median": 31,
+      "max": 32,
+      "p50": 31,
+      "p95": 32,
+      "note": "n>=20"
+    },
+    "slowRead": {
+      "n": 40,
+      "min": 205,
+      "median": 236,
+      "max": 239,
+      "p50": 236,
+      "p95": 238,
+      "note": "n>=20"
+    }
+  },
+  "result": "PASS",
+  "finishedAt": "2026-09-17T18:17:23.141Z"
+}

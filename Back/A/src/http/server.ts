@@ -69,9 +69,9 @@ export function startHttpServer(kernel: Kernel, port: number): Promise<Server> {
             const params: Record<string, string> = {};
             r.keys.forEach((k, i) => { params[k] = decodeURIComponent(m[i + 1] ?? ''); });
             let body: unknown = undefined;
-            if (req.method === 'POST') {
-                const raw = await readBody(req);
-                body = raw.trim().length === 0 ? {} : JSON.parse(raw); // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+            if (req.method === 'POST' || req.method === 'DELETE') {
+              const raw = await readBody(req);
+              body = raw.trim().length === 0 ? {} : JSON.parse(raw); // eslint-disable-line @typescript-eslint/no-unsafe-assignment
             }
             // 身份凭据：头优先，body 字段同义；__path 供 v2 幂等哈希绑定路径资源（v1 哈希显式剔除，行为不变）
             const credential = req.headers['x-principal-credential'] ??
@@ -215,6 +215,10 @@ export function startHttpServer(kernel: Kernel, port: number): Promise<Server> {
     route('POST', '/api/v2/customers/:customerId/rule-gate-receipts', async (_q, _s, p, _sp, body) => AN.registerGateReceipt(F(body), S(p.customerId)));
     route('POST', '/api/v2/customers/:customerId/analysis-runs/start', async (_q, _s, p, _sp, body) => AN.startAnalysisRun(F(body), S(p.customerId)));
     route('POST', '/api/v2/analysis-runs/:runId/finish', async (_q, _s, p, _sp, body) => AN.finishAnalysisRun(F(body), S(p.runId)));
+    // ---- goal-01 G1 豁免登记（不变量 2：豁免须引用真实有权批准记录）----
+    route('POST', '/api/v2/customers/:customerId/domain-exemptions', async (_q, _s, p, _sp, body) => AN.registerDomainExemption(F(body), S(p.customerId)));
+    route('GET', '/api/v2/customers/:customerId/domain-exemptions', async (_q, _s, p, _sp, body) => AN.listDomainExemptions(cred(body, _q), S(p.customerId)));
+    route('DELETE', '/api/v2/domain-exemptions/:exemptionId', async (_q, _s, p, _sp, body) => AN.revokeDomainExemption(F(body), S(p.exemptionId)));
 
     // ---- 检查会话（任务一；契约见 Back/A/docs/INSPECTION_SESSION_V1.md）----
     const IX = k.ix;

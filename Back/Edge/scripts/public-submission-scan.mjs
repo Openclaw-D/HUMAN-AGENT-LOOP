@@ -29,22 +29,31 @@ const KNOWN_SYNTHETIC = new Set(['v7next', 'jw-local-demo', 'harness-demo-cred']
 const MAX_SCAN_BYTES = 5 * 1024 * 1024;
 
 const SECRET_PATTERNS = [
-  { re: /BEGIN (?:RSA |EC |OPENSSH |PGP )?PRIVATE KEY/g, severity: 'HARD', kind: 'private_key' },
-  { re: /gsk_[A-Za-z0-9]{16,}/g, severity: 'HARD', kind: 'zhipu_api_key' },
-  { re: /sk-[A-Za-z0-9]{20,}/g, severity: 'HARD', kind: 'openai_style_key' },
-  { re: /AKIA[0-9A-Z]{16}/g, severity: 'HARD', kind: 'aws_access_key' },
-  { re: /eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\./g, severity: 'HARD', kind: 'jwt' },
+  { re: /BEGIN (?:RSA |EC |OPENSSH |PGP )?PRIVATE KEY/g, severity: 'HARD', kind: 'private_key', excerpt: 'omit' },
+  { re: /gsk_[A-Za-z0-9]{16,}/g, severity: 'HARD', kind: 'zhipu_api_key', excerpt: 'omit' },
+  { re: /sk-[A-Za-z0-9]{20,}/g, severity: 'HARD', kind: 'openai_style_key', excerpt: 'omit' },
+  { re: /AKIA[0-9A-Z]{16}/g, severity: 'HARD', kind: 'aws_access_key', excerpt: 'omit' },
+  { re: /eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\./g, severity: 'HARD', kind: 'jwt', excerpt: 'omit' },
   {
     re: /\b(?:password|passwd|secret|api[_-]?key|access[_-]?token)\s*[:=]\s*['"]([^'"\n]{3,})['"]/gi,
-    severity: 'REVIEW', kind: 'credential_assignment',
+    severity: 'REVIEW', kind: 'credential_assignment', excerpt: 'redact-value',
     classify: (m, value) => (KNOWN_SYNTHETIC.has(value) || /^\$\{.*\}$/.test(value)) ? 'INFO' : 'REVIEW',
   },
   {
     re: /postgres(?:ql)?:\/\/[^\s'"]*:([^\s'"/@]+)@[^\s'"]+/gi,
-    severity: 'REVIEW', kind: 'db_uri_with_password',
+    severity: 'REVIEW', kind: 'db_uri_with_password', excerpt: 'redact-password',
     classify: (m, value) => (KNOWN_SYNTHETIC.has(value) || /^\$\{.*\}$/.test(value)) ? 'INFO' : 'REVIEW',
   },
 ];
+
+// 命中报告只存脱敏位置与类型，不复制秘密（D25 判据）：真实秘密若被原样摘录，
+// 会在 exit 1 阻断提交的同时把秘密复制进已跟踪的报告文件，制造二次泄漏。
+function redactExcerpt(pattern, matched) {
+  if (pattern.excerpt === 'omit') return undefined;
+  if (pattern.excerpt === 'redact-value') return matched.replace(/(['"])[^'"\n]{3,}(['"])/, '$1***$2').slice(0, 80);
+  if (pattern.excerpt === 'redact-password') return matched.replace(/:\/\/([^:/\s'"]+):[^@/\s'"]+@/, '://$1:***@').slice(0, 80);
+  return matched.slice(0, 60);
+}
 
 async function main() {
   const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+/, '').replace('T', '-');
@@ -88,6 +97,15 @@ async function main() {
     }
     if (st.size > 10 * 1024 * 1024) review.push({ file: relPosix, kind: 'large_file', bytes: st.size });
 
+    // 自排除（已知盲区，显式登记）：扫描报告自身（按 schemaVersion 识别，不依赖文件名）
+    // 内含命中摘录行，重扫会递归自指放大。报告的人工签核在生成时完成，不在此重复计数。
+    if (ext === '.json' && st.size < 20 * 1024 * 1024) {
+      try {
+        const preview = readFileSync(abs, 'utf8').slice(0, 200);
+        if (preview.includes('"schemaVersion": "jw.d25-scan.v1"')) continue;
+      } catch { /* 不可读则按普通文件扫 */ }
+    }
+
     let buf;
     try { buf = readFileSync(abs); } catch { continue; }
     if (buf.length === 0) continue;
@@ -105,7 +123,8 @@ async function main() {
       while ((m = p.re.exec(text)) !== null) {
         const line = text.slice(0, m.index).split('\n').length;
         const severity = p.classify ? p.classify(m[0], m[1]) : p.severity;
-        const entry = { file: relPosix, kind: p.kind, line, excerpt: m[0].slice(0, 60) };
+        const excerpt = redactExcerpt(p, m[0]);
+        const entry = { file: relPosix, kind: p.kind, line, ...(excerpt ? { excerpt } : { excerptRedacted: true }) };
         if (severity === 'HARD') hard.push(entry);
         else if (severity === 'REVIEW') review.push(entry);
         else info.push({ ...entry, note: '已知合成演示值（公开）' });

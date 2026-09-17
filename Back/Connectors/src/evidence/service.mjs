@@ -177,12 +177,18 @@ export function makeEvidenceService(store) {
   }
 
   /** 事实候选（authority=none）。检测同 subject+predicate 冲突 → 并存 + conflict 记录（I17）。
-   *  任务02 · W10：事实可携带对象/期间锚定；不同对象/期间的同名事实不互相替代。 */
+   *  任务02 · W10：事实可携带对象/期间锚定；不同对象/期间的同名事实不互相替代。
+   *  goal-02：f.contentKey（内容键）给定时 factId 确定性生成——处理任务重放/崩溃恢复
+   *  重入时同键零新增（ON CONFLICT DO NOTHING），不产生重复候选或重复冲突记录。 */
   async function assertFact(f) {
     if (!f.tenantId || !f.customerId || !f.subject || !f.predicate || f.objectValue == null) {
       throw new ConnError('INVALID_INPUT', 'assertFact: tenantId/customerId/subject/predicate/objectValue required');
     }
-    const factId = newId('fact');
+    const factId = f.contentKey ? `fact-${String(f.contentKey).replace(/[^a-z0-9]/gi, '').slice(0, 40)}` : newId('fact');
+    if (f.contentKey) {
+      const dup = await store.query(`SELECT fact_id FROM fact_assertions WHERE fact_id=$1`, [factId]);
+      if (dup.rows.length > 0) return { factId, status: 'candidate', authority: 'none', conflicts: [], untrusted: { trusted: false, instructionLike: false, patterns: [] }, existed: true };
+    }
     const untrusted = flagUntrustedContent(f.objectValue) ;
     await store.query(
       `INSERT INTO fact_assertions (fact_id, tenant_id, customer_id, statement, subject, predicate, object_value, unit, from_observations, from_artifacts, source_mode, object_ref, period_from, period_to)

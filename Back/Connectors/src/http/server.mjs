@@ -173,11 +173,20 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
           readable,
           sourceMode: b.sourceMode ?? 'real',
         });
+        // goal-02 · 修正原件：显式取代关系 → 旧件标 superseded_by（历史不改写；材料集只取现行件）
+        if (b.supersedesEvidenceId) {
+          const s = await svc.store.query(
+            `UPDATE evidence_artifacts SET superseded_by=$3 WHERE tenant_id=$1 AND evidence_id=$2 AND superseded_by IS NULL RETURNING evidence_id`,
+            [b.tenantId, b.supersedesEvidenceId, reg.evidenceId],
+          );
+          if (s.rows.length === 0) throw new ConnError('INVALID_STATE', `supersedesEvidenceId ${b.supersedesEvidenceId} 不存在或已被取代`);
+        }
         return json(res, 200, {
           ok: true, ...reg,
+          ...(svc.processing ? { processing: await svc.processing.enqueueArtifact({ tenantId: b.tenantId, customerId: b.customerId, evidenceId: reg.evidenceId, kind: b.kind }) } : {}),
           note: reg.completeness === 'needs_followup'
             ? '材料不可读/缺失：已登记待补，不产生任何事实候选'
-            : '已登记为声明级未核验工件；人工核验须由操作者另行执行',
+            : '已登记为声明级未核验工件；处理（解压/解析/分析）由持久任务推进，传输完成≠解析完成',
         });
       }
       if (route === 'POST /api/connectors/evidence/verify') {
@@ -187,6 +196,45 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
       if (route === 'POST /api/connectors/evidence/coverage') {
         const b = JSON.parse(body);
         return json(res, 200, { ok: true, ...(await svc.evidence.evidenceCoverage(b)) });
+      }
+
+      // ---- goal-02 · 处理协调面（持久任务/进度回执/问题准备/暂停）----
+      if (route === 'POST /api/connectors/processing/tick') {
+        if (!svc.processing) throw new ConnError('INTERNAL', 'processing not wired');
+        const b = body ? JSON.parse(body) : {};
+        return json(res, 200, { ok: true, ...(await svc.processing.tick({ maxTasks: b.maxTasks })) });
+      }
+      if (route === 'GET /api/connectors/processing/status') {
+        if (!svc.processing) throw new ConnError('INTERNAL', 'processing not wired');
+        if (!tid) throw new ConnError('INVALID_INPUT', 'tid（tenantId）必填');
+        return json(res, 200, { ok: true, ...(await svc.processing.statusForCustomer({ tenantId: tid, customerId: url.searchParams.get('cid') })) });
+      }
+      if (route.startsWith('GET /api/connectors/processing/tasks/')) {
+        if (!svc.processing) throw new ConnError('INTERNAL', 'processing not wired');
+        const taskId = url.pathname.slice('/api/connectors/processing/tasks/'.length);
+        const t = await svc.processing.getTask({ tenantId: tid, taskId });
+        if (!t) throw new ConnError('NOT_FOUND', `task ${taskId}`);
+        return json(res, 200, { ok: true, task: t });
+      }
+      if (route === 'POST /api/connectors/processing/pause') {
+        if (!svc.processing) throw new ConnError('INTERNAL', 'processing not wired');
+        const b = JSON.parse(body);
+        return json(res, 200, { ok: true, ...(await svc.processing.setPause({ tenantId: b.tenantId, customerId: b.customerId ?? null, paused: b.paused === true, actor: b.actor ?? 'api' })) });
+      }
+      if (route === 'GET /api/connectors/questions/pending') {
+        if (!svc.processing) throw new ConnError('INTERNAL', 'processing not wired');
+        const st = await svc.processing.statusForCustomer({ tenantId: tid, customerId: url.searchParams.get('cid') });
+        return json(res, 200, { ok: true, questions: st.questions, pause: st.pause });
+      }
+      if (route === 'POST /api/connectors/questions/answer') {
+        if (!svc.processing) throw new ConnError('INTERNAL', 'processing not wired');
+        const b = JSON.parse(body);
+        return json(res, 200, { ok: true, ...(await svc.processing.recordAnswer({ tenantId: b.tenantId, customerId: b.customerId, questionKey: b.questionKey, answerText: b.answerText, answerer: b.answerer })) });
+      }
+      if (route === 'POST /api/connectors/questions/verify') {
+        if (!svc.processing) throw new ConnError('INTERNAL', 'processing not wired');
+        const b = JSON.parse(body);
+        return json(res, 200, { ok: true, ...(await svc.processing.verifyQuestion({ tenantId: b.tenantId, customerId: b.customerId, questionKey: b.questionKey, verifiedBy: b.verifiedBy, note: b.note })) });
       }
 
       return json(res, 404, { ok: false, error: 'NOT_FOUND' });

@@ -16,6 +16,14 @@
 // C1.5 精度与背压：seq 以字符串/BigInt 承载（不无条件 Number 转换，>2^53 不失真）；
 //   单桶缓冲上限、单轮补取页数上限，慢客户端由 server 层 writableLength 上限处理。
 //
+// goal-03 C1 增量（backend-upgrade 轮）：
+//   - 明细缓存（桶内）：assessments/financing-requests 明细按 id 缓存于本身份桶；失效=本桶新事件
+//     引用该 id（立即）或 TTL（默认 60s，JW_EDGE_DETAIL_CACHE_MS 可调，0=关 TTL）。客户主体/敞口/
+//     决策面/清单/会话不缓存、每请求直查权威端点。命中在 projection.freshness 以 cached:true 如实标注。
+//   - 同请求合并：同 (客户×身份×凭据) 的在途 getWorkspace 共享同一 Promise；只在途、不跨授权/版本。
+//   - 查询计数：kernelFetch 按 snapshot/events/detail/other 计数（_qCounters/_resetQCounters），
+//     供"每 workspace 读取的 A 查询数"口径与测试断言。
+//
 // 一致性边界（C04）：workspace 携带的 eventCursor ≤ 拉取时已见 head；订阅以 after=游标 起步
 // 先补历史缓冲再收实时（客户端按 eventId 去重，重复不致命、缺口不允许）。Edge 进程重启后
 // 内存缓冲清空 → 旧游标 replayFrom 判 expired → 客户端 resync 重取快照（绝不静默续播）。
@@ -29,6 +37,8 @@ const MAX_DETAIL_REFS = 20;      // 快照回查的评估/申请条数上限（�
 const MAX_POLL_PAGES = 20;       // 单次补取最多页数（500/页）
 const MAX_LIST_ITEMS = 50;       // findings / object-inventory 快照内上限（超出以 truncated 标注）
 const SEQ_RECHECK_WINDOW = 128n; // 提交滞后重查窗口（见头部 C1.4）
+// goal-03 C1：评估/申请明细的桶内缓存 TTL。0=禁用 TTL（事件失效仍生效）。环境变量可调（回退开关）。
+const DETAIL_CACHE_TTL_MS = Math.max(0, Number(process.env.JW_EDGE_DETAIL_CACHE_MS ?? 60_000));
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -46,6 +56,10 @@ export function createKernelStore({
   const root = baseUrl.replace(/\/$/, '');
   // 授权上下文分桶：key = `${customerId}|${principalId}|${credFingerprint}`（C1.1）
   const buckets = new Map();
+  // goal-03 C1：上游查询计数（供性能口径与测试断言；不含探测/写面，仅 kernelFetch 读路径）
+  const qCounters = { total: 0, snapshot: 0, events: 0, detail: 0, other: 0 };
+  // goal-03 C1：同 (桶) 的进行中 getWorkspace 合并（同权限同查询共享同一在途请求；不跨授权/版本）
+  const inFlightWs = new Map();
 
   const bucketKey = (customerId, ctx = {}) =>
     `${customerId}|${ctx.principalId ?? 'unknown'}|${typeof ctx.credential === 'string' && ctx.credential.length > 0 ? credFingerprint(ctx.credential) : 'nocred'}`;
@@ -58,6 +72,7 @@ export function createKernelStore({
         key, customerId, principalId: ctx.principalId ?? null, credential: ctx.credential,
         envelopes: [], byId: new Map(), lastSeq: 0n, subs: new Set(),
         eventsBlocked: null, authDead: null, gap: false, timer: null, pulling: false,
+        detailCache: new Map(), // goal-03 C1：id → { kind, data, fetchedAtMs }；事件引用该 id 或 TTL 过期即失效
       };
       buckets.set(key, b);
     }
@@ -66,6 +81,11 @@ export function createKernelStore({
 
   // ---- 上游访问：只放行服务端持有的凭据；错误带上游状态/码供 server 透传 ----
   async function kernelFetch(credential, path) {
+    qCounters.total += 1;
+    if (path.includes('/events?')) qCounters.events += 1;
+    else if (path.includes('/api/v2/assessments/') || path.includes('/api/v2/financing-requests/')) qCounters.detail += 1;
+    else if (path.includes('/api/v2/customers/')) qCounters.snapshot += 1;
+    else qCounters.other += 1;
     let res;
     try {
       res = await fetchImpl(root + path, {
@@ -142,6 +162,12 @@ export function createKernelStore({
             killBucket(b, e.upstream.code);
             return 'auth';
           }
+          // goal-03 C1.2 补强：A 对越权/撤权统一 404（不泄露存在性）。对本桶"曾成功读过"的客户，
+          // 轮询中出现的 404 是撤权（或客户删除）信号——同样断流销桶，不给旧订阅静默失联。
+          if (e.upstream && e.upstream.status === 404 && (b.envelopes.length > 0 || b.lastSeq > 0n)) {
+            killBucket(b, 'CUSTOMER_ACCESS_REVOKED');
+            return 'auth';
+          }
           throw e;
         }
         b.eventsBlocked = null;
@@ -154,6 +180,14 @@ export function createKernelStore({
           insertSorted(b, env, seq);
           if (seq > b.lastSeq) b.lastSeq = seq;
           fresh.push(env);
+        }
+        // goal-03 C1 失效钩子：新事件引用某评估/申请 id → 该明细缓存条目立即失效（权威重取）。
+        if (b.detailCache.size > 0) {
+          for (const env of fresh) {
+            const p = env.payload || {};
+            if (p.assessmentId) b.detailCache.delete(`ass:${p.assessmentId}`);
+            if (p.frId) b.detailCache.delete(`fr:${p.frId}`);
+          }
         }
         // 新事件只投给本桶订阅者（同凭据授权上下文，C1.1）；重复事件不重投
         for (const env of fresh) {
@@ -207,6 +241,19 @@ export function createKernelStore({
   }
 
   async function getWorkspace(customerId, opts = {}) {
+    // goal-03 C1 合并：同 (客户×身份×凭据) 的进行中 workspace 请求共享同一 Promise（重订风暴/多面板
+    // 并发刷新不放大上游查询）。合并只在"在途"窗口内——不跨授权上下文、不做结果级缓存（版本时点各取）。
+    const ctx = { credential: opts.credential, principalId: opts.principalId };
+    if (typeof ctx.credential !== 'string' || ctx.credential.length === 0) return runWorkspace(customerId, opts);
+    const key = bucketKey(customerId, ctx);
+    const prior = inFlightWs.get(key);
+    if (prior) return prior;
+    const p = runWorkspace(customerId, opts).finally(() => { inFlightWs.delete(key); });
+    inFlightWs.set(key, p);
+    return p;
+  }
+
+  async function runWorkspace(customerId, opts = {}) {
     const ctx = { credential: opts.credential, principalId: opts.principalId };
     if (typeof ctx.credential !== 'string' || ctx.credential.length === 0) {
       const err = new Error('live 模式 workspace 需要会话');
@@ -280,8 +327,23 @@ export function createKernelStore({
     if (b.gap) notes.push('事件窗口内检测到缺号（疑似反序提交中）：重查窗口将自动补齐，快照以权威查询为准');
 
     const refs = collectRefs(b);
-    const assessments = (await Promise.all(refs.assessmentIds.map((id) => settle(`assessment:${id}`, `/api/v2/assessments/${encodeURIComponent(id)}`)))).filter(Boolean);
-    const financingRequests = (await Promise.all(refs.frIds.map((id) => settle(`fr:${id}`, `/api/v2/financing-requests/${encodeURIComponent(id)}`)))).filter(Boolean);
+    // goal-03 C1 明细缓存：命中（未被事件失效且未过 TTL）→ 不打上游；freshness 如实标 cached。
+    // 缓存只存"本身份桶"内、只用于未变明细；客户主体/敞口/决策面/清单/会话每请求必直查（§1.5）。
+    const cachedDetail = async (cacheKey, id, label, pathPrefix) => {
+      const hit = b.detailCache.get(cacheKey);
+      const ttlOk = DETAIL_CACHE_TTL_MS === 0 || !hit || (Date.now() - hit.fetchedAtMs) < DETAIL_CACHE_TTL_MS;
+      if (hit && ttlOk) {
+        freshness[label] = { ok: true, at: new Date(hit.fetchedAtMs).toISOString(), cached: true };
+        return hit.data;
+      }
+      const data = await settle(label, `${pathPrefix}/${encodeURIComponent(id)}`);
+      if (data !== null && freshness[label]?.ok) {
+        b.detailCache.set(cacheKey, { kind: cacheKey.split(':')[0], data, fetchedAtMs: Date.now() });
+      }
+      return data;
+    };
+    const assessments = (await Promise.all(refs.assessmentIds.map((id) => cachedDetail(`ass:${id}`, id, `assessment:${id}`, '/api/v2/assessments')))).filter(Boolean);
+    const financingRequests = (await Promise.all(refs.frIds.map((id) => cachedDetail(`fr:${id}`, id, `fr:${id}`, '/api/v2/financing-requests')))).filter(Boolean);
 
     let session = null;
     if (refs.sessionId) {
@@ -441,11 +503,15 @@ export function createKernelStore({
       const out = [];
       for (const [key, b] of buckets) {
         if (!customerId || key.startsWith(`${customerId}|`)) {
-          out.push({ key, envelopes: b.envelopes.length, lastSeq: b.lastSeq.toString(), subs: b.subs.size, authDead: b.authDead, gap: b.gap });
+          out.push({ key, envelopes: b.envelopes.length, lastSeq: b.lastSeq.toString(), subs: b.subs.size, authDead: b.authDead, gap: b.gap, detailCache: b.detailCache.size });
         }
       }
       return out;
     },
+    // goal-03 C1：查询计数与缓存控制（测试/性能口径用；不影响对外协议）
+    _qCounters: () => ({ ...qCounters }),
+    _resetQCounters: () => { for (const k of Object.keys(qCounters)) qCounters[k] = 0; },
+    _dropDetailCaches: () => { for (const b of buckets.values()) b.detailCache.clear(); },
   };
 }
 

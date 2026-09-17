@@ -1,0 +1,2 @@
+{"type":"reserve","requestId":"v7d-b25-d25-7:g-mu5skhax-119a756d473f:c1-1789665396139::model:business:risk_review::a0","amount":1,"currency":"CNY","customerKey":"p-mu5skhaf-f40e1df4ddbd","sessionKey":"v7d-b25-d25-7:g-mu5skhax-119a756d473f:c1-1789665396139","at":"2026-09-17T17:16:36.232Z"}
+{"type":"actual","requestId":"v7d-b25-d25-7:g-mu5skhax-119a756d473f:c1-1789665396139::model:business:risk_review::a0","amount":0,"billKnown":true,"at":"2026-09-17T17:16:36.236Z"}

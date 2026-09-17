@@ -1,0 +1,374 @@
+{
+  "suite": "g4_recovery",
+  "results": [
+    {
+      "id": "D-13",
+      "title": "杀API重启：目标/待办/证据/回执全量持久，版本不变",
+      "severity": "P0",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 35,
+      "failures": [
+        {
+          "msg": "create template 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "create template ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "create project 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "create project ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "instantiate collect 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "instantiate collect ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "instantiate review 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "instantiate review ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "证据 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "证据 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "claim 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "claim ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "complete 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "complete ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "人工待办 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "人工待办 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "candidate态跨重启",
+          "detail": "{\"expected\":\"candidate_ready\"}"
+        },
+        {
+          "msg": "重启后可写 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "重启后可写 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "重启后待办可回应 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "重启后待办可回应 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        }
+      ],
+      "ms": 4316,
+      "note": ""
+    },
+    {
+      "id": "D-14",
+      "title": "重启DB容器：数据完整、API自动恢复、新写正常",
+      "severity": "P0",
+      "owner": "A",
+      "state": "fail",
+      "assertions": 30,
+      "failures": [
+        {
+          "msg": "create template 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "create template ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "create project 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "create project ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "instantiate collect 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "instantiate collect ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "instantiate review 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "instantiate review ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "证据 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "证据 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "claim 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "claim ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "complete 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "complete ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "人工待办 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "人工待办 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "DB重启后可写 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "DB重启后可写 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        }
+      ],
+      "ms": 32534,
+      "note": ""
+    },
+    {
+      "id": "D-12",
+      "title": "运行中杀worker→恢复续跑：已回执步不重执行、unknown零盲重发（B侧）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 16,
+      "failures": [
+        {
+          "msg": "模板 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "模板 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "项目 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "项目 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "实例化calc任务目标（params透传工具确定性输入,契约§2） 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "实例化calc任务目标（params透传工具确定性输入,契约§2） ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "提证触发ready（含calc工具输入+币种） 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "提证触发ready（含calc工具输入+币种） ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "杀worker后恢复续跑至candidate_ready",
+          "detail": "{\"expected\":\"candidate_ready\"}"
+        }
+      ],
+      "ms": 93099,
+      "note": ""
+    },
+    {
+      "id": "D-15",
+      "title": "checkpoint与worker存储凭据零泄漏（B侧；A侧审计/事件面已由D-23覆盖）",
+      "severity": "P0",
+      "owner": "B",
+      "state": "pass",
+      "assertions": 2,
+      "failures": [],
+      "ms": 1,
+      "note": ""
+    },
+    {
+      "id": "D-12b",
+      "title": "mid-flight击杀：model步8s延迟窗口内SIGKILL→重启→C mock恰收1次调用（零盲重发）+诚实终态",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 15,
+      "failures": [
+        {
+          "msg": "模板 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "模板 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "项目 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "项目 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "实例化model目标 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "实例化model目标 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "提证 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "提证 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        }
+      ],
+      "ms": 26615,
+      "note": ""
+    },
+    {
+      "id": "D-27b",
+      "title": "unknown人工恢复端到端：中断→零盲重发→无凭据resume被拒→带凭据retry_step恰一次重发→candidate",
+      "severity": "P0",
+      "owner": "B",
+      "state": "fail",
+      "assertions": 28,
+      "failures": [
+        {
+          "msg": "模板 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "模板 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "项目 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "项目 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "实例化 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "实例化 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "提证 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "提证 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "第二项目（同模板goalKey唯一） 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "第二项目（同模板goalKey唯一） ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "第二个model目标 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "第二个model目标 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "提证2 返回2xx",
+          "detail": "{\"status\":403,\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "提证2 ok:true",
+          "detail": "{\"body\":\"{\\\"ok\\\":false,\\\"error\\\":\\\"PRINCIPAL_UNTRUSTED\\\",\\\"message\\\":\\\"principal 凭据验证失败\\\"}\"}"
+        },
+        {
+          "msg": "人工授权重发恰一次（run2在resume后恰1次真实调用）",
+          "detail": "{\"actual\":0,\"expected\":1}"
+        },
+        {
+          "msg": "人工恢复后到达candidate_ready",
+          "detail": "{\"expected\":\"candidate_ready\"}"
+        },
+        {
+          "msg": "候选provider=simulation（真实经mock执行的候选）",
+          "detail": "{\"expected\":\"simulation\"}"
+        }
+      ],
+      "ms": 32610,
+      "note": ""
+    }
+  ],
+  "pass": 1,
+  "fail": 5,
+  "skip": 0,
+  "blocked": 0,
+  "totalAssertions": 126,
+  "runnerError": null
+}

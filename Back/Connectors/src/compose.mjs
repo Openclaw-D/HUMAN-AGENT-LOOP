@@ -11,6 +11,7 @@ import { makeEvidenceService } from './evidence/service.mjs';
 import { makeRetentionService } from './evidence/retention.mjs';
 import { makeIntakeService } from './intake/service.mjs';
 import { makeARegistrar } from './evidence/a_register.mjs';
+import { makeProcessingCoordinator } from './processing/coordinator.mjs';
 import { FakeWecomTransport, HttpWecomTransport } from './wecom/transport.mjs';
 
 /** 组合根：全部服务经此装配；测试与 HTTP 共用。 */
@@ -32,10 +33,18 @@ export async function compose(config) {
   const recording = config.recordingAdapter
     ? makeRecordingService(store, { objectStore, adapter: config.recordingAdapter })
     : null;
-  const aRegister = config.aBaseUrl ? makeARegistrar({ aBaseUrl: config.aBaseUrl, aCredential: config.aCredential }) : null;
+  const aRegister = config.aBaseUrl ? makeARegistrar({ aBaseUrl: config.aBaseUrl, aCredential: config.aCredential, fetchImpl: config.aFetchImpl ?? null }) : null;
+  // goal-02 · 资料处理与尽调执行协调器（config.processing===false 显式关闭；默认装配）
+  const processing = config.processing === false ? null : makeProcessingCoordinator(store, evidence, {
+    objectStore,
+    rulePack: config.processing?.rulePack,
+    aRegister,
+    sendService: send,
+    config: { ...(config.processing ?? {}) },
+  });
   return {
-    config, store, objectStore, consent, bindings, ingest, send, sessions, evidence, intake, retention, recording, aRegister,
-    async close() { await store.close(); },
+    config, store, objectStore, consent, bindings, ingest, send, sessions, evidence, intake, retention, recording, aRegister, processing,
+    async close() { processing?.stopDriver(); await store.close(); },
   };
 }
 

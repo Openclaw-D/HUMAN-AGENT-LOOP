@@ -1,0 +1,27 @@
+{
+  "#cursor": {
+    "eventSeq": 64
+  },
+  "v7d-b25-d25-3:g-mu5siv65-2c7362dddec3:c1-1789665322143": {
+    "status": "submitted",
+    "goalId": "g-mu5siv65-2c7362dddec3",
+    "fencingToken": 1,
+    "startedAt": "2026-09-17T17:15:22.200Z",
+    "leaseUntil": "2026-09-17T17:15:30.185Z",
+    "claimedAt": "2026-09-17T17:15:22.143Z",
+    "outcomeState": "candidate_ready",
+    "aGoalVersion": 4,
+    "at": "2026-09-17T17:15:22.325Z"
+  },
+  "v7d-b25-d25-3:g-mu5siv5b-2470f275b90c:c1-1789665322200": {
+    "status": "submitted",
+    "goalId": "g-mu5siv5b-2470f275b90c",
+    "fencingToken": 1,
+    "startedAt": "2026-09-17T17:15:22.257Z",
+    "leaseUntil": "2026-09-17T17:15:30.223Z",
+    "claimedAt": "2026-09-17T17:15:22.200Z",
+    "outcomeState": "failed",
+    "aGoalVersion": 4,
+    "at": "2026-09-17T17:15:22.345Z"
+  }
+}

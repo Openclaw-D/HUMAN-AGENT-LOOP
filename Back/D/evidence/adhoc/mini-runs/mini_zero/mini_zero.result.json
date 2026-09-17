@@ -9,7 +9,7 @@
       "state": "fail",
       "assertions": 0,
       "failures": [],
-      "ms": 16,
+      "ms": 14,
       "note": "0 assertions executed（不允许零断言PASS）"
     }
   ],

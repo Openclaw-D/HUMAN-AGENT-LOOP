@@ -7,7 +7,7 @@ import {
   fmtAmount, modeBadge, nextPhase, parseSseFrames,
 } from '../../site-mirror/lib/v5-preview/edge/edge-logic.ts';
 
-test('SSE 帧解析：多帧/心跳/残帧缓冲', () => {
+test('SSE 帧解析：多帧/心跳/残帧缓冲；CRLF 与多行 data 兼容（goal-03）', () => {
   const first = parseSseFrames(': hb 123\n\nevent: cursor\ndata: {"eventCursor":"e1","snapshotVersion":3}\n\nevent: business\nid: e2\ndata: {"payloadRef":{"type":"ARTIFACT_REGISTERED"}}\n\n');
   assert.equal(first.frames.length, 2);
   assert.equal(first.frames[0].event, 'cursor');
@@ -17,6 +17,14 @@ test('SSE 帧解析：多帧/心跳/残帧缓冲', () => {
   const second = parseSseFrames('event: business\ndata: {"half":');
   assert.equal(second.frames.length, 0);
   assert.ok(second.rest.startsWith('event:'));
+  // CRLF 行尾（经代理改写的中间层）
+  const crlf = parseSseFrames('event: cursor\r\ndata: {"eventCursor":"e3"}\r\n\r\n');
+  assert.equal(crlf.frames.length, 1);
+  assert.equal(crlf.frames[0].event, 'cursor');
+  // 多行 data 按规范以 \n 连接；"data:" 后无空格与有一个空格等价
+  const multi = parseSseFrames('event: business\ndata:{"a":1}\ndata:{"b":2}\n\n');
+  assert.equal(multi.frames.length, 1);
+  assert.equal(multi.frames[0].data, '{"a":1}\n{"b":2}');
 });
 
 test('连接状态机：不把失败伪装成 live；重连与显式停止区分', () => {
@@ -29,13 +37,19 @@ test('连接状态机：不把失败伪装成 live；重连与显式停止区分
   assert.equal(nextPhase('off', { type: 'drop' }), 'off');
 });
 
-test('会话操作条：按服务端 runStatus 推导可用动作（不发明第五种状态）', () => {
+test('会话操作条：服务端 availableActions 优先；缺省才按 runStatus 本地推导（不发明第五种状态）', () => {
+  // 服务端提供了 availableActions：逐字投影（契约要求以服务端为准），不本地发明
+  const fromServer = deriveSessionActions({ runStatus: 'preparing', closureStatus: 'open', sessionId: 's1', availableActions: ['plan', 'scene', 'start'] });
+  assert.equal(fromServer.fromServer, true);
+  assert.deepEqual(fromServer.acts.map((a) => a.key), ['start']); // plan/scene 无工作台按钮路径，不渲染
+  // 服务端未提供：按 runStatus 推导兜底并如实标注 fromServer=false
   const mk = (runStatus, closureStatus = 'open') => deriveSessionActions({ runStatus, closureStatus, sessionId: 's1' });
-  assert.deepEqual(mk('preparing').map((a) => a.key), ['start']);
-  assert.deepEqual(mk('in_progress').map((a) => a.key), ['pause', 'end']);
-  assert.deepEqual(mk('suspended').map((a) => a.key), ['resume', 'end']);
-  assert.deepEqual(mk('ended', 'pending_evidence').map((a) => a.key), ['close']);
-  assert.deepEqual(mk('ended', 'closed'), []);
+  assert.equal(mk('preparing').fromServer, false);
+  assert.deepEqual(mk('preparing').acts.map((a) => a.key), ['start']);
+  assert.deepEqual(mk('in_progress').acts.map((a) => a.key), ['pause', 'end']);
+  assert.deepEqual(mk('suspended').acts.map((a) => a.key), ['resume', 'end']);
+  assert.deepEqual(mk('ended', 'pending_evidence').acts.map((a) => a.key), ['close']);
+  assert.deepEqual(mk('ended', 'closed').acts, []);
 });
 
 test('等待原因：暂停/在途/开放问题/未决核验如实呈现', () => {

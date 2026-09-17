@@ -13,6 +13,14 @@ export const DEFAULT_DEPENDENCY_MAP = Object.freeze({
     image: ['asset'],
     video: ['asset'],
     audio: ['credit'],
+    // goal-02：进件真实材料 kind（Connectors evidence kind 与此处词汇一致）
+    statement: ['credit', 'commerce'],              // 银行流水：经营/负债面（口径注记随事实走）
+    tax_filing: ['policy', 'credit'],               // 税报：政策适用面+申报收入
+    sales_purchase: ['credit', 'commerce'],         // 进销项：集中度/经营规模
+    accounting_ledger: ['credit'],                  // 报表/科目余额：偿债与经营
+    equipment_contract: ['asset', 'commerce'],      // 购机合同：资产权属+商务条款
+    site_evidence: ['asset'],                       // 现场证据：存在性/铭牌
+    media: ['asset'],                               // 现场媒体（与 image 同面）
   }),
   byFactKey: Object.freeze({
     entity_identity_verified: ['policy'],
