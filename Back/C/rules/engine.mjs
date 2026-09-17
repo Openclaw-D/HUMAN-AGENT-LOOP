@@ -4,13 +4,19 @@
 // - 命中：激活规则的 condition 在达等级事实上成立 → outcome=hit（贡献 NEEDS_EVIDENCE/HOLD/HARD_BLOCK）。
 // - 不命中：outcome=not_hit（在声明的输入范围与规则版本下未发现命中，不等于保证安全）。
 // - 历史回放：同版本规则包 + 同 asOf 评估结果可重放（规则文件不可变，改版=新版本号）。
+//
+// 任务 02 · B2/W04 负例加固（PR#3 审核 W04：不静默不适用/不静默安全）：
+// - 适用面缺失：规则 scope 限定具体维度而交易面未提供该维度 → outcome=applicability_unknown
+//   （待核验），不再当作"不适用"静默跳过；交易面提供且不命中才是确定不适用。
+// - 类型不符：数值比较遇非有限数/非数值、布尔判定遇非布尔、等值比较遇类型不同 →
+//   outcome=condition_error（明确错误），不再转成 not_hit 安全结论。
 
 import { activationStatus } from './rule-schema.mjs';
 import { VERIFICATION_LEVELS } from '../domains/schema.mjs';
 
 function levelRank(l) { return VERIFICATION_LEVELS.indexOf(l); }
 
-/** 原子条件求值（确定性；未知值 → false 且标记 evaluatedOnUnknown）。 */
+/** 原子条件求值（确定性；未知值 → false 且标记 evaluatedOnUnknown；类型不符 → typeError）。 */
 function evalAtomic(cond, facts) {
   const entries = facts[cond.fact];
   const best = entries && entries.length > 0
@@ -18,19 +24,45 @@ function evalAtomic(cond, facts) {
     : null;
   if (!best) return { ok: false, evaluatedOnUnknown: true, present: false };
   const v = best.value;
+  const typeError = (code) => ({ ok: false, evaluatedOnUnknown: false, present: true, typeError: code });
   let result = false;
   switch (cond.op) {
-    case 'equals': result = v === cond.value; break;
-    case 'not_equals': result = v !== cond.value; break;
-    case 'gt': result = typeof v === 'number' && v > cond.value; break;
-    case 'gte': result = typeof v === 'number' && v >= cond.value; break;
-    case 'lt': result = typeof v === 'number' && v < cond.value; break;
-    case 'lte': result = typeof v === 'number' && v <= cond.value; break;
-    case 'in': result = Array.isArray(cond.value) && cond.value.some((x) => JSON.stringify(x) === JSON.stringify(v)); break;
-    case 'not_in': result = Array.isArray(cond.value) && !cond.value.some((x) => JSON.stringify(x) === JSON.stringify(v)); break;
-    case 'is_true': result = v === true; break;
-    case 'is_false': result = v === false; break;
-    default: result = false;
+    case 'equals':
+      if (typeof v !== typeof cond.value) return typeError('VALUE_TYPE_MISMATCH');
+      result = v === cond.value;
+      break;
+    case 'not_equals':
+      if (typeof v !== typeof cond.value) return typeError('VALUE_TYPE_MISMATCH');
+      result = v !== cond.value;
+      break;
+    case 'gt':
+    case 'gte':
+    case 'lt':
+    case 'lte':
+      if (typeof v !== 'number' || !Number.isFinite(v)) return typeError('NON_NUMERIC_VALUE');
+      result = cond.op === 'gt' ? v > cond.value
+        : cond.op === 'gte' ? v >= cond.value
+          : cond.op === 'lt' ? v < cond.value
+            : v <= cond.value;
+      break;
+    case 'in':
+      if (!Array.isArray(cond.value)) return typeError('CONDITION_MALFORMED');
+      result = cond.value.some((x) => JSON.stringify(x) === JSON.stringify(v));
+      break;
+    case 'not_in':
+      if (!Array.isArray(cond.value)) return typeError('CONDITION_MALFORMED');
+      result = !cond.value.some((x) => JSON.stringify(x) === JSON.stringify(v));
+      break;
+    case 'is_true':
+      if (typeof v !== 'boolean') return typeError('NON_BOOLEAN_VALUE');
+      result = v === true;
+      break;
+    case 'is_false':
+      if (typeof v !== 'boolean') return typeError('NON_BOOLEAN_VALUE');
+      result = v === false;
+      break;
+    default:
+      return typeError('UNKNOWN_OPERATOR');
   }
   return { ok: result, evaluatedOnUnknown: best.verificationLevel === 'unknown', present: true };
 }
@@ -41,11 +73,12 @@ function evalCondition(cond, facts) {
     return {
       ok: parts.every((p) => p.ok),
       evaluatedOnUnknown: parts.some((p) => p.evaluatedOnUnknown),
+      typeError: (parts.find((p) => p.typeError) ?? {}).typeError,
       factsMissing: parts.some((p) => (p.factsMissing ?? []).length > 0) ? parts.flatMap((p) => p.factsMissing ?? []) : [],
     };
   }
   const r = evalAtomic(cond, facts);
-  return { ok: r.ok, evaluatedOnUnknown: r.evaluatedOnUnknown, factsMissing: r.present ? [] : [cond.fact] };
+  return { ok: r.ok, evaluatedOnUnknown: r.evaluatedOnUnknown, typeError: r.typeError, factsMissing: r.present ? [] : [cond.fact] };
 }
 
 /**
@@ -84,8 +117,9 @@ export function evaluateRules({ pack, projection, asOf, transaction = {}, derive
   const results = [];
   let policyPending = false;
   for (const rule of pack.rules) {
-    // 适用面过滤：不适用 = 不激活（scope 未命中），与“缺批准”区分
-    const scopeApplied = scopeMatches(rule.scope, transaction);
+    // 适用面判定：维度缺失=applicability_unknown（待核验）；提供且不命中=确定不适用
+    const sd = scopeDecision(rule.scope, transaction);
+    const scopeApplied = sd.applied && sd.unknownDims.length === 0;
     const act = activationStatus(rule, { asOf });
     if (!act.activated) {
       // 存在相关但未批准/来源未确认的规则 → policy_pending（不得自行推断适用后放行，C28）；
@@ -94,7 +128,16 @@ export function evaluateRules({ pack, projection, asOf, transaction = {}, derive
       results.push({ ruleId: rule.ruleId, version: rule.version, activated: false, inactiveReason: act.inactiveReason, outcome: null, scopeApplied });
       continue;
     }
-    if (!scopeApplied) {
+    // W04：适用面维度缺失 → 待核验，不当"不适用"跳过，也不在未知范围内评估命中
+    if (sd.unknownDims.length > 0) {
+      results.push({
+        ruleId: rule.ruleId, version: rule.version, activated: true, inactiveReason: null,
+        outcome: 'applicability_unknown', applicabilityUnknown: sd.unknownDims,
+        scopeApplied: false, nonWaivable: rule.nonWaivable,
+      });
+      continue;
+    }
+    if (!sd.applied) {
       results.push({ ruleId: rule.ruleId, version: rule.version, activated: true, inactiveReason: null, outcome: null, scopeApplied: false });
       continue;
     }
@@ -115,6 +158,17 @@ export function evaluateRules({ pack, projection, asOf, transaction = {}, derive
       continue;
     }
     const verdict = evalCondition(rule.condition, facts);
+    // W04：类型不符/未知操作符 = 明确错误，不转 not_hit 安全结论
+    if (verdict.typeError) {
+      results.push({
+        ruleId: rule.ruleId, version: rule.version, activated: true, inactiveReason: null,
+        outcome: 'condition_error', errorCode: verdict.typeError,
+        evaluatedOnUnknown: verdict.evaluatedOnUnknown, scopeApplied: true,
+        blockedActions: rule.effect.blockedActions, nonWaivable: rule.nonWaivable,
+        evidenceRefs: conditionEvidence(facts, rule),
+      });
+      continue;
+    }
     results.push({
       ruleId: rule.ruleId, version: rule.version, activated: true, inactiveReason: null,
       outcome: verdict.ok ? 'hit' : 'not_hit',
@@ -131,15 +185,26 @@ export function evaluateRules({ pack, projection, asOf, transaction = {}, derive
   return { rulesetVersion: pack.version, asOf, results, policyPending, facts };
 }
 
-function scopeMatches(scope, t) {
-  const hit = (list, v) => list.includes('*') || list.includes(v);
-  if (!hit(scope.orgTypes, t.orgType ?? '*')) return false;
-  if (!hit(scope.regions, t.region ?? '*')) return false;
-  if (!hit(scope.products, t.product ?? '*')) return false;
+/**
+ * 适用面判定：返回 { applied:boolean, unknownDims:string[] }。
+ * 规则限定具体值而交易面缺失该维度 → unknownDims 记录该维度（待核验，不当"不适用"）；
+ * 交易面提供了值且不在范围内 → 确定不适用；scope 含 '*' 恒适用。
+ */
+function scopeDecision(scope, t) {
+  const unknownDims = [];
+  const decide = (list, v, key) => {
+    if (Array.isArray(list) && list.includes('*')) return true;
+    if (v === undefined || v === null || v === '') { unknownDims.push(key); return true; }
+    return Array.isArray(list) ? list.includes(v) : list === v;
+  };
+  const orgOk = decide(scope.orgTypes, t.orgType, 'orgType');
+  const regionOk = decide(scope.regions, t.region, 'region');
+  const productOk = decide(scope.products, t.product, 'product');
   const cr = scope.customerRange;
-  if (Array.isArray(cr)) { if (!hit(cr, t.customerRange ?? '*')) return false; }
-  else if (cr !== '*' && cr !== (t.customerRange ?? '*')) return false;
-  return true;
+  const crOk = Array.isArray(cr)
+    ? decide(cr, t.customerRange, 'customerRange')
+    : (cr === '*' ? true : decide([cr], t.customerRange, 'customerRange'));
+  return { applied: orgOk && regionOk && productOk && crOk, unknownDims };
 }
 
 function factEvidence(facts, factKey) {

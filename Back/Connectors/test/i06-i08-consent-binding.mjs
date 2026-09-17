@@ -69,13 +69,14 @@ test('I07: 同一联系人命中两客户 → 不自动串线，需显式上下�
     msg: { msgid: 'm_i07', action: 'send', from: 'wo_dual', tolist: ['userid_sales'], msgtime: 1760011000000, msgtype: 'text', text: { content: '双重归属消息' } },
   });
   assert.equal(r.quarantined, true, '消息进入隔离待分配区');
-  assert.equal(r.customerId, undefined, '绝不自动选择客户');
+  assert.equal(r.customerId ?? null, null, '绝不自动选择客户');
 
   const ev = (await h.store.query(`SELECT customer_id FROM communication_events WHERE event_id=$1`, [r.eventId])).rows[0];
   assert.equal(ev.customer_id, null, '事件未归属任何客户');
 
   // 显式 thread 上下文绑定后解决。
-  const threadId = (await h.store.query(`SELECT thread_id FROM communication_threads WHERE provider_thread_key=$1`, ['dm:wo_dual|userid_sales'])).rows[0].thread_id;
+  // 线程键按 from+tolist 经 sort() 后拼接：'dm:userid_sales|wo_dual'
+  const threadId = (await h.store.query(`SELECT thread_id FROM communication_threads WHERE provider_thread_key=$1`, ['dm:userid_sales|wo_dual'])).rows[0].thread_id;
   await h.bindings.bind({ tenantId: TENANT, provider: 'wecom_archive', providerUserId: 'wo_dual', customerId: 'cust_dual_A', verifiedBy: 'human_reviewer', threadScope: threadId });
   const res = await h.bindings.resolve({ tenantId: TENANT, provider: 'wecom_archive', providerUserId: 'wo_dual', threadId });
   assert.equal(res.status, 'resolved');

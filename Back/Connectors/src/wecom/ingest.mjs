@@ -123,7 +123,14 @@ export function makeIngestService(store, { bindings, consent }) {
     const subject = externalIds[0] ?? msg?.agree?.user?.userid ?? null;
     if (subject && !agree) {
       // 撤回：停止该主体在存档通道的后续新处理；数据留存交 retention。
+      // 同意的主体是绑定后的客户主档 id——须同时撤销外部 subject 与其绑定客户（I06b）。
       await consent.revoke({ tenantId, subjectId: subject, channel: 'wecom_archive' });
+      try {
+        const res = await bindings.resolve({ tenantId, provider, providerUserId: subject });
+        if (res.status === 'resolved' && res.customerId && res.customerId !== subject) {
+          await consent.revoke({ tenantId, subjectId: res.customerId, channel: 'wecom_archive' });
+        }
+      } catch { /* 绑定解析失败不阻断撤回登记 */ }
     }
     if (subject && agree) {
       const existing = await store.query(
@@ -183,22 +190,25 @@ export function makeIngestService(store, { bindings, consent }) {
       return { lastSeq: throughSeq, suspectedGap: false };
     }
     const prev = cur.rows[0];
+    // BIGINT 经 pg 返回字符串：必须先转数值再比较，否则 `last_seq + 1` 是字符串拼接，跳变检测永远失效。
+    // 企微 seq 处于 Number 安全整数范围（< 2^53）。
+    const prevSeq = Number(prev.last_seq);
     let suspectedGap = false;
-    if (throughSeq > prev.last_seq + 1) {
+    if (throughSeq > prevSeq + 1) {
       // 非连续：记录疑点，不必然当丢失，也不悄悄忽略。
       suspectedGap = true;
       await store.query(
         `UPDATE ingestion_checkpoints SET last_seq=$4, suspected_gaps=suspected_gaps+1, updated_at=now() WHERE tenant_id=$1 AND provider=$2 AND channel=$3`,
         [tenantId, provider, channel, throughSeq],
       );
-      await audit(store, { tenantId, actor: 'ingest', action: 'CHECKPOINT_SEQ_JUMP', targetType: 'checkpoint', targetId: `${provider}/${channel}`, summary: `${prev.last_seq} -> ${throughSeq}; recorded as suspected_gap (not confirmed loss)` });
-    } else if (throughSeq > prev.last_seq) {
+      await audit(store, { tenantId, actor: 'ingest', action: 'CHECKPOINT_SEQ_JUMP', targetType: 'checkpoint', targetId: `${provider}/${channel}`, summary: `${prevSeq} -> ${throughSeq}; recorded as suspected_gap (not confirmed loss)` });
+    } else if (throughSeq > prevSeq) {
       await store.query(
         `UPDATE ingestion_checkpoints SET last_seq=$4, updated_at=now() WHERE tenant_id=$1 AND provider=$2 AND channel=$3`,
         [tenantId, provider, channel, throughSeq],
       );
     }
-    return { lastSeq: Math.max(prev.last_seq, throughSeq), suspectedGap };
+    return { lastSeq: Math.max(prevSeq, throughSeq), suspectedGap };
   }
 
   /** 可确认断档（例如超官方5天窗口）：archive_gap，需补救流程（E2：重新授权窗口内人工补拉/业务补偿记录）。 */

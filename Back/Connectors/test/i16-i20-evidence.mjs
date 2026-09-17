@@ -32,7 +32,7 @@ test('I16: ASR 草稿把“没有抵押”错识别为“有抵押”→ 修正�
   const factFinal = await h.evidence.assertFact({ tenantId: TENANT, customerId: 'cust_i16', subject: 'company_assets', predicate: 'has_collateral', objectValue: '没有抵押', fromObservations: [obs2.observationId] });
   assert.equal(factFinal.status, 'candidate', '修正后仍是候选（正式判断在人）');
   const versions = await h.store.query(
-    `SELECT revision, state, superseded_by FROM evidence_observations WHERE tenant_id=$1 AND segment_id='seg_100' ORDER BY revision`,
+    `SELECT observation_id, revision, state, superseded_by, speaker FROM evidence_observations WHERE tenant_id=$1 AND segment_id='seg_100' ORDER BY revision`,
     [TENANT],
   );
   assert.equal(versions.rows.length, 2);

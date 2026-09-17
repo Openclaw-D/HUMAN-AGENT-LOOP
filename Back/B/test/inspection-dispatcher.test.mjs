@@ -15,9 +15,12 @@ function snapshotOf({ runStatus = 'in_progress', paused = false, generation = 3,
 function actionsOf(entries) {
   return {
     nextActions: entries.map((e) => ({
-      itemId: e.itemId, itemKey: e.itemKey ?? e.itemId, status: 'pending',
+      itemId: e.itemId, itemKey: e.itemKey ?? e.itemId, title: e.title ?? null,
+      status: 'pending',
       blockedReason: e.blockedReason ?? 'waiting_dispatch:问题已建立待外发授权',
       waitingFor: e.waitingFor ?? { role: 'dispatcher', questionId: e.questionId },
+      targetRole: e.targetRole ?? null,
+      whyNeeded: e.whyNeeded ?? null,
     })),
   };
 }
@@ -122,6 +125,151 @@ test('B·调度器：仅 intent 无 terminal 的历史回执 → 判 unknown 不
   const prior = await receipts.get('ixd-crash-q1');
   assert.equal(prior.phase, 'intent');
   assert.equal(prior.sent, null);
+});
+
+test('B·W07 公共通话单飞：通话通道被占时排队不抢话；角色私线并行不受限', async () => {
+  const receipts = new MemoryReceipts();
+  // 两个通话问题（实控人在公共通话上应答）+ 一个财务私线问题
+  const port = stubPort({
+    snapshot: () => snapshotOf({ generation: 3 }),
+    actions: () => actionsOf([
+      { itemId: 'it1', itemKey: 'own-verify', questionId: 'q-voice-1', targetRole: 'customer_owner' },
+      { itemId: 'it2', itemKey: 'own-site', questionId: 'q-voice-2', targetRole: 'customer_owner' },
+      { itemId: 'it3', itemKey: 'fin-verify', questionId: 'q-fin', targetRole: 'customer_finance' },
+    ]),
+  });
+  const dispatcher = createInspectionDispatcher({
+    port, receipts,
+    channel: 'chat',
+    autoSend: {
+      allowlist: null,
+      channelForRole: (role) => (role === 'customer_owner' ? 'rtc-voice' : 'wecom-kf'),
+      voiceChannels: ['rtc-voice'],
+    },
+  });
+  const round = await dispatcher.dispatchOnce('ins-x');
+  // 同轮：至多 1 个通话问题被授权（另一个排队），财务私线照常并行
+  assert.equal(round.dispatched, 2);
+  assert.equal(round.stop, null);
+  const channels = port.calls.grant.map((g) => g.channel).sort();
+  assert.deepEqual(channels, ['rtc-voice', 'wecom-kf']);
+  const heldVoice = round.held.find((h) => h.reason === 'VOICE_IN_FLIGHT');
+  assert.ok(heldVoice, '第二个通话问题应排队（VOICE_IN_FLIGHT）');
+  assert.equal(heldVoice.questionId, 'q-voice-2');
+  // A 在途已占通话槽（snapshot.inFlight 带 questionId）→ 本轮零通话授权，私线照常
+  const receipts2 = new MemoryReceipts();
+  const port2 = stubPort({
+    snapshot: () => snapshotOf({ generation: 3, inFlight: [{ sendId: 's1', questionId: 'q-live', generation: 3, status: 'sent' }] }),
+    actions: () => actionsOf([
+      { itemId: 'it1', itemKey: 'own-verify', questionId: 'q-new-voice', targetRole: 'customer_owner' },
+      { itemId: 'it9', itemKey: 'own-live', questionId: 'q-live', targetRole: 'customer_owner', blockedReason: 'waiting_answer:问题已外发，等待回答' },
+      { itemId: 'it3', itemKey: 'fin-verify', questionId: 'q-fin2', targetRole: 'customer_finance' },
+    ]),
+  });
+  const dispatcher2 = createInspectionDispatcher({
+    port: port2, receipts: receipts2,
+    autoSend: {
+      channelForRole: (role) => (role === 'customer_owner' ? 'rtc-voice' : 'wecom-kf'),
+      voiceChannels: ['rtc-voice'],
+    },
+  });
+  const round2 = await dispatcher2.dispatchOnce('ins-x');
+  assert.equal(round2.dispatched, 1, '仅财务私线被授权');
+  assert.equal(port2.calls.grant[0].channel, 'wecom-kf');
+  assert.ok(round2.held.some((h) => h.reason === 'VOICE_IN_FLIGHT' && h.questionId === 'q-new-voice'));
+});
+
+test('B·W07/W08 角色单飞：同一回答者在途至多一问；不同角色线程并行、通道正确', async () => {
+  const receipts = new MemoryReceipts();
+  const port = stubPort({
+    snapshot: () => snapshotOf({
+      generation: 3,
+      inFlight: [
+        { sendId: 's-fin', questionId: 'q-fin-live', generation: 3, status: 'sent' },
+        { sendId: 's-pm', questionId: 'q-pm-live', generation: 3, status: 'sent' },
+      ],
+    }),
+    actions: () => actionsOf([
+      // 财务/厂长各有一个在途问题（waiting_answer 行提供 questionId→targetRole 映射）
+      { itemId: 'itf0', itemKey: 'fin-live', questionId: 'q-fin-live', targetRole: 'customer_finance', blockedReason: 'waiting_answer:问题已外发，等待回答' },
+      { itemId: 'itp0', itemKey: 'pm-live', questionId: 'q-pm-live', targetRole: 'plant_manager', blockedReason: 'waiting_participant:plant_manager 暂离' },
+      // 新等待授权：财务（在途→单飞跳过）与厂长新问（在途→单飞跳过）与实控人私线（无在途→授权）
+      { itemId: 'itf1', itemKey: 'fin-new', questionId: 'q-fin-new', targetRole: 'customer_finance' },
+      { itemId: 'itp1', itemKey: 'pm-new', questionId: 'q-pm-new', targetRole: 'plant_manager' },
+      { itemId: 'ito1', itemKey: 'own-thread', questionId: 'q-own-new', targetRole: 'customer_owner' },
+    ]),
+  });
+  const dispatcher = createInspectionDispatcher({
+    port, receipts,
+    autoSend: { channelForRole: () => 'wecom-kf', voiceChannels: ['rtc-voice'] },
+  });
+  const round = await dispatcher.dispatchOnce('ins-x');
+  assert.equal(round.dispatched, 1);
+  assert.equal(port.calls.grant[0].questionId, 'q-own-new');
+  assert.equal(port.calls.grant[0].channel, 'wecom-kf');
+  assert.deepEqual(round.held.map((h) => [h.questionId, h.reason]).sort(), [
+    ['q-fin-new', 'ROLE_IN_FLIGHT'],
+    ['q-pm-new', 'ROLE_IN_FLIGHT'],
+  ]);
+  const rid = port.calls.grant[0].requestId;
+  const terminal = await receipts.get(rid);
+  assert.equal(terminal.audience, 'customer_owner', '回执携带受众（审计/对账依据）');
+});
+
+test('B·B3.2 敏感转人工 + 获准外发：敏感词/未获准一律不自动外发', async () => {
+  const receipts = new MemoryReceipts();
+  const port = stubPort({
+    snapshot: () => snapshotOf({ generation: 3 }),
+    actions: () => actionsOf([
+      { itemId: 'it1', itemKey: 'routine-check', questionId: 'q-ok', targetRole: 'customer_finance', whyNeeded: '核对期间水电费支出' },
+      { itemId: 'it2', itemKey: 'score-probe', questionId: 'q-score', targetRole: 'customer_finance', whyNeeded: '内部评分卡参数说明' },
+      { itemId: 'it3', itemKey: 'accuse-probe', questionId: 'q-accuse', targetRole: 'customer_owner', title: '是否存在虚开发票情形' },
+      { itemId: 'it4', itemKey: 'not-approved', questionId: 'q-na', targetRole: 'customer_finance', whyNeeded: '常规补充说明' },
+    ]),
+  });
+  const dispatcher = createInspectionDispatcher({
+    port, receipts,
+    autoSend: {
+      allowlist: ['routine-check'],
+      channelForRole: () => 'wecom-kf',
+    },
+  });
+  const round = await dispatcher.dispatchOnce('ins-x');
+  assert.deepEqual(round.held.map((h) => [h.questionId, h.reason]).sort(), [
+    ['q-accuse', 'SENSITIVE_REQUIRES_HUMAN'],
+    ['q-na', 'AUTO_SEND_NOT_APPROVED'],
+    ['q-score', 'SENSITIVE_REQUIRES_HUMAN'],
+  ]);
+  assert.equal(round.dispatched, 1);
+  assert.equal(port.calls.grant.length, 1);
+  assert.equal(port.calls.grant[0].questionId, 'q-ok');
+});
+
+test('B·W09 unknown 在途：不换 requestId 重问（对账走 A 门）', async () => {
+  const receipts = new MemoryReceipts();
+  const port = stubPort({
+    snapshot: () => snapshotOf({
+      generation: 3,
+      inFlight: [{ sendId: 's9', questionId: 'q-unk', generation: 2, status: 'unknown' }],
+    }),
+    actions: () => actionsOf([
+      { itemId: 'it1', itemKey: 'k1', questionId: 'q-unk', targetRole: 'customer_finance' },
+      { itemId: 'it2', itemKey: 'k2', questionId: 'q-other', targetRole: 'customer_finance' },
+    ]),
+  });
+  const dispatcher = createInspectionDispatcher({
+    port, receipts,
+    autoSend: { channelForRole: () => 'wecom-kf' },
+  });
+  const round = await dispatcher.dispatchOnce('ins-x');
+  // q-unk 处于 unknown 在途 → 跳过（对账走 A 的 SEND_UNKNOWN_RECONCILE 门）；
+  // 且 unknown 在途占用其角色槽（对账前不向同一人追加新问，防重复骚扰）→ q-other 排队
+  assert.deepEqual(round.held.map((h) => [h.questionId, h.reason]).sort(), [
+    ['q-other', 'ROLE_IN_FLIGHT'],
+    ['q-unk', 'SEND_UNKNOWN_RECONCILE'],
+  ]);
+  assert.equal(round.dispatched, 0);
+  assert.equal(port.calls.grant.length, 0);
 });
 
 test('B·httpInspectionPort：URL/头/载荷符合 A 契约（fetch 注入断言）', async () => {

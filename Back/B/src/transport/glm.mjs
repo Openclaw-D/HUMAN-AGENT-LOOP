@@ -15,7 +15,6 @@
 
 import { redactText, safeError } from '../redact.mjs';
 import { stableJson } from '../graph/decision.mjs';
-import crypto from 'node:crypto';
 
 /** 合成上下文标签:隔离 project/goal/role;C 的跨项目串线探针按此核对。 */
 function contextTags({ projectId, goalId, runId, role }) {
@@ -110,69 +109,24 @@ export function createModelTransport(p = {}) {
   const ledgerDir = costLogPath ? costLogPath.replace(/[/\\][^/\\]+$/, '') : null;
   const lockPath = costLogPath ? `${ledgerDir}/budget.lock` : null;
 
-  const sleepMs = (ms) => new Promise((r) => setTimeout(r, ms));
-  function pidAlive(pid) {
-    try { process.kill(pid, 0); return true; } catch (e) { return e.code === 'EPERM'; }
-  }
-
-  /** 跨进程互斥:wx 独占创建 budget.lock,内容 = `<pid> <at> <token>`。
-   *  锁安全(06:00 Goal):
-   *   - 抢占只针对**已死 owner**(pid 不存在);活 PID 的锁绝不因超龄被删(不盲抢活锁),
-   *     等待超 deadline → BUDGET_LOCK_TIMEOUT 失败关闭;
-   *   - owner 释放时带 token 校验:仅当锁内容仍是自己的 token 才 unlink,
-   *     防止旧 owner 的 finally 删掉新 owner 的锁;
-   *   - 半写锁(内容不可解析):mtime 超过 10s(写失败的残留)才抢占,否则等持锁者写完。 */
+  /** 跨进程互斥:委托 fs-lock.mjs 的 withFileLock（任务02/W13 加固协议：死锁回收=
+   *  rename 原子替换+动手前复核+持有期看门狗，绝不 unlink 非本人创建的锁）。
+   *  预算侧语义:
+   *   - LOCK_TIMEOUT / LOCK_STOLEN → 返回 blocked(调用未发送,失败关闭);
+   *     STOLEN 单列 BUDGET_LOCK_LOST(临界区互斥不可证,预算判定作废);
+   *   - LOCK_IO → 抛 BUDGET_LEDGER_IO(与账本 I/O 同类,由 budgetGate 兜底失败关闭)。 */
   async function withBudgetLock(fn) {
-    const { fs } = await import('../deps.mjs');
-    const deadline = Date.now() + 8000;
-    const ownToken = `${process.pid} ${Date.now()} ${crypto.randomBytes(8).toString('hex')}\n`;
-    for (;;) {
-      let fd;
-      try {
-        fd = await fs.open(lockPath, 'wx');
-      } catch (e) {
-        if (e.code !== 'EEXIST') {
-          throw Object.assign(new Error(`预算锁不可创建(${e.code}):失败关闭`), { code: 'BUDGET_LEDGER_IO' });
-        }
-        let stale = false;
-        try {
-          const raw = await fs.readFile(lockPath, 'utf8');
-          const m = raw.match(/^(\d+) (\d+) ([0-9a-f]+)\s*$/);
-          if (m) {
-            stale = !pidAlive(Number(m[1])); // 仅死 owner 可抢;活 PID 不盲抢
-          } else {
-            // 半写/未知格式:仅当 mtime 超过 10s(写失败的残留)才抢占
-            const st = await fs.stat(lockPath);
-            stale = Date.now() - st.mtimeMs > 10000;
-          }
-        } catch (e2) {
-          if (e2.code === 'ENOENT') continue; // 锁刚被释放
-          throw Object.assign(new Error(`预算锁不可读(${e2.code}):失败关闭`), { code: 'BUDGET_LEDGER_IO' });
-        }
-        if (stale) { await fs.unlink(lockPath).catch(() => {}); continue; }
-        if (Date.now() >= deadline) {
-          return {
-            blocked: {
-              code: 'BUDGET_LOCK_TIMEOUT',
-              messageZh: '预算锁等待超时:持锁进程仍在(不盲抢活锁),调用未发送(失败关闭)',
-            },
-          };
-        }
-        await sleepMs(50);
-        continue;
-      }
-      try {
-        await fd.writeFile(ownToken, 'utf8');
-        return await fn();
-      } finally {
-        try { await fd.close(); } catch { /* 已关 */ }
-        // owner 校验:仅当锁内容仍是自己的 token 才删除;被抢占(新 owner)时不删别人的锁
-        try {
-          const cur = await fs.readFile(lockPath, 'utf8');
-          if (cur === ownToken) await fs.unlink(lockPath).catch(() => {});
-        } catch { /* 已被他人处理 */ }
-      }
-    }
+    const { withFileLock } = await import('../fs-lock.mjs');
+    const res = await withFileLock({ lockPath, fn, timeoutMs: 8000, staleMs: 10000, watchdogMs: 500 });
+    if (res.ok) return res.value;
+    const { code, messageZh } = res.blocked;
+    if (code === 'LOCK_IO') throw Object.assign(new Error(messageZh), { code: 'BUDGET_LEDGER_IO' });
+    return {
+      blocked: {
+        code: code === 'LOCK_STOLEN' ? 'BUDGET_LOCK_LOST' : 'BUDGET_LOCK_TIMEOUT',
+        messageZh,
+      },
+    };
   }
 
   /** 严格读账:ENOENT(新账本)=空表;目录/权限等其他读错误或任何坏行 → 抛错失败关闭,不跳过。 */

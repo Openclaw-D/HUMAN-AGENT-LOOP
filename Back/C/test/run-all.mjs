@@ -13,6 +13,10 @@ const files = [
   'contract-adapter.test.mjs',
   'four-domain.test.mjs',
   'four-domain-matrix.test.mjs',
+  'rule-negative.test.mjs',
+  'gate-adapter.test.mjs',
+  'intake-normalize.test.mjs',
+  'eval-discipline.test.mjs',
 ].map((f) => path.join(here, f));
 
 const only = process.argv.slice(2);

@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS evidence_artifacts (
   frame_region TEXT,
   consent_ref TEXT,
   verification_state TEXT NOT NULL DEFAULT 'unverified', -- unverified|partial|verified|incomplete
-  completeness TEXT NOT NULL DEFAULT 'complete',
+  completeness TEXT NOT NULL DEFAULT 'complete',     -- complete|incomplete|needs_followup
   source_group TEXT NOT NULL,
   derived_from TEXT,
   duplicate_of TEXT,
@@ -214,6 +214,39 @@ CREATE TABLE IF NOT EXISTS evidence_artifacts (
   trust JSONB NOT NULL DEFAULT '{}',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+-- 任务02 · B1/W02 口径化元数据（存量库幂等补列；新建库由上方定义直接包含）
+ALTER TABLE evidence_artifacts ADD COLUMN IF NOT EXISTS period_from TIMESTAMPTZ;  -- 材料期间起
+ALTER TABLE evidence_artifacts ADD COLUMN IF NOT EXISTS period_to TIMESTAMPTZ;    -- 材料期间止
+ALTER TABLE evidence_artifacts ADD COLUMN IF NOT EXISTS currency TEXT;            -- 币种（ISO 4217）
+ALTER TABLE evidence_artifacts ADD COLUMN IF NOT EXISTS unit TEXT;                -- 数值单位（元/万元/台…）
+ALTER TABLE evidence_artifacts ADD COLUMN IF NOT EXISTS caliber TEXT;             -- 口径（收付/权责/含税/不含税）
+ALTER TABLE evidence_artifacts ADD COLUMN IF NOT EXISTS page_from INT;            -- 页码范围起
+ALTER TABLE evidence_artifacts ADD COLUMN IF NOT EXISTS page_to INT;              -- 页码范围止
+ALTER TABLE evidence_artifacts ADD COLUMN IF NOT EXISTS uploader_ref TEXT;        -- 上传者（绑定/邀请/渠道）引用
+ALTER TABLE evidence_artifacts ADD COLUMN IF NOT EXISTS upload_source TEXT;       -- customer_upload|employee|channel_callback
+ALTER TABLE evidence_artifacts ADD COLUMN IF NOT EXISTS object_refs JSONB NOT NULL DEFAULT '[]'; -- 设备/场所锚定（W10）
+
+-- 任务02 · B1/W01 分级邀请：商机触发后把客户主体、角色身份、上传范围、会话对应起来。
+-- 邀请令牌原文不落库（只存 sha256）；一次有效；接受 ≠ 验证（candidate，操作者核验后才 active）。
+CREATE TABLE IF NOT EXISTS intake_invitations (
+  invitation_id TEXT PRIMARY KEY,
+  tenant_id TEXT NOT NULL,
+  customer_id TEXT NOT NULL,                         -- 客户主档由 A 唯一持有；此处只引用不合并
+  session_id TEXT,                                   -- 可空：会话未建立时先进件
+  role TEXT NOT NULL,                                -- customer_owner|plant_manager|customer_finance|customer_contact
+  allowed_evidence_kinds JSONB NOT NULL,             -- 该身份获准上传的证据 kind 清单
+  object_refs JSONB NOT NULL DEFAULT '[]',           -- 获准的材料对象锚定（空=不限定对象）
+  token_hash TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending',            -- pending|accepted|revoked|expired
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_by TEXT NOT NULL,
+  accepted_binding_id TEXT,
+  accepted_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_invitations_customer ON intake_invitations(tenant_id, customer_id, status);
+ALTER TABLE intake_invitations ADD COLUMN IF NOT EXISTS accepted_binding_id TEXT;  -- 幂等保底
+ALTER TABLE intake_invitations ADD COLUMN IF NOT EXISTS accepted_at TIMESTAMPTZ;
 
 CREATE TABLE IF NOT EXISTS evidence_observations (
   observation_id TEXT PRIMARY KEY,
@@ -252,6 +285,10 @@ CREATE TABLE IF NOT EXISTS fact_assertions (
   source_mode TEXT NOT NULL DEFAULT 'real',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+-- 任务02 · W10 事实级对象/期间锚定：kind 相同但对象/期间不同的事实不能互相替代
+ALTER TABLE fact_assertions ADD COLUMN IF NOT EXISTS object_ref TEXT;
+ALTER TABLE fact_assertions ADD COLUMN IF NOT EXISTS period_from TIMESTAMPTZ;
+ALTER TABLE fact_assertions ADD COLUMN IF NOT EXISTS period_to TIMESTAMPTZ;
 
 CREATE TABLE IF NOT EXISTS fact_conflicts (
   conflict_id TEXT PRIMARY KEY,

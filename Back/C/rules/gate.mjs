@@ -77,6 +77,18 @@ export function evaluateGate({
       bump('POLICY_PENDING', SEVERITY.HOLD_FOR_REVIEW);
     }
     for (const r of ruleEvaluation.results) {
+      // W04：适用面维度缺失 → 待核验（不静默不适用），需澄清交易范围后重算
+      if (r.outcome === 'applicability_unknown') {
+        bump('RULE_APPLICABILITY_UNKNOWN', SEVERITY.NEEDS_EVIDENCE, [], [r.ruleId]);
+        releaseConditions.push({ type: 'clarify_transaction_scope', ruleId: r.ruleId, dims: r.applicabilityUnknown ?? [], then: 'recompute' });
+        continue;
+      }
+      // W04：条件类型不符 → 明确错误（不转 not_hit 安全结论），需纠正输入后重算
+      if (r.outcome === 'condition_error') {
+        bump('RULE_CONDITION_TYPE_ERROR', SEVERITY.NEEDS_EVIDENCE, r.evidenceRefs ?? [], [r.ruleId]);
+        releaseConditions.push({ type: 'correct_rule_input', ruleId: r.ruleId, errorCode: r.errorCode ?? 'UNKNOWN', then: 'recompute' });
+        continue;
+      }
       if (!r.activated || !r.scopeApplied) continue;
       if (r.outcome === 'precondition_missing') {
         bump('NEEDS_EVIDENCE_RULE_PRECONDITION', SEVERITY.NEEDS_EVIDENCE, r.evidenceRefs ?? [], [r.ruleId]);

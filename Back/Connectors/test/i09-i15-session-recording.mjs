@@ -24,8 +24,8 @@ async function makeLiveSession({ sourceMode = 'real' } = {}) {
 
 test('I09a: 房间令牌签名篡改 → 拒绝', async () => {
   const { invite } = await makeLiveSession({});
-  const [body, sig] = invite.token.split('.');
-  assert.throws(() => h.sessions.join({ token: `${body}.forged_sig` }), (e) => e.code === 'TOKEN_INVALID');
+  const [body] = invite.token.split('.');
+  await assert.rejects(() => h.sessions.join({ token: `${body}.forged_sig` }), (e) => e.code === 'TOKEN_INVALID');
 });
 
 test('I09b: 令牌转给其他角色（observer 令牌被用作 customer）→ 拒绝', async () => {
@@ -37,7 +37,7 @@ test('I09b: 令牌转给其他角色（observer 令牌被用作 customer）→ �
   const { createHmac } = await import('node:crypto');
   const forged = Buffer.from(JSON.stringify({ ...payload, role: 'customer', participantId: 'p_attacker' })).toString('base64url');
   const badSig = createHmac('sha256', 'attacker_secret').update(forged).digest('base64url');
-  assert.throws(() => h.sessions.join({ token: `${forged}.${badSig}` }), (e) => e.code === 'TOKEN_INVALID');
+  await assert.rejects(() => h.sessions.join({ token: `${forged}.${badSig}` }), (e) => e.code === 'TOKEN_INVALID');
 });
 
 test('I09c: 令牌跨房间（把 A 会话令牌发给 B 会话上下文）→ TOKEN_ROOM_MISMATCH / 一次性拒绝', async () => {
@@ -47,7 +47,7 @@ test('I09c: 令牌跨房间（把 A 会话令牌发给 B 会话上下文）→ T
   // 令牌绑定房间：join 校验的是令牌声明的房间与会话一致；一次性 jti 防转发重放。
   const first = await h.sessions.join({ token: a.invite.token });
   assert.ok(first.sessionId);
-  assert.throws(() => h.sessions.join({ token: a.invite.token }), (e) => e.code === 'TOKEN_REUSED', '同一令牌转发给他人重放 → 拒绝');
+  await assert.rejects(() => h.sessions.join({ token: a.invite.token }), (e) => e.code === 'TOKEN_REUSED', '同一令牌转发给他人重放 → 拒绝');
   void b;
 });
 
@@ -200,7 +200,7 @@ test('I24: 合成素材进实时会话 → sourceMode=synthetic 全链透传，�
   const art = await h.evidence.registerArtifact({
     tenantId: TENANT, customerId: 'cust_synthetic_sess', sessionId: session.sessionId,
     sourceProvider: 'trtc_local_loop', kind: 'media', objectRef: file.object_ref, sha256: file.sha256,
-    sourceGroup: started.taskId, sourceMode: 'synthetic',
+    sourceGroup: rec.taskId, sourceMode: 'synthetic',
   });
   const row = (await h.store.query(`SELECT source_mode FROM evidence_artifacts WHERE evidence_id=$1`, [art.evidenceId])).rows[0];
   assert.equal(row.source_mode, 'synthetic', '合成素材不得标为 real 客户现场');

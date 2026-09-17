@@ -8,17 +8,45 @@ import { audit } from './consent.mjs';
  */
 
 export function makeSendService(store, { transport, bindings, consent }) {
+  /** 外发事件的 thread_id 有 FK：无显式线程时归集到该客户现存 kf 线程，或建一条服务外发线程。 */
+  async function ensureThread(tenantId, customerId, threadId) {
+    if (threadId) {
+      const r = await store.query(`SELECT thread_id FROM communication_threads WHERE thread_id=$1 AND tenant_id=$2`, [threadId, tenantId]);
+      if (r.rows.length === 0) throw new ConnError('INVALID_STATE', `thread ${threadId} not found in tenant`);
+      return threadId;
+    }
+    const found = await store.query(
+      `SELECT thread_id FROM communication_threads WHERE tenant_id=$1 AND channel='wecom_kf' AND customer_id=$2 ORDER BY created_at LIMIT 1`,
+      [tenantId, customerId],
+    );
+    if (found.rows.length > 0) return found.rows[0].thread_id;
+    const id = newId('thr');
+    await store.query(
+      `INSERT INTO communication_threads (thread_id, tenant_id, customer_id, channel, provider_thread_key) VALUES ($1,$2,$3,'wecom_kf',$4)`,
+      [id, tenantId, customerId, `kf:${customerId}`],
+    );
+    return id;
+  }
+
   async function send({ tenantId, actor, customerId, threadId, audience, text, clientMsgId }) {
     if (!tenantId || !customerId || !audience || !text) throw new ConnError('INVALID_INPUT', 'send: tenantId/customerId/audience/text required');
     if (!['customer', 'internal'].includes(audience)) throw new ConnError('INVALID_INPUT', `audience must be customer|internal`);
 
+    // I08：customerId 必须由受控绑定取得且在租户内（身份范围先于同意判定）。
+    const b = await store.query(
+      `SELECT 1 FROM participant_bindings WHERE tenant_id=$1 AND customer_id=$2 AND status='active' LIMIT 1`,
+      [tenantId, customerId],
+    );
+    if (b.rows.length === 0) throw new ConnError('CUSTOMER_SCOPE_MISMATCH', `no active binding for customer ${customerId} in tenant`);
+
     // I22：内部受众不允许经客户通道外发；内部消息只登记。
     if (audience === 'internal') {
+      const tid = await ensureThread(tenantId, customerId, threadId);
       const eventId = newId('cev');
       await store.query(
         `INSERT INTO communication_events (event_id, tenant_id, customer_id, thread_id, provider_event_id, source_type, direction, kind, body, completeness)
          VALUES ($1,$2,$3,$4,$5,'internal_note','outbound','internal_note',$6,'complete')`,
-        [eventId, tenantId, customerId, threadId ?? 'none', `internal:${clientMsgId ?? eventId}`, JSON.stringify({ text, audience: 'internal' })],
+        [eventId, tenantId, customerId, tid, `internal:${clientMsgId ?? eventId}`, JSON.stringify({ text, audience: 'internal' })],
       );
       return { audience: 'internal', delivery: 'recorded_only', eventId, note: 'internal audience never leaves via customer channel' };
     }
@@ -27,15 +55,9 @@ export function makeSendService(store, { transport, bindings, consent }) {
     const c = await consent.check({ tenantId, subjectId: customerId, channel: 'wecom_kf', purpose: 'external_disclosure' });
     if (!c.ok) throw new ConnError('CONSENT_REQUIRED', c.reason);
 
-    // I08：customerId 必须由受控绑定取得且在租户内。
-    const b = await store.query(
-      `SELECT 1 FROM participant_bindings WHERE tenant_id=$1 AND customer_id=$2 AND status='active' LIMIT 1`,
-      [tenantId, customerId],
-    );
-    if (b.rows.length === 0) throw new ConnError('CUSTOMER_SCOPE_MISMATCH', `no active binding for customer ${customerId} in tenant`);
-
     const msgId = clientMsgId ?? newId('snd');
     const eventId = newId('cev');
+    const tid = await ensureThread(tenantId, customerId, threadId);
     let delivery;
     try {
       const resp = await transport.kfSendMsg({ touser: await resolveProviderUserId(tenantId, customerId), open_kfid: 'kf_service', msgid: msgId, msgtype: 'text', text: { content: text } });
@@ -49,7 +71,7 @@ export function makeSendService(store, { transport, bindings, consent }) {
     await store.query(
       `INSERT INTO communication_events (event_id, tenant_id, customer_id, thread_id, provider_event_id, source_type, direction, kind, body, completeness)
        VALUES ($1,$2,$3,$4,$5,'wecom_kf_msg','outbound','text',$6,'complete')`,
-      [eventId, tenantId, customerId, threadId ?? 'none', `send:${msgId}`, JSON.stringify({ text, audience: 'customer', delivery, clientMsgId: msgId })],
+      [eventId, tenantId, customerId, tid, `send:${msgId}`, JSON.stringify({ text, audience: 'customer', delivery, clientMsgId: msgId })],
     );
     await audit(store, { tenantId, actor: actor ?? 'send-service', action: `SEND_${delivery.state.toUpperCase()}`, targetType: 'communication_event', targetId: eventId, summary: `audience=customer state=${delivery.state}` });
     return { audience: 'customer', delivery, eventId };

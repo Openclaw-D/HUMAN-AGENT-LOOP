@@ -28,6 +28,17 @@ async function waitIntentReceipt(dir, timeoutMs = 15000) {
   throw new Error('等待 intent 回执超时');
 }
 
+// intent 回执写在出站之前：必须等请求确实到达 mock 服务再 SIGKILL，
+// 否则高负载下会杀在发送前，"恰好一次出站"断言与崩溃场景（intent 无 terminal）都不成立。
+async function waitOutboundArrived(api, n, timeoutMs = 15000) {
+  const t0 = Date.now();
+  while (Date.now() - t0 < timeoutMs) {
+    if (api.requests.length >= n) return;
+    await sleep(50);
+  }
+  throw new Error(`等待出站请求到达超时(期望≥${n})`);
+}
+
 test('跨进程崩溃恢复:intent 无回执 → unknown,零盲重发;业务回执对账留痕', async () => {
   const api = await startMockApi({ mode: 'slow', delayMs: 60000 }); // 永不及时的响应
   const dir = await tmpDir('crash-');
@@ -47,6 +58,7 @@ test('跨进程崩溃恢复:intent 无回执 → unknown,零盲重发;业务回�
     child.stderr.on('data', (c) => { childOut += c; });
     const intent = await waitIntentReceipt(dir);
     assert.equal(intent.phase, 'intent');
+    await waitOutboundArrived(api, 1);
     child.kill('SIGKILL');
     await sleep(300);
 
@@ -87,6 +99,7 @@ test('恢复后取消:未发送剩余步 → cancelled;已有 intent 步 → unk
 
     const child = spawn(process.execPath, [CHILD, dir, api.baseUrl, 'tr:cc'], { stdio: ['ignore', 'pipe', 'pipe'] });
     await waitIntentReceipt(dir);
+    await waitOutboundArrived(api, 1);
     child.kill('SIGKILL');
     await sleep(300);
 

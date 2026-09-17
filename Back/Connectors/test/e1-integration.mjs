@@ -101,8 +101,9 @@ test('E1-3: 签名 URL 全链：登记→签发→读取→过期拒绝；无服
     method: 'POST', headers: { 'x-service-token': 'e1_service_token', 'content-type': 'application/json' },
     body: JSON.stringify({ tenantId: TENANT, evidenceId: (await svc.store.query(`SELECT evidence_id FROM evidence_artifacts WHERE sha256='sha_e1_media'`)).rows[0].evidence_id, objectRef: 'media/e1.bin', customerId: 'cust_e1', ttlSec: 60 }),
   });
-  assert.equal(issue.status, 200);
-  const { url } = (await issue.json());
+  const issueBody = await issue.json().catch(() => null);
+  assert.equal(issue.status, 200, `media-url 签发失败: ${issue.status} ${JSON.stringify(issueBody ?? {}).slice(0, 200)}`);
+  const { url } = issueBody;
 
   const media = await fetch(`http://127.0.0.1:${PORT}${url}`);
   assert.equal(media.status, 200);
@@ -175,6 +176,8 @@ test('E1-6: LocalLoop 录制全链经真实 HTTP 回调入口（含 Sign 校验�
   const { makeRecordingService } = await import('../src/session/recording.mjs');
   let loopRef = null;
   const bridgeAdapter = {
+    // requestRecording 会经 adapter.startTask 在 loop 上登记任务；fetch 由桥接判定
+    startTask: async (args) => loopRef.loop.startTask(args), // 必须回传 {taskId}，否则录制服务回落到自造 rect_* id
     fetchRecordingFile: async ({ fileName }) => {
       if (loopRef?.pendingFile?.fileName === fileName) return loopRef.pendingFile.bytes;
       throw new (await import('../src/errors.mjs')).ConnError('NOT_FOUND', `file ${fileName} missing`);
@@ -190,7 +193,8 @@ test('E1-6: LocalLoop 录制全链经真实 HTTP 回调入口（含 Sign 校验�
       assert.equal(r.status, 200, `callback http ${r.status}`);
     },
   });
-  loopRef = loop;
+  loopRef = { loop, pendingFile: null };
+  Object.defineProperty(loopRef, 'pendingFile', { get: () => loop.pendingFile, set: (v) => { loop.pendingFile = v; } });
 
   await svc.consent.grant({ tenantId: TENANT, subjectType: 'customer_participant', subjectId: 'cust_e1', channel: 'video_session', purposes: ['recording'], dataCategory: 'video_record', basis: 'test', source: 'test' });
   const session = await svc.sessions.createSession({ tenantId: TENANT, customerId: 'cust_e1', createdBy: 'e1' });

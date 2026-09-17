@@ -14,7 +14,7 @@ const CALL_FLOW = {
   created: ['invited', 'ended'],
   invited: ['connecting', 'ended'],
   connecting: ['live', 'reconnecting', 'ended'],
-  live: ['reconnecting', 'ended'],
+  live: ['connecting', 'reconnecting', 'ended'],   // connecting=客户主动停媒体（设备关闭，如实降级）
   reconnecting: ['live', 'ended'],
   ended: [],
 };
@@ -25,7 +25,10 @@ export function makeSessionService(store, { signingSecret, clock = () => Date.no
   function issueToken({ session, participantId, role, ttlSec = 300 }) {
     const jti = randomUUID();
     const exp = clock() + ttlSec * 1000;
-    const payload = { sessionId: session.sessionId, participantId, role, roomId: session.room_id, exp, jti };
+    // session 可能是 DB 行（snake_case）：显式归一，绝不让 undefined 混进令牌载荷
+    const sessionId = session.session_id ?? session.sessionId;
+    const roomId = session.room_id ?? session.roomId;
+    const payload = { sessionId, participantId, role, roomId, exp, jti };
     const body = b64url(JSON.stringify(payload));
     const sig = createHmac('sha256', signingSecret).update(body).digest('base64url');
     return { token: `${body}.${sig}`, jti, exp };
@@ -52,7 +55,7 @@ export function makeSessionService(store, { signingSecret, clock = () => Date.no
       `INSERT INTO diligence_sessions (session_id, tenant_id, customer_id, room_id, source_mode, created_by) VALUES ($1,$2,$3,$4,$5,$6)`,
       [sessionId, tenantId, customerId, roomId, sourceMode, createdBy],
     );
-    return { sessionId, roomId, callState: 'created' };
+    return { sessionId, roomId, callState: 'created', sourceMode };
   }
 
   async function getSession(sessionId) {
@@ -70,7 +73,8 @@ export function makeSessionService(store, { signingSecret, clock = () => Date.no
       `INSERT INTO session_tokens (jti, session_id, participant_id, role, room_id, expires_at) VALUES ($1,$2,$3,$4,$5,to_timestamp($6/1000.0))`,
       [jti, sessionId, participantId, role, session.room_id, exp],
     );
-    if (['created', 'invited'].includes(session.call_state)) {
+    if (session.call_state === 'created') {
+      // 仅 created → invited；已有 invite 时重复邀请其他参与者保持 invited（多人邀请合法）
       await transition(session, 'invited', `invite ${role}`);
     }
     await audit(store, { tenantId: session.tenant_id, actor: actor ?? 'session-service', action: 'SESSION_INVITED', targetType: 'session', targetId: sessionId, summary: `role=${role} participant=${participantId}` });

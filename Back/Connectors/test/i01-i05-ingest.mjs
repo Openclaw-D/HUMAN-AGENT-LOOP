@@ -145,7 +145,7 @@ test('I04b: 附件重试成功 → completeness=complete，对象可读', async 
   const ev = (await h.store.query(`SELECT completeness FROM communication_events WHERE event_id=$1`, [r.eventId])).rows[0];
   assert.equal(ev.completeness, 'complete');
   const obj = (await h.store.query(`SELECT sha256, size_bytes FROM objects WHERE object_ref LIKE 'media/%' ORDER BY created_at DESC LIMIT 1`)).rows[0];
-  assert.equal(obj.size_bytes, 4);
+  assert.equal(Number(obj.size_bytes), 4); // BIGINT 经 pg 返回字符串
 });
 
 test('I05: 超出官方可补拉窗口（>5天）→ 确认 archive_gap + 补救流程，不静默丢失', async () => {
@@ -159,6 +159,11 @@ test('I05: 超出官方可补拉窗口（>5天）→ 确认 archive_gap + 补救
 });
 
 test('I05b: seq 非连续 → 记录疑似缺口（suspected_gap），不必然当丢失', async () => {
+  // 测试隔离：前序用例已推进游标（seq 7001+），显式归位到 99 使 100 连续、105 成跳变；confirmed_gaps 保留 I05 的 1
+  await h.store.query(
+    `UPDATE ingestion_checkpoints SET last_seq=99, suspected_gaps=0 WHERE tenant_id=$1 AND provider='wecom_archive' AND channel='archive'`,
+    [TENANT],
+  );
   await h.ingest.advanceCheckpoint({ tenantId: TENANT, provider: 'wecom_archive', channel: 'archive', throughSeq: 100 });
   const r1 = await h.ingest.advanceCheckpoint({ tenantId: TENANT, provider: 'wecom_archive', channel: 'archive', throughSeq: 105 });
   assert.equal(r1.suspectedGap, true, 'jump recorded');

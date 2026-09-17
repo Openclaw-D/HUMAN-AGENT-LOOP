@@ -81,3 +81,18 @@ node test/run-all.mjs                                      # 72 项单测（含 
 ```
 
 B 侧消费：`tools.mode='four-domain'` + `routesPath` 指向 `Back/B/config/routes-four-domain.json`；工具实现 `Back/B/src/domains/four-domain-tools.mjs`。held-out 纪律：期望块 sha256 冻结，修改必须重生成 manifest 并在 RESULT 披露污染风险。
+
+## 7. 任务 02（PR#3 审核修复轮）交付（2026-09-17 追加；E1）
+
+审核输入：`JW_PR3_independent_audit_and_four_tasks` 包（F04/F06/F07/W04/W05/W13/W15 及 B1/B3 增量）。范围仅 C/B 两路文件，A 零改动；held-out 冻结集未动（42 场景全部原判据通过）。
+
+| 交付物 | 路径 | 说明 |
+|---|---|---|
+| C→A Gate 有版本适配器（F06/X04 修复） | `src/gate-adapter.mjs` | `toAGateInput`：rulesetVersion→rulePackVersion、scope.blockedActions→顶层 blockedActions、失败明确拒绝；`toADomainResultRegistration`：A recordDomainResult 帧投影（watermark 对象→可核字符串、非 completed Run 拒绝登记）；`cPassthrough` 无损透传 |
+| 契约互验测试（W05） | `test/gate-adapter.test.mjs` | 四种 Gate 结果取**真实场景管线输出**做消费者契约输入（S01/S19/S10/S20）；镜像 A validateGateInput/validateAnalysisRunShallow 形状断言；坏 schema 明确拒绝 |
+| 规则引擎 W04 负例加固 | `rules/engine.mjs` | scope 限定维度在交易面缺失→`applicability_unknown`（不静默不适用）；数值/布尔/等值类型不符→`condition_error`（不转 not_hit 安全结论）；派生覆盖率输入非数值/债务≤0→显式 `value=null` 派生事实走类型错误路径 |
+| Gate/计划器新信号消费 | `rules/gate.mjs` · `questions/planner.mjs` | 新 reasonCodes `RULE_APPLICABILITY_UNKNOWN`/`RULE_CONDITION_TYPE_ERROR`→NEEDS_EVIDENCE + 解除条件；内部澄清/纠正问题生成 |
+| 消融实验纪律（F07/W15） | `src/evaluation/ab-experiment.mjs` · `test/eval-discipline.test.mjs` | 明示**功能消融**非多Agent因果证明；管线失败进分母；四域臂劣于/管线错误/零样本→exit 1 |
+| 进件规范化（B1/W01–W03） | `intake/normalize.mjs` · `test/intake-normalize.test.mjs` | 商机归集主档（不授内部权限）、分级邀请×主体×种类授予面（越权待补）、元数据/可读性待补不编数、同源链求根（派生件级联待补、独立来源按根去重）、主体|期间对齐表、无倒计时确定性批次 id |
+
+复跑：`node test/run-all.mjs`（93 项）· `node src/evaluation/run-four-domain-evaluation.mjs --all`（42 场景 196 断言，exit 0）。

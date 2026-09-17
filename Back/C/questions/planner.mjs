@@ -44,6 +44,32 @@ export function planQuestions({ gate, projection, minLevels = {} }) {
         customerBurden: 'medium',
         stopCondition: `fact_verified:${rc.factKey}`,
       });
+    } else if (rc.type === 'clarify_transaction_scope') {
+      // W04：适用面维度缺失（机构/地区/产品/客户区间）→ 内部澄清，不是客户负担
+      raw.push({
+        questionId: `q-scope-clarify-${rc.ruleId}`,
+        audience: 'internal',
+        whyNeeded: { type: 'transaction_scope_unknown', ruleId: rc.ruleId ?? null, detail: `交易适用面缺 ${(rc.dims ?? []).join('/')}：规则 ${rc.ruleId} 适用性待核验，不能当"不适用"处理` },
+        expectedEvidence: { kind: 'system', note: '补充交易适用面声明后重算' },
+        targetFact: null,
+        priority: 'high',
+        optional: false,
+        customerBurden: 'none',
+        stopCondition: `transaction_scope_complete:${(rc.dims ?? []).join('|')}`,
+      });
+    } else if (rc.type === 'correct_rule_input') {
+      // W04：条件类型不符（非数值/非布尔/类型不一致）→ 内部数据质量纠正，不编造换算
+      raw.push({
+        questionId: `q-input-correct-${rc.ruleId}`,
+        audience: 'internal',
+        whyNeeded: { type: 'rule_input_type_error', ruleId: rc.ruleId ?? null, detail: `规则 ${rc.ruleId} 条件求值类型错误（${rc.errorCode}）：不转安全结论，纠正输入后重算` },
+        expectedEvidence: { kind: 'system', note: '纠正输入数值类型/单位口径后重算' },
+        targetFact: null,
+        priority: 'high',
+        optional: false,
+        customerBurden: 'none',
+        stopCondition: `rule_input_corrected:${rc.ruleId}`,
+      });
     }
   }
   for (const uc of gate.unsupportedRuleRefs ?? []) {

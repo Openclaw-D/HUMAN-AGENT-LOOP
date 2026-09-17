@@ -12,6 +12,7 @@ import { makeSessionService } from '../src/session/service.mjs';
 import { makeRecordingService } from '../src/session/recording.mjs';
 import { makeEvidenceService } from '../src/evidence/service.mjs';
 import { makeRetentionService } from '../src/evidence/retention.mjs';
+import { makeIntakeService } from '../src/intake/service.mjs';
 import { FakeWecomTransport } from '../src/wecom/transport.mjs';
 import { LocalLoopAdapter } from '../src/rtc/trtc.mjs';
 
@@ -50,6 +51,7 @@ export async function makeHarness({ fakeTransport } = {}) {
   const send = makeSendService(store, { transport, bindings, consent });
   const sessions = makeSessionService(store, { signingSecret: SIGNING_SECRET });
   const evidence = makeEvidenceService(store);
+  const intake = makeIntakeService(store, { bindings });
   const retention = makeRetentionService(store, { objectStore });
 
   // 回调入口（与 HTTP 层相同的校验路径）：LocalLoop 事件经签名后进入 recording.handleCallback。
@@ -69,7 +71,7 @@ export async function makeHarness({ fakeTransport } = {}) {
   }
 
   return {
-    dbName, store, objectStore, consent, bindings, ingest, send, sessions, evidence, retention, transport,
+    dbName, store, objectStore, consent, bindings, ingest, send, sessions, evidence, intake, retention, transport,
     wireLoop, wireRecording,
     get loop() { return loop; },
     get recording() { return recording; },

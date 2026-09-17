@@ -32,22 +32,42 @@ function deriveFacts(projection, asOf) {
   const pickBest = (arr) => (arr.length > 0 ? arr.reduce((a, b) => (levelRank(b.verificationLevel) >= levelRank(a.verificationLevel) ? b : a)) : null);
   const o = pickBest(op);
   const d = pickBest(ds);
-  if (o && d && typeof o.value === 'number' && typeof d.value === 'number' && d.value > 0) {
+  const isNum = (x) => typeof x === 'number' && Number.isFinite(x);
+  if (o && d) {
+    // W02/W04：两侧事实都在（达级）但任一非有限数值 → 产出 value=null 的显式派生事实，
+    // 由规则引擎按类型错误拒绝（不静默不产出让规则走 not_hit 安全结论），单位/口径原样透出
     const minLevel = levelRank(o.verificationLevel) <= levelRank(d.verificationLevel) ? o.verificationLevel : d.verificationLevel;
-    out.cash_coverage_ratio = {
-      value: Number((o.value / d.value).toFixed(6)),
-      verificationLevel: minLevel,
-      formula: 'cash_coverage_ratio = monthly_operating_cash_flow / monthly_debt_service (sim-cf-coverage@1)',
-    };
-    // 压力口径：叠加声明级新增债务（存在才产出；等级=各输入最低级）
-    const n = pickBest(nd);
-    if (n && typeof n.value === 'number' && (d.value + n.value) > 0) {
-      const lvl = [o.verificationLevel, d.verificationLevel, n.verificationLevel]
-        .reduce((a, b) => (levelRank(b) < levelRank(a) ? b : a));
-      out.cash_coverage_ratio_stressed = {
-        value: Number((o.value / (d.value + n.value)).toFixed(6)),
-        verificationLevel: lvl,
-        formula: 'cash_coverage_ratio_stressed = monthly_operating_cash_flow / (monthly_debt_service + new_debt_monthly_payment) (sim-cf-stress@1)',
+    if (isNum(o.value) && isNum(d.value)) {
+      if (d.value > 0) {
+      out.cash_coverage_ratio = {
+        value: Number((o.value / d.value).toFixed(6)),
+        verificationLevel: minLevel,
+        formula: 'cash_coverage_ratio = monthly_operating_cash_flow / monthly_debt_service (sim-cf-coverage@1)',
+      };
+      // 压力口径：叠加声明级新增债务（存在才产出；等级=各输入最低级）
+      const n = pickBest(nd);
+      if (n && isNum(n.value) && (d.value + n.value) > 0) {
+        const lvl = [o.verificationLevel, d.verificationLevel, n.verificationLevel]
+          .reduce((a, b) => (levelRank(b) < levelRank(a) ? b : a));
+        out.cash_coverage_ratio_stressed = {
+          value: Number((o.value / (d.value + n.value)).toFixed(6)),
+          verificationLevel: lvl,
+          formula: 'cash_coverage_ratio_stressed = monthly_operating_cash_flow / (monthly_debt_service + new_debt_monthly_payment) (sim-cf-stress@1)',
+        };
+      }
+      } else {
+        out.cash_coverage_ratio = {
+          value: null,
+          verificationLevel: minLevel,
+          formula: 'cash_coverage_ratio = UNCOMPUTABLE_NON_POSITIVE_DEBT_SERVICE (sim-cf-coverage@1)',
+        };
+      }
+    } else {
+      out.cash_coverage_ratio = {
+        value: null,
+        verificationLevel: minLevel,
+        formula: 'cash_coverage_ratio = UNCOMPUTABLE_NON_NUMERIC_INPUT (sim-cf-coverage@1)',
+        inputUnits: { operating: o.unit, debtService: d.unit },
       };
     }
   }

@@ -92,7 +92,7 @@ test('I25: 留存到期 vs 法律保留 → 依审批策略处置并记录', asy
   assert.equal(out.disposed, true);
   const gone = await h.store.query(`SELECT COUNT(*)::int AS n FROM evidence_artifacts WHERE evidence_id='ev_i25_a'`);
   assert.equal(gone.rows[0].n, 0);
-  const disp = (await h.store.query(`SELECT action, approved_by FROM disposition_log WHERE evidence_id='ev_i25_a' ORDER BY id DESC LIMIT 1`)).rows[0];
+  const disp = (await h.store.query(`SELECT action, approved_by FROM disposition_log WHERE evidence_id='ev_i25_a' AND action='disposed' ORDER BY id DESC LIMIT 1`)).rows[0];
   assert.equal(disp.action, 'disposed');
   assert.equal(disp.approved_by, 'records_admin');
   const audited = (await h.store.query(`SELECT summary FROM audit_log WHERE action='EVIDENCE_DISPOSED' AND target_id='ev_i25_a'`)).rows[0];

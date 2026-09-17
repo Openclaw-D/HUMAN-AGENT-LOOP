@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
 import { ConnError } from '../errors.mjs';
+import { newId } from '../ids.mjs';
 import { verifyCallback, verifyUrlEcho } from '../wecom/crypto.mjs';
 import { verifyTrtcSignature, parseTrtcEvent } from '../rtc/trtc.mjs';
 
@@ -12,7 +13,7 @@ import { verifyTrtcSignature, parseTrtcEvent } from '../rtc/trtc.mjs';
  * 所有读带 tenant 作用域；错误码统一 {ok:false,error}。
  */
 
-export function startServer(svc, { port = 48100, wecomConfig, trtcCallbackKey, serviceToken }) {
+export async function startServer(svc, { port = 48100, wecomConfig, trtcCallbackKey, serviceToken }) {
   const server = createServer(async (req, res) => {
     const url = new URL(req.url, `http://127.0.0.1:${port}`);
     try {
@@ -49,6 +50,19 @@ export function startServer(svc, { port = 48100, wecomConfig, trtcCallbackKey, s
         if (!svc.recording) throw new ConnError('INTERNAL', 'recording service not wired');
         const out = await svc.recording.handleCallback({ tenantId: url.searchParams.get('tid') ?? wecomConfig.defaultTenantId, rawBody: body, signHeader: req.headers['sign'], callbackKey: trtcCallbackKey });
         return json(res, 200, { code: 0, ...out });
+      }
+
+      // 签名 URL 读取：面向获准的浏览器/客户端（无服务令牌），安全性由 HMAC 签名 +
+      // 租户/客户/操作/时效校验承担；必须在服务令牌门之前，否则签名 URL 永不可用。
+      if (req.method === 'GET' && url.pathname.startsWith('/objects/')) {
+        const objectRef = decodeURIComponent(url.pathname.slice('/objects/'.length));
+        svc.objectStore.verify({
+          objectRef, op: url.searchParams.get('op'), tid: url.searchParams.get('tid'), cid: url.searchParams.get('cid'),
+          exp: url.searchParams.get('exp'), sig: url.searchParams.get('sig'), nowMs: Date.now(),
+        });
+        const buf = await svc.objectStore.get(objectRef);
+        res.writeHead(200, { 'content-type': 'application/octet-stream', 'cache-control': 'no-store' });
+        return res.end(buf);
       }
 
       // 以下需服务令牌。
@@ -101,15 +115,78 @@ export function startServer(svc, { port = 48100, wecomConfig, trtcCallbackKey, s
         return json(res, 200, { ok: true, ...(await svc.send.send({ tenantId: b.tenantId, actor: b.actor, customerId: b.customerId, threadId: b.threadId, audience: b.audience, text: b.text, clientMsgId: b.clientMsgId })) });
       }
 
-      if (req.method === 'GET' && url.pathname.startsWith('/objects/')) {
-        const objectRef = decodeURIComponent(url.pathname.slice('/objects/'.length));
-        const v = svc.objectStore.verify({
-          objectRef, op: url.searchParams.get('op'), tid: url.searchParams.get('tid'), cid: url.searchParams.get('cid'),
-          exp: url.searchParams.get('exp'), sig: url.searchParams.get('sig'), nowMs: Date.now(),
+      // ---- 任务02 · B1 进件域（W01/W02/W03/W10）----
+      if (route === 'POST /api/connectors/intake/invitations') {
+        const b = JSON.parse(body);
+        return json(res, 200, { ok: true, ...(await svc.intake.issueInvitation(b)) });
+      }
+      if (route === 'POST /api/connectors/intake/accept') {
+        const b = JSON.parse(body);
+        return json(res, 200, { ok: true, ...(await svc.intake.acceptInvitation(b)) });
+      }
+      if (route === 'POST /api/connectors/intake/verify-binding') {
+        const b = JSON.parse(body);
+        return json(res, 200, { ok: true, ...(await svc.intake.verifyBinding(b)) });
+      }
+      if (route === 'POST /api/connectors/intake/revoke') {
+        const b = JSON.parse(body);
+        return json(res, 200, { ok: true, ...(await svc.intake.revokeInvitation(b)) });
+      }
+      if (route === 'POST /api/connectors/evidence/upload') {
+        const b = JSON.parse(body);
+        if (!svc.objectStore) throw new ConnError('INTERNAL', 'objectStore not wired');
+        // 1) 范围门：邀请须 accepted、kind 获准、对象在锚定范围（W01）；多锚点逐一校验
+        const anchors = [...(Array.isArray(b.objectRefs) ? b.objectRefs : []), ...(b.objectRef ? [b.objectRef] : [])];
+        if (anchors.length === 0) {
+          await svc.intake.checkUploadScope({ tenantId: b.tenantId, invitationId: b.invitationId, kind: b.kind, objectRef: null });
+        } else {
+          for (const anchor of anchors) {
+            await svc.intake.checkUploadScope({ tenantId: b.tenantId, invitationId: b.invitationId, kind: b.kind, objectRef: anchor });
+          }
+        }
+        // 2) 原件入受控对象存储（内容哈希由对象存储落库；get 时复核）
+        let objectRef = b.objectRef ?? null;
+        let sha256 = null;
+        let readable = b.readable !== false;
+        if (b.contentBase64 != null) {
+          const buf = Buffer.from(b.contentBase64, 'base64');
+          if (buf.length === 0) readable = false; // 空内容=不可读，不得编造
+          objectRef = objectRef ?? newId('up');
+          const put = await svc.objectStore.put(objectRef, buf, { tenantId: b.tenantId, contentType: b.contentType ?? 'application/octet-stream' });
+          sha256 = put.sha256;
+        } else if (objectRef == null) {
+          throw new ConnError('INVALID_INPUT', 'upload: contentBase64 或 objectRef 必须提供其一');
+        }
+        // 3) 登记原件+口径元数据；不可读 → needs_followup（待补），绝不产生事实候选
+        const reg = await svc.evidence.registerArtifact({
+          tenantId: b.tenantId, customerId: b.customerId, sessionId: b.sessionId ?? null,
+          sourceProvider: 'customer_upload', kind: b.kind,
+          objectRef, sha256, sourceGroup: b.sourceGroup ?? `upload:${b.customerId}:${b.kind}`,
+          derivedFrom: b.derivedFrom ?? null,
+          capturedAt: b.capturedAt ?? null,
+          periodFrom: b.periodFrom ?? null, periodTo: b.periodTo ?? null,
+          currency: b.currency ?? null, unit: b.unit ?? null, caliber: b.caliber ?? null,
+          pageFrom: b.pageFrom ?? null, pageTo: b.pageTo ?? null,
+          uploaderRef: b.invitationId, uploadSource: 'customer_upload',
+          objectRefs: b.objectRefs ?? (objectRef ? [objectRef] : []),
+          completeness: readable ? b.completeness ?? 'complete' : 'needs_followup',
+          readable,
+          sourceMode: b.sourceMode ?? 'real',
         });
-        const buf = await svc.objectStore.get(objectRef);
-        res.writeHead(200, { 'content-type': 'application/octet-stream', 'cache-control': 'no-store' });
-        return res.end(buf);
+        return json(res, 200, {
+          ok: true, ...reg,
+          note: reg.completeness === 'needs_followup'
+            ? '材料不可读/缺失：已登记待补，不产生任何事实候选'
+            : '已登记为声明级未核验工件；人工核验须由操作者另行执行',
+        });
+      }
+      if (route === 'POST /api/connectors/evidence/verify') {
+        const b = JSON.parse(body);
+        return json(res, 200, { ok: true, ...(await svc.evidence.verifyArtifact(b)) });
+      }
+      if (route === 'POST /api/connectors/evidence/coverage') {
+        const b = JSON.parse(body);
+        return json(res, 200, { ok: true, ...(await svc.evidence.evidenceCoverage(b)) });
       }
 
       return json(res, 404, { ok: false, error: 'NOT_FOUND' });
