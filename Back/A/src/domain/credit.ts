@@ -307,6 +307,11 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       const grantee = reqString(granteePrincipalId, 'principalId', 64);
       return await runTxV2(kernel.pool, async (tx) => {
         await tx.query(`DELETE FROM principal_customer_grants WHERE customer_id=$1 AND principal_id=$2`, [customerId, grantee]);
+        // v2.4 G2：客户联系人身份级联停用（撤权即刻生效；重放经鉴权链同样拒绝）
+        await tx.query(
+          `UPDATE customer_identities SET status='disabled' WHERE principal_id=$2 AND customer_id=$1 AND status='active'`,
+          [customerId, grantee],
+        );
         await tx.query(
           `INSERT INTO audit_events (actor_principal_id, action, target_type, target_id, project_id, summary, payload_sha256)
            VALUES ($1,'customer_grant_revoked','customer',$2,NULL,$3,$4)`,
@@ -387,6 +392,21 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
         if (stored !== null) return stored;
         const tenantId = customer.tenant_id as string;
         const kind = reqString(frame.kind, 'kind', 64);
+        // v2.4 G2：邀请兑换的客户联系人身份按授予面限制材料种类（服务端强制）。
+        // 仅约束 customer_identities 成员；既有合成客户 principal（目录种子，非邀请路径）保持旧行为零变更。
+        // DEF-G04N-02（04 路接口对齐项）：处理桥（02 coordinator）可能以 `material.<kind>` 命名空间登记，
+        // 比对按剥离前缀后的原始种类执行，落库保持调用方原样——两侧任一收敛均安全，不会双拒。
+        if (ctx.roles.includes('customer')) {
+          const ident = await tx.query(
+            `SELECT allowed_kinds FROM customer_identities WHERE principal_id=$1 AND status='active'`, [ctx.actor]);
+          if (ident.rows.length > 0) {
+            const allowed = (ident.rows[0].allowed_kinds as string[] | undefined) ?? [];
+            const bareKind = kind.startsWith('material.') ? kind.slice('material.'.length) : kind;
+            if (!allowed.includes(bareKind)) {
+              throw forbidden('PERMISSION_DENIED', `邀请未授予材料种类 ${kind}（客户联系人仅能提交获准种类）`);
+            }
+          }
+        }
         const factKey = frame.factKey === undefined || frame.factKey === null ? null : reqString(frame.factKey, 'factKey', 128);
         const content = reqObject(frame.content, 'content');
         const grade = frame.grade === undefined || frame.grade === null ? 'unverified' : reqString(frame.grade, 'grade', 32);
@@ -514,7 +534,8 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       // B13：客户角色不授予证据清单地址（内部证据元数据不外泄）
       const authArt = await authenticate(kernel.verifierForV2(), credential);
       requireVerified(authArt);
-      if (authArt.principal.roles.every((r) => r === 'customer')) {
+      // B13：客户角色不授予证据清单地址（内部证据元数据不外泄）。some 口径：混合角色同样拒绝（v2.4 加固）。
+      if (authArt.principal.roles.some((r) => r === 'customer')) {
         throw forbidden('PERMISSION_DENIED', '无权访问该资源');
       }
       const res = await kernel.pool.query(

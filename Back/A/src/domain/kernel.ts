@@ -14,6 +14,7 @@ import { buildPackageCommands, type PackageApi } from './package.ts';
 import { buildReportCommands, type ReportsApi } from './reports.ts';
 import { buildAnalysisCommands, type AnalysisApi } from './analysis.ts';
 import { buildInspectionCommands, type InspectionApi } from './inspection.ts';
+import { buildIdentityCommands, chainCustomerIdentityVerifier, type IdentityApi } from './identity.ts';
 
 const MAX_BODY_JSON = 1 << 20;      // 1MB 请求体上限
 const MAX_RESULT_JSON = 64 << 10;   // 候选结果上限（上下文限额守卫的一部分）
@@ -200,10 +201,14 @@ export class Kernel {
   /** 可信规则回执通道（任务01 A2）：规则版本激活/Gate 回执/分析运行登记。 */
   readonly analysis: AnalysisApi;
 
+  /** v2.4 身份与办理面（受限邀请/客户联系人身份/客户目录/材料处理状态）。 */
+  readonly identity: IdentityApi;
+
   constructor(pool: Pool, options: KernelOptions) {
     this.pool = pool;
     this.config = options.config;
-    this.verifier = options.verifier;
+    // 校验链：进程内合成目录 → customer_identities（DB 侧客户联系人身份，撤权即刻生效）。
+    this.verifier = chainCustomerIdentityVerifier(options.verifier, pool);
     this.v2 = {
       ...buildCreditCommands(this),
       ...buildReviewCommands(this),
@@ -212,6 +217,7 @@ export class Kernel {
     } as CreditV2Api & ReviewApi & PackageApi & ReportsApi & AnalysisApi;
     this.ix = buildInspectionCommands(this);
     this.analysis = buildAnalysisCommands(this);
+    this.identity = buildIdentityCommands(this);
   }
 
   /** v2 授信域访问可信身份源与配置（credit.ts 只经此读取，保持单一 Kernel 实例）。 */
@@ -1208,6 +1214,7 @@ export class Kernel {
       db,
       model: this.config.modelTransport === null ? 'not_configured' : 'configured',
       principalVerifier: this.verifier === null ? 'not_configured' : 'configured',
+      ...(this.config.bootNonce ? { bootNonce: this.config.bootNonce } : {}),
       leaseSeconds: this.config.leaseSeconds,
       contractVersion: 'v1.3+v2.1-credit+decision-loop(task01+task02)',
       creditPolicy: {

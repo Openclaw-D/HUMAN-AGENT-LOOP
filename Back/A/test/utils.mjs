@@ -12,6 +12,7 @@ export const A_ROOT = path.resolve(__dirname, '..');
 // 未设置时保持历史默认（v7next-a-pg@15432），旧流程行为不变。
 const ADMIN_DB = process.env.JW_A_ADMIN_DB_URL ?? 'postgres://v7next:v7next@127.0.0.1:15432/postgres';
 const BASE_PORT = 48100;
+// 四任务轮提示：并行会话共用本机时，为各路指定互不重叠的 JW_A_ADMIN_DB_URL 容器与端口段。
 
 export const TOKENS = {
   admin: 'tok-admin',
@@ -39,16 +40,23 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export async function createTestDb(prefix = 'v7next_a_test') {
   const name = `${prefix}_${randomBytes(4).toString('hex')}`;
-  const admin = new pg.Pool({ connectionString: ADMIN_DB });
-  await admin.query(`CREATE DATABASE ${name}`);
+  // 四任务轮实测：CREATE DATABASE 可能被其他并行会话长期持有的管理库连接无限阻塞（pg 默认无超时，
+  // 表现为测试进程零输出挂起数十分钟）。加语句超时 + 有界重试，把无限挂起变成快速可见的失败。
+  const admin = new pg.Pool({ connectionString: ADMIN_DB, statement_timeout: 20000, connectionTimeoutMillis: 8000 });
+  let lastErr = null;
+  for (let i = 0; i < 3; i++) {
+    try { await admin.query(`CREATE DATABASE ${name}`); lastErr = null; break; }
+    catch (e) { lastErr = e; await sleep(1500); }
+  }
   await admin.end();
+  if (lastErr !== null) throw new Error(`CREATE DATABASE ${name} 三次尝试均失败（疑似管理库被并行会话长期占用）：${lastErr.message}`);
   const base = new URL(ADMIN_DB);
   base.pathname = `/${name}`;
   return { name, url: base.toString() };
 }
 
 export async function dropTestDb(name) {
-  const admin = new pg.Pool({ connectionString: ADMIN_DB });
+  const admin = new pg.Pool({ connectionString: ADMIN_DB, statement_timeout: 20000, connectionTimeoutMillis: 8000 });
   await admin.query(`DROP DATABASE IF EXISTS ${name} WITH (FORCE)`);
   await admin.end();
 }
@@ -58,11 +66,16 @@ export async function dropTestDb(name) {
  *  随机端口偶发与本机常驻服务（如 Edge 面板@48200）碰撞：EADDRINUSE 时自动换口重试（goal-01）。 */
 export async function startKernel({ portOffset = 0, leaseSeconds = 90, dispatch = false, dbUrl = null, keepDb = false, extraArgs = [], principalSpec = PRINCIPAL_SPEC } = {}) {
   const db = dbUrl === null ? await createTestDb() : { name: null, url: dbUrl };
+  // 启动随机数指纹：healthz 回显 bootNonce 才认定"是我起的内核"。四任务轮并行实测：
+  // 同端口段会被其他会话的同指纹 A 内核抢占（healthz 形状相同、鉴权探测也会被 faulty-verifier 等注入挂住）。
+  const bootNonce = randomBytes(8).toString('hex');
   try {
     for (let attempt = 1; ; attempt++) {
-      const port = BASE_PORT + Math.floor(Math.random() * 400) + portOffset;
+      // 四任务轮：四路会话并行跑测试，48100-48500 窄段 + Edge 固定口 48200 撞 port 频繁（实测）→ 加宽随机段
+      // （上限 49100：Windows 临时端口默认自 49152 起，不得越界）
+      const port = BASE_PORT + Math.floor(Math.random() * 1000) + portOffset;
       const args = ['src/index.ts', '--port', String(port), '--db', db.url, '--principal-tokens', principalSpec,
-        '--lease-seconds', String(leaseSeconds)];
+        '--boot-nonce', bootNonce, '--lease-seconds', String(leaseSeconds)];
       if (dispatch) args.push('--dispatch');
       if (extraArgs.length > 0) args.push(...extraArgs);
       const child = spawn('node', args, { cwd: A_ROOT, stdio: ['ignore', 'pipe', 'pipe'] });
@@ -75,12 +88,28 @@ export async function startKernel({ portOffset = 0, leaseSeconds = 90, dispatch 
       for (let i = 0; i < 60; i++) {
         try {
           const r = await fetch(`${base}/healthz`);
-          if (r.status === 200) { up = true; break; }
+          if (r.status === 200) {
+            // A 内核指纹：healthz 必须回显本次启动的 bootNonce——同端口段的其他 A 内核/外来服务都不可能持有。
+            let hj = null;
+            try { hj = await r.json(); } catch { /* 非 JSON */ }
+            if (hj && typeof hj === 'object' && hj.bootNonce === bootNonce && 'db' in hj) { up = true; break; }
+ }
         } catch { /* 未起 */ }
         await sleep(250);
       }
       if (up) {
         const pool = new pg.Pool({ connectionString: db.url });
+        // 等迁移完成：内核 HTTP 就绪可能先于迁移（负载下更明显），seedMatrix 等首个查询会竞态失败
+        // （A18/A19 实测 permission_matrix 不存在）。以迁移 002 的表为 schema 就绪标记。
+        for (let i = 0; i < 60; i++) {
+          try {
+            const m = await pool.query("SELECT to_regclass('public.permission_matrix') AS t");
+            if (m.rows[0] && m.rows[0].t !== null) break;
+          } catch { /* 重试 */ }
+          await sleep(250);
+        }
+        // 迁移完成即视为就绪（bootNonce 指纹已确认是我起的内核）；faulty-verifier 等注入内核
+        // 的鉴权层不可用，不再做鉴权探测。
         return {
           port, base, dbUrl: db.url, dbName: db.name, child, logs,
           pool,
@@ -95,7 +124,7 @@ export async function startKernel({ portOffset = 0, leaseSeconds = 90, dispatch 
       }
       child.kill('SIGKILL');
       const logText = logs.join('');
-      if (attempt < 3 && logText.includes('EADDRINUSE')) continue; // 端口碰撞：换口重来
+      if (attempt < 6 && logText.includes('EADDRINUSE')) continue; // 端口碰撞：换口重来（并行会话下碰撞率高，3 次不够）
       throw new Error(`kernel 启动失败：\n${logText}`);
     }
   } catch (error) {

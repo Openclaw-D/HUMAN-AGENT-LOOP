@@ -17,3 +17,7 @@
 ## 任务01 增量 · 2026-09-17（PR#3 审核修复轮）
 
 执行 `JW_PR3_independent_audit_and_four_tasks` 任务01（审核基线 870e149；范围 Back/A/**、共享契约与迁移 005–007；零 Git 提交、零真实模型/资金调用）。按任务书 A1→A2→A3 三个提交边界关闭审核 F01/F02/F03/F04/F06/F10/F12：A1 身份/客户级授权与幂等归属（K01–K04，含撤权后重放不借缓存、v1 读口/事件/回执封匿名旁路）；A2 Gate 只来自可信服务回执、分析运行开始即盖章输入摘要、必需域政策 fail-closed、HOLD_FOR_REVIEW 不再产生 ready、正式路径强制绑定依据包（K05–K11，legacy 通道仅显式开启）；A3 台账锁后重读+二层去重、commit/disburse 提交点门、冷却口径收窄为"向上申请/发布"、客户级提额请求（在途唯一/次数窗口/实质新证据/nextEligibleAt）（K12–K18，真实 PG 屏障并发）。旧套件按契约 v2.2 适配（decision-loop B01–B14 走新机器，语义保留）。测试：Back/A 全量 102 项 101 pass / 0 fail / 1 skip（crash 容器重启用例按边界守卫跳过）；K01–K18 共 21 项全绿。契约登记见 Back/CONTRACT.md §9 v2.2；接口破坏（Edge 匿名读口）需任务03 跟进。
+
+## 任务01 增量 · 2026-09-18（四任务产品交付轮 v2.4）
+
+执行 `JW_product_delivery_four_tasks` 任务01（基线 e4ed7a5；范围 Back/A、迁移 009、CONTRACT §11、docs/product-delivery/goal-01/）。新增可供页面办理的业务服务面：授权客户目录（grants 过滤+键集分页）、受限邀请与客户联系人身份（DB 侧动态身份，邀请码/凭据仅存 sha256，兑换恰一次、requestId 对账、撤权级联停用、授予面服务端强制）、材料处理状态权威投影（service 回执制、runRef 内单调、失败必须给下一动作、客户侧白名单披露 my/materials）。修复 B13 混合角色越权（every→some）、游标微秒截断跨页重复、撤权级联缺失；A22 迁移清单补 009。测试工具加固（/healthz 指纹/迁移等待/鉴权探测/端口段加宽）。测试：Back/A 120 项全部最终态通过证据、0 fail/1 skip；新套件 invitations-directory V1–V6。契约登记见 Back/CONTRACT.md §11 v2.4；本路无破坏性接口变更。
