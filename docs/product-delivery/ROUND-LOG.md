@@ -165,3 +165,29 @@ IR-03-8 ①②③⑤ 全部关闭（03 路缺陷候选 → 02 owner 落地）。
 - **03 路（等此形状的项）**：⑦ 页面链 = admin 签发 svc 凭据（Edge 服务端保管）→ Gate 回执（svc）→ 分析运行（svc）→ 域结果（域角色 human）→ 冻结包（credit/business human）→ 提案带 packageId；⑧ 预览代理目标=`.../artifacts/:artifactId/content`；④ 无需页面适配（两形态皆通）；⑥ 会话名册加 `{roleKey:'customer',kind:'human'}` 即可在客户门户内直接读线程+回答。
 - **04 路**：DEF-G04N-04 owner-01 项（交付运行时补 service 主体）已交付，页面复测可走 W3 同型链；请 04 验收后在 DEFECTS.md 标注。
 - 边界重申：未 commit/push；只写 Back/A/**、CONTRACT §11 加法、goal-01 文档与本回执。
+
+---
+
+## 2026-09-19 10:4x｜04 路（合流装配）完工回执：四切片提交+单一固定快照九路回归全绿+PR 已开
+
+阶段一（R2/R3/登记）与阶段二（切片/回归/push/PR）全部完成。工作目录 C:/Users/22673/Desktop/JW，分支 v02-goal1234-delivery。
+
+### 阶段一
+
+- **R2 关闭**：`.gitignore` 增 `!docs/**/*.log` 窄化负模式，救回 196 个回归/验收证据 log（goal-01 分片与终验、backend-upgrade/goal-01 与 goal-04、customer-next task3 验收与稳定性轮）；g03d 运行态凭据（`.jw-g03d-journey/`、`Back/Edge/config/g03d-conn-token.txt`）入忽略。
+- **R3 关闭**：`JW_product_delivery_four_tasks/` 扁平化一层，六文件 sha256 与 MANIFEST.json 复核一致；round-report / round-report-d27r / goal-01 与 goal-04 BASELINE 共 4 处嵌套路径引用同步修正。
+- 登记：根 CHANGELOG/DECISIONS 补任务02条目并按 02 路完工回执修订；DELIVERY-BRIEF-draft.md 定稿复核+基线状态刷新。
+
+### 阶段二
+
+- **四切片提交**（等三路完工回执齐后执行；本派工即 commit 授权）：`c0ee2ea`=01路（Back/A+CONTRACT+goal-01，24 文件）；`d45b03e`=02路（B/C/Connectors+goal-02，42 文件）；`c53c6a8`=03路（Front 含 dist+Back/Edge+goal-03，50 文件）；`bc81c86`=04路（.gitignore+根部 docs+任务书包+Back/D+goal-04，232 文件）。零 revert/零丢弃、按路归位，树净后才跑回归。
+- **单一固定快照回归（九路全绿，R6 节留证）**：交付栈按派工固定命令重启（迁移 010 首次应用于交付库；healthz/ready ok；同源 dist 页面 200）；A 132=131+1skip、B 105/105（首跑九路并行满载 104/105=已登记 crash-recovery 偶发族，单文件 3/3+安静环境全量复跑 105/105）、C 101/101、Connectors 77/77、Edge 53/53、Front 37/37、e1 全链 1/1、金丝雀门禁 43/43+缺陷复现 0/2。证据 `docs/product-delivery/goal-04/evidence/d4-merge/`。
+- **端口注记**：金丝雀固定段 17933/17935 仍被本轮 03 路 g03d 栈占用，按派工预案改临时段 **17943/17945**，并给 `journey-first-file.mjs` 加 `--a-port/--conn-port`（向后兼容，默认不变）。未知进程零触碰；jw-g04b-pg 只 start 未重建。
+- **DEFECTS 标注（应 01 路之托）**：DEF-G04N-04/05 状态改为「修复已双路交付、合流回归绿、页面级 J1 复测待下轮后关闭」——不冒充关闭。
+- **push+PR**：分支已推 origin；新 PR（base main）已开，描述如实列交付/已关闭/OPEN 清单。
+
+### 遗留与移交（如实）
+
+- **G04N-04/05 页面级复测**：修复已交付且服务级/套件级全绿，但 J1.4/J1.5 页面级关闭需下轮在固定快照重跑 J1（本轮未做页面旅程，不冒充）。
+- OPEN 不变项：D27-L-UI 硬门不判 PASS（本轮 PASS3/BLOCKED4）；IR-03-4 权威清单、IR-03-6 扩展（cit_* 名册外明细面）、IR-03-8⑤ 的 01 侧目录归集读口；反例集页面层（N-01–N-12）、人证轮、D27-R、D27-S 未做；生产化项（HTTPS/Cookie/限流/凭据存续/Edge 会话持久化）按 S3 边界未开工。
+- B 已知偶发：crash-recovery 时序失败在并行满载下可复现（两代登记一致）；单独复跑与安静环境全量均绿。

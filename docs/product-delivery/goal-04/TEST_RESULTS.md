@@ -99,3 +99,24 @@
 
 - 反例集 N-01–N-12 页面层未跑（API 层等价证据见 R4 金丝雀 12 件反例样本）；真人试用轮 NOT_RUN；D27-R/D27-S 单列未决。
 - 运行态：交付栈监督进程保持后台（Edge@17931/A@48282/PG@15452）供复核；停止走 `delivery-down.mjs` 三证复核。
+
+## R6｜合流装配：单一固定快照回归（2026-09-19）✅
+
+- 前置：A/B/C 三路 ROUND-LOG 完工回执齐备（01：④⑥⑦⑧ 终验 132 项；02：IR-03-8①②③⑤ 关闭 77/77；03：⑨⑩⑪ Edge 53/53+Front 37/37）后按路切片提交，工作树产品代码零脏项；R2 证据 log 入库（`.gitignore` 增 `!docs/**/*.log`，救回 196 个）；R3 任务书包扁平化入库（六文件 sha256 与 MANIFEST 复核一致）。
+- 快照：分支 HEAD **`bc81c86`**（四切片 c0ee2ea=01路 / d45b03e=02路 / c53c6a8=03路 / bc81c86=04路装配）。交付栈 version-seal buildId `4647b2ef388bc085`（gitSha=bc81c86；dirty 3 路径=本路在写的 d4-merge 证据目录与金丝雀驱动器端口参数修订，非产品代码）。
+- 交付栈（派工固定命令，重启验证）：`delivery-down --db-container jw-g04b-pg`（三证复核）→ `delivery-up --db-container jw-g04b-pg --db-port 15452 --kernel-port 48282 --edge-port 17931 --serve-front C:/Users/22673/Desktop/JW/Front/dist`。迁移 001–010 应用（**010_service_identities 首次应用于交付库**，DB 簿记复核）；Edge `/healthz/ready` ok=true（kernel-a 200 + db tcp，逐依赖独立报告）；A `/healthz` ok、contractVersion `v1.3+v2.1-credit+decision-loop(task01+task02)`；同源根页面 200 出 dist HTML。探针留证 `evidence/d4-merge/probe-*.json`。
+- 回归矩阵（九路，全部对提交后代码）：
+
+| 项 | 命令 | 结果 | 证据（evidence/d4-merge/） |
+|---|---|---|---|
+| A 全量 | `JW_A_ADMIN_DB_URL=postgres://goal01:goal01-local@127.0.0.1:15446/postgres node --test --test-concurrency=1 test/*.test.mjs` | **132 项=131 pass/0 fail/1 skip**（skip=crash 容器守卫，口径同 01 路回执） | a-suite-full.log |
+| B 默认入口 | `npm test` | 首跑（九路并行满载）**104/105**——crash-recovery「恢复后取消」时序失败（02 路已登记的已知偶发族）；**单文件复跑 3/3、安静环境全量复跑 105/105** | b-npm-test.log / b-crash-recovery-rerun.log / b-npm-test-rerun.log |
+| C | `npm test` | **101/101** | c-run-all.log |
+| Connectors | `npm test` | **77/77**（默认入口含 a-bridge 真内核 3/3） | connectors-npm-test.log |
+| Edge 非 e1 | `npm test` | **53/53** | edge-npm-test.log |
+| Front | `npm test` | **37/37** | front-npm-test.log |
+| e1 全链 | `node --test test/e1/e1-g04-fullchain.test.mjs`（自管 15438/17923） | **1/1 PASS**（22 组判据：进件幂等→四域可信依据→检查会话→包→人工决定→占额→阻断→恢复） | e1-fullchain.log |
+| 02 路金丝雀 | `node Back/D/product-journey/journey-first-file.mjs --a-port 17943 --conn-port 17945` | **门禁 43/43 全 ok、缺陷复现 0/2**（DEF-G04N-01/03 探针 ok） | canary-journey.log + first-file-1789785410383.json |
+
+- 端口注记：金丝雀固定段 17933/17935 仍被 03 路 g03d 栈占用（03 回执"17935 原样未动"），按派工预案**改临时段 17943/17945** 落证，并给驱动器加 `--a-port/--conn-port` 参数（向后兼容，默认不变；修订随本轮回执 commit 入库）。
+- 结论：**单一固定快照九路全绿，push 前置达成**。交付栈验证后按三证复核 `delivery-down` 停止（PG 容器保留不动）。

@@ -2,8 +2,8 @@
 
 - **身份**：本文件原为合流审计会话草案（2026-09-19）；按任务书《四路唯一修改者》，定稿权属任务04（发布装配 writer）。2026-09-19 由任务04 按 R4/R5 实测结果定稿刷新；逐项证据指针见 `docs/product-delivery/goal-04/TEST_RESULTS.md`。
 - **详版**：`docs/product-delivery/round-report.md`（§11 一致性分歧清单 D1–D8、合流风险 R1–R8）+ `docs/product-delivery/goal-04/`（USER_JOURNEY/ACCEPTANCE_MATRIX/TEST_RESULTS/DEFECTS/BASELINE）。
-- **基线**：分支 `v02-goal1234-delivery` 在制工作树（HEAD e4ed7a5）；`origin/main` 已含 PR#4（b6bea23）。本轮全部成果尚未提交，合流路径 = 按路切片提交 → 新 PR（base main）。
-- **固定快照**：version-seal buildId `521bdc0e2f60246e`（`docs/product-delivery/goal-04/evidence/d3/version-seal.json`；gitSha+在制 dirty 如实在案）。
+- **基线**：分支 `v02-goal1234-delivery`；`origin/main` 已含 PR#4（b6bea23）。**2026-09-19 合流装配完成**：本轮成果已按路切片提交（`c0ee2ea`=01路 / `d45b03e`=02路 / `c53c6a8`=03路 / `bc81c86`=04路装配），单一固定快照九路回归全绿（`docs/product-delivery/goal-04/TEST_RESULTS.md` R6），分支已推 origin 并开新 PR（base main）。
+- **固定快照**：合流回归栈 version-seal buildId `4647b2ef388bc085`（gitSha=bc81c86，`evidence/d4-merge/probe-edge-versionz.json`）；D3 轮参照快照 buildId `521bdc0e2f60246e`（`evidence/d3/version-seal.json`）。
 
 ## 一、本轮交付了什么（结论先行）
 
@@ -25,12 +25,12 @@
 - **原件预览**：等 A 单件读回端点（IR-03-3）。
 - 页面层旅程硬门 **D27-L-UI 不判 PASS**（J1：PASS 3 项/BLOCKED 4 项，见 ACCEPTANCE_MATRIX）；反例集页面层、真人试用轮（人证轮）、真实媒体/模型（D27-R）、三维（D27-S）均未发生，不冒充完成。
 
-## 三、合流入 main 前必须裁决/处理的事
+## 三、合流入 main 前必须裁决/处理的事（2026-09-19 全部已处理）
 
-1. **回归证据 .log 入库方式（R2）**：goal-01 的 evidence-shard-*.log 等被 `.gitignore` 全局 `**/*.log` 吞掉——`git add -f` 或加窄化负模式，二选一。
-2. **任务书包入库（R3）**：`JW_product_delivery_four_tasks/` 建议入库但须先消除嵌套同名目录。
-3. 根 DECISIONS/CHANGELOG 补任务02/04 登记；PR 描述如实列 OPEN（G04N-04/05、G3 接线、IR-03-3/4/6/7、反例集页面层）。
-4. 合流 PR 分支上补跑一轮 e1 全链+各路默认入口+金丝雀，取得"单一固定快照"回归证据后再请求验收。
+1. **回归证据 .log 入库方式（R2）✅已裁决执行**：采用窄化负模式 `!docs/**/*.log`（04 路派工授权），救回 196 个证据 log；运行态凭据另加忽略。
+2. **任务书包入库（R3）✅已执行**：`JW_product_delivery_four_tasks/` 已扁平化一层入库，六文件 sha256 复核一致，4 处嵌套路径引用同步修正。
+3. 根 DECISIONS/CHANGELOG ✅已补任务02/03/04 登记；PR 描述如实列 OPEN（G04N-04/05 修复已交付待页面级复测、IR 遗留、反例集页面层、人证轮、D27-R/S）。
+4. ✅已在 PR 分支补跑"单一固定快照"回归（e1 全链+各路默认入口+02 路金丝雀临时段 17943/17945），九路全绿后 push，证据在 `evidence/d4-merge/`。
 
 ## 四、怎么跑（最快看到页面）
 

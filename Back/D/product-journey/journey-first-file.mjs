@@ -19,8 +19,10 @@ const CONNECTORS = path.join(REPO, 'Back', 'Connectors');
 const A_INDEX = path.join(REPO, 'Back', 'A', 'src', 'index.ts');
 
 const KEEP = process.argv.includes('--keep');
+const portArg = (name, dflt) => { const i = process.argv.indexOf(name); return i > 0 && process.argv[i + 1] ? Number(process.argv[i + 1]) : dflt; };
 const PG = { container: 'jw-g04b-pg', port: 15452, user: 'jw', password: 'jw-local-demo' };
-const A_PORT = 17933, CONN_PORT = 17935;
+// 默认 17933/17935 与 goal-03 路登记栈共用；合流回归等场景用 --a-port/--conn-port 错峰（04 路）
+const A_PORT = portArg('--a-port', 17933), CONN_PORT = portArg('--conn-port', 17935);
 const A_DB = 'jw_g04j', C_DB = 'cnext_g04j';
 const TENANT = 't1';
 const CUST_LOCAL = 'journey-cust';

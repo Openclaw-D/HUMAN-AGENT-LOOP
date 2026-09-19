@@ -1,0 +1,23 @@
+[delivery-up] ✓ 预检：node/docker/dist 就绪
+[delivery-up] ✓ 容器 jw-g04b-pg 已在运行
+[delivery-up] ✓ PG 就绪
+[delivery-up] ✓ 数据库迁移已应用（A 迁移簿记：[migrate] applied: 010_service_identities.sql）
+[delivery-up] ✓ 权限矩阵播种完成（配置内 SQL，幂等）
+[delivery-up] ✓ A 内核运行中 pid=4516 port=48282 marker=jw-delivery-…
+[delivery-up] ✓ Edge 身份目录已写入（9 条；服务端内存使用）
+[edge-start] jw-edge 守护进程运行中 pid=28032 port=17931 marker=b31a3d63…
+  GET /versionz        版本封存
+  GET /healthz/live    liveness（仅进程存活）
+  GET /healthz/ready   readiness（逐依赖独立结果）
+  停止：node scripts/edge-stop.mjs（先复核启动标识，绝不误杀）
+[delivery-up] ✓ Edge（live 投影）已启动
+──────────────────────────────────────────────
+[delivery-up] 就绪：是
+  前端(同源) : http://127.0.0.1:17931/  ← C:/Users/22673/Desktop/JW/Front/dist（Edge 同源托管，工作本走同源 API）
+  前端(预览) : cd Front && node start-preview.mjs --port=3628（本地模拟形态，不连后台）
+  Edge       : http://127.0.0.1:17931/  (build 4647b2ef388bc085, /harness/ 操作验证页)
+  A 内核     : http://127.0.0.1:48282/healthz
+  停止       : 本窗口 Ctrl+C（推荐）；或另开窗口 node scripts/delivery-down.mjs
+  能力位     : {"model":"not_configured","video":"blocked_external_access","recording":"blocked_external_access","policy":"simulation_rule_pack_v1.0.0 (boundary=simulation_only)","credit":"v2_kernel (policy bits synthetic; 生产矩阵须公司批准录入)","note":"能力位逐一独立报告，永不汇总为 all_ok；受限能力见 contract/consumed-surface-v1.json"}
+──────────────────────────────────────────────
+[delivery-up] 监督进程运行中：保持本窗口开启；Ctrl+C 停止 Edge+A。
