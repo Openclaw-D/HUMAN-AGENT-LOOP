@@ -1,0 +1,34 @@
+[delivery-up] ✓ 预检：node/docker/dist 就绪
+[delivery-up] ✓ 容器 jw-v01-pg 已在运行
+[delivery-up] ✓ PG 就绪
+[delivery-up] ✓ 数据库迁移已应用（A 迁移簿记：[migrate] up-to-date）
+[delivery-up] ✓ 权限矩阵播种完成（配置内 SQL，幂等）
+[delivery-up] ✓ A 内核运行中 pid=27328 port=48180 marker=jw-delivery-…
+[edge-start] jw-edge 守护进程运行中 pid=1772 port=48200 marker=29f16c65…
+  GET /versionz        版本封存
+  GET /healthz/live    liveness（仅进程存活）
+  GET /healthz/ready   readiness（逐依赖独立结果）
+  停止：node scripts/edge-stop.mjs（先复核启动标识，绝不误杀）
+[delivery-up] ✓ Edge（live 投影）已启动
+──────────────────────────────────────────────
+[delivery-up] 就绪：是
+  前端预览   : cd Front && node start-preview.mjs   → http://127.0.0.1:3618/
+  Edge       : http://127.0.0.1:48200/  (build 5378df5b660da525, /harness/ 操作验证页)
+  A 内核     : http://127.0.0.1:48180/healthz
+  停止       : 本窗口 Ctrl+C（推荐）；或另开窗口 node scripts/delivery-down.mjs
+  能力位     : {"model":"not_configured","video":"blocked_external_access","recording":"blocked_external_access","policy":"simulation_rule_pack_v1.0.0 (boundary=simulation_only)","credit":"v2_kernel (policy bits synthetic; 生产矩阵须公司批准录入)","note":"能力位逐一独立报告，永不汇总为 all_ok；受限能力见 contract/consumed-surface-v1.json"}
+──────────────────────────────────────────────
+[delivery-up] 监督进程运行中：保持本窗口开启；Ctrl+C 停止 Edge+A。
+--- probes ---
+{"schemaVersion":"jw.version-seal.v1","sealedAt":"2026-09-16T18:50:37.085Z","buildId":"5378df5b660da525","git":{"gitSha":"9c724c0efa0cc0cc6b70db39c94b431bd0db683a","sourceDirty":true,"dirtyCount":86,"
+{"ok":true,"checks":[{"name":"kernel-a","ok":true,"detail":{"status":200,"ok":true,"db":"up","model":"not_configured"},"latencyMs":19},{"name":"db","ok":true,"detail":"tcp connect ok","latencyMs":0}],"capabilities":{"model":"not_configured","video":"blocked_ex
+workspace-no-session=403
+harness=200
+--- delivery-down (supervisor alive, heartbeat fresh) ---
+[edge-stop] jw-edge pid=1772 已停止；未删除任何数据（exit 0）
+[delivery-down] ✓ A 内核已停止 pid=27328（pid+heartbeat+端口标识三证相符）
+[delivery-down] 数据库容器保持运行（--with-db 可停库；不删卷）
+[delivery-down] 完成
+DOWN_EXIT=0
+after-down kernel=000 edge=000
+WALKTHROUGH_DONE

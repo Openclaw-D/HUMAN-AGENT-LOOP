@@ -96,3 +96,35 @@
 - **材料处理状态权威投影**（J1.2/J1.3）：仅 kind=service 回执制；runRef 内阶段严格递增、新 runRef=新尝试；failed 必须 failureReason+nextAction；客户侧仅 `my/materials` 白名单披露，无金额/授信语义。
 - **测试工具加固**（Back/A/test/utils.mjs，四路并行实测）：/healthz 内核指纹防误绑外来服务、迁移完成等待、admin 鉴权探测、端口段 48100–49100+重试 6 次；`npm test` 父 runner 吞内层 TAP（仅透传退出码）如实登记。
 - 测试：invitations-directory V1–V6 新增；**120 项（基线 114+新增 6）全部有最终代码态通过证据，0 fail/1 skip（容器守卫）**；A22 迁移清单按惯例补 009。四路并行负载下整跑两次中断的经过与分层证据矩阵见 docs/product-delivery/goal-01/TEST_RESULTS.md。契约消费方：03（Edge 会话绑定/目录/上传进度）、02（processing 写口），见 goal-01/INTERFACE_REQUESTS.md。
+
+## 任务04 · 2026-09-19（R4/R5：三缺陷复测关闭 + D3 固定快照 + 页面旅程裁决）
+
+- **DEF-G04N-01/02/03 复测关闭**（缺陷台账留痕不删除）：金丝雀 41/41 全绿为关闭判据；G04N-02 的关闭以跨路黑盒复测为准（真实邀请兑换→cit_* 凭据→`material.<kind>` 获准 200/未获准 403），不因代码审读下结论。
+- **金丝雀探针收窄（本路驱动器修订）**：`kd:register-results-reaches-a` 只计失败于 register_results 阶段的任务；zipguard 按设计拒绝（X4 样本 unzip:failed）不算本缺陷——它是 x4 门禁的通过条件。驱动器补 admin「激活规则包版本」前置（USER_JOURNEY J1 前置动作）；无激活版本时 A fail-closed 报 STALE_BASIS 属正确行为，不记缺陷。
+- **D3 固定快照裁决**：以 version-seal buildId `521bdc0e2f60246e` 为本轮发布快照参照（gitSha+在制 dirty 60 路径如实封存）；四路并行在制树不回切不合并，合流后须复扫。
+- **交付形态事实（R5 页面实测裁决）**：Edge `--serve-front` 同源托管=交付页面形态（delivery-up 已补透传）；页面层旅程硬门 D27-L-UI **不判 PASS**（PASS 3/BLOCKED 4，owner 上矩阵）；两新缺陷 DEF-G04N-04（页面提案链无法绑定依据包，owner 03+01；A 权威门 fail-closed 行为正确，不开兼容核）、DEF-G04N-05（页内消息对端不渲染，owner 03）。
+- **性能口径**：≥3 轮性能对运行中冻结交付栈实测（同环境不重建栈）；keySubmit 项 BLOCKED 如实单列，不汇总为 PASS；全链解析性能不在页面链内，引用 R4 金丝雀同快照证据并显式分列环境差异。
+
+## goal-03 续轮实施决定（2026-09-19，J1.1–J1.5 页面做实）
+
+来源：`JW_product_delivery_four_tasks` 任务03 续（范围 Front/**、Back/Edge/src/**、contract、Edge 非 e1 测试）。基线 `v02-goal1234-delivery@e4ed7a5` 在制树。
+
+- **Connectors 纳入 Edge BFF 上游**（IR-02-C 消费）：新增 `--connectors-url`+`--connectors-token-file`，服务令牌仅存 Edge 服务端内存（X-Service-Token），读 `/api/jw/v2/connectors/**`、写 `/api/jw/v2/actions/connectors/**` 白名单代理；requestId 纪律与 A 面一致。理由：任务书定位 Edge=BFF 组合投影/受控命令代理；页面不得直连通道服务、凭据不得进前端。
+- **通道与 A 档案双链路分列呈现**：A 档案（envelope v0，权威材料清单）与处理通道（字节解析链，aBridge 登记 A）页面分列，不互相冒充；同一原件可经通道任务回执 aOps 追溯 A 侧运行/Gate 回执引用（J1.3 依据）。
+- **决策链页面化**：冻结依据包只收服务端 Gate 回执引用（gateReceiptId 自动同步自通道回执）；域意见登记限定域目录角色并引用真实 runId（authority=none 服务端强制）；提案强制绑定包；批准由服务端机械复查——本轮真实结论为 NEEDS_EVIDENCE/STALE_BASIS 诚实阻断，页面呈现缺口明细（N-07 页面证明），正向批准待 source_supported 级事实覆盖（IR-03-8②，不伪造 CLEAR）。
+- **撤权页面化**（IR-03-7 关闭）：Edge 动作代理支持 DELETE（CSRF 同 POST），admin 于邀请页对已兑换身份撤权（级联停用 cit_*，重放 403 由 A 保证）。
+- **测试入口纪律**：修复 Front `npm test` 漏挂 `wb-logic.test.mjs`（T-1"无漏挂"判据）。
+- **自动化边界**：IAB 无原生 file chooser/prompt——上传用页面上下文真实字节注入 `<input type=file>`；面板原生 prompt 全部改为行内输入（产品形态同步改善）。
+- **跨路径待裁决**：IR-03-8①–⑤（G3 推进、人工事实进快照、intake 判重键、kind 前缀、客户映射运行时建立）与 IR-03-6 扩展（cit_* 入会话名册）已在 ROUND-LOG 派单，未在本路代修。
+
+## 任务02 实施决定（2026-09-18/19，四任务产品交付轮）
+
+来源：`JW_product_delivery_four_tasks` 任务02（范围 Back/B、Back/C、Back/Connectors）。基线 `v02-goal1234-delivery@e4ed7a5` 在制树。
+
+- **A 桥为 Connectors→A 唯一登记通道**：材料/派生件/分析运行/Gate 回执/findings 全部经 a_bridge 以服务身份登记 A；requestId 确定性生成（`ptx-<taskId>-<op>`，≤128，findings 最长形态实测达标）；unknown 不换 ID、a_links 幂等对账、重入零新写（N1 判据常绿兜底 DEF-G04N-01 形态）。
+- **解析语义裁决（parse-adapters v2）**：坏行/非法日期剔除且留痕、不静默规范化；合计行显式剔除并入质量标记；同字节不同声明元数据不判重（重新解析、新锚点并存）；扫描件/未知格式转人工路线，零伪造事实；XLSX 为单一文档走专用适配器（zipguard 命运分离：真 ZIP 仍解包）。
+- **默认测试入口纪律**：`npm test` 必须真实执行用例——Connectors 原命令在 Node 22 下实跑 0 用例属假绿，改显式文件清单（Windows cmd 无 shell glob）；B 补挂 3 文件（83→105）。
+- **性能口径**：双臂同机同数据对照（selective vs naive_full），等价性断言 4/4 一致为前提，倍率为结论、绝对值随机器变。
+- **G3 上报语义裁决（2026-09-19 续轮，IR-03-8①关闭）**：处理状态上报=进度披露非业务事实；上报失败不阻断主链（a_links 留痕）；页面 stage 权威源=A G3 获准披露面（页面零改动）；runRef=`<taskId>:a<attempt>`，requestId 确定性幂等。
+- **verified 升级裁决**：只挂 manual_entry_required 问题的获准复核（correct-fact 恒 source_supported；复核人可另行核验）；人工事实经 requeueForAnalysis 并入四域感知快照，NEEDS_EVIDENCE→复核→CLEAR 页面可达且 CLEAR 回执真实到达 A。
+- **如实遗留**：IR-03-8④归 01（检查会话裸 kind 匹配）；⑤ 的 01 侧目录归集读口 OPEN；包域结果登记默认关（等依据包冻结声明）；`stream\r` PDF 形态不预先扩面；非 Windows 平台未测。

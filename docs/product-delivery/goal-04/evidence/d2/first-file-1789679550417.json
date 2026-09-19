@@ -1,0 +1,509 @@
+{
+  "startedAt": "2026-09-17T21:12:27.135Z",
+  "checks": [
+    {
+      "id": "A-create-customer",
+      "ok": true,
+      "detail": "{\"ok\":true,\"customerId\":\"cust-mu60zu7s-09d7940858d6\",\"tenantId\":\"t1\"}"
+    },
+    {
+      "id": "intake-invitation",
+      "ok": true,
+      "detail": "{\"ok\":true,\"invitationId\":\"inv_e45c9ac8eb7f4ba7be9d\",\"token\":\"76a21c438db79089906100a1c73bad13926d87a9bbd23266\",\"role\":\"customer_owner\",\"expiresAt\":\"2026-09-17T22:12:29.679Z\"}"
+    },
+    {
+      "id": "intake-accept",
+      "ok": true,
+      "detail": "{\"ok\":true,\"invitationId\":\"inv_e45c9ac8eb7f4ba7be9d\",\"bindingId\":\"bnd_0936bb7c0ab644f680bd\",\"bindingStatus\":\"candidate\",\"role\":\"customer_owner\",\"customerId\":\"journey-cust\",\"existed\":false}"
+    },
+    {
+      "id": "upload:A-statement-q3-plain.csv",
+      "ok": true,
+      "detail": "{\"ok\":true,\"evidenceId\":\"ev_8aa3418b2c7242079213\",\"duplicateOf\":null,\"sameSourceFlag\":null,\"completeness\":\"complete\",\"verificationState\":\"unverified\",\"processing\":{\"taskId\":\"ptk-7ad288d17f039aff\",\"existed\":false},\"note\":"
+    },
+    {
+      "id": "upload:A-statement-q3.csv",
+      "ok": true,
+      "detail": "{\"ok\":true,\"evidenceId\":\"ev_5c844eec40c34f0c9a57\",\"duplicateOf\":null,\"sameSourceFlag\":null,\"completeness\":\"complete\",\"verificationState\":\"unverified\",\"processing\":{\"taskId\":\"ptk-3bfc935541424554\",\"existed\":false},\"note\":"
+    },
+    {
+      "id": "upload:A-entity-register.txt",
+      "ok": true,
+      "detail": "{\"ok\":true,\"evidenceId\":\"ev_a94503e51c00457e8d6c\",\"duplicateOf\":null,\"sameSourceFlag\":null,\"completeness\":\"complete\",\"verificationState\":\"unverified\",\"processing\":{\"taskId\":\"ptk-db7c98dd5c9ee237\",\"existed\":false},\"note\":"
+    },
+    {
+      "id": "upload:A-ledger-q3.xlsx",
+      "ok": true,
+      "detail": "{\"ok\":true,\"evidenceId\":\"ev_9634d548651245b79d78\",\"duplicateOf\":null,\"sameSourceFlag\":null,\"completeness\":\"complete\",\"verificationState\":\"unverified\",\"processing\":{\"taskId\":\"ptk-626ce04e4637f405\",\"existed\":false},\"note\":"
+    },
+    {
+      "id": "upload:A-purchase-contract.pdf",
+      "ok": true,
+      "detail": "{\"ok\":true,\"evidenceId\":\"ev_a16ae2ed329b490583b9\",\"duplicateOf\":null,\"sameSourceFlag\":null,\"completeness\":\"complete\",\"verificationState\":\"unverified\",\"processing\":{\"taskId\":\"ptk-9c06f6310493c16b\",\"existed\":false},\"note\":"
+    },
+    {
+      "id": "upload:A-device-plate.png",
+      "ok": true,
+      "detail": "{\"ok\":true,\"evidenceId\":\"ev_963b43685c1d4e6d9c30\",\"duplicateOf\":null,\"sameSourceFlag\":null,\"completeness\":\"complete\",\"verificationState\":\"unverified\",\"processing\":{\"taskId\":\"ptk-ccba771201b6348b\",\"existed\":false},\"note\":"
+    },
+    {
+      "id": "upload:A-site-photo.png",
+      "ok": true,
+      "detail": "{\"ok\":true,\"evidenceId\":\"ev_933fd3c9960a4f62aaba\",\"duplicateOf\":null,\"sameSourceFlag\":null,\"completeness\":\"complete\",\"verificationState\":\"unverified\",\"processing\":{\"taskId\":\"ptk-7feb71741f0bf973\",\"existed\":false},\"note\":"
+    },
+    {
+      "id": "upload:X1-statement-bad-date.csv",
+      "ok": true,
+      "detail": "{\"ok\":true,\"evidenceId\":\"ev_0685a0547c9b4107b4b0\",\"duplicateOf\":null,\"sameSourceFlag\":null,\"completeness\":\"complete\",\"verificationState\":\"unverified\",\"processing\":{\"taskId\":\"ptk-94612248d7ae72d6\",\"existed\":false},\"note\":"
+    },
+    {
+      "id": "upload:X2-statement-bad-row.csv",
+      "ok": true,
+      "detail": "{\"ok\":true,\"evidenceId\":\"ev_6c574704d0934dd7a639\",\"duplicateOf\":null,\"sameSourceFlag\":null,\"completeness\":\"complete\",\"verificationState\":\"unverified\",\"processing\":{\"taskId\":\"ptk-bec1ccc21ffc7173\",\"existed\":false},\"note\":"
+    },
+    {
+      "id": "upload:X3-unknown-format.bin",
+      "ok": true,
+      "detail": "{\"ok\":true,\"evidenceId\":\"ev_105d261f5651452f85ca\",\"duplicateOf\":null,\"sameSourceFlag\":null,\"completeness\":\"complete\",\"verificationState\":\"unverified\",\"processing\":{\"taskId\":\"ptk-f5736f0f71af0030\",\"existed\":false},\"note\":"
+    },
+    {
+      "id": "upload:X4-zip-traversal.zip",
+      "ok": true,
+      "detail": "{\"ok\":true,\"evidenceId\":\"ev_04fe09e3e21d42c0a895\",\"duplicateOf\":null,\"sameSourceFlag\":null,\"completeness\":\"complete\",\"verificationState\":\"unverified\",\"processing\":{\"taskId\":\"ptk-2a54c98f6f50e7ab\",\"existed\":false},\"note\":"
+    },
+    {
+      "id": "upload:L1-late-adverse.csv",
+      "ok": true,
+      "detail": "{\"ok\":true,\"evidenceId\":\"ev_04910d2c816441929763\",\"duplicateOf\":null,\"sameSourceFlag\":null,\"completeness\":\"complete\",\"verificationState\":\"unverified\",\"processing\":{\"taskId\":\"ptk-6bb2280ba7b7768e\",\"existed\":false},\"note\":"
+    },
+    {
+      "id": "processing-advanced",
+      "ok": true,
+      "detail": "tick 共认领 12 任务次 / 3 轮"
+    },
+    {
+      "id": "plain-statement:parse",
+      "ok": false,
+      "detail": "null"
+    },
+    {
+      "id": "plain-statement:inflow-total",
+      "ok": false,
+      "detail": "inflowTotal=undefined 期望 1664500"
+    },
+    {
+      "id": "plain-statement:outflow-total",
+      "ok": false,
+      "detail": "outflowTotal=undefined 期望 826900"
+    },
+    {
+      "id": "plain-statement:total-row-not-counted",
+      "ok": false,
+      "detail": "rowCount=undefined badRowCount=undefined（TOTAL 行不得计入 12 行业务数据）"
+    },
+    {
+      "id": "plain-statement:fact-asserted",
+      "ok": false,
+      "detail": "[]"
+    },
+    {
+      "id": "quoted-statement:no-wrong-totals",
+      "ok": false,
+      "detail": "parse.status=undefined inflowTotal=undefined（≠1664500 且未拒绝=缺陷）"
+    },
+    {
+      "id": "entity-register:declared-facts",
+      "ok": false,
+      "detail": "facts=[]"
+    },
+    {
+      "id": "xlsx:not-silent-success-with-garbage",
+      "ok": true,
+      "detail": "XLSX 不得被误判为已知格式并静默产数"
+    },
+    {
+      "id": "manual-route:A-purchase-contract.pdf:no-auto-facts",
+      "ok": true,
+      "detail": "扫描/PDF/图片不得伪造自动事实（人工路线）"
+    },
+    {
+      "id": "manual-route:A-device-plate.png:no-auto-facts",
+      "ok": true,
+      "detail": "扫描/PDF/图片不得伪造自动事实（人工路线）"
+    },
+    {
+      "id": "manual-route:A-site-photo.png:no-auto-facts",
+      "ok": true,
+      "detail": "扫描/PDF/图片不得伪造自动事实（人工路线）"
+    },
+    {
+      "id": "x1:badrow-visible",
+      "ok": false,
+      "detail": "null"
+    },
+    {
+      "id": "x1:good-rows-still-3",
+      "ok": false,
+      "detail": "rowCount=undefined（坏行剔除后应 3 行）"
+    },
+    {
+      "id": "x2:badrow-excluded",
+      "ok": false,
+      "detail": "null"
+    },
+    {
+      "id": "x3:no-auto-facts",
+      "ok": true,
+      "detail": "未知格式不得产事实"
+    },
+    {
+      "id": "x4:no-escape-file",
+      "ok": true,
+      "detail": "zipguard 必须拒绝 ../ 条目，不得落盘 escape.txt"
+    },
+    {
+      "id": "late-adverse:outflow-500000",
+      "ok": false,
+      "detail": "outflowTotal=undefined"
+    },
+    {
+      "id": "traceability:registered-in-a",
+      "ok": false,
+      "detail": "0 件在 A 登记（register_material done）"
+    },
+    {
+      "id": "traceability:sha256-match",
+      "ok": false,
+      "detail": "0/0 件 A 侧 content.sha256 与原件字节一致"
+    },
+    {
+      "id": "traceability:grade-unverified",
+      "ok": false,
+      "detail": "客户上传件等级复核（详情见 evidence artifacts 探针）"
+    }
+  ],
+  "observations": [
+    {
+      "id": "quoted-statement:behavior",
+      "detail": "status=undefined detail=null"
+    },
+    {
+      "id": "entity-register:facts",
+      "detail": "[]"
+    },
+    {
+      "id": "xlsx-behavior",
+      "detail": "status=failed parse=null"
+    },
+    {
+      "id": "manual-route:A-purchase-contract.pdf",
+      "detail": "status=failed parse=null"
+    },
+    {
+      "id": "manual-route:A-device-plate.png",
+      "detail": "status=failed parse=null"
+    },
+    {
+      "id": "manual-route:A-site-photo.png",
+      "detail": "status=failed parse=null"
+    },
+    {
+      "id": "x2:rows",
+      "detail": "rowCount=undefined inflow=undefined"
+    },
+    {
+      "id": "x3-behavior",
+      "detail": "status=failed parse=null"
+    },
+    {
+      "id": "x4-behavior",
+      "detail": "status=failed stages=[{\"stage\":\"register_material\",\"status\":\"failed\",\"detail\":{\"code\":\"PERMISSION_DENIED\",\"message\":\"A /api/v2/customers/cust-mu60zu7s-09d7940858d6/artifacts → 403 PERMISSION_DENIED: 邀请未授予材料种类 material.document_sample（客户联系人仅能提交获准种类）\"}}]"
+    },
+    {
+      "id": "late-adverse:parsed",
+      "detail": "status=failed outflowTotal=undefined"
+    }
+  ],
+  "artifacts": [
+    {
+      "file": "A-statement-q3-plain.csv",
+      "evidenceId": "ev_8aa3418b2c7242079213",
+      "taskStatus": "failed",
+      "aRef": null,
+      "stages": [
+        {
+          "stage": "register_material",
+          "status": "failed",
+          "detail": {
+            "code": "PERMISSION_DENIED",
+            "message": "A /api/v2/customers/cust-mu60zu7s-09d7940858d6/artifacts → 403 PERMISSION_DENIED: 邀请未授予材料种类 material.bank_statement（客户联系人仅能提交获准种类）"
+          }
+        }
+      ]
+    },
+    {
+      "file": "A-statement-q3.csv",
+      "evidenceId": "ev_5c844eec40c34f0c9a57",
+      "taskStatus": "failed",
+      "aRef": null,
+      "stages": [
+        {
+          "stage": "register_material",
+          "status": "failed",
+          "detail": {
+            "code": "PERMISSION_DENIED",
+            "message": "A /api/v2/customers/cust-mu60zu7s-09d7940858d6/artifacts → 403 PERMISSION_DENIED: 邀请未授予材料种类 material.bank_statement（客户联系人仅能提交获准种类）"
+          }
+        }
+      ]
+    },
+    {
+      "file": "A-entity-register.txt",
+      "evidenceId": "ev_a94503e51c00457e8d6c",
+      "taskStatus": "failed",
+      "aRef": null,
+      "stages": [
+        {
+          "stage": "register_material",
+          "status": "failed",
+          "detail": {
+            "code": "PERMISSION_DENIED",
+            "message": "A /api/v2/customers/cust-mu60zu7s-09d7940858d6/artifacts → 403 PERMISSION_DENIED: 邀请未授予材料种类 material.entity_register（客户联系人仅能提交获准种类）"
+          }
+        }
+      ]
+    },
+    {
+      "file": "A-ledger-q3.xlsx",
+      "evidenceId": "ev_9634d548651245b79d78",
+      "taskStatus": "failed",
+      "aRef": null,
+      "stages": [
+        {
+          "stage": "register_material",
+          "status": "failed",
+          "detail": {
+            "code": "PERMISSION_DENIED",
+            "message": "A /api/v2/customers/cust-mu60zu7s-09d7940858d6/artifacts → 403 PERMISSION_DENIED: 邀请未授予材料种类 material.ledger_book（客户联系人仅能提交获准种类）"
+          }
+        }
+      ]
+    },
+    {
+      "file": "A-purchase-contract.pdf",
+      "evidenceId": "ev_a16ae2ed329b490583b9",
+      "taskStatus": "failed",
+      "aRef": null,
+      "stages": [
+        {
+          "stage": "register_material",
+          "status": "failed",
+          "detail": {
+            "code": "PERMISSION_DENIED",
+            "message": "A /api/v2/customers/cust-mu60zu7s-09d7940858d6/artifacts → 403 PERMISSION_DENIED: 邀请未授予材料种类 material.purchase_contract（客户联系人仅能提交获准种类）"
+          }
+        }
+      ]
+    },
+    {
+      "file": "A-device-plate.png",
+      "evidenceId": "ev_963b43685c1d4e6d9c30",
+      "taskStatus": "failed",
+      "aRef": null,
+      "stages": [
+        {
+          "stage": "register_material",
+          "status": "failed",
+          "detail": {
+            "code": "PERMISSION_DENIED",
+            "message": "A /api/v2/customers/cust-mu60zu7s-09d7940858d6/artifacts → 403 PERMISSION_DENIED: 邀请未授予材料种类 material.device_photo（客户联系人仅能提交获准种类）"
+          }
+        }
+      ]
+    },
+    {
+      "file": "A-site-photo.png",
+      "evidenceId": "ev_933fd3c9960a4f62aaba",
+      "taskStatus": "failed",
+      "aRef": null,
+      "stages": [
+        {
+          "stage": "register_material",
+          "status": "failed",
+          "detail": {
+            "code": "PERMISSION_DENIED",
+            "message": "A /api/v2/customers/cust-mu60zu7s-09d7940858d6/artifacts → 403 PERMISSION_DENIED: 邀请未授予材料种类 material.site_photo（客户联系人仅能提交获准种类）"
+          }
+        }
+      ]
+    },
+    {
+      "file": "X1-statement-bad-date.csv",
+      "evidenceId": "ev_0685a0547c9b4107b4b0",
+      "taskStatus": "failed",
+      "aRef": null,
+      "stages": [
+        {
+          "stage": "register_material",
+          "status": "failed",
+          "detail": {
+            "code": "PERMISSION_DENIED",
+            "message": "A /api/v2/customers/cust-mu60zu7s-09d7940858d6/artifacts → 403 PERMISSION_DENIED: 邀请未授予材料种类 material.bank_statement（客户联系人仅能提交获准种类）"
+          }
+        }
+      ]
+    },
+    {
+      "file": "X2-statement-bad-row.csv",
+      "evidenceId": "ev_6c574704d0934dd7a639",
+      "taskStatus": "failed",
+      "aRef": null,
+      "stages": [
+        {
+          "stage": "register_material",
+          "status": "failed",
+          "detail": {
+            "code": "PERMISSION_DENIED",
+            "message": "A /api/v2/customers/cust-mu60zu7s-09d7940858d6/artifacts → 403 PERMISSION_DENIED: 邀请未授予材料种类 material.bank_statement（客户联系人仅能提交获准种类）"
+          }
+        }
+      ]
+    },
+    {
+      "file": "X3-unknown-format.bin",
+      "evidenceId": "ev_105d261f5651452f85ca",
+      "taskStatus": "failed",
+      "aRef": null,
+      "stages": [
+        {
+          "stage": "register_material",
+          "status": "failed",
+          "detail": {
+            "code": "PERMISSION_DENIED",
+            "message": "A /api/v2/customers/cust-mu60zu7s-09d7940858d6/artifacts → 403 PERMISSION_DENIED: 邀请未授予材料种类 material.document_sample（客户联系人仅能提交获准种类）"
+          }
+        }
+      ]
+    },
+    {
+      "file": "X4-zip-traversal.zip",
+      "evidenceId": "ev_04fe09e3e21d42c0a895",
+      "taskStatus": "failed",
+      "aRef": null,
+      "stages": [
+        {
+          "stage": "register_material",
+          "status": "failed",
+          "detail": {
+            "code": "PERMISSION_DENIED",
+            "message": "A /api/v2/customers/cust-mu60zu7s-09d7940858d6/artifacts → 403 PERMISSION_DENIED: 邀请未授予材料种类 material.document_sample（客户联系人仅能提交获准种类）"
+          }
+        }
+      ]
+    },
+    {
+      "file": "L1-late-adverse.csv",
+      "evidenceId": "ev_04910d2c816441929763",
+      "taskStatus": "failed",
+      "aRef": null,
+      "stages": [
+        {
+          "stage": "register_material",
+          "status": "failed",
+          "detail": {
+            "code": "PERMISSION_DENIED",
+            "message": "A /api/v2/customers/cust-mu60zu7s-09d7940858d6/artifacts → 403 PERMISSION_DENIED: 邀请未授予材料种类 material.late_adverse（客户联系人仅能提交获准种类）"
+          }
+        }
+      ]
+    }
+  ],
+  "originals": {
+    "A-license-scan.png": {
+      "bytes": 2585,
+      "sha256": "eb67265b53e2544e388998f54e3e3fdee6f42cad193e5dc4f270be4e925e479e"
+    },
+    "A-entity-register.txt": {
+      "bytes": 186,
+      "sha256": "a8ec6782fcefd07293028b238ceedd15175da676b5dc3e72112b56e0c018b9b7"
+    },
+    "A-statement-q3.csv": {
+      "bytes": 600,
+      "sha256": "a1153e709bb8f0b05c89afbb56081ce2d4f2a36e78fc3c0a7166eacf7fc6176b"
+    },
+    "A-statement-q3-plain.csv": {
+      "bytes": 461,
+      "sha256": "10a87d58c4e86e60d15d6e7ac1acf0bc3e4e8c26508e427f9a77f2a16d6c2250"
+    },
+    "A-ledger-q3.xlsx": {
+      "bytes": 3136,
+      "sha256": "b1d756ee8088f7fefbe6592b6c8e238471530a56f4b618e8c14cb866da2f2494"
+    },
+    "A-purchase-contract.pdf": {
+      "bytes": 1144,
+      "sha256": "6398d08dc82ec7d7a1e07684f2e7b3a54a31ea843536a16ea2d15e3ba48d910d"
+    },
+    "A-device-plate.png": {
+      "bytes": 2566,
+      "sha256": "f97b935ae0272af066a4b35725a208b9c1c2098b6fd747ab4a47a9525e860fb1"
+    },
+    "A-site-photo.png": {
+      "bytes": 1958,
+      "sha256": "db8e628bc88e6a5ec85d00e07fb61c1eb753d5be8c85c51369ed78c14fe3e43b"
+    },
+    "B-license-scan.png": {
+      "bytes": 2585,
+      "sha256": "eb67265b53e2544e388998f54e3e3fdee6f42cad193e5dc4f270be4e925e479e"
+    },
+    "B-entity-register.txt": {
+      "bytes": 186,
+      "sha256": "a8ec6782fcefd07293028b238ceedd15175da676b5dc3e72112b56e0c018b9b7"
+    },
+    "B-statement-q3.csv": {
+      "bytes": 600,
+      "sha256": "a1153e709bb8f0b05c89afbb56081ce2d4f2a36e78fc3c0a7166eacf7fc6176b"
+    },
+    "B-statement-q3-plain.csv": {
+      "bytes": 461,
+      "sha256": "10a87d58c4e86e60d15d6e7ac1acf0bc3e4e8c26508e427f9a77f2a16d6c2250"
+    },
+    "B-ledger-q3.xlsx": {
+      "bytes": 3136,
+      "sha256": "b1d756ee8088f7fefbe6592b6c8e238471530a56f4b618e8c14cb866da2f2494"
+    },
+    "B-purchase-contract.pdf": {
+      "bytes": 1144,
+      "sha256": "e0522bccf014bde7d3ec97f95539fbc563b4787177b5eb1c1fb786858da45463"
+    },
+    "B-device-plate.png": {
+      "bytes": 2559,
+      "sha256": "34495b263825da3faf2522c63b6745e75876306c35b6d34e9caf917ea6ba7c0f"
+    },
+    "B-site-photo.png": {
+      "bytes": 1958,
+      "sha256": "db8e628bc88e6a5ec85d00e07fb61c1eb753d5be8c85c51369ed78c14fe3e43b"
+    },
+    "X1-statement-bad-date.csv": {
+      "bytes": 241,
+      "sha256": "8fd9fa1ca275c2b8c8b5b88f7099b386208520d2d3dd000ae917211c963bfef1"
+    },
+    "X2-statement-bad-row.csv": {
+      "bytes": 95,
+      "sha256": "da1c811ad4d596cb32785e117c08caebd1d6264dd3b1cf5a1eb8ddd38977de53"
+    },
+    "X3-unknown-format.bin": {
+      "bytes": 10,
+      "sha256": "5180c25e237cd6e580b2686a8eb870cb1c4fe06aea9777e8c07699bd9cfa6189"
+    },
+    "X4-zip-traversal.zip": {
+      "bytes": 239,
+      "sha256": "f1276044bea95e451b09de92a1a89cb93f9dfa494d8f2db35c553b23ab463794"
+    },
+    "L1-late-adverse.csv": {
+      "bytes": 90,
+      "sha256": "141bd5965810ee5fc40e312f8de6cfd5ec10fe0877099d38f7da1589dc7bd138"
+    }
+  },
+  "aCustomerId": "cust-mu60zu7s-09d7940858d6",
+  "finishedAt": "2026-09-17T21:12:30.417Z"
+}

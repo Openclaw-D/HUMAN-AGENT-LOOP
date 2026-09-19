@@ -1,0 +1,8 @@
+[D1-r1] PASS boot=14864ms
+[D1-r2] PASS boot=13885ms
+[D1-r3] PASS boot=13891ms
+[D2-r1] PASS boot=14570ms
+[D2-r2] PASS boot=14677ms
+[D2-r3] PASS boot=14636ms
+[D3-r1] FAIL boot=14643ms
+[D3-r2] FAIL boot=14408ms

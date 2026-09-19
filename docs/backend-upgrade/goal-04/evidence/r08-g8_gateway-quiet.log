@@ -1,0 +1,4 @@
+[run-all] run=g04-quiet-g8_gateway suites=g8_gateway.test.mjs
+[run-all] freeze: [freeze] label=run-g04-quiet-g8_gateway files=312 combined=223c77d12b30c895…
+[run-all] g8_gateway.test.mjs exit=1 pass=7 fail=1 assertions=156
+[run-all] AGGREGATE pass=7 fail=1 skip=0 blocked=1 assertions=156 -> exit=1

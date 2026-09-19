@@ -1,0 +1,26 @@
+TAP version 13
+# Subtest: g04 完整新链（无 allow-legacy-basis：进件→四域可信依据→检查会话→包→人工决定→占额→阻断→恢复）
+not ok 1 - g04 完整新链（无 allow-legacy-basis：进件→四域可信依据→检查会话→包→人工决定→占额→阻断→恢复）
+  ---
+  duration_ms: 56757.2198
+  type: 'test'
+  location: 'C:\\Users\\22673\\Desktop\\JW\\Back\\Edge\\test\\e1\\e1-g04-fullchain.test.mjs:14:1'
+  failureType: 'testCodeFailure'
+  error: 'g04 A 内核未就绪（详见 kernel.log）'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    bootG04 (file:///C:/Users/22673/Desktop/JW/Back/Edge/test/e1/g04-chain.mjs:95:27)
+    async TestContext.<anonymous> (file:///C:/Users/22673/Desktop/JW/Back/Edge/test/e1/e1-g04-fullchain.test.mjs:18:13)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 56960.4521
+EXIT=1

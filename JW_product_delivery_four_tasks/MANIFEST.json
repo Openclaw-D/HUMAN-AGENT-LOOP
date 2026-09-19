@@ -1,0 +1,36 @@
+{
+  "purpose": "JW 原件到人工决定：产品交付与部分解耦任务书",
+  "status": "execution_instructions_not_execution_evidence",
+  "files": [
+    {
+      "file": "00_START_HERE.md",
+      "bytes": 5315,
+      "sha256": "6f628ae97429daf778f6dc4897d79a385f613af3f7c61a325d39470a16d56476"
+    },
+    {
+      "file": "01_CORE_AND_LEASING_BOUNDARIES.md",
+      "bytes": 6404,
+      "sha256": "4ed8ab8a9463136d8d2d91bb452e28d5370507ae1cf947d6b398f7eee39cb4c2"
+    },
+    {
+      "file": "02_ORIGINALS_TO_DECISION_PIPELINE.md",
+      "bytes": 6229,
+      "sha256": "4e20f39b4c6fe9150b1e931d6465d07a75ef00cdc6bb11de098862db82313de7"
+    },
+    {
+      "file": "03_CUSTOMER_AND_REVIEW_WORKBENCH.md",
+      "bytes": 6367,
+      "sha256": "33a6f0148615d06bd49c0250bfc272bc19cae384065fc46a4334fb59b138dd9e"
+    },
+    {
+      "file": "04_INDEPENDENT_USER_JOURNEY_ACCEPTANCE.md",
+      "bytes": 6781,
+      "sha256": "bf880fb2c9545a1e97a15babacf42088d5204b52a793d193a2d2085f3585a17f"
+    },
+    {
+      "file": "FOUR_TASKS_COMPLETE.md",
+      "bytes": 31120,
+      "sha256": "e783772acf6f9e6b5222f100afc4480d9f078165affa79cfe641daadf4914b67"
+    }
+  ]
+}

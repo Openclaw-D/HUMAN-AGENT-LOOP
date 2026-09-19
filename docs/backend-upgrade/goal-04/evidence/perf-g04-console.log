@@ -1,0 +1,11 @@
+[D1-r1] PASS boot=13687ms
+[D1-r2] PASS boot=15005ms
+[D1-r3] PASS boot=13382ms
+[D2-r1] PASS boot=12205ms
+[D2-r2] PASS boot=12045ms
+[D2-r3] PASS boot=12234ms
+[D3-r1] PASS_WITH_ERRORS boot=11974ms
+[D3-r2] PASS_WITH_ERRORS boot=12191ms
+[D3-r3] PASS_WITH_ERRORS boot=12055ms
+EVIDENCE_DIR=C:\Users\22673\Desktop\JW\docs\backend-upgrade\goal-04\evidence\perf-g04-2026-09-17T16-43-57
+EXIT=0

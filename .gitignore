@@ -44,3 +44,16 @@ Achieve/**/*.key
 # JW task03 delivery runtime credentials (Git excluded; examples stay tracked)
 Back/Edge/config/delivery-runtime.json
 Back/Edge/config/edge-auth.json
+
+# goal-03c 本轮运行态配置（凭据/令牌，本地生成，不入库）
+Back/Edge/config/g03c-auth.json
+Back/Edge/config/g03c-runtime.json
+Back/Edge/.run-g03c/
+
+# goal-03d journey 运行态（本地合成凭据/邀请码/临时件，不入库）
+.jw-g03d-journey/
+Back/Edge/config/g03d-conn-token.txt
+
+# R2 裁决（2026-09-19，任务04）：docs/ 下 .log 为刻意留存的回归/验收证据，放行入库；
+# 代码区运行态日志（Back/**、.run 目录等）仍被上方 **/*.log 排除。
+!docs/**/*.log
