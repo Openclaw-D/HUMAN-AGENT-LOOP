@@ -1,3 +1,5 @@
+> 2026-09-19 当前权威更新：本文件以下是旧阶段快照，其产品方向/先后顺序/分工不再作为最新指令。先读 C:/Users/22673/Desktop/JW/docs/codex-handoff/NORTH_STAR.md：业务视角横屏二维作业看板；3D/地图/手柄/游戏化暂停。已有技术映射与证据仅在不冲突时复用，不改原始历史事实。
+
 # V0.2 Stage 1 · Front ↔ Back 语义映射契约
 
 2026-09-16。依据：Back/CONTRACT.md（v1.3）、Back/C/templates/commercial-leasing-v1.json、Back/A/assembly/run-c-plans.mjs（ADAPTER_NOTE）、Front/site-mirror/app/v5-preview/role-contract.ts、role-cases.ts。本文档是 Stage 2+ 的实施依据；未列映射不得自行发明。属于 Commit Boundary 1（仅本文档，不改运行行为）。

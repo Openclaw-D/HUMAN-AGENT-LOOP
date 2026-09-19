@@ -1,3 +1,16 @@
+> 2026-09-19 最新冻结：业务视角横屏二维作业看板，明确不做3D/全国地图/办公室/手柄/游戏化，不以表格为主界面。此前见微世界与多输入要求在本轮范围中被替代，历史原型保留但停止投入。复用真实工作本，单项目商机→尽调→政策→信审→商务→资产至结清，依赖可并行不强制流水线。最新复核与四路接续任务见 docs/codex-handoff/board-round-02/REVIEW.md。
+
+## 2026-09-19 三种输入与完整框架补充
+
+用户确认前期可加大投入先完成骨架；键鼠/Xbox/屏幕点击同等兼容。已核对Front声明依赖与官方文档，新增docs/codex-handoff/WORLD_INPUT_AND_STACK.md。Three.js路线为当前建议，Unity不是必需也非直接互换。未安装依赖、未改源码，三输入实机NOT_RUN。
+
+## 2026-09-19 最新最高产品决定：见微世界
+
+用户明确更正为可探索可游玩的工作RPG世界，不是单条任务或古板看板；默认第一人称/可切第三人称，Xbox手柄必须兼容。全国→省店→客户→现场，喀什详细其余复用；五角色业务主导，真人唯一位置，浅橙半透明同款见微在本人离场后变大留守。能力、成就、日历、资产、音乐进入产品范围；Three.js实现，当前不用Blender。展示暂按1+5+8分钟CG/实玩/PPT（约10页）。详见docs/codex-handoff/NORTH_STAR.md。
+
+此前“先全面后台验收再地图”“Three.js仅视觉参考”与Codex全面编码授权均已被新决定替代。ZCode在制整改继续保留，Codex设计/契约/独立验收，中大型实现手动交ZCode。真实模型暂不调用，正式业务权威不因游戏化变化。下文按日期保留历史，不作为冲突时的当前指令。
+
+
 # 当前决定 · V0.1
 
 2026-09-16，来源：用户在迁移任务中的明确指令。
@@ -15,7 +28,7 @@
 
 产品方向依据 [2026-09-16最新夜间任务原文](Achieve/Anthropic/V7/NIGHT_BACKEND_20260916.md)：目标驱动的人机协作，角色/人/Agent/目标分离，商业融资租赁小微制造业为首个配置。人的正式authority、风险底线、可追溯与人的选择权持续有效。旧阶段原决定及原因在Achieve中可追溯，不批量晋升历史候选。
 
-待裁决：v1.3复核ack政策；前后端接线的首个小闭环；生产身份/数据/模型费用。
+待裁决：v1.3复核ack政策；前后端接线的首个小闭环；生产身份/数据/模型费用（开发/测试面真实模型已按 2026-09-19 决定授权，生产部署仍未决）。
 
 ## 任务 03 实施决定（2026-09-16，四域 Agent 与 Gate）
 
@@ -128,3 +141,18 @@
 - **G3 上报语义裁决（2026-09-19 续轮，IR-03-8①关闭）**：处理状态上报=进度披露非业务事实；上报失败不阻断主链（a_links 留痕）；页面 stage 权威源=A G3 获准披露面（页面零改动）；runRef=`<taskId>:a<attempt>`，requestId 确定性幂等。
 - **verified 升级裁决**：只挂 manual_entry_required 问题的获准复核（correct-fact 恒 source_supported；复核人可另行核验）；人工事实经 requeueForAnalysis 并入四域感知快照，NEEDS_EVIDENCE→复核→CLEAR 页面可达且 CLEAR 回执真实到达 A。
 - **如实遗留**：IR-03-8④归 01（检查会话裸 kind 匹配）；⑤ 的 01 侧目录归集读口 OPEN；包域结果登记默认关（等依据包冻结声明）；`stream\r` PDF 形态不预先扩面；非 Windows 平台未测。
+
+## 真实模型接入决定（2026-09-19，Back/B transport real 模式启用）
+
+来源：用户当日明确指令"接入真实的API接口、调用GLM5.2"，其后经一键入口两次亲自注入密钥并确认。CONTRACT 与任务03 的"GLM-5.2 只预留 transport、0 调用"边界自本日起解除（仅限 B transport 面，不构成生产部署授权）。
+
+- 授权范围与凭据卫生：用户本人 bigmodel API Key 经根目录 Set-GLM-Key.cmd 显式注入 gitignored 的 `Back/B/config/b-config.json`（`**/b-config.json` 被 .gitignore 排除，写入前有 gitignore 护栏校验，缺规则即拒写）。ZCode 未读取环境/宿主既有密钥，Key 不回显不入日志；首次粘贴不完整（32 位无点号）被服务端 401 拒绝，用户补全（49 位两段式）后通过——入口对坏 Key 的行为即"如实失败、确定未发送"。
+- 端点与模型：`https://open.bigmodel.cn/api/paas/v4/chat/completions`，model=glm-5.2（全小写，样例中的 "GLM-5.2" 系预留占位、已按官方文档在真实配置中纠正）；outboundAllow 仅该 origin；出站必过预算门（默认 maxTotalCost 0.5 元 / perCallEstimate 0.01 元 / 失败关闭），成本台账持久（.tmp 冒烟账本 / 常驻 runtime 账本分离）。
+- 首次真实调用证据（E2 冒烟，Back/B/scripts/glm-real-smoke.mjs，合成演示内容）：status=succeeded；prompt 71 + completion 786 tokens（含 reasoning 559），耗时 14.3s；真实模型输出遵守 sharedRules 纪律——明示 authority=none 不输出审批/额度/价格结论、未收到证据清单即输出 unknown 并要求补充而非编造。费率未注入，成本如实标"未估算"不记 0（billKnown=false 语义）。
+- 新增接线件：`Set-GLM-Key.cmd`（交互式入口）→ `Back/B/scripts/setup-glm-key.mjs`（打码输入、粘贴清洗、配置合成/更新）→ `Back/B/scripts/glm-real-smoke.mjs`（七状态冒烟）。验证链含 C loopback mock 全链路（simulated+usage+成本入账+串线探针）。
+- 边界不变：模型输出 authority=none；E1 的 42 场景冻结评测保持确定性零模型不受影响；前端六角色演示仍为本地合成模拟（前端直连模型会绕开预算/脱敏/门禁，明确不采用）；本次授权不含生产部署与真实客户数据。
+- 待办：用户表示后续可能换 DeepSeek（口头"ds"，未实施）——transport 端点/模型/Key/白名单均为 b-config.json 配置项，切换时改配置即可，无需改代码。
+
+## 2026-09-19 Codex 接手与北极星确认
+
+来源：用户本次明确交接。Codex 承接本轮规划、产品开发、测试和联调，替代旧 ZCode 专属开发分工；其余单文件单 writer、禁 subagent/worktree、不擅自 commit/push/部署等边界保持。第一目标为普通人无需开发者陪同从页面完成新客户原始材料→处理→核验/补证→有权人类决定；最终形态全国工作地图＋二维工作本＋现场空间，通用机制与租赁规则部分解耦，不重造平台。具体方向、偏离判断和接续记录见 docs/codex-handoff/。本地 main 已从 1ec0ee4 安全快进到交接基线 8dcef63，原 GLM 本地变更已备份并保留；D27-L-UI 仍未通过。

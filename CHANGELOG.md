@@ -1,3 +1,14 @@
+> 2026-09-19 最新冻结：业务视角横屏二维作业看板，明确不做3D/全国地图/办公室/手柄/游戏化，不以表格为主界面。此前见微世界与多输入要求在本轮范围中被替代，历史原型保留但停止投入。复用真实工作本，单项目商机→尽调→政策→信审→商务→资产至结清，依赖可并行不强制流水线。最新复核与四路接续任务见 docs/codex-handoff/board-round-02/REVIEW.md。
+
+## 2026-09-19 三种输入与完整框架补充
+
+用户确认前期可加大投入先完成骨架；键鼠/Xbox/屏幕点击同等兼容。已核对Front声明依赖与官方文档，新增docs/codex-handoff/WORLD_INPUT_AND_STACK.md。Three.js路线为当前建议，Unity不是必需也非直接互换。未安装依赖、未改源码，三输入实机NOT_RUN。
+
+## 2026-09-19 · V0.2见微世界方向更新（文档）
+
+统一当前北极星、路线、README/AGENTS/交接/状态入口；补充官方交互研究与Xbox实机验收要求。替代单线演示与地图后置顺序；历史记录保留失效标识。仅文档，未实现世界/音频/手柄/CG/PPT，未跑测试、未调用模型、未发布。更新前精确备份在.local/world-direction-*。
+
+
 # 版本记录
 
 ## V0.1 · 2026-09-16
@@ -38,3 +49,7 @@
 ## 任务02 增量 · 2026-09-18/19（四任务产品交付轮：A 桥贯通+解析 v2+默认测试入口修复+IR-03-8 关闭）
 
 执行 `JW_product_delivery_four_tasks` 任务02（基线 e4ed7a5 在制树；范围 Back/B、Back/C、Back/Connectors；文档 docs/product-delivery/goal-02/）。A 桥贯通（Back/Connectors a_bridge）：材料→解析→四域预审全链接通 A 权威登记（analysis-runs/Gate 回执/findings/回执对账；a_links 幂等对账、unknown 不换 ID、requestId 确定性 ≤128）。解析 v2（Back/C parse-adapters）：引号 CSV 状态机、非法日期与合计行剔除、XLSX 专用适配器（DEF-G04N-03 修复）、text-PDF（修复 extractPdfText 流切片混入 `stream` 关键字致长流抽取全空）、扫描件人工路线（录入→冲突→更正→复核 verified，零伪造事实）。默认测试入口修复（任务书 B1）：Connectors `npm test` 修复前实跑 0 用例，修复为显式清单；B 补挂 3 文件 83→105。续轮（2026-09-19，ROUND-LOG 回执在案）关闭 IR-03-8①②③⑤：①G3 处理状态写口接线（reportProcessingStages/reportG3：received/parsed/analyzed/needs_review/failed，runRef=`<taskId>:a<attempt>`，requestId=`ptx-<taskId>-a<attempt>-prc-<stage>` 确定性幂等，a_links entity_type=processing，上报失败不阻断主链）；②人工事实并入四域分析（fact_assertions 加列 entry_mode/value_json 幂等回填、requeueForAnalysis 录入/更正/复核自动重入、liveManualBlocks 取代 parse 值、复核 verified 升级，CLEAR 回执真实到达 A）；③判重收敛客户级+既有绑定新邀请显式 accepted；⑤start-connectors 透传 processing 配置（resolveProcessingConfig 优先级，a_customer_links 表为权威）。测试（2026-09-19 最终轮）：Connectors **77/77**（73+新增 G-A3/M3/N3/N4）、A 桥真内核 **3/3**、C 101/101、B 105/105；perf 双臂对照处理 2642→1560ms、域计算 80→26、外发 100→5，等价性断言 4/4。如实遗留：IR-03-8④（检查会话裸 kind 匹配）归 01；⑤ 的 01 侧目录归集读口 OPEN（种子降级为兼容路径）；B 全量并发偶发 1 次 crash-recovery 时序失败（单独复跑均 105/105）；包域结果登记默认关；XLSX 仅首 sheet、PDF 表格不重构、`stream\r` 形态不识别。
+
+## 真实模型接入增量 · 2026-09-19
+
+用户授权接入真实 GLM-5.2（此前"GLM-5.2 只预留 transport、0 调用"边界自此解除，仅限 B transport 面）。新增：根目录一键密钥入口 `Set-GLM-Key.cmd` + `Back/B/scripts/setup-glm-key.mjs`（打码输入、粘贴清洗、写入前 .gitignore 护栏、自动冒烟）与 `Back/B/scripts/glm-real-smoke.mjs`（七状态冒烟；启用预算必须配账本，冒烟账本落 gitignored `.tmp`）。用户 Key 经入口显式注入 gitignored 的 `Back/B/config/b-config.json`：mode=real、model=glm-5.2、endpoint=open.bigmodel.cn v4 chat/completions、outboundAllow 仅该 origin、预算 0.5 元/次估 0.01 元失败关闭。验证链：mock 全链路（C loopback，simulated+usage+成本入账+串线探针）→ 真实端点无效凭据 401→INVALID_CREDENTIAL 映射（零费用）→ 首次真实调用成功（prompt 71+completion 786 tokens、14.3s；模型遵守 authority=none、缺证据输出 unknown 不编造；费率未注入，成本如实标未估算）。模型意见仍 authority=none；E1 42 场景冻结评测与前端六角色演示保持零真实模型；无 Git 提交。
