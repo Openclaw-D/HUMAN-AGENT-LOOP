@@ -1,0 +1,802 @@
+TAP version 13
+# Subtest: A01 同一客户两个渠道创建申请：合并约束，新建项目不产生额度
+ok 1 - A01 同一客户两个渠道创建申请：合并约束，新建项目不产生额度
+  ---
+  duration_ms: 1569.4124
+  type: 'test'
+  ...
+# Subtest: A02 同名不同企业不自动合并；同法定主体拒绝重复建档
+ok 2 - A02 同名不同企业不自动合并；同法定主体拒绝重复建档
+  ---
+  duration_ms: 1238.2077
+  type: 'test'
+  ...
+# Subtest: A03 同一联系人代表两企业：联系人关联不导致企业合并
+ok 3 - A03 同一联系人代表两企业：联系人关联不导致企业合并
+  ---
+  duration_ms: 1263.8399
+  type: 'test'
+  ...
+# Subtest: A04 重复提交100份同一材料：去重关联，不产生额外证明力或额度
+ok 4 - A04 重复提交100份同一材料：去重关联，不产生额外证明力或额度
+  ---
+  duration_ms: 2687.4784
+  type: 'test'
+  ...
+# Subtest: A05 有利资料后新增不利证据：可降级/暂停，金额非单调
+ok 5 - A05 有利资料后新增不利证据：可降级/暂停，金额非单调
+  ---
+  duration_ms: 1388.4421
+  type: 'test'
+  ...
+# Subtest: A06 上限外加1分被拒；币种与单位明确；跨币种拒绝
+ok 6 - A06 上限外加1分被拒；币种与单位明确；跨币种拒绝
+  ---
+  duration_ms: 1355.3261
+  type: 'test'
+  ...
+# Subtest: A07 已用900万，并发预占两笔各80万：恰一笔成功，总额不超上限
+ok 7 - A07 已用900万，并发预占两笔各80万：恰一笔成功，总额不超上限
+  ---
+  duration_ms: 1446.329
+  type: 'test'
+  ...
+# Subtest: A08 100次并发重复同 requestId：仅一条账目与一次业务效应
+ok 8 - A08 100次并发重复同 requestId：仅一条账目与一次业务效应
+  ---
+  duration_ms: 1744.2225
+  type: 'test'
+  ...
+# Subtest: A09 相同 requestId 不同金额：冲突且原数据零副作用
+ok 9 - A09 相同 requestId 不同金额：冲突且原数据零副作用
+  ---
+  duration_ms: 1350.9639
+  type: 'test'
+  ...
+# Subtest: A10 跨租户猜客户ID/回执ID：读取、写入、事件、回执全部拒绝
+ok 10 - A10 跨租户猜客户ID/回执ID：读取、写入、事件、回执全部拒绝
+  ---
+  duration_ms: 1412.2499
+  type: 'test'
+  ...
+# Subtest: A11 预占成功后响应丢失：重放返回原效应，不重复占用
+ok 11 - A11 预占成功后响应丢失：重放返回原效应，不重复占用
+  ---
+  duration_ms: 1345.9078
+  type: 'test'
+  ...
+# Subtest: A12 模拟付款结果未知：不盲重发、不自动释放预占，须对账确认
+ok 12 - A12 模拟付款结果未知：不盲重发、不自动释放预占，须对账确认
+  ---
+  duration_ms: 3254.3645
+  type: 'test'
+  ...
+# Subtest: A13 重复结算回调：幂等，不重复扣减
+ok 13 - A13 重复结算回调：幂等，不重复扣减
+  ---
+  duration_ms: 1485.7697
+  type: 'test'
+  ...
+# Subtest: A14 暂停与支用并发：提交点统一裁决，不绕过 Gate
+ok 14 - A14 暂停与支用并发：提交点统一裁决，不绕过 Gate
+  ---
+  duration_ms: 2017.5118
+  type: 'test'
+  ...
+# Subtest: A15 批准前依据更新：旧版本批准被拒或要求重新评估
+ok 15 - A15 批准前依据更新：旧版本批准被拒或要求重新评估
+  ---
+  duration_ms: 1424.1961
+  type: 'test'
+  ...
+# Subtest: A16 降额低于存量敞口：保留敞口、显示超额、禁止新增支用
+ok 16 - A16 降额低于存量敞口：保留敞口、显示超额、禁止新增支用
+  ---
+  duration_ms: 1444.775
+  type: 'test'
+  ...
+# Subtest: A17 非循环额度收到还款：不擅自恢复为可循环可用额度
+ok 17 - A17 非循环额度收到还款：不擅自恢复为可循环可用额度
+  ---
+  duration_ms: 1426.2621
+  type: 'test'
+  ...
+# Subtest: A18 模型输出额度/批准字段：可为合法候选，但不能激活额度
+ok 18 - A18 模型输出额度/批准字段：可为合法候选，但不能激活额度
+  ---
+  duration_ms: 1264.35
+  type: 'test'
+  ...
+# Subtest: A19 假人类角色/切前端角色：后端拒绝，审计记录不含秘密
+ok 19 - A19 假人类角色/切前端角色：后端拒绝，审计记录不含秘密
+  ---
+  duration_ms: 1331.4303
+  type: 'test'
+  ...
+# Subtest: A20 发票金额与合同金额冲突：两份证据都可追溯，冲突不被掩盖
+ok 20 - A20 发票金额与合同金额冲突：两份证据都可追溯，冲突不被掩盖
+  ---
+  duration_ms: 1254.4301
+  type: 'test'
+  ...
+# Subtest: A21 accepted 且结论 rejected：工作完成状态不映射为风险通过
+ok 21 - A21 accepted 且结论 rejected：工作完成状态不映射为风险通过
+  ---
+  duration_ms: 1277.0077
+  type: 'test'
+  ...
+# Subtest: A22 迁移中断/重复运行：可恢复，不损毁旧项目/证据/审计
+ok 22 - A22 迁移中断/重复运行：可恢复，不损毁旧项目/证据/审计
+  ---
+  duration_ms: 1247.0116
+  type: 'test'
+  ...
+# Subtest: A23 业务提交成功、outbox 发布失败：恢复后可投递，不丢事件
+ok 23 - A23 业务提交成功、outbox 发布失败：恢复后可投递，不丢事件
+  ---
+  duration_ms: 5023.0046
+  type: 'test'
+  ...
+# Subtest: A24 单客户多子额度/直租回租并发：受客户主上限与关联组约束
+ok 24 - A24 单客户多子额度/直租回租并发：受客户主上限与关联组约束
+  ---
+  duration_ms: 1855.5538
+  type: 'test'
+  ...
+# Subtest: B01 材料、生成场景及截图同源：不增加独立证明；真实核验缺口仍在
+ok 25 - B01 材料、生成场景及截图同源：不增加独立证明；真实核验缺口仍在
+  ---
+  duration_ms: 1668.4235
+  type: 'test'
+  ...
+# Subtest: B02 发票/合同/付款/铭牌不一致：原件并存、逐项定位、后上传不覆盖前者
+ok 26 - B02 发票/合同/付款/铭牌不一致：原件并存、逐项定位、后上传不覆盖前者
+  ---
+  duration_ms: 1288.3704
+  type: 'test'
+  ...
+# Subtest: B03 主体/期间/口径不同：先标口径待解释，不造欺诈结论
+ok 27 - B03 主体/期间/口径不同：先标口径待解释，不造欺诈结论
+  ---
+  duration_ms: 1265.2777
+  type: 'test'
+  ...
+# Subtest: B04 客户说"没有问题"/顾问点"已知悉"：无所需证据不能关闭关键复核；硬门不能被 ack 绕过
+ok 28 - B04 客户说"没有问题"/顾问点"已知悉"：无所需证据不能关闭关键复核；硬门不能被 ack 绕过
+  ---
+  duration_ms: 1269.0808
+  type: 'test'
+  ...
+# Subtest: B05 某域依赖已变：该域必须更新，未变域允许复用，不强迫全量重跑
+ok 29 - B05 某域依赖已变：该域必须更新，未变域允许复用，不强迫全量重跑
+  ---
+  duration_ms: 1822.6228
+  type: 'test'
+  ...
+# Subtest: B06 无关留言不全量重算；相关不利材料只影响真实依赖与相应动作
+ok 30 - B06 无关留言不全量重算；相关不利材料只影响真实依赖与相应动作
+  ---
+  duration_ms: 17236.1139
+  type: 'test'
+  ...
+# Subtest: B07 新证据先提交、旧审批随后提交：正式命令失败，零不合法正式效果
+ok 31 - B07 新证据先提交、旧审批随后提交：正式命令失败，零不合法正式效果
+  ---
+  duration_ms: 1841.8429
+  type: 'test'
+  ...
+# Subtest: B08 批准先完成、随后不利证据：历史不变；新用信按当前依据阻断，不沿用旧 CLEAR
+ok 32 - B08 批准先完成、随后不利证据：历史不变；新用信按当前依据阻断，不沿用旧 CLEAR
+  ---
+  duration_ms: 1980.5085
+  type: 'test'
+  ...
+# Subtest: B09 两主体同时复核/批准同一版本：版本与权限保护成立，不静默互覆
+ok 33 - B09 两主体同时复核/批准同一版本：版本与权限保护成立，不静默互覆
+  ---
+  duration_ms: 1494.4334
+  type: 'test'
+  ...
+# Subtest: B10 同一客户不同申请并发预占：共享同一额度约束，新项目/重试不重复占用
+ok 34 - B10 同一客户不同申请并发预占：共享同一额度约束，新项目/重试不重复占用
+  ---
+  duration_ms: 1471.0042
+  type: 'test'
+  ...
+# Subtest: B11 提额冷却期内发现关键矛盾：复核与新动作立即阻断，不等待冷却
+ok 35 - B11 提额冷却期内发现关键矛盾：复核与新动作立即阻断，不等待冷却
+  ---
+  duration_ms: 1535.0471
+  type: 'test'
+  ...
+# Subtest: B12 预占/批准响应丢失：幂等查回执恢复；报告重复生成不重做业务
+ok 36 - B12 预占/批准响应丢失：幂等查回执恢复；报告重复生成不重做业务
+  ---
+  duration_ms: 1440.0047
+  type: 'test'
+  ...
+# Subtest: B13 客户请求内部报告/事件/证据地址：服务端拒绝，元数据与阈值不泄漏
+ok 37 - B13 客户请求内部报告/事件/证据地址：服务端拒绝，元数据与阈值不泄漏
+  ---
+  duration_ms: 1791.523
+  type: 'test'
+  ...
+# Subtest: B14 场景对象重命名/重新导入：旧依据可追溯；显式重关联才能转移，不悄悄继承
+ok 38 - B14 场景对象重命名/重新导入：旧依据可追溯；显式重关联才能转移，不悄悄继承
+  ---
+  duration_ms: 1736.964
+  type: 'test'
+  ...
+# Subtest: B-EX 事件契约：五类决策闭环事件齐备（AssessmentBasisRevised/ReviewRequired/PackageReady/FormalDecision/UseReadiness）
+ok 39 - B-EX 事件契约：五类决策闭环事件齐备（AssessmentBasisRevised/ReviewRequired/PackageReady/FormalDecision/UseReadiness）
+  ---
+  duration_ms: 2186.9841
+  type: 'test'
+  ...
+# Subtest: X1·自报 approvedBy/domain 的 exemptions[] → 400，无任何登记即形成豁免
+ok 40 - X1·自报 approvedBy/domain 的 exemptions[] → 400，无任何登记即形成豁免
+  ---
+  duration_ms: 1253.9708
+  type: 'test'
+  ...
+# Subtest: X2·无矩阵条目的角色登记豁免 → POLICY_PENDING；有档 approver 登记 → 服务端解析批准人
+ok 41 - X2·无矩阵条目的角色登记豁免 → POLICY_PENDING；有档 approver 登记 → 服务端解析批准人
+  ---
+  duration_ms: 1212.8022
+  type: 'test'
+  ...
+# Subtest: X3·有效豁免 → 包引用后该域 required=false（无域结果也 ready）；冻结记录服务端批准人
+ok 42 - X3·有效豁免 → 包引用后该域 required=false（无域结果也 ready）；冻结记录服务端批准人
+  ---
+  duration_ms: 1567.9038
+  type: 'test'
+  ...
+# Subtest: X4·撤销后新包引用被拒（POLICY_PENDING）；已冻结历史包不受影响
+ok 43 - X4·撤销后新包引用被拒（POLICY_PENDING）；已冻结历史包不受影响
+  ---
+  duration_ms: 1744.5097
+  type: 'test'
+  ...
+# Subtest: X5·过期豁免引用被拒；跨客户引用统一 404 不泄露存在性
+ok 44 - X5·过期豁免引用被拒；跨客户引用统一 404 不泄露存在性
+  ---
+  duration_ms: 2715.963
+  type: 'test'
+  ...
+# Subtest: X6·not_applicable 引用制：自报 waiverRef 被拒；有效豁免（scope=any）可关闭；范围不覆盖被拒
+ok 45 - X6·not_applicable 引用制：自报 waiverRef 被拒；有效豁免（scope=any）可关闭；范围不覆盖被拒
+  ---
+  duration_ms: 1316.9044
+  type: 'test'
+  ...
+# Subtest: X7·撤销权限：有目录角色但无矩阵条目的角色撤销 → POLICY_PENDING（fail-closed）
+ok 46 - X7·撤销权限：有目录角色但无矩阵条目的角色撤销 → POLICY_PENDING（fail-closed）
+  ---
+  duration_ms: 1226.7844
+  type: 'test'
+  ...
+# Subtest: G2-1·错设备材料作为答案引用 → 409 EVIDENCE_OBJECT_MISMATCH，核验项状态不变
+ok 47 - G2-1·错设备材料作为答案引用 → 409 EVIDENCE_OBJECT_MISMATCH，核验项状态不变
+  ---
+  duration_ms: 1384.5504
+  type: 'test'
+  ...
+# Subtest: G2-2·自动核验项：未锚定材料不满足对象锚定（保持 waiting_evidence）；对象匹配材料经晚到登记 → verified
+ok 48 - G2-2·自动核验项：未锚定材料不满足对象锚定（保持 waiting_evidence）；对象匹配材料经晚到登记 → verified
+  ---
+  duration_ms: 1415.7942
+  type: 'test'
+  ...
+# Subtest: G2-3·晚到错设备材料不重开锚定项；收口保持 pending_evidence 不当作通过
+ok 49 - G2-3·晚到错设备材料不重开锚定项；收口保持 pending_evidence 不当作通过
+  ---
+  duration_ms: 1488.0807
+  type: 'test'
+  ...
+# Subtest: G2-4·未锚定项与人工核验路径行为不变（回归护栏）
+ok 50 - G2-4·未锚定项与人工核验路径行为不变（回归护栏）
+  ---
+  duration_ms: 1389.0943
+  type: 'test'
+  ...
+# Subtest: G2-5·拒绝响应零写入：被拒答案不推进问题/核验项/会话版本
+ok 51 - G2-5·拒绝响应零写入：被拒答案不推进问题/核验项/会话版本
+  ---
+  duration_ms: 1382.9235
+  type: 'test'
+  ...
+# Subtest: A08·未决冲突下结束视频：会议可结束；收口 pending_review；不能宣称全部通过
+ok 52 - A08·未决冲突下结束视频：会议可结束；收口 pending_review；不能宣称全部通过
+  ---
+  duration_ms: 1626.4015
+  type: 'test'
+  ...
+# Subtest: A10·会后补证：新修订只重开受影响项；旧小结与旧结论保留
+ok 53 - A10·会后补证：新修订只重开受影响项；旧小结与旧结论保留
+  ---
+  duration_ms: 1684.3241
+  type: 'test'
+  ...
+# Subtest: A3·outbox 事件契约：必发事件齐备、重复投递可按 eventId 幂等去重
+ok 54 - A3·outbox 事件契约：必发事件齐备、重复投递可按 eventId 幂等去重
+  ---
+  duration_ms: 1605.2227
+  type: 'test'
+  ...
+# Subtest: A1·脚手架：会话建立于 preparing/open，快照含覆盖与角色
+ok 55 - A1·脚手架：会话建立于 preparing/open，快照含覆盖与角色
+  ---
+  duration_ms: 1282.3572
+  type: 'test'
+  ...
+# Subtest: A01·重复开始（同 requestId）单次业务效果；错误版本拒绝；历史不重置
+ok 56 - A01·重复开始（同 requestId）单次业务效果；错误版本拒绝；历史不重置
+  ---
+  duration_ms: 1282.9757
+  type: 'test'
+  ...
+# Subtest: A01·重复 pause/resume/end 同 requestId 均单次业务效果
+ok 57 - A01·重复 pause/resume/end 同 requestId 均单次业务效果
+  ---
+  duration_ms: 1477.8545
+  type: 'test'
+  ...
+# Subtest: A03·会前计划版本前移：拒绝过时开始，显式接受新计划才能开始
+ok 58 - A03·会前计划版本前移：拒绝过时开始，显式接受新计划才能开始
+  ---
+  duration_ms: 1322.4548
+  type: 'test'
+  ...
+# Subtest: A06·口述已登记 ≠ 材料已取得：回答成功但核验项与评估门仍未完成
+ok 59 - A06·口述已登记 ≠ 材料已取得：回答成功但核验项与评估门仍未完成
+  ---
+  duration_ms: 1391.3389
+  type: 'test'
+  ...
+# Subtest: A1·权限面：需真人的问题 Agent 不能代答；名册外/无角色 principal 被拒；非 owner 不能暂停
+ok 60 - A1·权限面：需真人的问题 Agent 不能代答；名册外/无角色 principal 被拒；非 owner 不能暂停
+  ---
+  duration_ms: 1445.7464
+  type: 'test'
+  ...
+# Subtest: A1·完整核验闭环（契约级）：建问→授权外发→回答→材料齐→人工核验→verified
+ok 61 - A1·完整核验闭环（契约级）：建问→授权外发→回答→材料齐→人工核验→verified
+  ---
+  duration_ms: 1475.6652
+  type: 'test'
+  ...
+# Subtest: A1·问题去重：同对象/期间/目的/受众去重返回原问题；目的不同保留差异
+ok 62 - A1·问题去重：同对象/期间/目的/受众去重返回原问题；目的不同保留差异
+  ---
+  duration_ms: 1316.5434
+  type: 'test'
+  ...
+# Subtest: M1 start 材料前置：material.<kind> 登记件满足裸 kind 前置；反向亦通；缺失仍 409
+ok 63 - M1 start 材料前置：material.<kind> 登记件满足裸 kind 前置；反向亦通；缺失仍 409
+  ---
+  duration_ms: 402.0797
+  type: 'test'
+  ...
+# Subtest: M2 晚到材料重开与缺口：material.<kind> 登记件解除 waiting_evidence（裸 kind 期望）
+ok 64 - M2 晚到材料重开与缺口：material.<kind> 登记件解除 waiting_evidence（裸 kind 期望）
+  ---
+  duration_ms: 363.2908
+  type: 'test'
+  ...
+# Subtest: M3 客户线程投影：cit_* 经名册 customer 角色读会话，仅见 customer 受众问题
+ok 65 - M3 客户线程投影：cit_* 经名册 customer 角色读会话，仅见 customer 受众问题
+  ---
+  duration_ms: 261.9648
+  type: 'test'
+  ...
+# Subtest: M4 客户在线程内回答/提问：受众门 + presence；内部受众 403
+ok 66 - M4 客户在线程内回答/提问：受众门 + presence；内部受众 403
+  ---
+  duration_ms: 372.5689
+  type: 'test'
+  ...
+# Subtest: M5 越权面：名册无 customer 角色 404；小结强制 customer 受众
+ok 67 - M5 越权面：名册无 customer 角色 404；小结强制 customer 受众
+  ---
+  duration_ms: 443.4638
+  type: 'test'
+  ...
+# Subtest: A02·厂长暂离、财务仍在线：依赖厂长的项等待，财务工作继续，既有记录保留
+ok 68 - A02·厂长暂离、财务仍在线：依赖厂长的项等待，财务工作继续，既有记录保留
+  ---
+  duration_ms: 1549.36
+  type: 'test'
+  ...
+# Subtest: A04·自动外发与暂停并发：暂停后无新授权；在途单列；旧调度者凭旧代际被拒
+ok 69 - A04·自动外发与暂停并发：暂停后无新授权；在途单列；旧调度者凭旧代际被拒
+  ---
+  duration_ms: 1439.8628
+  type: 'test'
+  ...
+# Subtest: A05·问题已发送回应丢失：保留未知并对账；重复回调不重复记账；不盲重问
+ok 70 - A05·问题已发送回应丢失：保留未知并对账；重复回调不重复记账；不盲重问
+  ---
+  duration_ms: 1487.2763
+  type: 'test'
+  ...
+# Subtest: A07·超过等待/追问边界：一次 sweep 转一条待办；不无限重试；系统失败不记客户失信
+ok 71 - A07·超过等待/追问边界：一次 sweep 转一条待办；不无限重试；系统失败不记客户失信
+  ---
+  duration_ms: 1592.7223
+  type: 'test'
+  ...
+# Subtest: A09·服务重启、隔日重新加入：状态/回执/已完成项恢复，不全量重新发问
+ok 72 - A09·服务重启、隔日重新加入：状态/回执/已完成项恢复，不全量重新发问
+  ---
+  duration_ms: 2068.4945
+  type: 'test'
+  ...
+# Subtest: A11·场景前移：旧锚定回答被拒；显式重绑保留原引用；权限撤销后旧角色动作被拒
+ok 73 - A11·场景前移：旧锚定回答被拒；显式重绑保留原引用；权限撤销后旧角色动作被拒
+  ---
+  duration_ms: 1455.2844
+  type: 'test'
+  ...
+# Subtest: A12·九角色并行：按权限分流、同收件人不抢问、一角色离开不清全局状态
+ok 74 - A12·九角色并行：按权限分流、同收件人不抢问、一角色离开不清全局状态
+  ---
+  duration_ms: 1411.5691
+  type: 'test'
+  ...
+# Subtest: 生命周期：blocked→ready→leased→candidate_ready→accepted→decided，执行者不能自验收
+ok 75 - 生命周期：blocked→ready→leased→candidate_ready→accepted→decided，执行者不能自验收
+  ---
+  duration_ms: 1425.0073
+  type: 'test'
+  ...
+# Subtest: 并发领取（真实双客户端）：恰好一个成功
+ok 76 - 并发领取（真实双客户端）：恰好一个成功
+  ---
+  duration_ms: 1298.2521
+  type: 'test'
+  ...
+# Subtest: 过期租约写回被 fencing 拒绝；重领后新 token 生效
+ok 77 - 过期租约写回被 fencing 拒绝；重领后新 token 生效
+  ---
+  duration_ms: 1361.9036
+  type: 'test'
+  ...
+# Subtest: takeover 强制释放租约并 fence 掉原 worker
+ok 78 - takeover 强制释放租约并 fence 掉原 worker
+  ---
+  duration_ms: 1326.1995
+  type: 'test'
+  ...
+# Subtest: 重启持久化：目标/租约/待办/审计还在
+ok 79 - 重启持久化：目标/租约/待办/审计还在
+  ---
+  duration_ms: 1907.1876
+  type: 'test'
+  ...
+# Subtest: 幂等：同 requestId 同载荷重放；异载荷 REQUEST_MISMATCH；回执可查
+ok 80 - 幂等：同 requestId 同载荷重放；异载荷 REQUEST_MISMATCH；回执可查
+  ---
+  duration_ms: 1318.3617
+  type: 'test'
+  ...
+# Subtest: 版本冲突与循环依赖、禁用键、MODEL_NOT_CONFIGURED、失败关闭、real_http 拒绝
+ok 81 - 版本冲突与循环依赖、禁用键、MODEL_NOT_CONFIGURED、失败关闭、real_http 拒绝
+  ---
+  duration_ms: 1404.6539
+  type: 'test'
+  ...
+# Subtest: 无凭据敏感写失败关闭（干净版本）
+ok 82 - 无凭据敏感写失败关闭（干净版本）
+  ---
+  duration_ms: 1334.828
+  type: 'test'
+  ...
+# Subtest: 失败上报与人工恢复：failed→resume→ready
+ok 83 - 失败上报与人工恢复：failed→resume→ready
+  ---
+  duration_ms: 1640.6283
+  type: 'test'
+  ...
+# Subtest: 非租赁小模板：审阅→批准 两目标核心闭环（无行业硬编码冒烟）
+ok 84 - 非租赁小模板：审阅→批准 两目标核心闭环（无行业硬编码冒烟）
+  ---
+  duration_ms: 1311.9672
+  type: 'test'
+  ...
+# Subtest: SIGKILL 内核进程后同库重启：已提交数据完整，无半事务状态
+ok 85 - SIGKILL 内核进程后同库重启：已提交数据完整，无半事务状态
+  ---
+  duration_ms: 2159.665
+  type: 'test'
+  ...
+# Subtest: PostgreSQL 容器整机重启（docker restart）：数据完好，连接池自动恢复
+ok 86 - PostgreSQL 容器整机重启（docker restart）：数据完好，连接池自动恢复 # SKIP 未设置 JW_A_TEST_PG_CONTAINER/JW_A_TEST_PG_ISREADY：跳过容器重启用例（避免触碰非本测试的容器）
+  ---
+  duration_ms: 0.3638
+  type: 'test'
+  ...
+# Subtest: 证据取代：命中目标重绑新证据→ready；下游级联失效；无关项目逐字节不变
+ok 87 - 证据取代：命中目标重绑新证据→ready；下游级联失效；无关项目逐字节不变
+  ---
+  duration_ms: 1484.489
+  type: 'test'
+  ...
+# Subtest: accepted+stale / decided 保护
+ok 88 - accepted+stale / decided 保护
+  ---
+  duration_ms: 1427.8035
+  type: 'test'
+  ...
+# Subtest: 人工待办：关联目标 waiting_human，无关目标照常领取完成；回应后恢复
+ok 89 - 人工待办：关联目标 waiting_human，无关目标照常领取完成；回应后恢复
+  ---
+  duration_ms: 1494.1751
+  type: 'test'
+  ...
+# Subtest: 项目暂停：claim/证据提交拒绝且状态不变；恢复后可继续
+ok 90 - 项目暂停：claim/证据提交拒绝且状态不变；恢复后可继续
+  ---
+  duration_ms: 1372.5258
+  type: 'test'
+  ...
+# Subtest: outbox 至少一次：失败重投直到成功；eventId 稳定可幂等去重；pull 通道可用
+ok 91 - outbox 至少一次：失败重投直到成功；eventId 稳定可幂等去重；pull 通道可用
+  ---
+  duration_ms: 5229.0034
+  type: 'test'
+  ...
+# Subtest: 跨项目越权：其他项目证据/目标不可操作；受限 principal 被拒
+ok 92 - 跨项目越权：其他项目证据/目标不可操作；受限 principal 被拒
+  ---
+  duration_ms: 2894.7186
+  type: 'test'
+  ...
+# Subtest: v1.3 传递staleness：accepted链被取代→全链可见stale，下游accept被复核门拦截，ack放行
+ok 93 - v1.3 传递staleness：accepted链被取代→全链可见stale，下游accept被复核门拦截，ack放行
+  ---
+  duration_ms: 1601.5074
+  type: 'test'
+  ...
+# Subtest: 事件与审计可追溯：审计只记 principalId 不含凭据；事件 seq 单调
+ok 94 - 事件与审计可追溯：审计只记 principalId 不含凭据；事件 seq 单调
+  ---
+  duration_ms: 1342.9495
+  type: 'test'
+  ...
+# Subtest: 载荷限额：result.output 超 64KB 被 400 拒绝（上下文限额守卫）
+ok 95 - 载荷限额：result.output 超 64KB 被 400 拒绝（上下文限额守卫）
+  ---
+  duration_ms: 1363.5122
+  type: 'test'
+  ...
+# Subtest: 验证器异常：--faulty-verifier 注入后敏感写 403 且错误体不含凭据/异常文本
+ok 96 - 验证器异常：--faulty-verifier 注入后敏感写 403 且错误体不含凭据/异常文本
+  ---
+  duration_ms: 1831.4095
+  type: 'test'
+  ...
+# Subtest: 同事务性：命令失败（任意 4xx/500）后 outbox/audit 计数不变；成功后事件可见
+ok 97 - 同事务性：命令失败（任意 4xx/500）后 outbox/audit 计数不变；成功后事件可见
+  ---
+  duration_ms: 1381.6051
+  type: 'test'
+  ...
+# Subtest: V1 客户目录：grants 过滤、搜索、游标分页、匿名拒绝
+ok 98 - V1 客户目录：grants 过滤、搜索、游标分页、匿名拒绝
+  ---
+  duration_ms: 179.4315
+  type: 'test'
+  ...
+# Subtest: V2 邀请生命周期：创建/兑换恰一次/过期/撤销/requestId 对账；agent 不可创建
+ok 99 - V2 邀请生命周期：创建/兑换恰一次/过期/撤销/requestId 对账；agent 不可创建
+  ---
+  duration_ms: 250.1989
+  type: 'test'
+  ...
+# Subtest: V3 撤权级联：身份停用+重放不借缓存回执
+ok 100 - V3 撤权级联：身份停用+重放不借缓存回执
+  ---
+  duration_ms: 77.882
+  type: 'test'
+  ...
+# Subtest: V4 邀请授予面：材料种类服务端强制；核验等级不可自提
+ok 101 - V4 邀请授予面：材料种类服务端强制；核验等级不可自提
+  ---
+  duration_ms: 159.0175
+  type: 'test'
+  ...
+# Subtest: V5 my/materials：获准披露白名单；内部视图边界保持
+ok 102 - V5 my/materials：获准披露白名单；内部视图边界保持
+  ---
+  duration_ms: 138.9774
+  type: 'test'
+  ...
+# Subtest: V6 处理状态：service 专用、runRef 内单调、新尝试可重开、失败须给下一动作
+ok 103 - V6 处理状态：service 专用、runRef 内单调、新尝试可重开、失败须给下一动作
+  ---
+  duration_ms: 172.6576
+  type: 'test'
+  ...
+# Subtest: 账本属性：随机操作序列下金额守恒、占用不超限、状态跃迁合法（seed=20260917）
+ok 104 - 账本属性：随机操作序列下金额守恒、占用不超限、状态跃迁合法（seed=20260917）
+  ---
+  duration_ms: 4309.2321
+  type: 'test'
+  ...
+# Subtest: K12: 同 frId 不同 requestId 并发 reserve（额度足够两次）→ 单次业务迁移、单次占用
+ok 105 - K12: 同 frId 不同 requestId 并发 reserve（额度足够两次）→ 单次业务迁移、单次占用
+  ---
+  duration_ms: 1449.2321
+  type: 'test'
+  ...
+# Subtest: K13: release 与 commit 屏障交错 → 状态与桶守恒，无负桶无双效应
+ok 106 - K13: release 与 commit 屏障交错 → 状态与桶守恒，无负桶无双效应
+  ---
+  duration_ms: 1428.3423
+  type: 'test'
+  ...
+# Subtest: K14: reserve 后设施暂停 / 规则换版 / unknown 出账 → 无新非法业务效果，模拟与实际明确区分
+ok 107 - K14: reserve 后设施暂停 / 规则换版 / unknown 出账 → 无新非法业务效果，模拟与实际明确区分
+  ---
+  duration_ms: 2104.3867
+  type: 'test'
+  ...
+# Subtest: K15: 审批与风险两种提交次序 → 线性化一致，历史不被回写，后续未完成动作被限制
+ok 108 - K15: 审批与风险两种提交次序 → 线性化一致，历史不被回写，后续未完成动作被限制
+  ---
+  duration_ms: 1650.817
+  type: 'test'
+  ...
+# Subtest: K16: 大数/币种/过期预占/循环恢复 → 无精度损失、无错误恢复、不默许过期支用
+ok 109 - K16: 大数/币种/过期预占/循环恢复 → 无精度损失、无错误恢复、不默许过期支用
+  ---
+  duration_ms: 1729.6716
+  type: 'test'
+  ...
+# Subtest: K17: 提额请求客户级限制——多业务员/窗口边界/实质新证据/重启保持/失败不误扣
+ok 110 - K17: 提额请求客户级限制——多业务员/窗口边界/实质新证据/重启保持/失败不误扣
+  ---
+  duration_ms: 1961.0609
+  type: 'test'
+  ...
+# Subtest: K18: 冷却内新负面材料 → 正常核验与阻断；既有合同不被自动改写
+ok 111 - K18: 冷却内新负面材料 → 正常核验与阻断；既有合同不被自动改写
+  ---
+  duration_ms: 1661.1829
+  type: 'test'
+  ...
+# Subtest: W1 服务身份签发：admin 人类专用；凭据明文仅一次；svc 凭据可达 service 专用写口
+ok 112 - W1 服务身份签发：admin 人类专用；凭据明文仅一次；svc 凭据可达 service 专用写口
+  ---
+  duration_ms: 203.2468
+  type: 'test'
+  ...
+# Subtest: W2 服务身份重放幂等/停用即刻失效/跨租户 404
+ok 113 - W2 服务身份重放幂等/停用即刻失效/跨租户 404
+  ---
+  duration_ms: 137.8916
+  type: 'test'
+  ...
+# Subtest: W3 页面消费链冒烟：svc Gate 回执 → human 冻结包 → 提案带 packageId 通过 BASIS 门；无包仍 409
+ok 114 - W3 页面消费链冒烟：svc Gate 回执 → human 冻结包 → 提案带 packageId 通过 BASIS 门；无包仍 409
+  ---
+  duration_ms: 136.3156
+  type: 'test'
+  ...
+# Subtest: C1 信封 v0 单件读回：materialFile 投影 + 元数据
+ok 115 - C1 信封 v0 单件读回：materialFile 投影 + 元数据
+  ---
+  duration_ms: 38.2466
+  type: 'test'
+  ...
+# Subtest: C2 非信封件：materialFile=null，content 原样返回
+ok 116 - C2 非信封件：materialFile=null，content 原样返回
+  ---
+  duration_ms: 44.3054
+  type: 'test'
+  ...
+# Subtest: C3 读回越权面：cit_* 403 / 匿名 403 / 跨客户与不存在 404
+ok 117 - C3 读回越权面：cit_* 403 / 匿名 403 / 跨客户与不存在 404
+  ---
+  duration_ms: 123.2023
+  type: 'test'
+  ...
+# Subtest: C4 被取代件可读：supersededBy 如实携带（历史可审计）
+ok 118 - C4 被取代件可读：supersededBy 如实携带（历史可审计）
+  ---
+  duration_ms: 61.8116
+  type: 'test'
+  ...
+# Subtest: K01: 匿名 GET 检查会话/next-actions/summary → 403，不返回内容
+ok 119 - K01: 匿名 GET 检查会话/next-actions/summary → 403，不返回内容
+  ---
+  duration_ms: 1114.9213
+  type: 'test'
+  ...
+# Subtest: K01: 已验证但非名册/未授权 principal → 404 不泄露存在性；名册可读
+ok 120 - K01: 已验证但非名册/未授权 principal → 404 不泄露存在性；名册可读
+  ---
+  duration_ms: 55.4763
+  type: 'test'
+  ...
+# Subtest: K01: v1 项目/事件/回执读口不再匿名
+ok 121 - K01: v1 项目/事件/回执读口不再匿名
+  ---
+  duration_ms: 23.8534
+  type: 'test'
+  ...
+# Subtest: K02: 同 requestId 跨 principal 重放不产生第二次业务效果；撤权后重放不借缓存
+ok 122 - K02: 同 requestId 跨 principal 重放不产生第二次业务效果；撤权后重放不借缓存
+  ---
+  duration_ms: 250.2887
+  type: 'test'
+  ...
+# Subtest: K02b: 检查会话命令幂等键绑定主体：跨主体同 requestId → REQUEST_MISMATCH
+ok 123 - K02b: 检查会话命令幂等键绑定主体：跨主体同 requestId → REQUEST_MISMATCH
+  ---
+  duration_ms: 24.874
+  type: 'test'
+  ...
+# Subtest: K03: 同租户客户甲 principal 访问客户乙 package/事件/对象/exposure → 一律 404 且不泄字段
+ok 124 - K03: 同租户客户甲 principal 访问客户乙 package/事件/对象/exposure → 一律 404 且不泄字段
+  ---
+  duration_ms: 109.0366
+  type: 'test'
+  ...
+# Subtest: K04: 客户角色上传 grade=confirmed → 403；agent 登记其他域结果 → 403
+ok 125 - K04: 客户角色上传 grade=confirmed → 403；agent 登记其他域结果 → 403
+  ---
+  duration_ms: 112.0864
+  type: 'test'
+  ...
+# Subtest: K05: 自报 gate JSON / []domains / 假收口引用 不可形成有效 ready
+ok 126 - K05: 自报 gate JSON / []domains / 假收口引用 不可形成有效 ready
+  ---
+  duration_ms: 1823.1854
+  type: 'test'
+  ...
+# Subtest: K06: Gate 四状态 × 正式动作 交叉表（HOLD/NEEDS_EVIDENCE/HARD_BLOCK 均不得产生正式效果）
+ok 127 - K06: Gate 四状态 × 正式动作 交叉表（HOLD/NEEDS_EVIDENCE/HARD_BLOCK 均不得产生正式效果）
+  ---
+  duration_ms: 3072.9243
+  type: 'test'
+  ...
+# Subtest: K07: 正式路径必须绑定依据包——无包提案被拒；旧数据只读、批准/用信被阻断；legacy 通道显式开启才可用
+ok 128 - K07: 正式路径必须绑定依据包——无包提案被拒；旧数据只读、批准/用信被阻断；legacy 通道显式开启才可用
+  ---
+  duration_ms: 2594.1138
+  type: 'test'
+  ...
+# Subtest: K08: Run 用旧输入，期间补不利材料，晚到旧结果 → 保留并标失效，不重新盖章 current
+ok 129 - K08: Run 用旧输入，期间补不利材料，晚到旧结果 → 保留并标失效，不重新盖章 current
+  ---
+  duration_ms: 1564.497
+  type: 'test'
+  ...
+# Subtest: K09: failed/timeout/not_configured 运行不得满足必需域
+ok 130 - K09: failed/timeout/not_configured 运行不得满足必需域
+  ---
+  duration_ms: 1568.1104
+  type: 'test'
+  ...
+# Subtest: K10: 规则正式换版 → 旧意见/Gate 失效（仅适用域），无关域不滥重算
+ok 131 - K10: 规则正式换版 → 旧意见/Gate 失效（仅适用域），无关域不滥重算
+  ---
+  duration_ms: 1720.2168
+  type: 'test'
+  ...
+# Subtest: K11: 原件被取代后派生截图不增加独立证明；缺口具体可见；失效派生依赖冻结被拒
+ok 132 - K11: 原件被取代后派生截图不增加独立证明；缺口具体可见；失效派生依赖冻结被拒
+  ---
+  duration_ms: 1455.6252
+  type: 'test'
+  ...
+1..132
+# tests 132
+# suites 0
+# pass 131
+# fail 0
+# cancelled 0
+# skipped 1
+# todo 0
+# duration_ms 205452.6046

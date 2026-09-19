@@ -22,7 +22,7 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { parseArtifactBytes, parseCacheKey, PARSE_ADAPTERS_VERSION } from '../../../C/src/parse/adapters.mjs';
+import { parseArtifactBytes, parseCacheKey, PARSE_ADAPTERS_VERSION, detectFormat } from '../../../C/src/parse/adapters.mjs';
 import { perceptionStage, assessStage, finalizeStage, effectiveRulePack } from '../../../C/domains/pipeline.mjs';
 import { planRecalc, isResultCurrent, DEFAULT_DEPENDENCY_MAP } from '../../../B/src/schedule/recalc-planner.mjs';
 import { bindQuestions, planDispatch, classifyOutboundTier } from '../../../B/src/schedule/question-arbiter.mjs';
@@ -79,7 +79,7 @@ export function loadDefaultRulePack() {
 }
 
 export function makeProcessingCoordinator(store, evidence, {
-  objectStore, rulePack = null, aRegister = null, sendService = null, config = {},
+  objectStore, rulePack = null, aBridge = null, sendService = null, config = {},
 } = {}) {
   const pack = rulePack ?? loadDefaultRulePack();
   const packOk = effectiveRulePack(pack);
@@ -119,7 +119,9 @@ export function makeProcessingCoordinator(store, evidence, {
     outboundPolicy: 'suggest_only',          // suggest_only（默认，只建议零外发）| auto_whitelist
     maxTasksPerCustomerPerHour: null,        // null=不设窗口上限
     aTimeoutMs: 5000,
-    aProjectByCustomer: {},
+    aCustomerLinks: {},                      // 种子映射 customerId→{aCustomerId, projectId?}（持久化进 a_customer_links；生产须来自授权客户目录）
+    aPackageDomainResults: false,            // true=发现现行依据包时登记包域结果（要求包冻结声明与本路消费面一致）
+    aRulePackVersion: null,                  // A 侧声明依赖的规则版本；null=取 C 规则包版本（须与 A 激活版本一致，否则 STALE_BASIS 如实失败）
     maxStoredTextBytes: 65536,
     // 交易适用面声明（simulation 输入；规则 scope 按此判定适用性，缺失=applicability_unknown）：
     // 生产环境须来自商机/产品登记，不由材料解析推断。
@@ -133,7 +135,8 @@ export function makeProcessingCoordinator(store, evidence, {
 
   // ---------- 登记 → 入队 ----------
 
-  /** 上传登记后调用（幂等）：同证据只会有一个处理任务。 */
+  /** 上传登记后调用（幂等）：同证据只会有一个处理任务。首段=A 材料登记（任务书数据顺序：
+   *  字节落地+元数据校验→A 登记权威材料→持久处理→解析）。 */
   async function enqueueArtifact({ tenantId, customerId, evidenceId, kind, depth = 0 }) {
     if (!tenantId || !customerId || !evidenceId || !kind) throw new ConnError('INVALID_INPUT', 'enqueueArtifact: tenantId/customerId/evidenceId/kind required');
     const taskId = `ptk-${hash16({ tenantId, evidenceId })}`;
@@ -142,7 +145,7 @@ export function makeProcessingCoordinator(store, evidence, {
        VALUES ($1,$2,$3,$4,$5,$6,$7)
        ON CONFLICT (tenant_id, evidence_id) DO NOTHING
        RETURNING task_id`,
-      [taskId, tenantId, customerId, evidenceId, kind, depth, depth > 0 ? 'parse' : 'unzip'],
+      [taskId, tenantId, customerId, evidenceId, kind, depth, 'register_material'],
     );
     await recordCost({ tenantId, customerId, taskId, stage: 'enqueue', estimate: { modelCalls: 0, estMs: 0, estBytes: 0 } });
     return { taskId, existed: r.rows.length === 0 };
@@ -155,7 +158,11 @@ export function makeProcessingCoordinator(store, evidence, {
       `SELECT stage, status, attempt, detail, started_at, finished_at FROM processing_stage_runs WHERE task_id=$1 ORDER BY id`,
       [taskId],
     )).rows;
-    return { ...t, stages };
+    const aOps = (await store.query(
+      `SELECT entity_type, local_id, a_ref, request_id, principal_id, status, detail FROM a_links WHERE tenant_id=$1 AND task_id=$2 ORDER BY created_at`,
+      [tenantId, taskId],
+    )).rows;
+    return { ...t, stages, aOps };
   }
 
   async function statusForCustomer({ tenantId, customerId }) {
@@ -233,11 +240,263 @@ export function makeProcessingCoordinator(store, evidence, {
     };
   }
 
-  // ---------- STAGE：unzip ----------
+  // ---------- A 桥接共用：客户映射 + 幂等操作执行（registered/unknown/failed 状态机） ----------
+
+  /** 客户↔A 客户持久映射：配置仅可种子，落 a_customer_links 后以表为准。 */
+  async function ensureCustomerLink(tenantId, customerId) {
+    const existing = (await store.query(
+      `SELECT a_customer_id, project_id FROM a_customer_links WHERE tenant_id=$1 AND customer_id=$2`,
+      [tenantId, customerId],
+    )).rows[0];
+    if (existing) return existing;
+    const seed = cfg.aCustomerLinks[customerId];
+    if (!seed?.aCustomerId) return null;
+    await store.query(
+      `INSERT INTO a_customer_links (tenant_id, customer_id, a_customer_id, project_id, linked_by)
+       VALUES ($1,$2,$3,$4,'config_seed') ON CONFLICT (tenant_id, customer_id) DO NOTHING`,
+      [tenantId, customerId, seed.aCustomerId, seed.projectId ?? null],
+    );
+    return (await store.query(
+      `SELECT a_customer_id, project_id FROM a_customer_links WHERE tenant_id=$1 AND customer_id=$2`,
+      [tenantId, customerId],
+    )).rows[0] ?? null;
+  }
+
+  /** 上传者身份：邀请角色→A principal 映射（客户上传恒 unverified；等级提升=获准人工复核行为）。 */
+  async function uploaderPrincipalFor(art) {
+    if (art.uploader_ref) {
+      const inv = (await store.query(
+        `SELECT role FROM intake_invitations WHERE invitation_id=$1 AND tenant_id=$2`,
+        [art.uploader_ref, art.tenant_id],
+      )).rows[0];
+      if (inv?.role) {
+        const token = aBridge?.principalOf?.('upload', inv.role);
+        if (token) return { token, principalId: `invite-role:${inv.role}` };
+      }
+    }
+    const token = aBridge?.principalOf?.('upload', undefined);
+    return token ? { token, principalId: 'upload_fallback' } : null;
+  }
+
+  /**
+   * 幂等 A 操作：request_id 确定性（`ptx-<taskId>-<op>`）；a_links 状态机驱动。
+   * - registered：直接续跑（崩溃恢复不重复登记）；
+   * - unknown：先回执对账（同 requestId + 原 principal；v2 回执按主体归属过滤），
+   *   对账命中从存储响应取回 aRef，未命中保持 unknown（绝不换 ID 重发）；
+   * - 无行/failed：执行 exec()；A_UNKNOWN → unknown + blocked_unknown；确定性拒绝 → failed。
+   * exec 返回 {aRef, detail}；aRefOf 用于从回执响应体提取引用（按 entity_type）。
+   */
+  const A_REF_FIELD = { material: 'artifactId', derived: 'artifactId', supersede: 'artifactId', run: 'runId', gate: 'receiptId', finding: 'findingId', domain_result: 'resultId', processing: 'aRef' };
+
+  async function aOp(task, { entityType, localId, op, exec, detail = {} }) {
+    const requestId = `ptx-${task.task_id}-${op}`;
+    const linkRow = (await store.query(
+      `SELECT link_id, status, a_ref, principal_id FROM a_links WHERE request_id=$1`, [requestId],
+    )).rows[0];
+    const refField = A_REF_FIELD[entityType] ?? 'aRef';
+    if (linkRow && linkRow.status === 'registered') {
+      return { ok: true, aRef: linkRow.a_ref, reused: true };
+    }
+    if (linkRow && linkRow.status === 'unknown') {
+      const pid = String(linkRow.principal_id);
+      const principalToken = pid.startsWith('invite-role:') ? aBridge.principalOf?.('upload', pid.slice('invite-role:'.length))
+        : pid === 'upload_fallback' ? aBridge.principalOf?.('upload', undefined)
+        : aBridge.credentials?.[pid] ?? aBridge.credentials?.service;
+      const receipt = await aBridge.getReceipt(requestId, { principalToken, timeoutMs: cfg.aTimeoutMs }).catch(() => null);
+      if (receipt?.found) {
+        const aRef = receipt.receipt?.[refField] ?? linkRow.a_ref ?? null;
+        await store.query(
+          `UPDATE a_links SET status='registered', a_ref=$3, updated_at=now() WHERE link_id=$1 AND tenant_id=$2`,
+          [linkRow.link_id, task.tenant_id, aRef],
+        );
+        return { ok: true, aRef, reconciled: true };
+      }
+      return { ok: false, unknown: true };
+    }
+    const principalKey = detail.principalKey ?? 'service';
+    try {
+      const out = await exec(requestId);
+      if (linkRow) {
+        await store.query(
+          `UPDATE a_links SET status='registered', a_ref=$3, updated_at=now() WHERE link_id=$1 AND tenant_id=$2`,
+          [linkRow.link_id, task.tenant_id, out.aRef ?? null],
+        );
+      } else {
+        await store.query(
+          `INSERT INTO a_links (link_id, tenant_id, customer_id, task_id, entity_type, local_id, a_customer_id, a_ref, request_id, principal_id, status, detail)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'registered',$11)`,
+          [`al-${hash16({ requestId })}`, task.tenant_id, task.customer_id, task.task_id, entityType, localId,
+           detail.aCustomerId ?? null, out.aRef ?? null, requestId, principalKey,
+           JSON.stringify({ ...detail, ...(out.detail ?? {}) }).slice(0, 4000)],
+        );
+      }
+      return { ok: true, aRef: out.aRef ?? null };
+    } catch (e) {
+      const unknown = e.code === 'A_UNKNOWN' || e.name === 'AbortError' || e.code === 'ECONNRESET';
+      const failDetail = JSON.stringify({ ...(detail), failCode: e.code ?? 'A_ERROR', failMsg: String(e.message).slice(0, 200) }).slice(0, 4000);
+      if (unknown) {
+        if (linkRow) {
+          await store.query(`UPDATE a_links SET status='unknown', updated_at=now() WHERE link_id=$1 AND tenant_id=$2`, [linkRow.link_id, task.tenant_id]);
+        } else {
+          await store.query(
+            `INSERT INTO a_links (link_id, tenant_id, customer_id, task_id, entity_type, local_id, a_customer_id, request_id, principal_id, status, detail)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'unknown',$10)`,
+            [`al-${hash16({ requestId })}`, task.tenant_id, task.customer_id, task.task_id, entityType, localId,
+             detail.aCustomerId ?? null, requestId, principalKey, failDetail],
+          );
+        }
+        return { ok: false, unknown: true, error: e };
+      }
+      if (linkRow) {
+        await store.query(`UPDATE a_links SET status='failed', detail=a_links.detail || $3::jsonb, updated_at=now() WHERE link_id=$1 AND tenant_id=$2`,
+          [linkRow.link_id, task.tenant_id, JSON.stringify({ failCode: e.code ?? 'A_ERROR', failMsg: String(e.message).slice(0, 200) })]);
+      } else {
+        await store.query(
+          `INSERT INTO a_links (link_id, tenant_id, customer_id, task_id, entity_type, local_id, a_customer_id, request_id, principal_id, status, detail)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'failed',$10)`,
+          [`al-${hash16({ requestId })}`, task.tenant_id, task.customer_id, task.task_id, entityType, localId,
+           detail.aCustomerId ?? null, requestId, principalKey, failDetail],
+        );
+      }
+      return { ok: false, error: e, deterministic: e.deterministic === true };
+    }
+  }
+
 
   async function artifactRow(tenantId, evidenceId) {
     return (await store.query(`SELECT * FROM evidence_artifacts WHERE tenant_id=$1 AND evidence_id=$2`, [tenantId, evidenceId])).rows[0];
   }
+
+  // ---------- G3 处理状态上报（IR-03-8①）：游标推进同步经 service 身份写 A，页面 my/materials 由此取权威 stage ----------
+  // 映射：register_material→received、parse→parsed、analyze→analyzed、人工环节（转人工/待补/深度超限）→needs_review、
+  //       失败→failed（带 failureReason+nextAction）。runRef=`<taskId>:a<attempt>`（新 attempt=新处理尝试，A 侧
+  //       允许从任意 stage 重开）；requestId=`ptx-<taskId>-a<attempt>-prc-<stage>`（确定性，重放幂等）。
+  // 纪律：上报失败/回退拒绝不阻断主链（进度披露非业务事实；a_links 如实留痕 failed/unknown）。
+  const G3_REPORTED = new Set(['received', 'parsed', 'analyzed', 'needs_review', 'failed']);
+
+  async function reportG3(task, stage, { detail = null, failureReason = null, nextAction = null } = {}) {
+    try {
+      if (!aBridge || !G3_REPORTED.has(stage)) return;
+      const link = await ensureCustomerLink(task.tenant_id, task.customer_id);
+      if (!link) return;
+      const aRef = await aMaterialRef(task.tenant_id, task.evidence_id);
+      if (!aRef) return;
+      const attempt = Math.max(1, Number(task.attempts) || 1);
+      const runRef = `${task.task_id}:a${attempt}`.slice(0, 128);
+      await aOp(task, {
+        entityType: 'processing', localId: `${task.evidence_id}:a${attempt}:${stage}`, op: `a${attempt}-prc-${stage}`,
+        detail: { aCustomerId: link.a_customer_id, principalKey: 'service', g3Stage: stage, runRef },
+        exec: (requestId) => aBridge.reportProcessingStages({
+          aCustomerId: link.a_customer_id,
+          aArtifactId: aRef,
+          stages: [{
+            stage, runRef,
+            ...(detail ? { detail } : {}),
+            ...(failureReason ? { failureReason } : {}),
+            ...(nextAction ? { nextAction } : {}),
+          }],
+          requestId,
+          timeoutMs: cfg.aTimeoutMs,
+        }).then(() => ({ aRef: null })),
+      });
+    } catch { /* 进度披露不阻断主链；a_links 已留痕 */ }
+  }
+
+  // ---------- STAGE：register_material（A 登记权威材料及版本；下载 100% 之后的第一个处理段） ----------
+
+  async function stageRegisterMaterial(task) {
+    const link = aBridge ? await ensureCustomerLink(task.tenant_id, task.customer_id) : null;
+    if (!aBridge || !link) {
+      await recordStage(task, 'register_material', 'skipped', { reason: aBridge ? 'no_customer_link' : 'a_not_configured' });
+      await moveCursor(task, 'unzip');
+      return true;
+    }
+    const art = await artifactRow(task.tenant_id, task.evidence_id);
+    if (!art) { await finishTask(task, 'failed', { failureCode: 'ARTIFACT_MISSING' }); return null; }
+    const principal = await uploaderPrincipalFor(art);
+    if (!principal) {
+      await recordStage(task, 'register_material', 'skipped', { reason: 'no_upload_principal_mapping' });
+      await moveCursor(task, 'unzip');
+      return true;
+    }
+    // 派生件（ZIP entry）：provenance 指向容器的 A 工件；容器未登记成功 → 诚实跳过（不伪造派生关系）
+    let derivedFromARef = null;
+    if (art.derived_from) {
+      const parentLink = (await store.query(
+        `SELECT a_ref FROM a_links WHERE tenant_id=$1 AND entity_type IN ('material','supersede') AND local_id=$2 AND status='registered' ORDER BY created_at DESC LIMIT 1`,
+        [task.tenant_id, art.derived_from],
+      )).rows[0];
+      if (!parentLink?.a_ref) {
+        await recordStage(task, 'register_material', 'skipped', { reason: 'parent_material_not_registered', parent: art.derived_from });
+        await moveCursor(task, 'unzip');
+        return true;
+      }
+      derivedFromARef = parentLink.a_ref;
+    }
+    // 更正原件（上传时声明 supersedes → 本地旧件已标 superseded_by）：A 侧形成显式取代版本链
+    let supersedesARef = null;
+    if (derivedFromARef === null) {
+      const supersededLocal = (await store.query(
+        `SELECT evidence_id FROM evidence_artifacts WHERE tenant_id=$1 AND superseded_by=$2 LIMIT 1`,
+        [task.tenant_id, task.evidence_id],
+      )).rows[0];
+      if (supersededLocal) supersedesARef = await aMaterialRef(task.tenant_id, supersededLocal.evidence_id);
+    }
+    const anchor = Array.isArray(art.object_refs) && art.object_refs.length > 0 ? art.object_refs[0] : null;
+    const out = await aOp(task, {
+      entityType: 'material', localId: task.evidence_id, op: 'mat',
+      detail: { aCustomerId: link.a_customer_id, principalKey: principal.principalId },
+      exec: () => aBridge.registerArtifactOp({
+        aCustomerId: link.a_customer_id,
+        kind: `material.${art.kind}`,
+        factKey: `material:${art.kind}`,
+        grade: 'unverified',
+        // 受控元数据（无媒体字节、无授信决策字段）；content=A 契约内的业务输入事实
+        content: {
+          connectorRef: { tenantId: task.tenant_id, customerId: task.customer_id, evidenceId: task.evidence_id },
+          sha256: art.sha256 ?? null,
+          sourceProvider: art.source_provider, uploadSource: art.upload_source,
+          completeness: art.completeness, objectRefCount: Array.isArray(art.object_refs) ? art.object_refs.length : 0,
+          derivedFromLocalId: art.derived_from ?? null, depth: task.depth,
+        },
+        materialMeta: {
+          ...(anchor ? { subjectRef: anchor } : {}),
+          ...(art.period_from ? { periodFrom: String(art.period_from).slice(0, 10) } : {}),
+          ...(art.period_to ? { periodTo: String(art.period_to).slice(0, 10) } : {}),
+          ...(art.unit ? { unit: String(art.unit).slice(0, 32) } : {}),
+          ...(art.caliber ? { caliber: String(art.caliber).slice(0, 64) } : {}),
+        },
+        ...(anchor ? { objectRef: { objectId: String(anchor).slice(0, 128), sceneVersion: 'initial' } } : {}),
+        ...(derivedFromARef ? { provenance: { derivedFrom: [derivedFromARef], generator: 'connectors-unzip', generationKind: 'derived' } } : {}),
+        ...(supersedesARef ? { supersedes: supersedesARef } : {}),
+        ...(link.project_id ? { projectId: link.project_id } : {}),
+        principalToken: principal.token,
+        requestId: `ptx-${task.task_id}-mat`, // aOp 使用 op 前缀构造确定性 ID，这里保持一致
+        timeoutMs: cfg.aTimeoutMs,
+      }).then((r) => ({ aRef: r.aArtifactId, detail: { duplicateOf: r.duplicateOf ?? null } })),
+    });
+    // aOp 已按 request_id=ptx-<taskId>-mat 登记；此处仅消费结果
+    if (out.ok) {
+      await recordStage(task, 'register_material', 'done', { aRef: out.aRef, reused: out.reused === true, reconciled: out.reconciled === true });
+      await reportG3(task, 'received', { detail: `A 工件 ${out.aRef ?? ''}` });
+      await moveCursor(task, 'unzip');
+      return true;
+    }
+    if (out.unknown) {
+      await recordStage(task, 'register_material', 'unknown', { requestId: `ptx-${task.task_id}-mat`, reconcile: 'receipt_pending' });
+      await finishTask(task, 'blocked_unknown', { failureCode: 'A_MATERIAL_UNKNOWN', note: 'A 材料登记已发出但结果未知：保持 unknown 先对账，不换 ID 重发' });
+      return null;
+    }
+    await recordStage(task, 'register_material', 'failed', { code: out.error?.code ?? 'A_ERROR', message: String(out.error?.message ?? '').slice(0, 200) });
+    await finishTask(task, 'failed', {
+      failureCode: out.error?.code ?? 'A_MATERIAL_FAILED',
+      lastError: String(out.error?.message ?? '').slice(0, 200),
+      note: 'A 登记确定性拒绝：如实失败（常见=凭据映射/客户范围未授权），不重试掩盖',
+    });
+    return null;
+  }
+
+
 
   async function stageUnzip(task) {
     const art = await artifactRow(task.tenant_id, task.evidence_id);
@@ -246,8 +505,16 @@ export function makeProcessingCoordinator(store, evidence, {
     const bytes = await objectStore.get(art.object_ref);
     const isZip = bytes.length >= 4 && bytes[0] === 0x50 && bytes[1] === 0x4b && (bytes[2] === 0x03 || bytes[2] === 0x05 || bytes[2] === 0x07);
     if (!isZip) { await recordStage(task, 'unzip', 'skipped', { reason: 'not_zip' }); await moveCursor(task, 'parse'); return true; }
+    // XLSX 是整体解析格式（首个工作表），不是分发容器：不在此解包，交 parse 段就地解析
+    const sniff = detectFormat(bytes, {});
+    if (sniff.family === 'zipish' && sniff.name === 'xlsx') {
+      await recordStage(task, 'unzip', 'skipped', { reason: 'xlsx_whole_file' });
+      await moveCursor(task, 'parse');
+      return true;
+    }
     if (task.depth >= cfg.maxZipDepth) {
       await recordStage(task, 'unzip', 'needs_followup', { reason: 'depth_over_limit', depth: task.depth });
+      await reportG3(task, 'needs_review', { failureReason: 'ZIP_DEPTH_OVER_LIMIT', nextAction: '嵌套容器超过处理深度：转人工解包后按新件上传' });
       await finishTask(task, 'needs_followup', { failureCode: 'ZIP_DEPTH_OVER_LIMIT', note: '嵌套容器超过处理深度：转人工，不解析' });
       return null;
     }
@@ -292,20 +559,43 @@ export function makeProcessingCoordinator(store, evidence, {
     if (!art) { await finishTask(task, 'failed', { failureCode: 'ARTIFACT_MISSING' }); return null; }
     if (art.completeness !== 'complete') {
       await recordStage(task, 'parse', 'needs_followup', { completeness: art.completeness });
+      await reportG3(task, 'needs_review', { failureReason: 'MATERIAL_INCOMPLETE', nextAction: '待补材料不解析、不编数：补齐后按新件重传' });
       await finishTask(task, 'needs_followup', { failureCode: 'MATERIAL_INCOMPLETE', note: '待补材料不解析、不编数（补齐重传后走新件）' });
       return null;
     }
     const naive = cfg.strategy === 'naive_full';
+    // 元数据签名：解析质量旗标（期间错位等）只依赖声明口径 → 缓存键含声明元数据
+    // （任务书 §5：不是只看文件哈希）。对象锚不进解析键：锚点差异不改变解析产物，
+    // 事实层 contentKey 已含 subject，锚点不同的事实各自断言、显式并存。
+    const metaSigOf = (a) => JSON.stringify({
+      periodFrom: a.period_from ?? null, periodTo: a.period_to ?? null,
+      currency: a.currency ?? null, unit: a.unit ?? null, caliber: a.caliber ?? null,
+    });
+    let metadataDupFlag = null;
     if (art.duplicate_of && !naive) {
-      await recordStage(task, 'parse', 'skipped_duplicate', { duplicateOf: art.duplicate_of, sameSourceFlag: art.same_source_flag });
-      await finishTask(task, 'skipped_duplicate', { note: `重复材料：与 ${art.duplicate_of} 同字节/同源，不重复处理` });
-      return null;
+      // 判重对"同客户内全部同字节件"比较（IR-03-8③：判重收敛客户级，跨客户同字节各自处理）：
+      // 任一同字节件声明元数据一致 → 完整重复，不重复处理；
+      // 全部不同 → 同字节不同元数据：照常处理（新锚点下事实并存，差异显式暴露）
+      const dupRows = (await store.query(
+        `SELECT * FROM evidence_artifacts WHERE tenant_id=$1 AND customer_id=$4 AND sha256=$2 AND evidence_id != $3`,
+        [task.tenant_id, art.sha256, task.evidence_id, task.customer_id],
+      )).rows;
+      if (dupRows.some((d) => metaSigOf(d) === metaSigOf(art))) {
+        await recordStage(task, 'parse', 'skipped_duplicate', { duplicateOf: art.duplicate_of, sameSourceFlag: art.same_source_flag });
+        await finishTask(task, 'skipped_duplicate', { note: `重复材料：与 ${art.duplicate_of} 同字节且声明元数据一致，不重复处理` });
+        return null;
+      }
+      metadataDupFlag = { flag: 'duplicate_bytes_new_metadata', detail: `同字节但声明元数据与既有件均不同：按新锚点处理，差异交事实层显式并存` };
     }
     const parserVersion = PARSE_ADAPTERS_VERSION;
-    const parseKey = parseCacheKey({ tenantId: task.tenant_id, customerId: task.customer_id, sha256: art.sha256 ?? task.evidence_id, parserVersion });
+    const parseKey = parseCacheKey({
+      tenantId: task.tenant_id, customerId: task.customer_id, sha256: art.sha256 ?? task.evidence_id,
+      parserVersion, meta: metaSigOf(art),
+    });
     const hit = naive ? null : (await store.query(`SELECT result, format, ok FROM parse_results WHERE parse_key=$1`, [parseKey])).rows[0];
     if (hit) {
       await recordStage(task, 'parse', 'skipped_duplicate', { parseKey, format: hit.format, cached: true });
+      await reportG3(task, 'parsed', { detail: `解析缓存命中（${hit.format ?? ''}）：同输入不重复解析` });
       await moveCursor(task, 'facts');
       return { fromCache: true, ...hit.result };
     }
@@ -315,6 +605,9 @@ export function makeProcessingCoordinator(store, evidence, {
       currency: art.currency, unit: art.unit, caliber: art.caliber,
     };
     const r = parseArtifactBytes(bytes, meta);
+    if (metadataDupFlag && r.ok) {
+      r.qualityFlags = [...(r.qualityFlags ?? []), metadataDupFlag];
+    }
     // naive_full 基线也落库解析结果（材料集 join 需要），但从不读它复用——不重用即基线
     await store.query(
       `INSERT INTO parse_results (parse_key, tenant_id, customer_id, sha256, parser_version, format, ok, result)
@@ -326,6 +619,10 @@ export function makeProcessingCoordinator(store, evidence, {
     if (!r.ok) {
       const manual = r.manualEntry === true;
       await recordStage(task, 'parse', 'needs_followup', { code: r.code, detail: r.detail, manualEntry: manual });
+      await reportG3(task, 'needs_review', {
+        failureReason: r.code,
+        nextAction: manual ? '解析白名单外/扫描件：请经人工录入入口转录事实（录入=转录，核验另行）' : '解析失败：补齐可读原件后按新件重传',
+      });
       await finishTask(task, 'needs_followup', {
         failureCode: r.code,
         note: manual ? `${r.detail}：转人工入口（如实不支持，不推断内容）` : r.detail,
@@ -333,7 +630,8 @@ export function makeProcessingCoordinator(store, evidence, {
       await enqueueManualEntryQuestion(task, r.code, r.detail);
       return null;
     }
-    await recordStage(task, 'parse', 'done', { format: r.format, parserVersion: r.parserVersion, parseKey, facts: r.declaredFacts?.length ?? 0, qualityFlags: r.qualityFlags ?? [] });
+    await recordStage(task, 'parse', 'done', { format: r.format, parserVersion: r.parserVersion, parseKey, facts: r.declaredFacts?.length ?? 0, qualityFlags: r.qualityFlags ?? [], aggregates: r.aggregates ?? null, badRowCount: Array.isArray(r.badRows) ? r.badRows.length : 0, ...(metadataDupFlag ? { duplicateBytesNewMetadata: true } : {}) });
+    await reportG3(task, 'parsed', { detail: `解析完成（${r.format ?? ''}，声明事实 ${r.declaredFacts?.length ?? 0} 项）` });
     await moveCursor(task, 'facts');
     return r;
   }
@@ -441,6 +739,82 @@ export function makeProcessingCoordinator(store, evidence, {
     });
   }
 
+  // ---------- IR-03-8②：人工事实（录入/更正/复核）进入四域分析输入 ----------
+  // 裁决（本路 owner 02）：分析快照除 parse declaredFacts 外，纳入现行人工事实——
+  // - manual_entry 转录事实=source_supported；该件 manual_entry_required 问题被获准复核 verified 后升为 verified
+  //   （verified 仍只能源自获准复核端点，机器永不自证）；
+  // - correction 更正事实=source_supported；同件同键存在现行人工事实时，parse 声明值不再进入快照
+  //   （本地事实状态已标 superseded——分析输入跟随现行事实状态，不在快照里复活被取代值）；
+  // - 同键多个人工取值并存 → 感知层冲突结构显式保留（与事实层并存语义一致）。
+  function typedFactValue(factRow) {
+    // JSONB 列 node-pg 已反序列化：录入时原始 JSON 类型（布尔/数值/字符串）保真恢复
+    if (factRow.value_json !== null && factRow.value_json !== undefined) return factRow.value_json;
+    const s = String(factRow.object_value);
+    if (s === 'true') return true;
+    if (s === 'false') return false;
+    return s;
+  }
+
+  /** 活跃人工事实块：每条 manual_entry 观测/每条 correction 事实一个感知材料块（materialId 带后缀不与原件冲突）。 */
+  async function liveManualBlocks(tenantId, customerId) {
+    const facts = (await store.query(
+      `SELECT fact_id, predicate, object_value, value_json, unit, from_observations, from_artifacts, entry_mode, correction_of
+       FROM fact_assertions
+       WHERE tenant_id=$1 AND customer_id=$2 AND status='candidate' AND entry_mode IN ('manual_entry','correction')`,
+      [tenantId, customerId],
+    )).rows;
+    if (facts.length === 0) return { blocks: [], baseArtifacts: [], factKeys: [] };
+    // 获准复核 verified 的 manual_entry_required 问题 → 其对象件的人工转录事实按 verified 级进入
+    const verifiedRows = (await store.query(
+      `SELECT DISTINCT binding->>'objectRef' AS ev FROM prepared_questions
+       WHERE tenant_id=$1 AND customer_id=$2 AND status='verified' AND binding->>'purpose'='manual_entry_required'`,
+      [tenantId, customerId],
+    )).rows;
+    const verifiedArtifacts = new Set(verifiedRows.map((r) => r.ev));
+    const obsIds = [...new Set(facts.flatMap((f) => (Array.isArray(f.from_observations) ? f.from_observations : [])))];
+    const obsRows = obsIds.length > 0 ? (await store.query(
+      `SELECT o.observation_id, o.artifact_id, o.text FROM evidence_observations o
+       JOIN evidence_artifacts a ON a.tenant_id=o.tenant_id AND a.evidence_id=o.artifact_id
+       WHERE o.tenant_id=$1 AND a.customer_id=$2 AND o.obs_kind='manual_entry' AND o.superseded_by IS NULL
+         AND o.observation_id = ANY($3::text[])`,
+      [tenantId, customerId, obsIds],
+    )).rows : [];
+    const obsById = new Map(obsRows.map((o) => [o.observation_id, o]));
+    const blocks = [];
+    const baseArtifacts = new Set();
+    const factKeys = [];
+    const levelOf = (artifactId) => (verifiedArtifacts.has(artifactId) ? 'verified' : 'source_supported');
+    for (const f of facts) {
+      const arts = Array.isArray(f.from_artifacts) ? f.from_artifacts : [];
+      const base = arts[0] ?? null;
+      if (!base) continue;
+      baseArtifacts.add(base);
+      factKeys.push(f.predicate);
+      const obsId = (Array.isArray(f.from_observations) ? f.from_observations : [])[0] ?? null;
+      const obs = obsId ? obsById.get(obsId) : null;
+      const suffix = obs ? `manual-${String(obs.observation_id).slice(-8)}` : `corr-${String(f.fact_id).slice(-8)}`;
+      const factBlock = {
+        factKey: f.predicate,
+        value: typedFactValue(f),
+        verificationLevel: f.entry_mode === 'correction' ? 'source_supported' : levelOf(base),
+        unit: f.unit ?? null,
+        caliber: null,
+      };
+      const prev = blocks.find((b) => b.materialId === `${base}@${suffix}`);
+      if (prev) prev.declaredFacts.push(factBlock);
+      else blocks.push({
+        materialId: `${base}@${suffix}`,
+        baseArtifactId: base,
+        kind: 'document',
+        content: obs?.text ?? String(f.statement ?? `${f.predicate}=${f.object_value}`).slice(0, 2000),
+        version: 1,
+        declaredFacts: [factBlock],
+        sourceRef: { channel: 'manual_entry', uri: String(base), field: suffix },
+      });
+    }
+    return { blocks, baseArtifacts: [...baseArtifacts], factKeys: [...new Set(factKeys)] };
+  }
+
   async function latestFin(tenantId, customerId) {
     return (await store.query(
       `SELECT * FROM analysis_finalizations WHERE tenant_id=$1 AND customer_id=$2 ORDER BY created_at DESC LIMIT 1`,
@@ -456,40 +830,68 @@ export function makeProcessingCoordinator(store, evidence, {
       await moveCursor(task, 'questions');
       return true;
     }
+    const manual = await liveManualBlocks(task.tenant_id, task.customer_id);
+    const myManual = manual.baseArtifacts.includes(task.evidence_id);
     const myParse = (await store.query(
       `SELECT 1 FROM parse_results pr JOIN evidence_artifacts a ON a.tenant_id=pr.tenant_id AND a.sha256=pr.sha256
        WHERE pr.tenant_id=$1 AND pr.customer_id=$2 AND a.evidence_id=$3 AND pr.ok`,
       [task.tenant_id, task.customer_id, task.evidence_id],
     )).rows[0];
-    if (!myParse) {
+    if (!myParse && !myManual) {
       await recordStage(task, 'analyze', 'skipped', { reason: 'no_parse_output' });
       await moveCursor(task, 'questions');
       return true;
     }
     const started = Date.now();
     const rows = await currentMaterials(task.tenant_id, task.customer_id);
-    if (rows.length === 0) {
+    // IR-03-8②：同件同键存在现行人工事实（录入/更正）→ parse 声明值让位（本地事实状态已 superseded）
+    const manualKeysByArtifact = new Map();
+    for (const b of manual.blocks) {
+      const set = manualKeysByArtifact.get(b.baseArtifactId) ?? new Set();
+      for (const f of b.declaredFacts) set.add(f.factKey);
+      manualKeysByArtifact.set(b.baseArtifactId, set);
+    }
+    const filteredRows = rows.map((r) => {
+      const keys = manualKeysByArtifact.get(r.evidence_id);
+      if (!keys || keys.size === 0) return r;
+      const pr = r.result ?? {};
+      const kept = (pr.declaredFacts ?? []).filter((f) => !keys.has(f.factKey));
+      return { ...r, result: { ...pr, declaredFacts: kept } };
+    }).filter((r) => (r.result?.declaredFacts ?? []).length > 0 || manualKeysByArtifact.has(r.evidence_id));
+    const materials = [
+      ...toPerceptionMaterials(filteredRows),
+      ...manual.blocks.map((b) => ({
+        materialId: b.materialId, kind: b.kind, content: b.content, version: b.version,
+        declaredFacts: b.declaredFacts, sourceRef: b.sourceRef,
+      })),
+    ];
+    if (materials.length === 0) {
       await recordStage(task, 'analyze', 'skipped', { reason: 'no_materials' });
       await moveCursor(task, 'questions');
       return true;
     }
-    const materials = toPerceptionMaterials(rows);
     const ps = perceptionStage({ tenantId: task.tenant_id, customerId: task.customer_id, materials, rulePack: pack });
     if (!ps.ok) {
       await recordStage(task, 'analyze', 'failed', { stage: ps.stage, problems: ps.problems });
+      await reportG3(task, 'failed', { failureReason: 'PERCEPTION_INVALID', nextAction: '感知输入非法：检查材料/事实状态后重传或人工处理' });
       await finishTask(task, 'failed', { failureCode: 'PERCEPTION_INVALID', lastError: JSON.stringify(ps.problems ?? []).slice(0, 200) });
       return null;
     }
     const snapshot = ps.snapshot;
 
-    // 选择性重算规划：本任务的事件（新证据 kind + 本件产出的事实键）→ 受影响域
-    const myFacts = (rows.find((r) => r.evidence_id === task.evidence_id)?.result?.declaredFacts ?? []).map((f) => f.factKey);
+    // 选择性重算规划：本任务的事件（新证据 kind + 本件产出的事实键，含人工事实键）→ 受影响域
+    const myFacts = [
+      ...(rows.find((r) => r.evidence_id === task.evidence_id)?.result?.declaredFacts ?? []).map((f) => f.factKey),
+      ...(myManual ? manual.factKeys : []),
+    ];
     const plan = planRecalc({
       event: { type: 'evidence_submitted', evidenceKind: evidenceKindOf(art.kind), factKeys: myFacts },
       currentDomainStatus: {},
     });
 
-    const artifactRefs = rows.map((r) => r.evidence_id);
+    // 收口引用面：解析材料 ∪ 人工事实来源件（A 侧 deps/回执引用必须覆盖真实参与材料）
+    const manualBaseArts = manual.baseArtifacts.filter((x) => !rows.some((r) => r.evidence_id === x));
+    const artifactRefs = [...rows.map((r) => r.evidence_id), ...manualBaseArts];
     const reused = [];
     const computed = [];
     const assessments = {};
@@ -525,12 +927,14 @@ export function makeProcessingCoordinator(store, evidence, {
       });
       if (!as.ok) {
         await recordStage(task, 'analyze', 'failed', { stage: as.stage, domain, problems: as.problems });
+        await reportG3(task, 'failed', { failureReason: `ASSESS_${domain.toUpperCase()}`, nextAction: `${domain} 域评估失败：检查输入事实后重算或人工处理` });
         await finishTask(task, 'failed', { failureCode: `ASSESS_${domain.toUpperCase()}`, lastError: JSON.stringify(as.problems ?? []).slice(0, 200) });
         return null;
       }
       const out = as.analyses[domain];
       if (!out?.analysisRun || out.analysisRun.inputHash !== snapshot.inputHash) {
         await recordStage(task, 'analyze', 'failed', { domain, reason: 'snapshot_mismatch' });
+        await reportG3(task, 'failed', { failureReason: 'SNAPSHOT_MISMATCH', nextAction: '域输入与感知快照不一致：重算或人工处理' });
         await finishTask(task, 'failed', { failureCode: 'SNAPSHOT_MISMATCH', lastError: `${domain} 域输入哈希与感知快照不一致` });
         return null;
       }
@@ -579,8 +983,10 @@ export function makeProcessingCoordinator(store, evidence, {
     await recordStage(task, 'analyze', 'done', {
       inputHash: snapshot.inputHash, generation: snapshot.watermark.generation,
       planRecompute: plan.recompute, computed, reused, materials: rows.length,
+      manualBlocks: manual.blocks.length,
       durationMs: Date.now() - started,
     });
+    await reportG3(task, 'analyzed', { detail: `四域预审完成（输入 ${snapshot.inputHash.slice(0, 12)}，材料 ${rows.length}+人工 ${manual.blocks.length}）` });
     await recordCost({ tenantId: task.tenant_id, customerId: task.customer_id, taskId: task.task_id, stage: 'analyze', estimate: { modelCalls: 0, estMs: Date.now() - started, estBytes: Buffer.byteLength(JSON.stringify(materials)) } });
     await moveCursor(task, 'questions');
     return true;
@@ -618,7 +1024,7 @@ export function makeProcessingCoordinator(store, evidence, {
 
   async function stageQuestions(task) {
     const fin = await latestFin(task.tenant_id, task.customer_id);
-    if (!fin) { await recordStage(task, 'questions', 'skipped', { reason: 'no_finalization' }); await moveCursor(task, 'register_a'); return true; }
+    if (!fin) { await recordStage(task, 'questions', 'skipped', { reason: 'no_finalization' }); await moveCursor(task, 'register_results'); return true; }
     const plan = fin.question_plan ?? { questions: [] };
     const arbiterInput = plan.questions.map((q) => ({
       questionId: q.questionId,
@@ -637,7 +1043,7 @@ export function makeProcessingCoordinator(store, evidence, {
     const bound = bindQuestions({ sessionId: 'processing', customerId: task.customer_id, questions: arbiterInput });
     if (!bound.ok && bound.bindings.length === 0) {
       await recordStage(task, 'questions', 'done', { problems: bound.problems, bindings: 0 });
-      await moveCursor(task, 'register_a');
+      await moveCursor(task, 'register_results');
       return true;
     }
     const dispatch = planDispatch({ bindings: bound.bindings, session: { outboundPaused: pause.outboundPaused, dispatchGeneration: pause.dispatchGeneration }, callState: { activeCallId: null } });
@@ -690,7 +1096,7 @@ export function makeProcessingCoordinator(store, evidence, {
       outbound: dispatch.plan.outbound.length, queued: dispatch.plan.queued.length, blocked: dispatch.plan.blocked.length,
       sentOk, sendFailed, sendUnknown, policy: cfg.outboundPolicy, paused: pause.outboundPaused,
     });
-    await moveCursor(task, 'register_a');
+    await moveCursor(task, 'register_results');
     return true;
   }
 
@@ -736,10 +1142,17 @@ export function makeProcessingCoordinator(store, evidence, {
     if (!verifiedBy || !note) throw new ConnError('INVALID_INPUT', 'verifyQuestion: verifiedBy/note 必填（核验意见可回溯）');
     const r = await store.query(
       `UPDATE prepared_questions SET status='verified', note=COALESCE(note,'')||$5||'（人工核验：' || $4 || '）', updated_at=now()
-       WHERE tenant_id=$1 AND customer_id=$2 AND question_key=$3 AND status IN ('material_received','answered','suggested') RETURNING question_key`,
+       WHERE tenant_id=$1 AND customer_id=$2 AND question_key=$3 AND status IN ('material_received','answered','suggested')
+       RETURNING question_key, binding->>'objectRef' AS object_ref, binding->>'purpose' AS purpose`,
       [tenantId, customerId, questionKey, verifiedBy, ` ${String(note).slice(0, 120)}`],
     );
     if (r.rows.length === 0) throw new ConnError('INVALID_STATE', `问题 ${questionKey} 不在可核验状态`);
+    // IR-03-8② 裁决：获准复核 verified 是事实等级提升的唯一来源——该件人工转录事实升为 verified 级，
+    // 触发重入分析（新输入=新收口；verified 仍只经本端点由人产生，机器不自证）
+    const row = r.rows[0];
+    if (row.purpose === 'manual_entry_required' && row.object_ref) {
+      await evidence.requeueForAnalysis(tenantId, [row.object_ref]);
+    }
     return { ok: true, questionKey, status: 'verified' };
   }
 
@@ -754,58 +1167,237 @@ export function makeProcessingCoordinator(store, evidence, {
     return { ok: true, questionKey, status: 'answered', note: '回答只是回答；材料取得与人工核验分别推进' };
   }
 
-  // ---------- STAGE：register_a（确定性 requestId；unknown 先对账，不换 ID） ----------
+  // ---------- STAGE：register_results（四域真实输出→A：运行/Gate 回执/findings/包域结果） ----------
+  //
+  // 顺序固定：derived → run+finish ×4 → gate → findings → (可选)包域结果。
+  // 每步经 aOp 幂等（确定性 requestId；unknown 先对账，绝不换 ID）；任何一步 unknown →
+  // 任务 blocked_unknown，下一 tick 从该步续跑（前面步骤经 a_links 状态零重复）。
 
-  async function stageRegisterA(task) {
-    const projectId = cfg.aProjectByCustomer[task.customer_id];
-    if (!aRegister || !projectId) {
-      await recordStage(task, 'register_a', 'skipped', { reason: aRegister ? 'no_project_mapping' : 'a_not_configured' });
+  async function aMaterialRef(tenantId, evidenceId) {
+    const r = (await store.query(
+      `SELECT a_ref FROM a_links WHERE tenant_id=$1 AND entity_type IN ('material','supersede') AND local_id=$2 AND status='registered' AND a_ref IS NOT NULL ORDER BY created_at DESC LIMIT 1`,
+      [tenantId, evidenceId],
+    )).rows[0];
+    return r?.a_ref ?? null;
+  }
+
+  async function stageRegisterResults(task) {
+    const link = aBridge ? await ensureCustomerLink(task.tenant_id, task.customer_id) : null;
+    if (!aBridge || !link) {
+      await recordStage(task, 'register_results', 'skipped', { reason: aBridge ? 'no_customer_link' : 'a_not_configured' });
+      await moveCursor(task, 'done');
+      await finishTask(task, 'done', { note: aBridge ? 'A 客户映射未配置：预审结果仅存本侧（候选，authority=none）' : undefined });
+      return null;
+    }
+    const fin = await latestFin(task.tenant_id, task.customer_id);
+    if (!fin) {
+      await recordStage(task, 'register_results', 'skipped', { reason: 'no_finalization' });
       await moveCursor(task, 'done');
       await finishTask(task, 'done');
       return null;
     }
-    const requestId = `ptx-${task.task_id}`; // 确定性：重放同 ID 幂等，绝不换 ID
-    // 先对账：本任务此前若处于 unknown，先查回执
-    const prev = (await store.query(
-      `SELECT status FROM processing_stage_runs WHERE task_id=$1 AND stage='register_a' ORDER BY id DESC LIMIT 1`,
-      [task.task_id],
+    const aRuleVersion = cfg.aRulePackVersion ?? rulesetVersion;
+    const unknownAbort = async (op) => {
+      await recordStage(task, 'register_results', 'unknown', { op, reconcile: 'receipt_pending' });
+      await finishTask(task, 'blocked_unknown', { failureCode: 'A_RESULTS_UNKNOWN', note: `A 结果登记（${op}）结果未知：保持 unknown 先对账，不换 ID 重发` });
+    };
+    const failAbort = async (op, e) => {
+      await recordStage(task, 'register_results', 'failed', { op, code: e?.code ?? 'A_ERROR', message: String(e?.message ?? '').slice(0, 200) });
+      await reportG3(task, 'failed', { failureReason: e?.code ?? 'A_RESULTS_FAILED', nextAction: `A 结果登记（${op}）确定性拒绝：按失败原因人工处理` });
+      await finishTask(task, 'failed', { failureCode: e?.code ?? 'A_RESULTS_FAILED', lastError: String(e?.message ?? '').slice(0, 200) });
+    };
+    // requestId 按收口（fin）作用域：同输入重放=同 ID 幂等；人工事实变更产生新收口=新 ID（合法新 A 写，不覆写历史回执）
+    const finTag = String(fin.fin_id ?? '').replace(/^fin-/, '').slice(0, 16);
+
+    // 1) 派生解析工件（provenance 指向原件 A 工件；等级≤上游=unverified）
+    const parseRow = (await store.query(
+      `SELECT pr.result FROM parse_results pr JOIN evidence_artifacts a ON a.tenant_id=pr.tenant_id AND a.customer_id=pr.customer_id AND a.sha256=pr.sha256
+       WHERE a.evidence_id=$1 AND pr.ok LIMIT 1`, [task.evidence_id],
     )).rows[0];
-    if (prev?.status === 'unknown') {
-      const receipt = await aRegister.getReceipt?.(requestId).catch(() => null);
-      if (receipt?.found) {
-        await recordStage(task, 'register_a', 'done', { reconciled: true, requestId, receipt });
-        await moveCursor(task, 'done');
-        await finishTask(task, 'done', { note: 'A 登记经回执对账确认（unknown→done，未换 ID 重发）' });
-        return null;
-      }
-      // 回执未见：保持 unknown（等待下一次对账），不自动重发
-      await recordStage(task, 'register_a', 'unknown', { requestId, reconcile: 'receipt_not_found_stay_unknown' });
-      await finishTask(task, 'blocked_unknown', { failureCode: 'A_REGISTER_UNKNOWN', note: 'A 登记结果未知：等待回执对账，不换 ID 重试' });
-      return null;
-    }
-    try {
-      const summary = `evidence ${task.evidence_id} parsed+preaudited (processing)`;
-      const r = await aRegister.registerEvidence({
-        projectId, tenantId: task.tenant_id, evidenceId: task.evidence_id, customerId: task.customer_id,
-        summary, sha256: (await artifactRow(task.tenant_id, task.evidence_id))?.sha256 ?? null,
-        sourceProvider: 'processing', sourceMode: 'real', requestId,
-        timeoutMs: cfg.aTimeoutMs,
+    let materialARef = await aMaterialRef(task.tenant_id, task.evidence_id);
+    if (parseRow && materialARef) {
+      const p = parseRow.result ?? {};
+      const der = await aOp(task, {
+        entityType: 'derived', localId: task.evidence_id, op: 'der',
+        detail: { aCustomerId: link.a_customer_id, principalKey: 'registrar' },
+        exec: (requestId) => aBridge.registerArtifactOp({
+          aCustomerId: link.a_customer_id,
+          requestId,
+          kind: 'parse_extraction',
+          factKey: `parse:${task.evidence_id}`,
+          grade: 'unverified',
+          content: {
+            connectorRef: { tenantId: task.tenant_id, customerId: task.customer_id, evidenceId: task.evidence_id },
+            format: p.format ?? null, parserVersion: p.parserVersion ?? null,
+            aggregates: p.aggregates ?? null, qualityFlags: p.qualityFlags ?? [],
+            badRowCount: Array.isArray(p.badRows) ? p.badRows.length : (p.badRows ? 1 : 0),
+            declaredFactSummaries: (p.declaredFacts ?? []).map((f) => ({ factKey: f.factKey, value: f.value, level: f.verificationLevel, unit: f.unit ?? null })),
+            caliberNote: p.caliberNote ?? null,
+          },
+          provenance: { derivedFrom: [materialARef], generator: `processing@${COORDINATOR_VERSION}`, generationKind: 'derived' },
+          principalToken: aBridge.principalOf('registrar'),
+          timeoutMs: cfg.aTimeoutMs,
+        }).then((r) => ({ aRef: r.aArtifactId })),
       });
-      await recordStage(task, 'register_a', 'done', { requestId, aEvidenceId: r.aEvidenceId, aProjectId: r.aProjectId });
-      await moveCursor(task, 'done');
-      await finishTask(task, 'done', { note: `已登记 A（${r.aProjectId}）` });
-    } catch (e) {
-      const unknown = e.code === 'TIMEOUT_UNKNOWN' || e.name === 'AbortError' || e.code === 'ECONNRESET';
-      if (unknown) {
-        await recordStage(task, 'register_a', 'unknown', { requestId, reason: String(e.message).slice(0, 120) });
-        await finishTask(task, 'blocked_unknown', { failureCode: 'A_REGISTER_UNKNOWN', note: 'A 登记已发出但结果未知：保持 unknown，先对账' });
+      if (!der.ok) return der.unknown ? unknownAbort('der') : failAbort('der', der.error);
+    }
+
+    // 2) 逐域分析运行 start→finish（deps=全部参与材料的 A 引用+该域消费键；A 盖章 input_digest）。
+    //    诚实口径：C 四域消费同一份全材料感知快照（inputHash 覆盖全部材料），故 deps 引用
+    //    收口时点的全部现行材料；域差异由 deps.factKeys（域消费面）表达。任何材料未入 A →
+    //    保守跳过该域并留痕（不伪造缩小依赖面）。
+    const finMaterials = Array.isArray(fin.artifact_refs) ? fin.artifact_refs : JSON.parse(fin.artifact_refs ?? '[]');
+    const finARefs = [];
+    const finUnlinked = [];
+    for (const ev of finMaterials) {
+      const ref = await aMaterialRef(task.tenant_id, ev);
+      if (ref) finARefs.push(ref); else finUnlinked.push(ev);
+    }
+    const runRefs = {};
+    const runDeps = {};
+    for (const domain of DOMAINS) {
+      const dRow = (await store.query(
+        `SELECT * FROM domain_analyses WHERE tenant_id=$1 AND customer_id=$2 AND domain=$3 ORDER BY created_at DESC LIMIT 1`,
+        [task.tenant_id, task.customer_id, domain],
+      )).rows[0];
+      if (!dRow) continue;
+      if (finARefs.length === 0 || finUnlinked.length > 0) {
+        await recordStage(task, 'register_results', 'skipped', {
+          op: `run-${domain}`,
+          reason: finARefs.length === 0 ? 'no_linked_artifacts' : 'partial_unlinked_artifacts',
+          unlinked: finUnlinked,
+        });
+        continue;
+      }
+      const factKeys = [...consumedFactsFor(domain, packFactRefs)].sort();
+      const deps = { artifactIds: finARefs, factKeys, rulePackVersion: aRuleVersion };
+      runDeps[domain] = deps;
+      const started = await aOp(task, {
+        entityType: 'run', localId: `${task.customer_id}:${domain}:${finTag}`, op: `run-${domain}-${finTag}`,
+        detail: { aCustomerId: link.a_customer_id, principalKey: 'service', rulePackVersion: aRuleVersion, artifactCount: finARefs.length },
+        exec: (requestId) => aBridge.startRun({
+          aCustomerId: link.a_customer_id, domain,
+          deps,
+          providerMode: 'deterministic_calculation',
+          requestId,
+          timeoutMs: cfg.aTimeoutMs,
+        }).then((r) => ({ aRef: r.runId, detail: { inputDigest: r.inputDigest } })),
+      });
+      if (!started.ok) return started.unknown ? unknownAbort(`run-${domain}`) : failAbort(`run-${domain}`, started.error);
+      runRefs[domain] = started.aRef;
+      const finished = await aOp(task, {
+        entityType: 'run', localId: `${task.customer_id}:${domain}:${finTag}:finish`, op: `fin-${domain}-${finTag}`,
+        detail: { aCustomerId: link.a_customer_id, principalKey: 'service' },
+        exec: (requestId) => aBridge.finishRun({ runId: started.aRef, executionStatus: 'completed', requestId, timeoutMs: cfg.aTimeoutMs })
+          .then((r) => ({ aRef: r.runId })),
+      });
+      if (!finished.ok) return finished.unknown ? unknownAbort(`fin-${domain}`) : failAbort(`fin-${domain}`, finished.error);
+    }
+
+    // 3) Gate 回执（C 收口结论 1:1 映射；rulesetVersion 必须=A 当前激活版本，否则 STALE_BASIS 如实失败）
+    const gate = fin.gate ?? {};
+    if (gate.result) {
+      const finMaterialList = Array.isArray(fin.artifact_refs) ? fin.artifact_refs : JSON.parse(fin.artifact_refs ?? '[]');
+      const materialRefs = [];
+      for (const r of finMaterialList) {
+        const ref = await aMaterialRef(task.tenant_id, r);
+        if (ref) materialRefs.push(ref);
+      }
+      const gateOp = await aOp(task, {
+        entityType: 'gate', localId: `${task.customer_id}:${fin.fin_id}`, op: `gate-${finTag}`,
+        detail: { aCustomerId: link.a_customer_id, principalKey: 'service', gateResult: gate.result, rulesetVersion: aRuleVersion },
+        exec: (requestId) => aBridge.registerGateReceipt({
+          aCustomerId: link.a_customer_id,
+          requestId,
+          result: gate.result,
+          rulesetVersion: aRuleVersion,
+          reasonCodes: Array.isArray(gate.reasonCodes) ? gate.reasonCodes.filter((x) => typeof x === 'string') : [],
+          ruleIds: Array.isArray(gate.ruleIds) ? gate.ruleIds.filter((x) => typeof x === 'string') : [],
+          blockedActions: Array.isArray(gate.blockedActions) ? gate.blockedActions.filter((x) => typeof x === 'string') : [],
+          evidenceRefs: materialRefs,
+          inputDigest: String(fin.input_hash ?? '').slice(0, 128) || null,
+          evaluatedAt: Number.isFinite(new Date(fin.created_at ?? null).getTime()) ? new Date(fin.created_at).toISOString() : null,
+          timeoutMs: cfg.aTimeoutMs,
+        }).then((r) => ({ aRef: r.receiptId })),
+      });
+      if (!gateOp.ok) return gateOp.unknown ? unknownAbort('gate') : failAbort('gate', gateOp.error);
+    }
+
+    // 4) 事实冲突 → A findings（复核队列；处理仅人类）
+    const conflicts = (await store.query(
+      `SELECT c.conflict_id, c.subject, c.predicate, fa.object_value AS value_a, fb.object_value AS value_b,
+              fa.from_artifacts AS art_a, fb.from_artifacts AS art_b
+       FROM fact_conflicts c
+       JOIN fact_assertions fa ON fa.fact_id=c.fact_a
+       JOIN fact_assertions fb ON fb.fact_id=c.fact_b
+       WHERE c.tenant_id=$1 AND c.customer_id=$2 AND c.state='open'`,
+      [task.tenant_id, task.customer_id],
+    )).rows;
+    for (const c of conflicts) {
+      const fnd = await aOp(task, {
+        entityType: 'finding', localId: c.conflict_id, op: `fnd-${c.conflict_id}`,
+        detail: { aCustomerId: link.a_customer_id, principalKey: 'service' },
+        exec: (requestId) => aBridge.createFinding({
+          aCustomerId: link.a_customer_id,
+          requestId,
+          findingType: 'material_conflict',
+          assertion: `同一对象/期间下 ${c.predicate} 出现不一致取值（处理链自动登记；人工复核仅人类）`,
+          sideA: { factKey: c.predicate, value: c.value_a, artifacts: c.art_a ?? [] },
+          sideB: { factKey: c.predicate, value: c.value_b, artifacts: c.art_b ?? [] },
+          responsibleRole: 'business',
+          severity: 'major',
+          impactScope: { actions: ['approve_facility', 'reserve'], domains: [], blocking: true },
+          requiredAction: { kind: 'verify', requiredEvidenceKinds: [], minGrade: null },
+          timeoutMs: cfg.aTimeoutMs,
+        }).then((r) => ({ aRef: r.findingId })),
+      });
+      if (!fnd.ok) return fnd.unknown ? unknownAbort(`fnd-${c.conflict_id}`) : failAbort(`fnd-${c.conflict_id}`, fnd.error);
+    }
+
+    // 5) （可选）包域结果：现行依据包存在且配置开启时登记（deps 须与包冻结声明一致，否则 A 确定性拒绝）
+    if (cfg.aPackageDomainResults === true) {
+      const st = await aBridge.decisionStatus(link.a_customer_id, { principalToken: aBridge.principalOf('registrar'), timeoutMs: cfg.aTimeoutMs }).catch((e) => ({ _err: e }));
+      if (st._err) return failAbort('decision-status', st._err);
+      const basisVersion = st?.basis?.basisVersion ?? null;
+      if (typeof basisVersion === 'string' && basisVersion.includes(':')) {
+        const packageId = basisVersion.split(':')[0];
+        for (const domain of DOMAINS) {
+          if (!runRefs[domain]) continue;
+          const dRow = (await store.query(
+            `SELECT result FROM domain_analyses WHERE tenant_id=$1 AND customer_id=$2 AND domain=$3 ORDER BY created_at DESC LIMIT 1`,
+            [task.tenant_id, task.customer_id, domain],
+          )).rows[0];
+          const assessment = dRow?.result?.assessment ?? null;
+          if (!assessment) continue;
+          const dres = await aOp(task, {
+            entityType: 'domain_result', localId: `${packageId}:${domain}:${finTag}`, op: `dres-${domain}-${finTag}`,
+            detail: { aCustomerId: link.a_customer_id, principalKey: 'registrar', packageId },
+            exec: (requestId) => aBridge.recordDomainResult({
+              packageId, domain,
+              requestId,
+              deps: runDeps[domain], // 与运行 start 声明一致；与包冻结声明不一致 = A 确定性拒绝（不猜测包内声明）
+              analysisRun: { runId: runRefs[domain], rulesetVersion: aRuleVersion },
+              opinion: assessment,
+              principalToken: aBridge.principalOf('registrar'),
+              timeoutMs: cfg.aTimeoutMs,
+            }).then(() => ({ aRef: null })),
+          });
+          if (!dres.ok) return dres.unknown ? unknownAbort(`dres-${domain}`) : failAbort(`dres-${domain}`, dres.error);
+        }
       } else {
-        await recordStage(task, 'register_a', 'failed', { requestId, reason: String(e.message).slice(0, 120) });
-        await finishTask(task, 'failed', { failureCode: e.code ?? 'A_REGISTER_FAILED', lastError: String(e.message).slice(0, 200) });
+        await recordStage(task, 'register_results', 'skipped', { op: 'domain_results', reason: 'no_ready_package' });
       }
     }
+
+    await recordStage(task, 'register_results', 'done', {
+      runs: Object.keys(runRefs), gate: gate.result ?? null, findings: conflicts.length,
+      note: '四域输出已按真实执行产物登记 A（运行回执/Gate 回执/冲突复核项）',
+    });
+    await moveCursor(task, 'done');
+    await finishTask(task, 'done');
     return null;
   }
+
 
   // ---------- 驱动：认领/恢复/预算/有限重试 ----------
 
@@ -839,19 +1431,61 @@ export function makeProcessingCoordinator(store, evidence, {
     return rows;
   }
 
-  /** 对账 sweep：blocked_unknown（A 登记结果未知）任务先查回执——同 requestId 幂等，绝不换 ID 重发。 */
+  /** 对账 sweep：blocked_unknown 任务先查回执——逐条核对 a_links 中 unknown 的 A 操作
+   *  （同 requestId + 原 principal；v2 回执按主体归属过滤），绝不换 ID 重发。
+   *  task_id IS NULL 的 unknown 行（人工更正回写等）一并按原凭据对账。 */
   async function reconcileUnknown() {
-    const rows = (await store.query(`SELECT * FROM processing_tasks WHERE status='blocked_unknown' ORDER BY updated_at LIMIT 10`)).rows;
+    const tasks = (await store.query(`SELECT * FROM processing_tasks WHERE status='blocked_unknown' ORDER BY updated_at LIMIT 10`)).rows;
     let reconciled = 0;
-    for (const task of rows) {
-      const requestId = `ptx-${task.task_id}`;
-      const receipt = await aRegister?.getReceipt?.(requestId).catch(() => null);
-      if (receipt?.found) {
-        await recordStage(task, 'register_a', 'done', { reconciled: true, requestId, receipt: { requestId: receipt.requestId } });
-        await finishTask(task, 'done', { note: 'A 登记经回执对账确认（unknown→done，未换 ID 重发）' });
-        reconciled += 1;
-      } else if (task.attempts >= task.max_attempts + 3) {
+    for (const task of tasks) {
+      const pending = (await store.query(
+        `SELECT link_id, request_id, principal_id, entity_type, a_ref FROM a_links WHERE tenant_id=$1 AND task_id=$2 AND status='unknown' ORDER BY created_at`,
+        [task.tenant_id, task.task_id],
+      )).rows;
+      let allResolved = true;
+      for (const row of pending) {
+        const pid = String(row.principal_id);
+        const principalToken = pid.startsWith('invite-role:') ? aBridge?.principalOf?.('upload', pid.slice('invite-role:'.length))
+          : pid === 'upload_fallback' ? aBridge?.principalOf?.('upload', undefined)
+          : aBridge?.credentials?.[pid] ?? aBridge?.credentials?.service;
+        const receipt = await aBridge?.getReceipt?.(row.request_id, { principalToken, timeoutMs: cfg.aTimeoutMs }).catch(() => null);
+        if (receipt?.found) {
+          const refField = A_REF_FIELD[row.entity_type] ?? 'aRef';
+          await store.query(
+            `UPDATE a_links SET status='registered', a_ref=$3, updated_at=now() WHERE link_id=$1 AND tenant_id=$2`,
+            [row.link_id, task.tenant_id, receipt.receipt?.[refField] ?? row.a_ref ?? null],
+          );
+          reconciled += 1;
+        } else {
+          allResolved = false;
+        }
+      }
+      if (allResolved && pending.length > 0) {
+        // 全部对账确认：任务从 blocked_unknown 回队，从游标续跑（已 registered 的步骤零重复）
+        await store.query(
+          `UPDATE processing_tasks SET status='queued', leased_until=NULL, leased_by=NULL, note='A 操作经回执对账确认（unknown→续跑，未换 ID）', updated_at=now()
+           WHERE task_id=$1 AND tenant_id=$2 AND status='blocked_unknown'`,
+          [task.task_id, task.tenant_id],
+        );
+      } else if (pending.length === 0 && task.attempts >= task.max_attempts + 3) {
         await finishTask(task, 'failed', { failureCode: 'A_REGISTER_UNRESOLVED', note: '对账超界：保持人工介入（从未换 ID 自动重发）' });
+      }
+    }
+    // 无任务的 unknown 操作（人工更正回写）：对账命中即闭环
+    const orphans = (await store.query(
+      `SELECT link_id, tenant_id, request_id, principal_id, entity_type, a_ref FROM a_links WHERE task_id IS NULL AND status='unknown' ORDER BY updated_at LIMIT 10`,
+    )).rows;
+    for (const row of orphans) {
+      const pid = String(row.principal_id);
+      const principalToken = aBridge?.credentials?.[pid] ?? aBridge?.credentials?.service;
+      const receipt = await aBridge?.getReceipt?.(row.request_id, { principalToken, timeoutMs: cfg.aTimeoutMs }).catch(() => null);
+      if (receipt?.found) {
+        const refField = A_REF_FIELD[row.entity_type] ?? 'aRef';
+        await store.query(
+          `UPDATE a_links SET status='registered', a_ref=$3, updated_at=now() WHERE link_id=$1 AND tenant_id=$2`,
+          [row.link_id, row.tenant_id, receipt.receipt?.[refField] ?? row.a_ref ?? null],
+        );
+        reconciled += 1;
       }
     }
     return reconciled;
@@ -860,7 +1494,8 @@ export function makeProcessingCoordinator(store, evidence, {
   /** 单任务推进：按游标执行到终态或需等待。cfg.hookAfterStage（测试/故障注入缝）在每段成功后调用。 */
   async function runTask(task) {
     let cur = task.stage_cursor;
-    for (let guard = 0; guard < 8; guard++) {
+    for (let guard = 0; guard < 12; guard++) {
+      if (cur === 'register_material') { const cont = await stageRegisterMaterial(task); if (!cont) return; if (cfg.hookAfterStage) await cfg.hookAfterStage(task, 'register_material'); cur = 'unzip'; task.stage_cursor = 'unzip'; continue; }
       if (cur === 'unzip') { const cont = await stageUnzip(task); if (!cont) return; if (cfg.hookAfterStage) await cfg.hookAfterStage(task, 'unzip'); cur = 'parse'; task.stage_cursor = 'parse'; continue; }
       if (cur === 'parse') {
         const pr = await stageParse(task);
@@ -888,8 +1523,8 @@ export function makeProcessingCoordinator(store, evidence, {
         continue;
       }
       if (cur === 'analyze') { const cont = await stageAnalyze(task); if (!cont) return; if (cfg.hookAfterStage) await cfg.hookAfterStage(task, 'analyze'); cur = 'questions'; task.stage_cursor = 'questions'; continue; }
-      if (cur === 'questions') { const cont = await stageQuestions(task); if (!cont) return; if (cfg.hookAfterStage) await cfg.hookAfterStage(task, 'questions'); cur = 'register_a'; task.stage_cursor = 'register_a'; continue; }
-      if (cur === 'register_a') { await stageRegisterA(task); return; }
+      if (cur === 'questions') { const cont = await stageQuestions(task); if (!cont) return; if (cfg.hookAfterStage) await cfg.hookAfterStage(task, 'questions'); cur = 'register_results'; task.stage_cursor = 'register_results'; continue; }
+      if (cur === 'register_results') { await stageRegisterResults(task); return; }
       if (cur === 'done') { await finishTask(task, task.status === 'running' ? 'done' : task.status); return; }
       await finishTask(task, 'failed', { failureCode: 'UNKNOWN_CURSOR', lastError: `未知游标 ${cur}` });
       return;

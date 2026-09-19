@@ -1,0 +1,237 @@
+
+> jw-front@0.1.0 test
+> node --experimental-strip-types --test preview/test/role-mock-adapter.test.mjs preview/test/edge-logic.test.mjs preview/test/wb-logic.test.mjs
+
+TAP version 13
+# Subtest: SSE 帧解析：多帧/心跳/残帧缓冲；CRLF 与多行 data 兼容（goal-03）
+ok 1 - SSE 帧解析：多帧/心跳/残帧缓冲；CRLF 与多行 data 兼容（goal-03）
+  ---
+  duration_ms: 1.9023
+  type: 'test'
+  ...
+# Subtest: 连接状态机：不把失败伪装成 live；重连与显式停止区分
+ok 2 - 连接状态机：不把失败伪装成 live；重连与显式停止区分
+  ---
+  duration_ms: 0.2903
+  type: 'test'
+  ...
+# Subtest: 会话操作条：服务端 availableActions 优先；缺省才按 runStatus 本地推导（不发明第五种状态）
+ok 3 - 会话操作条：服务端 availableActions 优先；缺省才按 runStatus 本地推导（不发明第五种状态）
+  ---
+  duration_ms: 1.6075
+  type: 'test'
+  ...
+# Subtest: 等待原因：暂停/在途/开放问题/未决核验如实呈现
+ok 4 - 等待原因：暂停/在途/开放问题/未决核验如实呈现
+  ---
+  duration_ms: 0.4916
+  type: 'test'
+  ...
+# Subtest: 额度行投影：候选=评估、已批准=设施、可用=服务端推导值；阻断位显式呈现
+ok 5 - 额度行投影：候选=评估、已批准=设施、可用=服务端推导值；阻断位显式呈现
+  ---
+  duration_ms: 39.9461
+  type: 'test'
+  ...
+# Subtest: 金额格式化：万元/元/未知/非 CNY 标注
+ok 6 - 金额格式化：万元/元/未知/非 CNY 标注
+  ---
+  duration_ms: 0.7114
+  type: 'test'
+  ...
+# Subtest: 模式徽标：Live 与本地合成演示不混淆
+ok 7 - 模式徽标：Live 与本地合成演示不混淆
+  ---
+  duration_ms: 0.3457
+  type: 'test'
+  ...
+# Subtest: 动作 requestId：会话+动作稳定，且不超过 128 上限
+ok 8 - 动作 requestId：会话+动作稳定，且不超过 128 上限
+  ---
+  duration_ms: 0.1997
+  type: 'test'
+  ...
+# Subtest: 4 个种子案例形状完整：六角色 roleViews/问≤3/脚本/来源
+ok 9 - 4 个种子案例形状完整：六角色 roleViews/问≤3/脚本/来源
+  ---
+  duration_ms: 1.9285
+  type: 'test'
+  ...
+# Subtest: initialCaseState：系统载入消息 + 事实副本（案例间不共享对象）
+ok 10 - initialCaseState：系统载入消息 + 事实副本（案例间不共享对象）
+  ---
+  duration_ms: 1.2782
+  type: 'test'
+  ...
+# Subtest: 空输入：拒绝且不改状态
+ok 11 - 空输入：拒绝且不改状态
+  ---
+  duration_ms: 0.6285
+  type: 'test'
+  ...
+# Subtest: 未知自由文本：待澄清，不假装理解、不改事实
+ok 12 - 未知自由文本：待澄清，不假装理解、不改事实
+  ---
+  duration_ms: 0.5081
+  type: 'test'
+  ...
+# Subtest: 案例1 缺证→补证：发票命中 → 证据版本+1、域回复+见微汇总、任务更新
+ok 13 - 案例1 缺证→补证：发票命中 → 证据版本+1、域回复+见微汇总、任务更新
+  ---
+  duration_ms: 0.5201
+  type: 'test'
+  ...
+# Subtest: 重复提交同证据：已登记提示，不重复记账
+ok 14 - 重复提交同证据：已登记提示，不重复记账
+  ---
+  duration_ms: 1.3256
+  type: 'test'
+  ...
+# Subtest: 案例1 两步全走完：发票→合同，见微最终汇总
+ok 15 - 案例1 两步全走完：发票→合同，见微最终汇总
+  ---
+  duration_ms: 1.5065
+  type: 'test'
+  ...
+# Subtest: 发言归属：不同视角的输入记录不同角色，且不混成正式身份
+ok 16 - 发言归属：不同视角的输入记录不同角色，且不混成正式身份
+  ---
+  duration_ms: 0.3941
+  type: 'test'
+  ...
+# Subtest: 案例3 权属疑点：确权函解除阻塞（asset 红线 → 可推进）
+ok 17 - 案例3 权属疑点：确权函解除阻塞（asset 红线 → 可推进）
+  ---
+  duration_ms: 0.8733
+  type: 'test'
+  ...
+# Subtest: 案例4 口径差异：书面解释 → 信审复算 + 见微跨域矛盾解除
+ok 18 - 案例4 口径差异：书面解释 → 信审复算 + 见微跨域矛盾解除
+  ---
+  duration_ms: 0.7503
+  type: 'test'
+  ...
+# Subtest: 角色切换零副作用：同状态不同视角提交只影响发言归属，不触发证据/任务变化
+ok 19 - 角色切换零副作用：同状态不同视角提交只影响发言归属，不触发证据/任务变化
+  ---
+  duration_ms: 0.4811
+  type: 'test'
+  ...
+# Subtest: 受限上传预检：正常小文件产出信封；超大/空文件/坏名拒绝且给业务语言
+ok 20 - 受限上传预检：正常小文件产出信封；超大/空文件/坏名拒绝且给业务语言
+  ---
+  duration_ms: 4.3235
+  type: 'test'
+  ...
+# Subtest: bytesToBase64 已知向量
+ok 21 - bytesToBase64 已知向量
+  ---
+  duration_ms: 0.3156
+  type: 'test'
+  ...
+# Subtest: 错误码→业务语言：政策未配置/Gate 阻断/未知码保守回显
+ok 22 - 错误码→业务语言：政策未配置/Gate 阻断/未知码保守回显
+  ---
+  duration_ms: 0.3844
+  type: 'test'
+  ...
+# Subtest: decisionView：候选≠批准≠可用 三行分开；阻断与 Gate 文案直出服务端字段
+ok 23 - decisionView：候选≠批准≠可用 三行分开；阻断与 Gate 文案直出服务端字段
+  ---
+  duration_ms: 1.9559
+  type: 'test'
+  ...
+# Subtest: 幂等键：稳定、同动作同键、跨动作不串、≤128
+ok 24 - 幂等键：稳定、同动作同键、跨动作不串、≤128
+  ---
+  duration_ms: 0.4986
+  type: 'test'
+  ...
+# Subtest: 二次确认计划：包含对象与幂等编号
+ok 25 - 二次确认计划：包含对象与幂等编号
+  ---
+  duration_ms: 0.3462
+  type: 'test'
+  ...
+# Subtest: 沟通分列：对客户与内部显式分开
+ok 26 - 沟通分列：对客户与内部显式分开
+  ---
+  duration_ms: 0.5662
+  type: 'test'
+  ...
+# Subtest: 材料行汇总：现行/取代链/文件标记
+ok 27 - 材料行汇总：现行/取代链/文件标记
+  ---
+  duration_ms: 0.3972
+  type: 'test'
+  ...
+# Subtest: 回答授权：仅我的角色匹配 target_role 时可答
+ok 28 - 回答授权：仅我的角色匹配 target_role 时可答
+  ---
+  duration_ms: 0.4651
+  type: 'test'
+  ...
+# Subtest: 通道任务行：状态/分段中文投影；blocked_unknown 如实显示对账中
+ok 29 - 通道任务行：状态/分段中文投影；blocked_unknown 如实显示对账中
+  ---
+  duration_ms: 0.753
+  type: 'test'
+  ...
+# Subtest: 通道 A 侧留痕行：实体中文名/Gate 引用/运行引用提取
+ok 30 - 通道 A 侧留痕行：实体中文名/Gate 引用/运行引用提取
+  ---
+  duration_ms: 0.8233
+  type: 'test'
+  ...
+# Subtest: 通道错误码业务语言：令牌无效/已用邀请/未完成运行
+ok 31 - 通道错误码业务语言：令牌无效/已用邀请/未完成运行
+  ---
+  duration_ms: 0.1545
+  type: 'test'
+  ...
+# Subtest: 冻结/域结果/撤权确认计划标题齐备且带幂等键
+ok 32 - 冻结/域结果/撤权确认计划标题齐备且带幂等键
+  ---
+  duration_ms: 0.2391
+  type: 'test'
+  ...
+# Subtest: 线程合并：远端为权威、mine/sender 归属标注、requestId 已留档的 pending 被远端行取代
+ok 33 - 线程合并：远端为权威、mine/sender 归属标注、requestId 已留档的 pending 被远端行取代
+  ---
+  duration_ms: 0.453
+  type: 'test'
+  ...
+# Subtest: 线程合并：requestId 留档后 pending 行退出，不双显示；空线程含 pending 仍可见
+ok 34 - 线程合并：requestId 留档后 pending 行退出，不双显示；空线程含 pending 仍可见
+  ---
+  duration_ms: 0.1786
+  type: 'test'
+  ...
+# Subtest: 预览类型投影：image/text 内联、其余下载兜底；data:URL 组装不经外部域
+ok 35 - 预览类型投影：image/text 内联、其余下载兜底；data:URL 组装不经外部域
+  ---
+  duration_ms: 0.5433
+  type: 'test'
+  ...
+# Subtest: 魔数嗅探：octet-stream 下的 PNG/JPEG/GIF 识别为图片 mime（通道对象面）
+ok 36 - 魔数嗅探：octet-stream 下的 PNG/JPEG/GIF 识别为图片 mime（通道对象面）
+  ---
+  duration_ms: 0.2074
+  type: 'test'
+  ...
+# Subtest: 提案确认计划：facility.propose 标题与依据包绑定行进确认（DEF-G04N-04 页面侧）
+ok 37 - 提案确认计划：facility.propose 标题与依据包绑定行进确认（DEF-G04N-04 页面侧）
+  ---
+  duration_ms: 0.183
+  type: 'test'
+  ...
+1..37
+# tests 37
+# suites 0
+# pass 37
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 631.8171
+FRONT_EXIT=0

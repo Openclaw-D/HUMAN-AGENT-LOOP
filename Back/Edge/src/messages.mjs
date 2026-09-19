@@ -3,7 +3,7 @@
 // messages:external-send 权限点（server 层校验）并强制审计；送达未知如实返回，不标已读。
 // validateTarget（live）：发往客户前以本会话凭据向 A 校验目标客户可读，防错 customerId。
 // requestId 幂等：同 ID 同载荷重放 → 原结果 + replayed:true；同 ID 异载荷 → 409 冲突。
-export function createMessageRouter({ deliver, auditSink, validateTarget = null }) {
+export function createMessageRouter({ deliver, auditSink, validateTarget = null, threadStore = null }) {
   const seen = new Map(); // requestId -> { fingerprint, result }（进程内幂等表，条目有界）
   const fingerprintOf = (body) => JSON.stringify({ audience: body.audience, text: body.text, threadId: body.threadId ?? null, internalContent: body.internalContent === true });
 
@@ -75,6 +75,17 @@ export function createMessageRouter({ deliver, auditSink, validateTarget = null 
         senderPrincipalId: session.principalId,
         threadId,
       });
+
+      // 线程留档（DEF-G04N-05）：投递成功才入栈——对端读端点据此渲染；重放（上方早退）不重复入栈。
+      if (threadStore) {
+        threadStore.append({
+          customerId, audience, text, requestId,
+          senderPrincipalId: session.principalId,
+          senderRoles: session.roles ?? [],
+          threadId,
+          deliverMessageId: result.messageId ?? null,
+        });
+      }
 
       // 可审计副作用：每次发送（含确认外发）都留审计；送达未知不标已读。
       auditSink.append({

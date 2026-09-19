@@ -289,6 +289,14 @@ CREATE TABLE IF NOT EXISTS fact_assertions (
 ALTER TABLE fact_assertions ADD COLUMN IF NOT EXISTS object_ref TEXT;
 ALTER TABLE fact_assertions ADD COLUMN IF NOT EXISTS period_from TIMESTAMPTZ;
 ALTER TABLE fact_assertions ADD COLUMN IF NOT EXISTS period_to TIMESTAMPTZ;
+-- goal-02 · IR-03-8② 人工事实进入四域分析输入的结构化溯源：
+-- entry_mode ∈ NULL(机器解析默认)|manual_entry(人工转录)|correction(人工更正)——分析快照据此识别人工事实；
+-- value_json=录入时的原始 JSON 值（布尔/数值类型保真，恢复时优先于 object_value 文本）。
+ALTER TABLE fact_assertions ADD COLUMN IF NOT EXISTS entry_mode TEXT;
+ALTER TABLE fact_assertions ADD COLUMN IF NOT EXISTS value_json JSONB;
+-- 存量库幂等回填：旧人工录入行（结构化溯源列上线前）按 statement 前缀补标（只补 NULL，不改新行）
+UPDATE fact_assertions SET entry_mode='manual_entry'
+  WHERE entry_mode IS NULL AND statement LIKE '人工录入（%';
 
 CREATE TABLE IF NOT EXISTS fact_conflicts (
   conflict_id TEXT PRIMARY KEY,
@@ -480,3 +488,44 @@ CREATE TABLE IF NOT EXISTS processing_flags (
   dispatch_generation INT NOT NULL DEFAULT 0,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- ============================================================================
+-- goal-02（产品交付·任务二）· A 桥接映射（跨服务 ID 持久化 + 幂等对账）
+-- 原则：A 是业务事实与正式收口权威；Connectors 只保存引用与处理状态。
+--       每条 A 操作一行登记：确定性 requestId + 原调用凭据（v2 回执按主体归属过滤，
+--       对账必须用原 principal）+ 状态机（registered|unknown|failed）。
+--       重放/恢复按 a_links 状态幂等续跑，绝不换 ID 重发。
+-- ============================================================================
+
+-- 客户↔A 客户持久映射（生产须来自授权客户目录/归集流程；配置仅可种子）
+CREATE TABLE IF NOT EXISTS a_customer_links (
+  tenant_id TEXT NOT NULL,
+  customer_id TEXT NOT NULL,
+  a_customer_id TEXT NOT NULL,
+  project_id TEXT,
+  linked_by TEXT NOT NULL DEFAULT 'config_seed',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (tenant_id, customer_id)
+);
+
+-- A 操作登记：entity_type ∈ material|derived|supersede|run|gate|finding|domain_result
+CREATE TABLE IF NOT EXISTS a_links (
+  link_id TEXT PRIMARY KEY,
+  tenant_id TEXT NOT NULL,
+  customer_id TEXT NOT NULL,
+  task_id TEXT,
+  entity_type TEXT NOT NULL,
+  local_id TEXT NOT NULL,
+  a_customer_id TEXT,
+  a_ref TEXT,                                       -- aArtifactId | runId | receiptId | findingId
+  request_id TEXT NOT NULL,
+  principal_id TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending',           -- pending|registered|unknown|failed|skipped
+  detail JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (request_id)
+);
+CREATE INDEX IF NOT EXISTS idx_alinks_task ON a_links(tenant_id, task_id, status);
+CREATE INDEX IF NOT EXISTS idx_alinks_local ON a_links(tenant_id, entity_type, local_id);

@@ -9,8 +9,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const EDGE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const PID_FILE = path.join(EDGE_ROOT, '.run', 'edge.pid');
-const HEARTBEAT_FILE = path.join(EDGE_ROOT, '.run', 'edge-heartbeat.json');
+// 与 edge-start --run-dir 配对（隔离实例）；默认 .run 行为不变。
+const argvIdx = process.argv.indexOf('--run-dir');
+const RUN_DIR = argvIdx >= 0 && process.argv[argvIdx + 1]
+  ? path.resolve(process.argv[argvIdx + 1])
+  : path.join(EDGE_ROOT, '.run');
+const PID_FILE = path.join(RUN_DIR, 'edge.pid');
+const HEARTBEAT_FILE = path.join(RUN_DIR, 'edge-heartbeat.json');
 
 const HEARTBEAT_MAX_AGE_MS = 60000;
 

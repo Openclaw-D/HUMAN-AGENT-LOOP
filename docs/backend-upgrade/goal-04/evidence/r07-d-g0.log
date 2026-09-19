@@ -1,0 +1,10 @@
+[2026-09-17T17:06:59.293Z] [PASS] G0-01 全过套件→exit 0且断言计数 assertions=3 ms=568
+[2026-09-17T17:06:59.865Z] [PASS] G0-02 断言失败→exit 1 assertions=2 ms=570
+[2026-09-17T17:07:00.438Z] [PASS] G0-03 测试内异常→FAIL捕获不崩溃，exit 1 assertions=3 ms=572
+[2026-09-17T17:07:01.027Z] [PASS] G0-04 零断言测试→FAIL（逐测守卫）exit 1，绝不PASS assertions=3 ms=589
+[2026-09-17T17:07:01.929Z] [PASS] G0-05 测试超时→FAIL(note=timeout)，exit 1 assertions=2 ms=902
+[2026-09-17T17:07:02.501Z] [PASS] G0-06 BLOCKED 留门→state=blocked；纯blocked无断言→exit 3不得PASS assertions=2 ms=572
+[2026-09-17T17:07:02.841Z] [PASS] G0-07 真实HTTP回环：200/JSON往返/拒绝连接得0不挂起 assertions=3 ms=340
+[2026-09-17T17:07:16.114Z] [PASS] G0-08 D自有隔离PG容器：起/建库/SQL/重启数据保持/销毁 assertions=2 ms=13273
+[2026-09-17T17:07:16.116Z] [SUITE-END] g0_runner_selftest pass=8 fail=0 skip=0 assertions=20
+EXIT=0

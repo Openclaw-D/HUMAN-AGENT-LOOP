@@ -191,6 +191,8 @@ export interface CreditV2Api {
   listRelationships(credential: unknown, customerId: string): Promise<Record<string, unknown>>;
   registerArtifact(frame: V2Frame, customerId: string): Promise<Record<string, unknown>>;
   listArtifacts(credential: unknown, customerId: string): Promise<Record<string, unknown>>;
+  /** §11.2（IR-03-3）：单件读回——原件预览数据源（Edge 受控代理）；只读回，不落对象存储。 */
+  getArtifactContent(credential: unknown, customerId: string, artifactId: string): Promise<Record<string, unknown>>;
   createAssessment(frame: V2Frame, customerId: string): Promise<Record<string, unknown>>;
   submitCandidate(frame: V2Frame, assessmentId: string): Promise<Record<string, unknown>>;
   submitForReview(frame: V2Frame, assessmentId: string): Promise<Record<string, unknown>>;
@@ -592,6 +594,46 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
         factConflicts: (conflictRes.rows as Record<string, unknown>[]).map((r) => ({ factKey: r.fact_key, assertionCount: Number(r.n) })),
         independentProofs,
         derivationGaps,
+      };
+    },
+
+    /** §11.2（IR-03-3）单件读回：原件预览数据源。内部 principal 专用（客户角色 403，B13 口径）；
+     *  只读回 content JSON（信封 v0 投影 materialFile），不落对象存储、无写路径；被取代/重复件同样可读。 */
+    getArtifactContent: async (credential: unknown, customerId: string, artifactId: string) => {
+      await lookupCustomer(kernel, credential, customerId);
+      const authRead = await authenticate(kernel.verifierForV2(), credential);
+      requireVerified(authRead);
+      if (authRead.principal.roles.some((r) => r === 'customer')) {
+        throw forbidden('PERMISSION_DENIED', '无权访问该资源');
+      }
+      const res = await kernel.pool.query(
+        `SELECT artifact_id, customer_id, kind, fact_key, sha256, content, superseded_by, duplicate_of, created_by, created_at
+         FROM evidence_artifacts WHERE artifact_id=$1 AND customer_id=$2`, [artifactId, customerId],
+      );
+      if (res.rows.length === 0) throw notFound('材料不存在');
+      const r = res.rows[0] as Record<string, unknown>;
+      const content = (r.content ?? null) as Record<string, unknown> | null;
+      const rawFile = content !== null && typeof content === 'object' && !Array.isArray(content)
+        ? (content as { materialFile?: unknown }).materialFile
+        : undefined;
+      // 信封 v0 投影：字段白名单原样取出（不转码、不落对象存储）；非信封件 materialFile=null
+      const materialFile = rawFile !== null && typeof rawFile === 'object' && !Array.isArray(rawFile)
+        ? {
+            name: (rawFile as { name?: unknown }).name ?? null,
+            mime: (rawFile as { mime?: unknown }).mime ?? null,
+            size: (rawFile as { size?: unknown }).size ?? null,
+            encoding: (rawFile as { encoding?: unknown }).encoding ?? null,
+            data: (rawFile as { data?: unknown }).data ?? null,
+          }
+        : null;
+      return {
+        ok: true,
+        artifact: {
+          artifactId: r.artifact_id, customerId: r.customer_id, kind: r.kind, factKey: r.fact_key,
+          sha256: r.sha256, createdBy: r.created_by, createdAt: r.created_at,
+          supersededBy: r.superseded_by, duplicateOf: r.duplicate_of,
+          content, materialFile,
+        },
       };
     },
 

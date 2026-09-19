@@ -1,0 +1,478 @@
+
+> jw-connectors@0.1.0 test
+> node --test --test-force-exit test/b1-intake.mjs test/e1-integration.mjs test/i01-i05-ingest.mjs test/i06-i08-consent-binding.mjs test/i09-i15-session-recording.mjs test/i16-i20-evidence.mjs test/i21-i25-outbound-safety.mjs test/processing.e2e.mjs test/goal02-parsing.test.mjs test/goal02-manual.test.mjs test/goal02-a-bridge.test.mjs test/defects-g04n.test.mjs
+
+TAP version 13
+# Subtest: W01 分级邀请全链：三身份→接受→candidate→验证→active；一次有效
+ok 1 - W01 分级邀请全链：三身份→接受→candidate→验证→active；一次有效
+  ---
+  duration_ms: 1694.0485
+  type: 'test'
+  ...
+# Subtest: W01 上传范围：未获准 kind / 越对象锚定 / 过期 / 撤销 一律拒绝
+ok 2 - W01 上传范围：未获准 kind / 越对象锚定 / 过期 / 撤销 一律拒绝
+  ---
+  duration_ms: 2380.022
+  type: 'test'
+  ...
+# Subtest: W02 口径元数据落库；不可读材料待补且不产生事实候选
+ok 3 - W02 口径元数据落库；不可读材料待补且不产生事实候选
+  ---
+  duration_ms: 904.2925
+  type: 'test'
+  ...
+# Subtest: W03 同源依赖：同字节重复与同源派生不增加独立证明
+ok 4 - W03 同源依赖：同字节重复与同源派生不增加独立证明
+  ---
+  duration_ms: 1150.8132
+  type: 'test'
+  ...
+# Subtest: W10 对象锚定：另一设备的同 kind 材料不能满足本设备覆盖；核验升级留痕
+ok 5 - W10 对象锚定：另一设备的同 kind 材料不能满足本设备覆盖；核验升级留痕
+  ---
+  duration_ms: 697.3442
+  type: 'test'
+  ...
+# Subtest: B1 HTTP 全链：邀请签发→接受→范围拒绝→获准上传（真实 HTTP + 对象存储）
+ok 6 - B1 HTTP 全链：邀请签发→接受→范围拒绝→获准上传（真实 HTTP + 对象存储）
+  ---
+  duration_ms: 554.686
+  type: 'test'
+  ...
+# Subtest: N1(DEF-G04N-01) register_results requestId 纪律：严格 A 契约下全链 done；解析产物到达 A；重入零新写；冲突 findings 同纪律
+ok 7 - N1(DEF-G04N-01) register_results requestId 纪律：严格 A 契约下全链 done；解析产物到达 A；重入零新写；冲突 findings 同纪律
+  ---
+  duration_ms: 2072.176
+  type: 'test'
+  ...
+# Subtest: N2(DEF-G04N-03) XLSX 整体解析不当容器：unzip 跳过零派生子件零垃圾事实，解析产物登记 A；真 ZIP 命运分离
+ok 8 - N2(DEF-G04N-03) XLSX 整体解析不当容器：unzip 跳过零派生子件零垃圾事实，解析产物登记 A；真 ZIP 命运分离
+  ---
+  duration_ms: 1042.0338
+  type: 'test'
+  ...
+# Subtest: N3(IR-03-8③) 判重收敛客户级：跨客户同字节各自处理；同客户同字节仍判重。既有绑定后新邀请 accepted（幂等回执，可上传）
+ok 9 - N3(IR-03-8③) 判重收敛客户级：跨客户同字节各自处理；同客户同字节仍判重。既有绑定后新邀请 accepted（幂等回执，可上传）
+  ---
+  duration_ms: 1782.7757
+  type: 'test'
+  ...
+# Subtest: N4(IR-03-8⑤) 种子透传：resolveProcessingConfig 优先级 + a.customerLinks 种子落表后全链到达 A
+ok 10 - N4(IR-03-8⑤) 种子透传：resolveProcessingConfig 优先级 + a.customerLinks 种子落表后全链到达 A
+  ---
+  duration_ms: 1229.6025
+  type: 'test'
+  ...
+# E1: A kernel 48080 reachable = false
+# Subtest: E1-1: 真实 HTTP 健康检查
+ok 11 - E1-1: 真实 HTTP 健康检查
+  ---
+  duration_ms: 648.5202
+  type: 'test'
+  ...
+# Subtest: E1-2: 企微回调经真实 HTTP：验签→解密→收件箱→事件登记（含重放幂等）
+ok 12 - E1-2: 企微回调经真实 HTTP：验签→解密→收件箱→事件登记（含重放幂等）
+  ---
+  duration_ms: 77.4494
+  type: 'test'
+  ...
+# Subtest: E1-3: 签名 URL 全链：登记→签发→读取→过期拒绝；无服务令牌的 API 拒绝
+ok 13 - E1-3: 签名 URL 全链：登记→签发→读取→过期拒绝；无服务令牌的 API 拒绝
+  ---
+  duration_ms: 61.7601
+  type: 'test'
+  ...
+# E1-5: A kernel 不可达 —— A 登记本轮无法验证，显式记录，不伪造 PASS。
+# Subtest: E1-4: 跨进程崩溃恢复（新 PG 连接读取同一库的 inbox 并恢复）
+ok 14 - E1-4: 跨进程崩溃恢复（新 PG 连接读取同一库的 inbox 并恢复）
+  ---
+  duration_ms: 32.0491
+  type: 'test'
+  ...
+# Subtest: E1-5: A 路登记（经现有 v1 API；A 不可达则显式注明不伪造）
+ok 15 - E1-5: A 路登记（经现有 v1 API；A 不可达则显式注明不伪造）
+  ---
+  duration_ms: 0.554
+  type: 'test'
+  ...
+# Subtest: E1-6: LocalLoop 录制全链经真实 HTTP 回调入口（含 Sign 校验）
+ok 16 - E1-6: LocalLoop 录制全链经真实 HTTP 回调入口（含 Sign 校验）
+  ---
+  duration_ms: 240.9381
+  type: 'test'
+  ...
+# Subtest: G-A1 全链贯通：原始字节上传 → A 材料/派生件/4 域已完成运行/Gate 回执；冲突 → A 复核队列
+ok 17 - G-A1 全链贯通：原始字节上传 → A 材料/派生件/4 域已完成运行/Gate 回执；冲突 → A 复核队列
+  ---
+  duration_ms: 4500.348
+  type: 'test'
+  ...
+# Subtest: G-A2 确定性拒绝如实失败：规则版本未激活 → 任务 failed（不降级不伪造）
+ok 18 - G-A2 确定性拒绝如实失败：规则版本未激活 → 任务 failed（不降级不伪造）
+  ---
+  duration_ms: 2063.9681
+  type: 'test'
+  ...
+# Subtest: G-A3 ①G3 状态推进（received→needs_review→analyzed；service 身份；按尝试重开；幂等重入零新增）+ ②人工路线 NEEDS_EVIDENCE→CLEAR 到达 A
+ok 19 - G-A3 ①G3 状态推进（received→needs_review→analyzed；service 身份；按尝试重开；幂等重入零新增）+ ②人工路线 NEEDS_EVIDENCE→CLEAR 到达 A
+  ---
+  duration_ms: 2621.7099
+  type: 'test'
+  ...
+# Subtest: M1 扫描件人工路线：解析转人工→人工录入（转录≠核验）→录入冲突并存→更正修订链→人工复核 verified
+ok 20 - M1 扫描件人工路线：解析转人工→人工录入（转录≠核验）→录入冲突并存→更正修订链→人工复核 verified
+  ---
+  duration_ms: 2027.4122
+  type: 'test'
+  ...
+# Subtest: M2 待补（不可读）材料拒绝人工录入：先补齐重传，不对缺失原件编数
+ok 21 - M2 待补（不可读）材料拒绝人工录入：先补齐重传，不对缺失原件编数
+  ---
+  duration_ms: 1007.7097
+  type: 'test'
+  ...
+# Subtest: M3(IR-03-8②) 人工路线到 CLEAR：扫描件→人工录入（source_supported，重入分析）→复核 verified（升级）→Gate 由 NEEDS_EVIDENCE 转 CLEAR
+ok 22 - M3(IR-03-8②) 人工路线到 CLEAR：扫描件→人工录入（source_supported，重入分析）→复核 verified（升级）→Gate 由 NEEDS_EVIDENCE 转 CLEAR
+  ---
+  duration_ms: 1057.2375
+  type: 'test'
+  ...
+# Subtest: F1 引号 CSV 全链：引号内逗号/千分位金额经真实入口解析，坏行不入合计
+ok 23 - F1 引号 CSV 全链：引号内逗号/千分位金额经真实入口解析，坏行不入合计
+  ---
+  duration_ms: 2037.2512
+  type: 'test'
+  ...
+# Subtest: F2 XLSX 原件全链：银行流水表（Excel 序列日期）经真实入口解析为 source_supported 聚合
+ok 24 - F2 XLSX 原件全链：银行流水表（Excel 序列日期）经真实入口解析为 source_supported 聚合
+  ---
+  duration_ms: 1041.3756
+  type: 'test'
+  ...
+# Subtest: F3 text-PDF 与扫描 PDF 分流：可提取文本=declared 声明；扫描=转人工+可预览不编数
+ok 25 - F3 text-PDF 与扫描 PDF 分流：可提取文本=declared 声明；扫描=转人工+可预览不编数
+  ---
+  duration_ms: 1024.3658
+  type: 'test'
+  ...
+# Subtest: F4 同字节不同元数据：不 skip——新锚点下事实并存；同字节同元数据：skip 不重算
+ok 26 - F4 同字节不同元数据：不 skip——新锚点下事实并存；同字节同元数据：skip 不重算
+  ---
+  duration_ms: 1569.0653
+  type: 'test'
+  ...
+# Subtest: F5 预览权限面：魔数嗅探+签名 URL；无公开媒体目录
+ok 27 - F5 预览权限面：魔数嗅探+签名 URL；无公开媒体目录
+  ---
+  duration_ms: 802.2759
+  type: 'test'
+  ...
+# Subtest: I01a: 回调签名错误 → 拒绝，不进入客户事实
+ok 28 - I01a: 回调签名错误 → 拒绝，不进入客户事实
+  ---
+  duration_ms: 611.4675
+  type: 'test'
+  ...
+# Subtest: I01b: 回调时间戳超窗（过期）→ 拒绝
+ok 29 - I01b: 回调时间戳超窗（过期）→ 拒绝
+  ---
+  duration_ms: 0.7329
+  type: 'test'
+  ...
+# Subtest: I01c: receiveid 不匹配（跨企业投递）→ 拒绝
+ok 30 - I01c: receiveid 不匹配（跨企业投递）→ 拒绝
+  ---
+  duration_ms: 0.6891
+  type: 'test'
+  ...
+# Subtest: I02: 同一事件重放 100 次 → 只形成一次业务登记，重放全部可审计
+ok 31 - I02: 同一事件重放 100 次 → 只形成一次业务登记，重放全部可审计
+  ---
+  duration_ms: 653.6103
+  type: 'test'
+  ...
+# Subtest: I03: 收到后崩溃（inbox=persisted, 未 processed）→ 恢复补拉不漏登记、不重复产生效果
+ok 32 - I03: 收到后崩溃（inbox=persisted, 未 processed）→ 恢复补拉不漏登记、不重复产生效果
+  ---
+  duration_ms: 22.9208
+  type: 'test'
+  ...
+# Subtest: I04: 正文已登记、附件下载失败 → attachment 状态如实、不自动核验通过
+ok 33 - I04: 正文已登记、附件下载失败 → attachment 状态如实、不自动核验通过
+  ---
+  duration_ms: 38.2362
+  type: 'test'
+  ...
+# Subtest: I04b: 附件重试成功 → completeness=complete，对象可读
+ok 34 - I04b: 附件重试成功 → completeness=complete，对象可读
+  ---
+  duration_ms: 23.8902
+  type: 'test'
+  ...
+# Subtest: I05: 超出官方可补拉窗口（>5天）→ 确认 archive_gap + 补救流程，不静默丢失
+ok 35 - I05: 超出官方可补拉窗口（>5天）→ 确认 archive_gap + 补救流程，不静默丢失
+  ---
+  duration_ms: 5.939
+  type: 'test'
+  ...
+# Subtest: I05b: seq 非连续 → 记录疑似缺口（suspected_gap），不必然当丢失
+ok 36 - I05b: seq 非连续 → 记录疑似缺口（suspected_gap），不必然当丢失
+  ---
+  duration_ms: 16.5024
+  type: 'test'
+  ...
+# Subtest: I06a: 客户未授权 → 拒绝基于该同意的新处理
+ok 37 - I06a: 客户未授权 → 拒绝基于该同意的新处理
+  ---
+  duration_ms: 612.5232
+  type: 'test'
+  ...
+# Subtest: I06b: 撤回（disagree）→ 停止新处理；既有合法保留数据不一概删除
+ok 38 - I06b: 撤回（disagree）→ 停止新处理；既有合法保留数据不一概删除
+  ---
+  duration_ms: 58.9962
+  type: 'test'
+  ...
+# Subtest: I07: 同一联系人命中两客户 → 不自动串线，需显式上下文绑定
+ok 39 - I07: 同一联系人命中两客户 → 不自动串线，需显式上下文绑定
+  ---
+  duration_ms: 40.1872
+  type: 'test'
+  ...
+# Subtest: I08: 外部载荷携带 customerId 字段 → 忽略；跨租户 customerId → 拒绝
+ok 40 - I08: 外部载荷携带 customerId 字段 → 忽略；跨租户 customerId → 拒绝
+  ---
+  duration_ms: 28.8023
+  type: 'test'
+  ...
+# Subtest: I08b: send 对无绑定/跨租户 customerId 拒绝
+ok 41 - I08b: send 对无绑定/跨租户 customerId 拒绝
+  ---
+  duration_ms: 9.3808
+  type: 'test'
+  ...
+# Subtest: I09a: 房间令牌签名篡改 → 拒绝
+ok 42 - I09a: 房间令牌签名篡改 → 拒绝
+  ---
+  duration_ms: 603.9893
+  type: 'test'
+  ...
+# Subtest: I09b: 令牌转给其他角色（observer 令牌被用作 customer）→ 拒绝
+ok 43 - I09b: 令牌转给其他角色（observer 令牌被用作 customer）→ 拒绝
+  ---
+  duration_ms: 28.8417
+  type: 'test'
+  ...
+# Subtest: I09c: 令牌跨房间（把 A 会话令牌发给 B 会话上下文）→ TOKEN_ROOM_MISMATCH / 一次性拒绝
+ok 44 - I09c: 令牌跨房间（把 A 会话令牌发给 B 会话上下文）→ TOKEN_ROOM_MISMATCH / 一次性拒绝
+  ---
+  duration_ms: 67.9201
+  type: 'test'
+  ...
+# Subtest: I09d: 过期令牌 → TOKEN_EXPIRED，且不泄露内部状态
+ok 45 - I09d: 过期令牌 → TOKEN_EXPIRED，且不泄露内部状态
+  ---
+  duration_ms: 51.3124
+  type: 'test'
+  ...
+# Subtest: I10: 客户拒绝摄像头/麦克风 → 状态如实，会话不得为 live
+ok 46 - I10: 客户拒绝摄像头/麦克风 → 状态如实，会话不得为 live
+  ---
+  duration_ms: 63.3104
+  type: 'test'
+  ...
+# Subtest: I10b: 授权后 → 有媒体轨 → live；再拒绝 → 退回 connecting（如实）
+ok 47 - I10b: 授权后 → 有媒体轨 → live；再拒绝 → 退回 connecting（如实）
+  ---
+  duration_ms: 87.4258
+  type: 'test'
+  ...
+# Subtest: I11(本地部分): 打开面板不重建会话；重复加入幂等
+ok 48 - I11(本地部分): 打开面板不重建会话；重复加入幂等
+  ---
+  duration_ms: 135.6909
+  type: 'test'
+  ...
+# Subtest: I12: 弱网/断网 → reconnecting + 录制缺口可见；客户绑定不丢
+ok 49 - I12: 弱网/断网 → reconnecting + 录制缺口可见；客户绑定不丢
+  ---
+  duration_ms: 159.9064
+  type: 'test'
+  ...
+# Subtest: I12b: 305 Status=2（滞留恢复）→ 缺口关闭，最终 complete
+ok 50 - I12b: 305 Status=2（滞留恢复）→ 缺口关闭，最终 complete
+  ---
+  duration_ms: 105.3312
+  type: 'test'
+  ...
+# Subtest: I13: 录制回调重复/乱序/延迟 → 幂等收敛，无假 complete
+ok 51 - I13: 录制回调重复/乱序/延迟 → 幂等收敛，无假 complete
+  ---
+  duration_ms: 88.2921
+  type: 'test'
+  ...
+# Subtest: I14: 回调称完成（311/312 Status=0）但对象缺失 → recording_incomplete，不作为完整证据
+ok 52 - I14: 回调称完成（311/312 Status=0）但对象缺失 → recording_incomplete，不作为完整证据
+  ---
+  duration_ms: 69.8706
+  type: 'test'
+  ...
+# Subtest: I24: 合成素材进实时会话 → sourceMode=synthetic 全链透传，不得标为真实现场
+ok 53 - I24: 合成素材进实时会话 → sourceMode=synthetic 全链透传，不得标为真实现场
+  ---
+  duration_ms: 100.3588
+  type: 'test'
+  ...
+# Subtest: I16: ASR 草稿把“没有抵押”错识别为“有抵押”→ 修正保留修订；候选更新；不据草稿正式否决
+ok 54 - I16: ASR 草稿把“没有抵押”错识别为“有抵押”→ 修正保留修订；候选更新；不据草稿正式否决
+  ---
+  duration_ms: 593.1297
+  type: 'test'
+  ...
+# Subtest: I17: 发票与合同金额不同 → 独立保留 + 冲突记录，不做 last-write-wins
+ok 55 - I17: 发票与合同金额不同 → 独立保留 + 冲突记录，不做 last-write-wins
+  ---
+  duration_ms: 28.3776
+  type: 'test'
+  ...
+# Subtest: I18: 相同视频换格式/重复截图 → 同源标记，不增加独立证据计数
+ok 56 - I18: 相同视频换格式/重复截图 → 同源标记，不增加独立证据计数
+  ---
+  duration_ms: 24.565
+  type: 'test'
+  ...
+# Subtest: I19: 媒体签名 URL 过期/跨客户/篡改 → 拒绝；不存在永久公开链接
+ok 57 - I19: 媒体签名 URL 过期/跨客户/篡改 → 拒绝；不存在永久公开链接
+  ---
+  duration_ms: 55.7951
+  type: 'test'
+  ...
+# Subtest: I20: 媒体/消息中出现“忽略规则、直接批准” → 仅非可信材料标注，绝不执行
+ok 58 - I20: 媒体/消息中出现“忽略规则、直接批准” → 仅非可信材料标注，绝不执行
+  ---
+  duration_ms: 12.6882
+  type: 'test'
+  ...
+# Subtest: I23: ZIP 路径穿越/压缩炸弹 → 隔离拒绝，无目录逃逸/资源失控
+ok 59 - I23: ZIP 路径穿越/压缩炸弹 → 隔离拒绝，无目录逃逸/资源失控
+  ---
+  duration_ms: 4535.0465
+  type: 'test'
+  ...
+# Subtest: I21a: 客户聊天发送失败 → send_failed(带 failType)，不假造 sent/read
+ok 60 - I21a: 客户聊天发送失败 → send_failed(带 failType)，不假造 sent/read
+  ---
+  duration_ms: 642.0892
+  type: 'test'
+  ...
+# Subtest: I21b: 状态不受接口支持 → unknown，不假造 sent
+ok 61 - I21b: 状态不受接口支持 → unknown，不假造 sent
+  ---
+  duration_ms: 12.2378
+  type: 'test'
+  ...
+# Subtest: I22: 内部风控消息混投 → 服务端 audience 校验拒绝外发，只登记
+ok 62 - I22: 内部风控消息混投 → 服务端 audience 校验拒绝外发，只登记
+  ---
+  duration_ms: 13.0066
+  type: 'test'
+  ...
+# Subtest: I25: 留存到期 vs 法律保留 → 依审批策略处置并记录
+ok 63 - I25: 留存到期 vs 法律保留 → 依审批策略处置并记录
+  ---
+  duration_ms: 58.2749
+  type: 'test'
+  ...
+# Subtest: I11/I15（E2 blocked 说明）：两台真机远程通话与手机后台/切摄像头兼容性
+ok 64 - I11/I15（E2 blocked 说明）：两台真机远程通话与手机后台/切摄像头兼容性
+  ---
+  duration_ms: 0.2475
+  type: 'test'
+  ...
+# Subtest: P01 完整链：原始银行 CSV 经真实入口 → 解析/事实/四域/提问逐段留痕
+ok 65 - P01 完整链：原始银行 CSV 经真实入口 → 解析/事实/四域/提问逐段留痕
+  ---
+  duration_ms: 839.1096
+  type: 'test'
+  ...
+# Subtest: P02 重复上传：同字节×2 → 第二件 duplicate 标注+零重复解析+零重复事实+零重复分析
+ok 66 - P02 重复上传：同字节×2 → 第二件 duplicate 标注+零重复解析+零重复事实+零重复分析
+  ---
+  duration_ms: 1024.774
+  type: 'test'
+  ...
+# Subtest: P03 错期间：声明期间与流水内容月份错位 → period_mismatch 定位旗标（不改写不冒充）
+ok 67 - P03 错期间：声明期间与流水内容月份错位 → period_mismatch 定位旗标（不改写不冒充）
+  ---
+  duration_ms: 836.1835
+  type: 'test'
+  ...
+# Subtest: P04 同源派生+部分解析失败：ZIP(csv+txt+pdf) → 子件逐个处理；pdf 转人工；csv/txt 不被拖垮
+ok 68 - P04 同源派生+部分解析失败：ZIP(csv+txt+pdf) → 子件逐个处理；pdf 转人工；csv/txt 不被拖垮
+  ---
+  duration_ms: 1234.6488
+  type: 'test'
+  ...
+# Subtest: P05 修正原件+局部重算：supersede 更新收口；无关新材料不触发任何域重算；补铭牌只动相关域
+ok 69 - P05 修正原件+局部重算：supersede 更新收口；无关新材料不触发任何域重算；补铭牌只动相关域
+  ---
+  duration_ms: 1159.1732
+  type: 'test'
+  ...
+# Subtest: P06 多人同时提交+并发 tick：两身份并发上传，任务全完成、事实零重复
+ok 70 - P06 多人同时提交+并发 tick：两身份并发上传，任务全完成、事实零重复
+  ---
+  duration_ms: 824.9671
+  type: 'test'
+  ...
+# Subtest: P07 暂停与授权竞态：暂停期新问题=零外发(outbound_paused)；恢复后按当前代际推进
+ok 71 - P07 暂停与授权竞态：暂停期新问题=零外发(outbound_paused)；恢复后按当前代际推进
+  ---
+  duration_ms: 671.3453
+  type: 'test'
+  ...
+# Subtest: P08 auto_whitelist 才外发：白名单策略经 send 外发，question_key 幂等不重发
+ok 72 - P08 auto_whitelist 才外发：白名单策略经 send 外发，question_key 幂等不重发
+  ---
+  duration_ms: 619.0822
+  type: 'test'
+  ...
+# Subtest: P09 超时未知：A 材料登记超时 → blocked_unknown；回执对账恢复且材料 POST 恰一次（不换 ID 重发）
+ok 73 - P09 超时未知：A 材料登记超时 → blocked_unknown；回执对账恢复且材料 POST 恰一次（不换 ID 重发）
+  ---
+  duration_ms: 436.261
+  type: 'test'
+  ...
+# Subtest: P10 进程终止后恢复：段间崩溃重试+过期租约回收，解析/事实零重复
+ok 74 - P10 进程终止后恢复：段间崩溃重试+过期租约回收，解析/事实零重复
+  ---
+  duration_ms: 571.4468
+  type: 'test'
+  ...
+# Subtest: P11 重复回调/任务重入：对已完成任务重复 tick 零副作用
+ok 75 - P11 重复回调/任务重入：对已完成任务重复 tick 零副作用
+  ---
+  duration_ms: 436.8392
+  type: 'test'
+  ...
+# Subtest: P12 预算耗尽：客户窗口任务上限 → 超额排队不丢弃；台账实际费用=未知不记 0
+ok 76 - P12 预算耗尽：客户窗口任务上限 → 超额排队不丢弃；台账实际费用=未知不记 0
+  ---
+  duration_ms: 411.858
+  type: 'test'
+  ...
+# Subtest: P13 会后补证：晚到材料只更新相关工作；answered≠材料≠核验三段分离
+ok 77 - P13 会后补证：晚到材料只更新相关工作；answered≠材料≠核验三段分离
+  ---
+  duration_ms: 603.8485
+  type: 'test'
+  ...
+1..77
+# tests 77
+# suites 0
+# pass 77
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12238.3439

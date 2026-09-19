@@ -1,0 +1,35 @@
+{
+  "startedAt": "2026-09-18T16:33:11.595Z",
+  "edge": "http://127.0.0.1:17931",
+  "kernel": "http://127.0.0.1:48282",
+  "rounds": [
+    {
+      "round": 1,
+      "result": "BLOCKED",
+      "errors": 0,
+      "firstScreenTotalMs": 47
+    },
+    {
+      "round": 2,
+      "result": "BLOCKED",
+      "errors": 0,
+      "firstScreenTotalMs": 65
+    },
+    {
+      "round": 3,
+      "result": "BLOCKED",
+      "errors": 0,
+      "firstScreenTotalMs": 64
+    }
+  ],
+  "rulePackActivation": {
+    "status": 200,
+    "json": {
+      "ok": true,
+      "version": "rules-delivery-demo",
+      "status": "active"
+    }
+  },
+  "finishedAt": "2026-09-18T16:33:19.956Z",
+  "note": "七项指标逐轮实测；FAIL 轮如实保留。全链文件解析性能（Connectors 处理链）不在交付页面链内，同快照证据见 R4 金丝雀（journey 专用库，同容器同源码）。"
+}

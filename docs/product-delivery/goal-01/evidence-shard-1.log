@@ -1,0 +1,156 @@
+TAP version 13
+# Subtest: A01 同一客户两个渠道创建申请：合并约束，新建项目不产生额度
+ok 1 - A01 同一客户两个渠道创建申请：合并约束，新建项目不产生额度
+  ---
+  duration_ms: 3577.9456
+  type: 'test'
+  ...
+# Subtest: A02 同名不同企业不自动合并；同法定主体拒绝重复建档
+ok 2 - A02 同名不同企业不自动合并；同法定主体拒绝重复建档
+  ---
+  duration_ms: 3560.7899
+  type: 'test'
+  ...
+# Subtest: A03 同一联系人代表两企业：联系人关联不导致企业合并
+ok 3 - A03 同一联系人代表两企业：联系人关联不导致企业合并
+  ---
+  duration_ms: 3592.9347
+  type: 'test'
+  ...
+# Subtest: A04 重复提交100份同一材料：去重关联，不产生额外证明力或额度
+ok 4 - A04 重复提交100份同一材料：去重关联，不产生额外证明力或额度
+  ---
+  duration_ms: 9274.7865
+  type: 'test'
+  ...
+# Subtest: A05 有利资料后新增不利证据：可降级/暂停，金额非单调
+ok 5 - A05 有利资料后新增不利证据：可降级/暂停，金额非单调
+  ---
+  duration_ms: 6219.8863
+  type: 'test'
+  ...
+# Subtest: A06 上限外加1分被拒；币种与单位明确；跨币种拒绝
+ok 6 - A06 上限外加1分被拒；币种与单位明确；跨币种拒绝
+  ---
+  duration_ms: 7272.2882
+  type: 'test'
+  ...
+# Subtest: A07 已用900万，并发预占两笔各80万：恰一笔成功，总额不超上限
+ok 7 - A07 已用900万，并发预占两笔各80万：恰一笔成功，总额不超上限
+  ---
+  duration_ms: 6971.7281
+  type: 'test'
+  ...
+# Subtest: A08 100次并发重复同 requestId：仅一条账目与一次业务效应
+ok 8 - A08 100次并发重复同 requestId：仅一条账目与一次业务效应
+  ---
+  duration_ms: 5903.2746
+  type: 'test'
+  ...
+# Subtest: A09 相同 requestId 不同金额：冲突且原数据零副作用
+ok 9 - A09 相同 requestId 不同金额：冲突且原数据零副作用
+  ---
+  duration_ms: 7425.6999
+  type: 'test'
+  ...
+# Subtest: A10 跨租户猜客户ID/回执ID：读取、写入、事件、回执全部拒绝
+ok 10 - A10 跨租户猜客户ID/回执ID：读取、写入、事件、回执全部拒绝
+  ---
+  duration_ms: 9938.9529
+  type: 'test'
+  ...
+# Subtest: A11 预占成功后响应丢失：重放返回原效应，不重复占用
+ok 11 - A11 预占成功后响应丢失：重放返回原效应，不重复占用
+  ---
+  duration_ms: 5496.4798
+  type: 'test'
+  ...
+# Subtest: A12 模拟付款结果未知：不盲重发、不自动释放预占，须对账确认
+ok 12 - A12 模拟付款结果未知：不盲重发、不自动释放预占，须对账确认
+  ---
+  duration_ms: 8666.2621
+  type: 'test'
+  ...
+# Subtest: A13 重复结算回调：幂等，不重复扣减
+ok 13 - A13 重复结算回调：幂等，不重复扣减
+  ---
+  duration_ms: 6207.0372
+  type: 'test'
+  ...
+# Subtest: A14 暂停与支用并发：提交点统一裁决，不绕过 Gate
+ok 14 - A14 暂停与支用并发：提交点统一裁决，不绕过 Gate
+  ---
+  duration_ms: 9304.4318
+  type: 'test'
+  ...
+# Subtest: A15 批准前依据更新：旧版本批准被拒或要求重新评估
+ok 15 - A15 批准前依据更新：旧版本批准被拒或要求重新评估
+  ---
+  duration_ms: 3886.0968
+  type: 'test'
+  ...
+# Subtest: A16 降额低于存量敞口：保留敞口、显示超额、禁止新增支用
+ok 16 - A16 降额低于存量敞口：保留敞口、显示超额、禁止新增支用
+  ---
+  duration_ms: 3276.685
+  type: 'test'
+  ...
+# Subtest: A17 非循环额度收到还款：不擅自恢复为可循环可用额度
+ok 17 - A17 非循环额度收到还款：不擅自恢复为可循环可用额度
+  ---
+  duration_ms: 5186.5051
+  type: 'test'
+  ...
+# Subtest: A18 模型输出额度/批准字段：可为合法候选，但不能激活额度
+ok 18 - A18 模型输出额度/批准字段：可为合法候选，但不能激活额度
+  ---
+  duration_ms: 5390.2199
+  type: 'test'
+  ...
+# Subtest: A19 假人类角色/切前端角色：后端拒绝，审计记录不含秘密
+ok 19 - A19 假人类角色/切前端角色：后端拒绝，审计记录不含秘密
+  ---
+  duration_ms: 4511.7033
+  type: 'test'
+  ...
+# Subtest: A20 发票金额与合同金额冲突：两份证据都可追溯，冲突不被掩盖
+ok 20 - A20 发票金额与合同金额冲突：两份证据都可追溯，冲突不被掩盖
+  ---
+  duration_ms: 5487.2793
+  type: 'test'
+  ...
+# Subtest: A21 accepted 且结论 rejected：工作完成状态不映射为风险通过
+ok 21 - A21 accepted 且结论 rejected：工作完成状态不映射为风险通过
+  ---
+  duration_ms: 2790.0703
+  type: 'test'
+  ...
+# Subtest: A22 迁移中断/重复运行：可恢复，不损毁旧项目/证据/审计
+ok 22 - A22 迁移中断/重复运行：可恢复，不损毁旧项目/证据/审计
+  ---
+  duration_ms: 2282.4369
+  type: 'test'
+  ...
+# Subtest: A23 业务提交成功、outbox 发布失败：恢复后可投递，不丢事件
+ok 23 - A23 业务提交成功、outbox 发布失败：恢复后可投递，不丢事件
+  ---
+  duration_ms: 4989.7942
+  type: 'test'
+  ...
+# Subtest: A24 单客户多子额度/直租回租并发：受客户主上限与关联组约束
+ok 24 - A24 单客户多子额度/直租回租并发：受客户主上限与关联组约束
+  ---
+  duration_ms: 2212.0068
+  type: 'test'
+  ...
+1..24
+# tests 24
+# suites 0
+# pass 24
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 133548.518
+shard1 exit=0
+ALL-SHARDS-DONE

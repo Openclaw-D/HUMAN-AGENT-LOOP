@@ -1,0 +1,20 @@
+{
+  "round": "goal-03d (2026-09-19) J1.1-J1.5 页面做实",
+  "stack": { "pg": "jw-g03c-pg@15456 (jw_g03c + jwg03c_conn)", "a": 17933, "connectors": 17937, "edge": 17935 },
+  "policy": { "requiredDomains": "pol-delivery-synthetic (4/4 required)", "rulePack": "1.0.0 active" },
+  "customers": { "main": "cust-mu77o9re-cd03fb5a5ed2", "pageCreated2nd": "cust-mu77youg-c46f8c8afca9" },
+  "chain": {
+    "channelMaterialsA": ["art-mu7a5k4a-475dcf4d8efc(material.document_sample)", "art-mu7987a3-89ab08fc8168(material.bank_statement)", "art-mu7961sv-292cf889a152(material.purchase_contract)"],
+    "derived": ["art-mu7a5k65-881e8db8057e"],
+    "runsRegistered": { "policy": "run-mu7a5k78-91d5765980d1", "credit": "run-mu7a5k8k-b3a34fe6480c", "commerce": "run-mu7a5k9q-ed041b9d57c8", "asset": "run-mu7a5kb4-28ec6e692f88" },
+    "gateReceipt": { "id": "gr-mu7a5kc4-56f395d0f448", "result": "NEEDS_EVIDENCE", "reason": "NEEDS_EVIDENCE_RULE_PRECONDITION (synthetic thin materials; requiredFacts minLevel=source_supported)" }
+  },
+  "packages": {
+    "r1": { "id": "pkg-mu7ajojm-e58cb6dad321", "domainResults": ["credit", "commerce", "asset", "policy"] },
+    "r2": { "id": "pkg-mu7aynfh-987eddd25213", "with": "inspectionRevision(ins-mu7atj0l-d10a83e08651, closure=pending_evidence)" },
+    "r3": { "id": "pkg-mu7b592z-81b5e25bcca4" }
+  },
+  "creditChain": { "assessment": "ass-mu7b0bfx-e8df18e9d", "candidate": "do_with_adjusted_terms/50000000分", "submitReview": "awaiting_human_review", "proposeBoundTo": "pkg-mu7aynfh(r2)", "approve": "BLOCKED honest (STALE_BASIS -> GATE_NEEDS_EVIDENCE/REQUIRED_DOMAIN_MISSING)" },
+  "customerPortal": { "redeem": "cit_* credential -> Edge session", "upload": "invoice ok", "myMaterials": "whitelist projection ok" },
+  "honestBlocks": ["INVITATION_NOT_FOUND(无效码404)", "PERMISSION_DENIED(approver创建邀请)", "NOT_READY(缺购销合同)", "STALE_BASIS(晚到材料)", "GATE_NEEDS_EVIDENCE+REQUIRED_DOMAIN_MISSING(批准点)"]
+}

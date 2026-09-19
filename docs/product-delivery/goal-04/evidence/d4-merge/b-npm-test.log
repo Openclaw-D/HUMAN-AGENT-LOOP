@@ -1,0 +1,662 @@
+
+> v7-backend-next-b-execution-routing@0.1.0 test
+> node --test --test-force-exit test/three-way-send.test.mjs test/router.test.mjs test/redact.test.mjs test/resume-identity.test.mjs test/contract-stub.test.mjs test/goal-graph.test.mjs test/crash-recovery.test.mjs test/worker-fencing.test.mjs test/def03-resume-resend.test.mjs test/budget.test.mjs test/four-domain.test.mjs test/four-domain-matrix.test.mjs test/fs-lock-recovery.test.mjs test/inspection-dispatcher.test.mjs test/question-arbiter.test.mjs
+
+TAP version 13
+# Subtest: T1 预算顺序上限:首调用入账后,后续 BUDGET_EXCEEDED 且未发送
+ok 1 - T1 预算顺序上限:首调用入账后,后续 BUDGET_EXCEEDED 且未发送
+  ---
+  duration_ms: 513.2712
+  type: 'test'
+  ...
+# Subtest: T2 重启不绕过:新实例读同一持久账本,立即失败关闭
+ok 2 - T2 重启不绕过:新实例读同一持久账本,立即失败关闭
+  ---
+  duration_ms: 918.4066
+  type: 'test'
+  ...
+# Subtest: T3 真实并发:6 实例 Promise.all 共享账本(预算1/单次1)→ 恰 1 次出站,5 次预算拒绝
+ok 3 - T3 真实并发:6 实例 Promise.all 共享账本(预算1/单次1)→ 恰 1 次出站,5 次预算拒绝
+  ---
+  duration_ms: 400.3585
+  type: 'test'
+  ...
+# Subtest: T4 真实跨进程:子进程与父进程同时调用(共享账本,预算1/单次1)→ 合计出站恰 1 次
+ok 4 - T4 真实跨进程:子进程与父进程同时调用(共享账本,预算1/单次1)→ 合计出站恰 1 次
+  ---
+  duration_ms: 165.7339
+  type: 'test'
+  ...
+# Subtest: T5 账本路径为目录(不可读写)→ 失败关闭,0 出站(05:00 反例)
+ok 5 - T5 账本路径为目录(不可读写)→ 失败关闭,0 出站(05:00 反例)
+  ---
+  duration_ms: 5.3807
+  type: 'test'
+  ...
+# Subtest: T6 坏账本(坏行/amount 非法)→ 失败关闭,0 出站
+ok 6 - T6 坏账本(坏行/amount 非法)→ 失败关闭,0 出站
+  ---
+  duration_ms: 10.3887
+  type: 'test'
+  ...
+# Subtest: T7 非法预算(NaN/Infinity/负数/0/缺项)→ 创建即抛错失败关闭
+ok 7 - T7 非法预算(NaN/Infinity/负数/0/缺项)→ 创建即抛错失败关闭
+  ---
+  duration_ms: 1.3629
+  type: 'test'
+  ...
+# Subtest: T8 启用预算但未配置账本路径 → 失败关闭(不吞配置错误)
+ok 8 - T8 启用预算但未配置账本路径 → 失败关闭(不吞配置错误)
+  ---
+  duration_ms: 1.8344
+  type: 'test'
+  ...
+# Subtest: T9 worker 端到端(DEF-04 回归):顶层 budget 段经 runtime 透传,真实 worker 流程预算门生效
+ok 9 - T9 worker 端到端(DEF-04 回归):顶层 budget 段经 runtime 透传,真实 worker 流程预算门生效
+  ---
+  duration_ms: 1178.9583
+  type: 'test'
+  ...
+# Subtest: claim→complete 正常路径:回执落库、目标版本推进、candidate_ready
+ok 10 - claim→complete 正常路径:回执落库、目标版本推进、candidate_ready
+  ---
+  duration_ms: 5.2137
+  type: 'test'
+  ...
+# Subtest: 门序与 fencing:过期 token 写回拒绝;lease 过期写回拒绝;旧 token 不可复活
+ok 11 - 门序与 fencing:过期 token 写回拒绝;lease 过期写回拒绝;旧 token 不可复活
+  ---
+  duration_ms: 0.7102
+  type: 'test'
+  ...
+# Subtest: requestId 载荷一致性:同载荷重放 → replayed:true;异载荷 → REQUEST_MISMATCH
+ok 12 - requestId 载荷一致性:同载荷重放 → replayed:true;异载荷 → REQUEST_MISMATCH
+  ---
+  duration_ms: 44.2398
+  type: 'test'
+  ...
+# Subtest: 乐观版本冲突:expectedVersion 过期 → VERSION_CONFLICT(协调冲突语义)
+ok 13 - 乐观版本冲突:expectedVersion 过期 → VERSION_CONFLICT(协调冲突语义)
+  ---
+  duration_ms: 0.374
+  type: 'test'
+  ...
+# Subtest: fail 路径:门序同 complete;成功后 goal=failed
+ok 14 - fail 路径:门序同 complete;成功后 goal=failed
+  ---
+  duration_ms: 0.6294
+  type: 'test'
+  ...
+# Subtest: 失效目标:不可领取(NOT_READY)
+ok 15 - 失效目标:不可领取(NOT_READY)
+  ---
+  duration_ms: 0.3529
+  type: 'test'
+  ...
+# Subtest: 人工待办:同 goal+kind 幂等;kind 合同枚举
+ok 16 - 人工待办:同 goal+kind 幂等;kind 合同枚举
+  ---
+  duration_ms: 0.5668
+  type: 'test'
+  ...
+# Subtest: pollWork:只领 ready;被持有任务跳过
+ok 17 - pollWork:只领 ready;被持有任务跳过
+  ---
+  duration_ms: 0.6713
+  type: 'test'
+  ...
+# Subtest: 版本投影:getGoalVersions 返回目标乐观版本(B 的 stale 判据)
+ok 18 - 版本投影:getGoalVersions 返回目标乐观版本(B 的 stale 判据)
+  ---
+  duration_ms: 1.0398
+  type: 'test'
+  ...
+# Subtest: 持久化:restore 后回执仍在(进程重启不丢业务回执)
+ok 19 - 持久化:restore 后回执仍在(进程重启不丢业务回执)
+  ---
+  duration_ms: 64.6671
+  type: 'test'
+  ...
+# Subtest: 跨进程崩溃恢复:intent 无回执 → unknown,零盲重发;业务回执对账留痕
+ok 20 - 跨进程崩溃恢复:intent 无回执 → unknown,零盲重发;业务回执对账留痕
+  ---
+  duration_ms: 1717.5525
+  type: 'test'
+  ...
+# Subtest: 恢复后取消:未发送剩余步 → cancelled;已有 intent 步 → unknown(不谎称未发送)
+not ok 21 - 恢复后取消:未发送剩余步 → cancelled;已有 intent 步 → unknown(不谎称未发送)
+  ---
+  duration_ms: 1384.9991
+  type: 'test'
+  location: 'C:\\Users\\22673\\Desktop\\JW\\Back\\B\\test\\crash-recovery.test.mjs:88:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + undefined
+    - true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/Users/22673/Desktop/JW/Back/B/test/crash-recovery.test.mjs:109:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: checkpoint 跨进程持久:终态运行在新实例可完整投影,continueRun 零新调用
+ok 22 - checkpoint 跨进程持久:终态运行在新实例可完整投影,continueRun 零新调用
+  ---
+  duration_ms: 170.7717
+  type: 'test'
+  ...
+# Subtest: DEF-03:中断→unknown→版本漂移→可信 retry_step 恰一次重发→A 收口 candidate_ready
+ok 23 - DEF-03:中断→unknown→版本漂移→可信 retry_step 恰一次重发→A 收口 candidate_ready
+  ---
+  duration_ms: 1144.7051
+  type: 'test'
+  ...
+# Subtest: C09: 无关留言不触发任何域重算;相关证据只触发受影响域
+ok 24 - C09: 无关留言不触发任何域重算;相关证据只触发受影响域
+  ---
+  duration_ms: 3.2009
+  type: 'test'
+  ...
+# Subtest: C09 扩展: 已 stale 的域无条件重算;政策更新触发 policy+gate(high)
+ok 25 - C09 扩展: 已 stale 的域无条件重算;政策更新触发 policy+gate(high)
+  ---
+  duration_ms: 0.4309
+  type: 'test'
+  ...
+# Subtest: C10: 缓存拒绝低代次回写(旧 worker 不覆盖新候选)
+ok 26 - C10: 缓存拒绝低代次回写(旧 worker 不覆盖新候选)
+  ---
+  duration_ms: 21.1957
+  type: 'test'
+  ...
+# Subtest: C10/C11: isResultCurrent——代次或规则版本不同 → stale
+ok 27 - C10/C11: isResultCurrent——代次或规则版本不同 → stale
+  ---
+  duration_ms: 0.6035
+  type: 'test'
+  ...
+# Subtest: C25: 同一文件 hash 不同客户 → 缓存键不同,结果不串线
+ok 28 - C25: 同一文件 hash 不同客户 → 缓存键不同,结果不串线
+  ---
+  duration_ms: 9.0378
+  type: 'test'
+  ...
+# Subtest: C24: EPERM 注入 → 有界重试成功无残留;永久 EPERM → 结构化失败旧内容完好
+ok 29 - C24: EPERM 注入 → 有界重试成功无残留;永久 EPERM → 结构化失败旧内容完好
+  ---
+  duration_ms: 1194.3201
+  type: 'test'
+  ...
+# Subtest: C24 进程内: 非占用类错误(EISDIR)不重试,确定性失败
+ok 30 - C24 进程内: 非占用类错误(EISDIR)不重试,确定性失败
+  ---
+  duration_ms: 898.7844
+  type: 'test'
+  ...
+# Subtest: C20: 6 个进程预算仅够 1 调用 → 出站恰 1 次,其余失败关闭
+ok 31 - C20: 6 个进程预算仅够 1 调用 → 出站恰 1 次,其余失败关闭
+  ---
+  duration_ms: 417.7289
+  type: 'test'
+  ...
+# Subtest: C21: 坏账本/目录账本 → 零出站,明确错误码
+ok 32 - C21: 坏账本/目录账本 → 零出站,明确错误码
+  ---
+  duration_ms: 65.535
+  type: 'test'
+  ...
+# Subtest: S3 多粒度预算: 客户级/会话级子限额与调用次数上限独立生效(失败关闭)
+ok 33 - S3 多粒度预算: 客户级/会话级子限额与调用次数上限独立生效(失败关闭)
+  ---
+  duration_ms: 195.1545
+  type: 'test'
+  ...
+# Subtest: C22/恢复竞态: 活进程持有的恢复锁不被盲抢;死进程锁可接管;registry 并发写不损坏
+ok 34 - C22/恢复竞态: 活进程持有的恢复锁不被盲抢;死进程锁可接管;registry 并发写不损坏
+  ---
+  duration_ms: 15303.0111
+  type: 'test'
+  ...
+# Subtest: C22 补充: in-flight 中断后恢复保留 unknown、零盲重发(与 crash-recovery.test.mjs 同判据的轻量进程内复核)
+ok 35 - C22 补充: in-flight 中断后恢复保留 unknown、零盲重发(与 crash-recovery.test.mjs 同判据的轻量进程内复核)
+  ---
+  duration_ms: 60047.1189
+  type: 'test'
+  ...
+# Subtest: S3 限额族: maxRequestChars 超限 → 确定未发送(REQUEST_TOO_LARGE)
+ok 36 - S3 限额族: maxRequestChars 超限 → 确定未发送(REQUEST_TOO_LARGE)
+  ---
+  duration_ms: 1.4815
+  type: 'test'
+  ...
+# Subtest: C23 前提: 人工授权重试用新 attempt/requestId;预算上限在重试后仍生效
+ok 37 - C23 前提: 人工授权重试用新 attempt/requestId;预算上限在重试后仍生效
+  ---
+  duration_ms: 31.1848
+  type: 'test'
+  ...
+# Subtest: E1: 四域评估经编排器完整跑通 → candidate_ready(provider=calculation, authority=none)
+ok 38 - E1: 四域评估经编排器完整跑通 → candidate_ready(provider=calculation, authority=none)
+  ---
+  duration_ms: 750.1988
+  type: 'test'
+  ...
+# Subtest: E1: 不利事实(新增负债)经同一执行器 → HOLD 且候选金额下降(结构性,零模型)
+ok 39 - E1: 不利事实(新增负债)经同一执行器 → HOLD 且候选金额下降(结构性,零模型)
+  ---
+  duration_ms: 624.1858
+  type: 'test'
+  ...
+# Subtest: fd:gate 单独收口:缺域结果 → HOLD(不默认通过)
+ok 40 - fd:gate 单独收口:缺域结果 → HOLD(不默认通过)
+  ---
+  duration_ms: 9.3005
+  type: 'test'
+  ...
+# Subtest: fd 工具失败关闭:未知工具/缺输入 → {ok:false}(不静默成功)
+ok 41 - fd 工具失败关闭:未知工具/缺输入 → {ok:false}(不静默成功)
+  ---
+  duration_ms: 1.9777
+  type: 'test'
+  ...
+# Subtest: reportOutcome: 全工具步运行 → provider=calculation(不冒充真实模型)
+ok 42 - reportOutcome: 全工具步运行 → provider=calculation(不冒充真实模型)
+  ---
+  duration_ms: 0.4929
+  type: 'test'
+  ...
+# Subtest: 路由配置: routes-four-domain.json 通过规则表校验且首中即用
+ok 43 - 路由配置: routes-four-domain.json 通过规则表校验且首中即用
+  ---
+  duration_ms: 0.8944
+  type: 'test'
+  ...
+# Subtest: W13-1 死 owner 锁被回收：rename 替换后持有，释放清干净
+ok 44 - W13-1 死 owner 锁被回收：rename 替换后持有，释放清干净
+  ---
+  duration_ms: 377.1633
+  type: 'test'
+  ...
+# Subtest: W13-2 过期观察已变化：放弃回收，不覆盖新 owner 的锁
+ok 45 - W13-2 过期观察已变化：放弃回收，不覆盖新 owner 的锁
+  ---
+  duration_ms: 1047.8778
+  type: 'test'
+  ...
+# Subtest: W13-3 持有期被夺：看门狗 LOCK_STOLEN 失败关闭，且不删新持者的锁
+ok 46 - W13-3 持有期被夺：看门狗 LOCK_STOLEN 失败关闭，且不删新持者的锁
+  ---
+  duration_ms: 456.9605
+  type: 'test'
+  ...
+# Subtest: W13-4 半写锁：新鲜不抢、超龄回收
+ok 47 - W13-4 半写锁：新鲜不抢、超龄回收
+  ---
+  duration_ms: 390.0136
+  type: 'test'
+  ...
+# Subtest: W13-6 临界区抛错：锁先释放再上抛，同进程可立即重入
+ok 48 - W13-6 临界区抛错：锁先释放再上抛，同进程可立即重入
+  ---
+  duration_ms: 111.1887
+  type: 'test'
+  ...
+# Subtest: W13-5 多进程并发回收同一死 owner 锁：无静默双持（对账不变量）
+ok 49 - W13-5 多进程并发回收同一死 owner 锁：无静默双持（对账不变量）
+  ---
+  duration_ms: 854.8127
+  type: 'test'
+  ...
+# Subtest: NO_ROUTE:未知任务种类 → human_required 终局 + noRoute 标记,零模型调用
+ok 50 - NO_ROUTE:未知任务种类 → human_required 终局 + noRoute 标记,零模型调用
+  ---
+  duration_ms: 261.0158
+  type: 'test'
+  ...
+# Subtest: 成功链(model+tool):candidate_ready,模拟整包标记,工具结果入候选
+ok 51 - 成功链(model+tool):candidate_ready,模拟整包标记,工具结果入候选
+  ---
+  duration_ms: 184.4828
+  type: 'test'
+  ...
+# Subtest: 补证等待:仅提问 → waiting_evidence;provide_evidence 重锚后重跑成功(新 attempt)
+ok 52 - 补证等待:仅提问 → waiting_evidence;provide_evidence 重锚后重跑成功(新 attempt)
+  ---
+  duration_ms: 333.2219
+  type: 'test'
+  ...
+# Subtest: unknown 零盲重发:断连 → unknown 中断;显式 retry_step 恰好一次新调用(新 attempt)
+ok 53 - unknown 零盲重发:断连 → unknown 中断;显式 retry_step 恰好一次新调用(新 attempt)
+  ---
+  duration_ms: 183.3313
+  type: 'test'
+  ...
+# Subtest: 陈旧结果丢弃:执行中事实版本变化 → stale,human_required,候选不出
+ok 54 - 陈旧结果丢弃:执行中事实版本变化 → stale,human_required,候选不出
+  ---
+  duration_ms: 782.4078
+  type: 'test'
+  ...
+# Subtest: checkpoint 零凭据:resume 后 checkpoint 文件不含凭据字符串
+ok 55 - checkpoint 零凭据:resume 后 checkpoint 文件不含凭据字符串
+  ---
+  duration_ms: 139.286
+  type: 'test'
+  ...
+# Subtest: B·调度器：为待授权问题请求外发授权，落 intent+terminal 回执；重入不重复授权
+ok 56 - B·调度器：为待授权问题请求外发授权，落 intent+terminal 回执；重入不重复授权
+  ---
+  duration_ms: 4.3607
+  type: 'test'
+  ...
+# Subtest: B·调度器：会话暂停即纪律性停止，零授权
+ok 57 - B·调度器：会话暂停即纪律性停止，零授权
+  ---
+  duration_ms: 0.4295
+  type: 'test'
+  ...
+# Subtest: B·调度器：旧代际被 A 拒绝 → 停而不绕（不重试不换 requestId）；回执 sent:false
+ok 58 - B·调度器：旧代际被 A 拒绝 → 停而不绕（不重试不换 requestId）；回执 sent:false
+  ---
+  duration_ms: 0.7991
+  type: 'test'
+  ...
+# Subtest: B·调度器：仅 intent 无 terminal 的历史回执 → 判 unknown 不自动重发（不换 requestId 再问一次）
+ok 59 - B·调度器：仅 intent 无 terminal 的历史回执 → 判 unknown 不自动重发（不换 requestId 再问一次）
+  ---
+  duration_ms: 0.5413
+  type: 'test'
+  ...
+# Subtest: B·W07 公共通话单飞：通话通道被占时排队不抢话；角色私线并行不受限
+ok 60 - B·W07 公共通话单飞：通话通道被占时排队不抢话；角色私线并行不受限
+  ---
+  duration_ms: 44.9125
+  type: 'test'
+  ...
+# Subtest: B·W07/W08 角色单飞：同一回答者在途至多一问；不同角色线程并行、通道正确
+ok 61 - B·W07/W08 角色单飞：同一回答者在途至多一问；不同角色线程并行、通道正确
+  ---
+  duration_ms: 0.6814
+  type: 'test'
+  ...
+# Subtest: B·B3.2 敏感转人工 + 获准外发：敏感词/未获准一律不自动外发
+ok 62 - B·B3.2 敏感转人工 + 获准外发：敏感词/未获准一律不自动外发
+  ---
+  duration_ms: 1.0488
+  type: 'test'
+  ...
+# Subtest: B·W09 unknown 在途：不换 requestId 重问（对账走 A 门）
+ok 63 - B·W09 unknown 在途：不换 requestId 重问（对账走 A 门）
+  ---
+  duration_ms: 0.5445
+  type: 'test'
+  ...
+# Subtest: B·httpInspectionPort：URL/头/载荷符合 A 契约（fetch 注入断言）
+ok 64 - B·httpInspectionPort：URL/头/载荷符合 A 契约（fetch 注入断言）
+  ---
+  duration_ms: 4.7686
+  type: 'test'
+  ...
+# Subtest: W07 同一对象/期间/目的/受众的四域重复问题合并为一条；差异键保留
+ok 65 - W07 同一对象/期间/目的/受众的四域重复问题合并为一条；差异键保留
+  ---
+  duration_ms: 3.4654
+  type: 'test'
+  ...
+# Subtest: W07 单语音仲裁：同一公共通话时刻至多一个 customer 语音问题 active，其余排队不抢话
+ok 66 - W07 单语音仲裁：同一公共通话时刻至多一个 customer 语音问题 active，其余排队不抢话
+  ---
+  duration_ms: 33.4607
+  type: 'test'
+  ...
+# Subtest: W08 财务/厂长并行线程不受语音槽阻塞；内部受众走内部线程
+ok 67 - W08 财务/厂长并行线程不受语音槽阻塞；内部受众走内部线程
+  ---
+  duration_ms: 0.9675
+  type: 'test'
+  ...
+# Subtest: B3.2 外发分级：敏感指控/授信承诺/评分参数/未知目的 → 转人工；常规核验 → 自动
+ok 68 - B3.2 外发分级：敏感指控/授信承诺/评分参数/未知目的 → 转人工；常规核验 → 自动
+  ---
+  duration_ms: 1.0498
+  type: 'test'
+  ...
+# Subtest: W09 暂停会话：计划零新外发，全部进 blocked（OUTBOUND_PAUSED）
+ok 69 - W09 暂停会话：计划零新外发，全部进 blocked（OUTBOUND_PAUSED）
+  ---
+  duration_ms: 10.3481
+  type: 'test'
+  ...
+# Subtest: B3.3 推进语义分立：计划明示 answered ≠ 材料取得 ≠ 核验完成
+ok 70 - B3.3 推进语义分立：计划明示 answered ≠ 材料取得 ≠ 核验完成
+  ---
+  duration_ms: 0.2533
+  type: 'test'
+  ...
+# Subtest: B3.1 绑定缺锚点/缺 purpose/缺 audience 明确拒绝（不外发无绑定问题）
+ok 71 - B3.1 绑定缺锚点/缺 purpose/缺 audience 明确拒绝（不外发无绑定问题）
+  ---
+  duration_ms: 0.4674
+  type: 'test'
+  ...
+# Subtest: redactText:Bearer/sk-/JWT/长hex/key=value 形状全替换,幂等
+ok 72 - redactText:Bearer/sk-/JWT/长hex/key=value 形状全替换,幂等
+  ---
+  duration_ms: 3.7882
+  type: 'test'
+  ...
+# Subtest: redactValue:敏感键整值抹除(不看值内容),递归+循环引用安全
+ok 73 - redactValue:敏感键整值抹除(不看值内容),递归+循环引用安全
+  ---
+  duration_ms: 0.6538
+  type: 'test'
+  ...
+# Subtest: safeError:Error 的 message 脱敏,code 保留
+ok 74 - safeError:Error 的 message 脱敏,code 保留
+  ---
+  duration_ms: 0.3436
+  type: 'test'
+  ...
+# Subtest: createSafeLogger:对象与文本日志均脱敏
+ok 75 - createSafeLogger:对象与文本日志均脱敏
+  ---
+  duration_ms: 1.2817
+  type: 'test'
+  ...
+# Subtest: D-10 场景:verifier 抛异常且异常文本内嵌凭据 → 错误文本脱敏,失败关闭
+ok 76 - D-10 场景:verifier 抛异常且异常文本内嵌凭据 → 错误文本脱敏,失败关闭
+  ---
+  duration_ms: 0.6909
+  type: 'test'
+  ...
+# Subtest: D-10 场景:authorizer 抛异常 → 错误文本脱敏,授权拒绝
+ok 77 - D-10 场景:authorizer 抛异常 → 错误文本脱敏,授权拒绝
+  ---
+  duration_ms: 0.3057
+  type: 'test'
+  ...
+# Subtest: 失败关闭矩阵:未配置验证器/缺凭据/错凭据/非human/伪造actor 全拒绝
+ok 78 - 失败关闭矩阵:未配置验证器/缺凭据/错凭据/非human/伪造actor 全拒绝
+  ---
+  duration_ms: 1.3006
+  type: 'test'
+  ...
+# Subtest: 可信 human 通过;authorizer 可按项目/动作拒绝
+ok 79 - 可信 human 通过;authorizer 可按项目/动作拒绝
+  ---
+  duration_ms: 1.0166
+  type: 'test'
+  ...
+# Subtest: 命令校验:无盖章拒绝(防绕过边界);版本门;重试目标状态门;accept 须带 note
+ok 80 - 命令校验:无盖章拒绝(防绕过边界);版本门;重试目标状态门;accept 须带 note
+  ---
+  duration_ms: 0.5195
+  type: 'test'
+  ...
+# Subtest: resume 效果计算:provide_evidence 重锚+代次推进;abort 终局
+ok 81 - resume 效果计算:provide_evidence 重锚+代次推进;abort 终局
+  ---
+  duration_ms: 0.4371
+  type: 'test'
+  ...
+# Subtest: 合法配置通过校验;首中规则生效且带 ruleId
+ok 82 - 合法配置通过校验;首中规则生效且带 ruleId
+  ---
+  duration_ms: 1.8191
+  type: 'test'
+  ...
+# Subtest: taskKind 缺失或无规则命中 → NO_ROUTE(升级人工,不猜)
+ok 83 - taskKind 缺失或无规则命中 → NO_ROUTE(升级人工,不猜)
+  ---
+  duration_ms: 0.3455
+  type: 'test'
+  ...
+# Subtest: role 细化匹配:role 不符 → 落到更宽规则或 NO_ROUTE
+ok 84 - role 细化匹配:role 不符 → 落到更宽规则或 NO_ROUTE
+  ---
+  duration_ms: 0.3921
+  type: 'test'
+  ...
+# Subtest: 计划深拷贝:路由产物改动不影响规则表
+ok 85 - 计划深拷贝:路由产物改动不影响规则表
+  ---
+  duration_ms: 0.2765
+  type: 'test'
+  ...
+# Subtest: 非法规则配置失败关闭:重复 ruleId / 非法 kind / 越权 role / 空 plan
+ok 86 - 非法规则配置失败关闭:重复 ruleId / 非法 kind / 越权 role / 空 plan
+  ---
+  duration_ms: 0.8992
+  type: 'test'
+  ...
+# Subtest: transport 未配置 → not_configured,零网络动作,不静默 mock
+ok 87 - transport 未配置 → not_configured,零网络动作,不静默 mock
+  ---
+  duration_ms: 3.589
+  type: 'test'
+  ...
+# Subtest: transport 非法 mode 构造即拒绝
+ok 88 - transport 非法 mode 构造即拒绝
+  ---
+  duration_ms: 0.498
+  type: 'test'
+  ...
+# Subtest: mock 模式(真实 loopback socket):成功 → simulated + mock 强标记 + 成本记录
+ok 89 - mock 模式(真实 loopback socket):成功 → simulated + mock 强标记 + 成本记录
+  ---
+  duration_ms: 167.3516
+  type: 'test'
+  ...
+# Subtest: real 模式:端点不在 outboundAllow → 拒绝且未发送(无网络请求)
+ok 90 - real 模式:端点不在 outboundAllow → 拒绝且未发送(无网络请求)
+  ---
+  duration_ms: 4.804
+  type: 'test'
+  ...
+# Subtest: real 模式:端点在允许列表 → 成功,apiKey 只进请求头
+ok 91 - real 模式:端点在允许列表 → 成功,apiKey 只进请求头
+  ---
+  duration_ms: 21.1022
+  type: 'test'
+  ...
+# Subtest: 连接拒绝(端口未监听)→ 确定失败且未发送(不是 unknown)
+ok 92 - 连接拒绝(端口未监听)→ 确定失败且未发送(不是 unknown)
+  ---
+  duration_ms: 6.4415
+  type: 'test'
+  ...
+# Subtest: 响应超时(请求已发出、响应未达)→ unknown,禁止自动重试
+ok 93 - 响应超时(请求已发出、响应未达)→ unknown,禁止自动重试
+  ---
+  duration_ms: 318.7438
+  type: 'test'
+  ...
+# Subtest: 发送后连接被对端切断 → unknown
+ok 94 - 发送后连接被对端切断 → unknown
+  ---
+  duration_ms: 6.6672
+  type: 'test'
+  ...
+# Subtest: HTTP 429=未被处理(sent=false)/5xx=上游错误(sent=true)
+ok 95 - HTTP 429=未被处理(sent=false)/5xx=上游错误(sent=true)
+  ---
+  duration_ms: 21.62
+  type: 'test'
+  ...
+# Subtest: 200 但 body 非 JSON → RESPONSE_CORRUPTED(上游已处理,与 unknown 区分);缺 choices → human_violation(经桥接)
+ok 96 - 200 但 body 非 JSON → RESPONSE_CORRUPTED(上游已处理,与 unknown 区分);缺 choices → human_violation(经桥接)
+  ---
+  duration_ms: 22.5497
+  type: 'test'
+  ...
+# Subtest: 桥接:仅提问无观察 → waiting_evidence(编排层不替模型下结论)
+ok 97 - 桥接:仅提问无观察 → waiting_evidence(编排层不替模型下结论)
+  ---
+  duration_ms: 0.3753
+  type: 'test'
+  ...
+# Subtest: 最小上下文:请求只含当前目标标签与证据引用,不含历史/仓库路径
+ok 98 - 最小上下文:请求只含当前目标标签与证据引用,不含历史/仓库路径
+  ---
+  duration_ms: 0.3003
+  type: 'test'
+  ...
+# Subtest: 闭环:pollWork→执行→candidate_ready 提交(provider=simulation);重复执行被 A 回执拦截
+ok 99 - 闭环:pollWork→执行→candidate_ready 提交(provider=simulation);重复执行被 A 回执拦截
+  ---
+  duration_ms: 566.4621
+  type: 'test'
+  ...
+# Subtest: fencing:过期 worker 写回被 A 拒绝;重领不可得时按 rejected 丢弃(不当未执行)
+ok 100 - fencing:过期 worker 写回被 A 拒绝;重领不可得时按 rejected 丢弃(不当未执行)
+  ---
+  duration_ms: 218.0868
+  type: 'test'
+  ...
+# Subtest: 安全重领:LEASE_EXPIRED 且结果确定 → 有界重领后成功提交(§6 未执行可安全重试路径)
+ok 101 - 安全重领:LEASE_EXPIRED 且结果确定 → 有界重领后成功提交(§6 未执行可安全重试路径)
+  ---
+  duration_ms: 160.9981
+  type: 'test'
+  ...
+# Subtest: unknown → fail 出口 + clarification 人工待办(不盲重发,不自动重领)
+ok 102 - unknown → fail 出口 + clarification 人工待办(不盲重发,不自动重领)
+  ---
+  duration_ms: 81.7702
+  type: 'test'
+  ...
+# Subtest: worker 主循环:并发上限与队列顺序;停机等待在途任务收尾
+ok 103 - worker 主循环:并发上限与队列顺序;停机等待在途任务收尾
+  ---
+  duration_ms: 1225.5981
+  type: 'test'
+  ...
+# Subtest: 软超时:取消在步边界生效,未发送步取消、已完成步保留(不谎称未发生)
+ok 104 - 软超时:取消在步边界生效,未发送步取消、已完成步保留(不谎称未发生)
+  ---
+  duration_ms: 1623.2612
+  type: 'test'
+  ...
+# Subtest: recoverAll:提交过的不动;未收尾的 run 补对账并如实标记
+ok 105 - recoverAll:提交过的不动;未收尾的 run 补对账并如实标记
+  ---
+  duration_ms: 48.2026
+  type: 'test'
+  ...
+1..105
+# tests 105
+# suites 0
+# pass 104
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 79877.0456
+B_EXIT=1

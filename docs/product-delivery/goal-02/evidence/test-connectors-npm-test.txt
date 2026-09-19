@@ -1,0 +1,13 @@
+# Connectors npm test（默认测试入口=显式清单；2026-09-18）
+  duration_ms: 702.8614
+  type: 'test'
+  ...
+1..71
+# tests 71
+# suites 0
+# pass 71
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 11987.1115

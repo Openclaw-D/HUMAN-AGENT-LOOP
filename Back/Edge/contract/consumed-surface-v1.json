@@ -1,304 +1,421 @@
 {
- "schemaVersion": "jw.edge.consumed-surface.v1",
- "publishedAt": "2026-09-17",
- "publisher": "task03-delivery (Back/Edge lane; 消费面固定，不改写上游契约文件)",
- "purpose": "任务三 C1 边界：固定本轮 Edge→上游 消费的接口子集与 Edge→客户端 协议。上游实现以此快照判据探测（c-gate），漂移即拒绝接线（fail-closed）。",
- "upstreamKernel": {
-  "name": "jw-a-kernel (Back/A)",
-  "sharedContract": "Back/CONTRACT.md v1.3（共享契约文件归其 writer；本快照不替代、只记录消费子集）",
-  "v2CreditKernel": {
-   "marker": "GET /healthz → contractVersion 含 'v2.0-credit-kernel' 且 creditPolicy 块存在",
-   "implementationDoc": "Back/A/docs/CUSTOMER_CREDIT_V2.md",
-   "upstreamStatus": "complete（48/48 自测记录，2026-09-17）",
-   "migrations": [
-    "001 (v1 内核)",
-    "002_customer_credit.sql (11 表 + projects.customer_id + outbox_events.customer_id)"
-   ]
-  },
-  "inspectionSession": {
-   "implementationDoc": "Back/A/docs/INSPECTION_SESSION_V1.md",
-   "upstreamStatus": "in_progress（A1 边界已落 migration 003 + domain/inspection.ts + 路由；作者声明的 A1–A3 测试文件尚未在工作区出现）——Edge 消费面按其 §4 契约接线，漂移/缺失时如实显示上游错误，不伪装会话状态",
-   "migrations": [
-    "003_inspection_sessions.sql",
-    "004_decision_loop.sql（004 路由未挂载，本轮不消费）"
-   ]
-  },
-  "consumedReads": [
-   {
-    "method": "GET",
-    "path": "/healthz",
-    "auth": "none",
-    "pass": "status=200 && ok=true && db==='up'",
-    "use": "readiness 探针（aKernelReadyPass）"
-   },
-   {
-    "method": "GET",
-    "path": "/api/v2/customers/:id",
-    "auth": "X-Principal-Credential（租户范围）",
-    "response": "{ok, customer:{customerId,tenantId,legalEntityRef,displayName,status,version,createdAt,updatedAt}}",
-    "use": "工作台快照主体；越权/不存在统一 404 NOT_FOUND（原样透传，不泄露存在性）"
-   },
-   {
-    "method": "GET",
-    "path": "/api/v2/customers/:id/exposure",
-    "auth": "同上",
-    "response": "{ok, customer, facilities:[{facilityId,approvedAmountMinor,currency,status,reservedMinor,committedMinor,outstandingMinor,lifetimeDisbursedMinor,exposureNowMinor,availableForNewDrawMinor,overLimit,staleBlockers}], totalsMinor}",
-    "use": "额度/报告区（候选=评估 candidate，已批准=facility，可用=availableForNewDrawMinor）"
-   },
-   {
-    "method": "GET",
-    "path": "/api/v2/customers/:id/events?after=<seq>&limit<=500",
-    "auth": "同上",
-    "response": "{ok, events:[{seq,eventId,at,eventType,customerId,payload}]}",
-    "use": "Edge SSE 事件源（轮询补取；eventId 作为 SSE 游标）"
-   },
-   {
-    "method": "GET",
-    "path": "/api/v2/assessments/:id",
-    "auth": "同上",
-    "response": "{ok, assessment:{assessmentId,customerId,status,stale,staleReasons,evidenceSnapshot,snapshotHash,ruleVersion,candidate,version,createdAt,updatedAt}}",
-    "use": "核验卡（问题/依据/需要谁行动）与额度依据版本"
-   },
-   {
-    "method": "GET",
-    "path": "/api/v2/financing-requests/:id",
-    "auth": "同上",
-    "response": "{ok, financingRequest:{frId,customerId,facilityId,productType,amountMinor,currency,equipmentRefs,contractRefs,status,externalState,reservedUntil,version,...}}",
-    "use": "两笔申请/用信准备状态"
-   },
-   {
-    "method": "GET",
-    "path": "/api/v2/customers/:id/artifacts",
-    "auth": "同上",
-    "response": "{ok, customer, artifacts:[...]}",
-    "use": "证据定位（核验卡）"
-   },
-   {
-    "method": "GET",
-    "path": "/api/v2/customers/:id/decision-status",
-    "auth": "同上",
-    "response": "{ok, customerId, basis?{packageId,revision,basisVersion,status,currency[DomainVerdict],decisionReadiness,gaps,requiredActions,blockedActions,candidate,inspectionRevision,gate}, facilityTotalsMinor{proposed,approvedInactive,active,suspended,available}, reviewQueue[], reportRefs[]}",
-    "use": "任务03 C1.3：权威决策状态（依据包/Gate/逐域 currency/可支用合计/复核队列/报告引用）——快照不再从事件缓冲逆推决策面"
-   },
-   {
-    "method": "GET",
-    "path": "/api/v2/customers/:id/findings",
-    "auth": "同上",
-    "response": "{ok, reviewQueue[], findings[]}",
-    "use": "任务03 C1.3：决策复核队列（负向发现阻断如实展示）"
-   },
-   {
-    "method": "GET",
-    "path": "/api/v2/customers/:id/object-inventory",
-    "auth": "同上",
-    "response": "{ok, ...对象清单（objectId/siteSnapshotId/sceneVersion 链接状态）}",
-    "use": "任务03 C4.3：二维桥接保底面板（objectId 锚定状态）；三维场区未建（D27-S BLOCKED）"
-   },
-   {
-    "method": "GET",
-    "path": "/api/v2/receipts/:requestId",
-    "auth": "同上（按归属 principal 过滤）",
-    "response": "{ok, found, receipt?{requestId,action,response,createdAt}}",
-    "use": "C05：动作丢响应后以回执对账；他人 requestId → found:false"
-   }
-  ],
-  "upstreamGaps": [
-   "A 无按客户列出 assessments / financing-requests 的权威列表端点：Edge 快照中这两类 refs 仍来自事件缓冲（显式 refsSource='event_buffer'、refsExhaustive=false，不暗示完整）。需求已提交任务01：补 GET /api/v2/customers/:id/assessments 与 /financing-requests 列表端点后，Edge 切换为权威查询。",
-   "A 的 /events 按 seq>after 查询而 seq 是 outbox 分配号非提交序：反序提交事件若晚于 Edge 重查窗口（128）提交仍会漏。需求已提交任务01：seq 在提交时分配或提供已提交水位/缺口检测。Edge 现以 eventId 去重 + 滞后重查窗口 + gap 标注缓解（窗口内自愈）。"
-  ],
-  "revision": "task03-repair-1（2026-09-17）：+decision-status/findings/object-inventory 消费、upstreamGaps 登记、edgeFacing 增 events-page 与 external-send 门",
-  "consumedWrites": [
-   {
-    "method": "POST",
-    "path": "/api/v2/customers",
-    "auth": "human+租户",
-    "note": "建档"
-   },
-   {
-    "method": "POST",
-    "path": "/api/v2/customers/:id/artifacts",
-    "auth": "human",
-    "note": "补证（客户提交材料经内部代理登记）"
-   },
-   {
-    "method": "POST",
-    "path": "/api/v2/customers/:id/assessments",
-    "auth": "human+credit 角色"
-   },
-   {
-    "method": "POST",
-    "path": "/api/v2/assessments/:id/candidate",
-    "auth": "human|agent（候选通道，authority 服务端强制 none）"
-   },
-   {
-    "method": "POST",
-    "path": "/api/v2/assessments/:id/submit-review",
-    "auth": "human+credit"
-   },
-   {
-    "method": "POST",
-    "path": "/api/v2/assessments/:id/decide",
-    "auth": "human+credit（仅 reject/withdraw）"
-   },
-   {
-    "method": "POST",
-    "path": "/api/v2/customers/:id/facilities",
-    "auth": "human+credit（提案）"
-   },
-   {
-    "method": "POST",
-    "path": "/api/v2/facilities/:id/approve",
-    "auth": "human+矩阵+上限/集中度/依据复查",
-    "errors": [
-     "POLICY_PENDING",
-     "PERMISSION_DENIED",
-     "STALE_BASIS",
-     "CONCENTRATION_BLOCKED",
-     "PRODUCT_CAP_EXCEEDED",
-     "CURRENCY_MISMATCH"
+  "schemaVersion": "jw.edge.consumed-surface.v1",
+  "publishedAt": "2026-09-17",
+  "publisher": "task03-delivery (Back/Edge lane; 消费面固定，不改写上游契约文件)",
+  "purpose": "任务三 C1 边界：固定本轮 Edge→上游 消费的接口子集与 Edge→客户端 协议。上游实现以此快照判据探测（c-gate），漂移即拒绝接线（fail-closed）。",
+  "upstreamKernel": {
+    "name": "jw-a-kernel (Back/A)",
+    "sharedContract": "Back/CONTRACT.md v1.3（共享契约文件归其 writer；本快照不替代、只记录消费子集）",
+    "v2CreditKernel": {
+      "marker": "GET /healthz → contractVersion 含 'v2.0-credit-kernel' 且 creditPolicy 块存在",
+      "implementationDoc": "Back/A/docs/CUSTOMER_CREDIT_V2.md",
+      "upstreamStatus": "complete（48/48 自测记录，2026-09-17）",
+      "migrations": [
+        "001 (v1 内核)",
+        "002_customer_credit.sql (11 表 + projects.customer_id + outbox_events.customer_id)"
+      ]
+    },
+    "inspectionSession": {
+      "implementationDoc": "Back/A/docs/INSPECTION_SESSION_V1.md",
+      "upstreamStatus": "in_progress（A1 边界已落 migration 003 + domain/inspection.ts + 路由；作者声明的 A1–A3 测试文件尚未在工作区出现）——Edge 消费面按其 §4 契约接线，漂移/缺失时如实显示上游错误，不伪装会话状态",
+      "migrations": [
+        "003_inspection_sessions.sql",
+        "004_decision_loop.sql（004 路由未挂载，本轮不消费）"
+      ]
+    },
+    "consumedReads": [
+      {
+        "method": "GET",
+        "path": "/healthz",
+        "auth": "none",
+        "pass": "status=200 && ok=true && db==='up'",
+        "use": "readiness 探针（aKernelReadyPass）"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/customers/:id",
+        "auth": "X-Principal-Credential（租户范围）",
+        "response": "{ok, customer:{customerId,tenantId,legalEntityRef,displayName,status,version,createdAt,updatedAt}}",
+        "use": "工作台快照主体；越权/不存在统一 404 NOT_FOUND（原样透传，不泄露存在性）"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/customers/:id/exposure",
+        "auth": "同上",
+        "response": "{ok, customer, facilities:[{facilityId,approvedAmountMinor,currency,status,reservedMinor,committedMinor,outstandingMinor,lifetimeDisbursedMinor,exposureNowMinor,availableForNewDrawMinor,overLimit,staleBlockers}], totalsMinor}",
+        "use": "额度/报告区（候选=评估 candidate，已批准=facility，可用=availableForNewDrawMinor）"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/customers/:id/events?after=<seq>&limit<=500",
+        "auth": "同上",
+        "response": "{ok, events:[{seq,eventId,at,eventType,customerId,payload}]}",
+        "use": "Edge SSE 事件源（轮询补取；eventId 作为 SSE 游标）"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/assessments/:id",
+        "auth": "同上",
+        "response": "{ok, assessment:{assessmentId,customerId,status,stale,staleReasons,evidenceSnapshot,snapshotHash,ruleVersion,candidate,version,createdAt,updatedAt}}",
+        "use": "核验卡（问题/依据/需要谁行动）与额度依据版本"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/financing-requests/:id",
+        "auth": "同上",
+        "response": "{ok, financingRequest:{frId,customerId,facilityId,productType,amountMinor,currency,equipmentRefs,contractRefs,status,externalState,reservedUntil,version,...}}",
+        "use": "两笔申请/用信准备状态"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/customers/:id/artifacts",
+        "auth": "同上",
+        "response": "{ok, customer, artifacts:[...]}",
+        "use": "证据定位（核验卡）"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/customers/:id/decision-status",
+        "auth": "同上",
+        "response": "{ok, customerId, basis?{packageId,revision,basisVersion,status,currency[DomainVerdict],decisionReadiness,gaps,requiredActions,blockedActions,candidate,inspectionRevision,gate}, facilityTotalsMinor{proposed,approvedInactive,active,suspended,available}, reviewQueue[], reportRefs[]}",
+        "use": "任务03 C1.3：权威决策状态（依据包/Gate/逐域 currency/可支用合计/复核队列/报告引用）——快照不再从事件缓冲逆推决策面"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/customers/:id/findings",
+        "auth": "同上",
+        "response": "{ok, reviewQueue[], findings[]}",
+        "use": "任务03 C1.3：决策复核队列（负向发现阻断如实展示）"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/customers/:id/object-inventory",
+        "auth": "同上",
+        "response": "{ok, ...对象清单（objectId/siteSnapshotId/sceneVersion 链接状态）}",
+        "use": "任务03 C4.3：二维桥接保底面板（objectId 锚定状态）；三维场区未建（D27-S BLOCKED）"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/receipts/:requestId",
+        "auth": "同上（按归属 principal 过滤）",
+        "response": "{ok, found, receipt?{requestId,action,response,createdAt}}",
+        "use": "C05：动作丢响应后以回执对账；他人 requestId → found:false"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/customers/:id/reports 与 /api/v2/reports/:id?format=json|markdown",
+        "auth": "X-Principal-Credential（BUSINESS_AUDIENCE 角色；internal 受众 403 由 A 结构保证）",
+        "use": "goal-03c 结果面板：报告清单与分受众内容导出（只读透传，前端自行落盘）"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/facilities/:id、/api/v2/decision-packages/:id、/api/v2/findings/:id、/api/v2/financing-requests/:id/use-readiness",
+        "auth": "X-Principal-Credential（verified+scope）",
+        "use": "goal-03c 工作本方案/核验面板单对象详情（只读透传）"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/customers?search=&limit=&cursor=",
+        "auth": "X-Principal-Credential（内部专用；grant 身份仅见在册客户）",
+        "response": "{ok, customers:[{customerId,displayName,status,createdBy,createdAt}], nextCursor}",
+        "use": "goal-03c 客户目录（A CONTRACT §11 G1 权威分页查询；键集游标仅基于 customer_id）"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/customers/:id/invitations",
+        "auth": "X-Principal-Credential（内部；不含 code）",
+        "use": "goal-03c 受限邀请清单（G2）"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/customers/:id/artifacts/:artifactId/processing",
+        "auth": "X-Principal-Credential（内部；客户角色 403）",
+        "response": "{current, history[]}",
+        "use": "goal-03c 材料处理状态（G3）"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/my/materials",
+        "auth": "客户联系人身份专用（内部 403）",
+        "response": "{materials:[{artifactId,kind,createdAt,duplicateOf,stage,failureReason?,nextAction?}]}",
+        "use": "goal-03c 客户门户获准披露白名单投影（G3）"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v2/customers/:customerId/artifacts/:artifactId/content",
+        "auth": "X-Principal-Credential（内部专用；roles 含 customer → 403，grant 不在册 → 404）",
+        "response": "{ok, artifact:{artifactId, customerId, kind, factKey, sha256, createdAt, createdBy, supersededBy, duplicateOf, materialFile|null, content}}",
+        "use": "IR-03-3 / CONTRACT §11.2 工件单件读回（A 档案信封件预览数据源；Edge 只读代理 /api/jw/v2/customers/:id/artifacts/:artifactId/content，404 语义原样透传）。上游 17933 实例未部署该路由前如实 404（无此路由），不伪装预览"
+      }
+    ],
+    "upstreamGaps": [
+      "IR-03-4：A 无按客户列出 assessments / financing-requests 的权威列表端点——Edge 快照中这两类 refs 仍来自事件缓冲（refsSource='event_buffer'、refsExhaustive=false，不暗示完整）；UI 已标注非权威清单。需求已提交任务01。",
+      "A 的 /events 按 seq>after 查询而 seq 是 outbox 分配号非提交序：反序提交事件若晚于 Edge 重查窗口（128）提交仍会漏。Edge 现以 eventId 去重 + 滞后重查窗口 + gap 标注缓解（窗口内自愈）。",
+      "IR-03-3（部分开放）：A v2.4 G3 已提供材料处理状态读口与客户获准披露（本面已接线）；但 evidence_artifacts.content 仍为 jsonb、无单件内容读端点——原件字节可经临时信封 v0 落库但无法回读预览，预览显式'待上游'。正式对象存储待任务01。",
+      "IR-03-6：A 无检查会话问题明细列表端点（快照仅 openQuestions 计数 + next-actions）——QA 面板展示服务端 next-actions + 本会话内创建的问题，不伪造历史问题清单。",
+      "IR-03-7：Edge 动作代理仅支持 POST；admin 撤销客户 grants（A DELETE /customers/:id/grants/:pid，撤权级联）本轮经 A 直连完成——如需页面化撤销，Edge 代理需支持 DELETE 或 A 提供 POST 同义端点。"
+    ],
+    "revision": "task03-repair-1（2026-09-17）：+decision-status/findings/object-inventory 消费、upstreamGaps 登记、edgeFacing 增 events-page 与 external-send 门",
+    "consumedWrites": [
+      {
+        "method": "POST",
+        "path": "/api/v2/customers",
+        "auth": "human+租户",
+        "note": "建档"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/customers/:id/artifacts",
+        "auth": "human",
+        "note": "补证（客户提交材料经内部代理登记）"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/customers/:id/assessments",
+        "auth": "human+credit 角色"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/assessments/:id/candidate",
+        "auth": "human|agent（候选通道，authority 服务端强制 none）"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/assessments/:id/submit-review",
+        "auth": "human+credit"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/assessments/:id/decide",
+        "auth": "human+credit（仅 reject/withdraw）"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/customers/:id/facilities",
+        "auth": "human+credit（提案）"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/facilities/:id/approve",
+        "auth": "human+矩阵+上限/集中度/依据复查",
+        "errors": [
+          "POLICY_PENDING",
+          "PERMISSION_DENIED",
+          "STALE_BASIS",
+          "CONCENTRATION_BLOCKED",
+          "PRODUCT_CAP_EXCEEDED",
+          "CURRENCY_MISMATCH"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/facilities/:id/activate|suspend|reduce",
+        "auth": "human+矩阵"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/customers/:id/financing-requests",
+        "auth": "human+business|credit"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/financing-requests/:id/reserve",
+        "auth": "human+business|credit",
+        "errors": [
+          "INSUFFICIENT_AVAILABLE_AMOUNT",
+          "FACILITY_NOT_ACTIVE",
+          "STALE_BASIS"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/financing-requests/:id/release|commit|disburse|settle",
+        "auth": "human+business（部分需矩阵外目录角色）",
+        "note": "disburse 仅受控模拟适配器（simulation_only）"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/financing-requests/:id/confirm-external",
+        "auth": "human+矩阵（unknown 对账唯一出口）",
+        "errors": [
+          "RESERVATION_IRREVERSIBLE_STATE"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/customers/:id/findings 与 /api/v2/findings/:id/resolve",
+        "auth": "human+scope / resolve 需对应目录角色",
+        "note": "goal-03c 核验面板：质量问题登记与有理由复核处理"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/customers/:id/decision-packages 与 /api/v2/decision-packages/:id/revisions|domain-results|adoption|gate|refresh-currency",
+        "auth": "human+对应域角色 / gate 只收 gateReceiptId（A 结构拒绝自由 JSON）",
+        "note": "goal-03c 决策闭环写面（四域意见登记/采纳/Gate/当前性刷新）"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/customers/:id/reports",
+        "auth": "BUSINESS_AUDIENCE 角色（幂等生成，同状态同行）",
+        "note": "goal-03c 结果面板：报告生成"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/customers/:id/originals（Edge 转换）→ /api/v2/customers/:id/artifacts",
+        "auth": "human（等级提升由 A 拒绝，客户申报恒 unverified）",
+        "note": "goal-03c 受限原件上传：IR-03-3 临时约定 v0——content.materialFile 信封（≤512KB base64）；正式存储待任务01后版本化替换"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/customers/:id/invitations 与 /api/v2/invitations/:id/revoke",
+        "auth": "human business/admin",
+        "note": "goal-03c 受限邀请（G2）：code 明文仅创建响应一次；撤销即刻生效"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v2/invitations/redeem",
+        "auth": "匿名（唯一匿名 v2 写口）",
+        "errors": [
+          "INVITATION_NOT_FOUND(404，不泄露存在性)",
+          "INVITATION_ALREADY_USED(409；同 requestId 重放→200 replayed 对账)",
+          "INVITATION_REVOKED(410)",
+          "INVITATION_EXPIRED(410)"
+        ],
+        "note": "Edge 新增匿名透传 POST /api/jw/v2/invitations/redeem（CSRF 守卫内）；凭据明文只在首次响应经兑换者浏览器一次"
+      }
+    ],
+    "inspectionReads": [
+      {
+        "method": "GET",
+        "path": "/api/v1/inspections/:sessionId",
+        "auth": "v1 凭据（敏感写面同 v1 语义）",
+        "response": "会话快照：runStatus/closureStatus/计划版本/items/questions/待办/外发状态(outboundPaused,dispatchGeneration)/lastEventSeq/availableActions",
+        "use": "会话操作条状态 + 等待原因 + 服务端 availableActions（客户端不自行判断可做性）"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/inspections/:sessionId/next-actions",
+        "response": "缺口驱动 nextActions + blockedReasons（当前等待谁）",
+        "use": "核验卡'需要谁行动'"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/inspections/:sessionId/summary?audience=internal|customer&revision=",
+        "auth": "audience 分权（服务端）",
+        "use": "会后报告入口（客户视图不含内部风险策略，由服务端 audience 分权保证）"
+      }
+    ],
+    "inspectionWrites": [
+      {
+        "method": "POST",
+        "path": "/api/v1/projects/:projectId/inspections",
+        "note": "建会话（preparing）"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/inspections/:sessionId/start|pause|resume|end|close|sweep|takeover|checkpoint|presence",
+        "note": "会话生命周期与调度面；pause 事务内 outbound_paused=true + dispatch_generation+1 + checkpoint；takeover 后不授自动外发"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/inspections/:sessionId/items 与 items/:itemId/verify|rebind|reassign",
+        "note": "核验项创建/人工核验/重锚定/改派"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/inspections/:sessionId/questions 与 questions/:questionId/answer|reask",
+        "note": "问题创建（dedup_key 去重）/回答/追问（unknown 在途时拒绝）"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/inspections/:sessionId/outbound/grant 与 outbound/:sendId/result",
+        "note": "自动提问外发授权（generation 校验）与发送结果回执（sent/unknown/cancelled/cancel_unsupported）"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/inspections/:sessionId/evidence",
+        "note": "会后补证 → closure_revision+1，只重开受影响事项"
+      }
+    ],
+    "receiptReconcile": {
+      "v2Credit": "GET /api/jw/v2/receipts/:requestId（Edge 代理，按归属 principal 过滤）",
+      "v1Family": "v1 族（检查会话/目标）回执不在 Edge 代理面：以同 requestId 重发对账（上游幂等 + expectedVersion 门裁决），Edge 不代生成新 ID"
+    },
+    "writeSemantics": [
+      "所有写命令 body.requestId 必带（1..128）；同载荷重放 → replayed:true（Edge 不代生成 requestId）",
+      "乐观一致性以响应内 version 字段为准；Edge 不缓存授权结论，每请求由 A 再验证",
+      "上游网络层未知 → Edge 502 UPSTREAM_UNKNOWN + 原 requestId 回显，不自动重试"
     ]
-   },
-   {
-    "method": "POST",
-    "path": "/api/v2/facilities/:id/activate|suspend|reduce",
-    "auth": "human+矩阵"
-   },
-   {
-    "method": "POST",
-    "path": "/api/v2/customers/:id/financing-requests",
-    "auth": "human+business|credit"
-   },
-   {
-    "method": "POST",
-    "path": "/api/v2/financing-requests/:id/reserve",
-    "auth": "human+business|credit",
-    "errors": [
-     "INSUFFICIENT_AVAILABLE_AMOUNT",
-     "FACILITY_NOT_ACTIVE",
-     "STALE_BASIS"
-    ]
-   },
-   {
-    "method": "POST",
-    "path": "/api/v2/financing-requests/:id/release|commit|disburse|settle",
-    "auth": "human+business（部分需矩阵外目录角色）",
-    "note": "disburse 仅受控模拟适配器（simulation_only）"
-   },
-   {
-    "method": "POST",
-    "path": "/api/v2/financing-requests/:id/confirm-external",
-    "auth": "human+矩阵（unknown 对账唯一出口）",
-    "errors": [
-     "RESERVATION_IRREVERSIBLE_STATE"
-    ]
-   }
-  ],
-  "inspectionReads": [
-   {
-    "method": "GET",
-    "path": "/api/v1/inspections/:sessionId",
-    "auth": "v1 凭据（敏感写面同 v1 语义）",
-    "response": "会话快照：runStatus/closureStatus/计划版本/items/questions/待办/外发状态(outboundPaused,dispatchGeneration)/lastEventSeq/availableActions",
-    "use": "会话操作条状态 + 等待原因 + 服务端 availableActions（客户端不自行判断可做性）"
-   },
-   {
-    "method": "GET",
-    "path": "/api/v1/inspections/:sessionId/next-actions",
-    "response": "缺口驱动 nextActions + blockedReasons（当前等待谁）",
-    "use": "核验卡'需要谁行动'"
-   },
-   {
-    "method": "GET",
-    "path": "/api/v1/inspections/:sessionId/summary?audience=internal|customer&revision=",
-    "auth": "audience 分权（服务端）",
-    "use": "会后报告入口（客户视图不含内部风险策略，由服务端 audience 分权保证）"
-   }
-  ],
-  "inspectionWrites": [
-   {
-    "method": "POST",
-    "path": "/api/v1/projects/:projectId/inspections",
-    "note": "建会话（preparing）"
-   },
-   {
-    "method": "POST",
-    "path": "/api/v1/inspections/:sessionId/start|pause|resume|end|close|sweep|takeover|checkpoint|presence",
-    "note": "会话生命周期与调度面；pause 事务内 outbound_paused=true + dispatch_generation+1 + checkpoint；takeover 后不授自动外发"
-   },
-   {
-    "method": "POST",
-    "path": "/api/v1/inspections/:sessionId/items 与 items/:itemId/verify|rebind|reassign",
-    "note": "核验项创建/人工核验/重锚定/改派"
-   },
-   {
-    "method": "POST",
-    "path": "/api/v1/inspections/:sessionId/questions 与 questions/:questionId/answer|reask",
-    "note": "问题创建（dedup_key 去重）/回答/追问（unknown 在途时拒绝）"
-   },
-   {
-    "method": "POST",
-    "path": "/api/v1/inspections/:sessionId/outbound/grant 与 outbound/:sendId/result",
-    "note": "自动提问外发授权（generation 校验）与发送结果回执（sent/unknown/cancelled/cancel_unsupported）"
-   },
-   {
-    "method": "POST",
-    "path": "/api/v1/inspections/:sessionId/evidence",
-    "note": "会后补证 → closure_revision+1，只重开受影响事项"
-   }
-  ],
-  "receiptReconcile": {
-   "v2Credit": "GET /api/jw/v2/receipts/:requestId（Edge 代理，按归属 principal 过滤）",
-   "v1Family": "v1 族（检查会话/目标）回执不在 Edge 代理面：以同 requestId 重发对账（上游幂等 + expectedVersion 门裁决），Edge 不代生成新 ID"
   },
-  "writeSemantics": [
-   "所有写命令 body.requestId 必带（1..128）；同载荷重放 → replayed:true（Edge 不代生成 requestId）",
-   "乐观一致性以响应内 version 字段为准；Edge 不缓存授权结论，每请求由 A 再验证",
-   "上游网络层未知 → Edge 502 UPSTREAM_UNKNOWN + 原 requestId 回显，不自动重试"
-  ]
- },
- "upstreamExecutor": {
-  "name": "jw-b-worker four-domain (Back/B) + jw-c-rulepack (Back/C)",
-  "consumedBy": "经 A v1 目标通道间接触发（claim/complete 等）；Edge 不直连 B/C",
-  "versions": {
-   "fourDomainTools": "fd-tools@1.0.0",
-   "rulePack": "jw-four-domain-rule-pack v1.0.0 (boundary=simulation_only, 8 rules, effect=hard_block)"
+  "upstreamExecutor": {
+    "name": "jw-b-worker four-domain (Back/B) + jw-c-rulepack (Back/C)",
+    "consumedBy": "经 A v1 目标通道间接触发（claim/complete 等）；Edge 不直连 B/C",
+    "versions": {
+      "fourDomainTools": "fd-tools@1.0.0",
+      "rulePack": "jw-four-domain-rule-pack v1.0.0 (boundary=simulation_only, 8 rules, effect=hard_block)"
+    }
+  },
+  "edgeFacing": {
+    "session": "POST /api/jw/v2/session {credential|principalId} → 不透明 sessionId；上游凭据只存服务端会话记录，绝不出现在响应/静态资源。goal-03c：principalId 受控登录=按部署身份目录（--auth-file entries 的 principalId/label/demo）服务端查得凭据，目录未配置则拒绝；手输凭据登录并存，无角色下拉、无提权输入",
+    "identities": "GET /api/jw/v2/auth/identities → 受控身份目录元数据 {principalId,roles,label,demo}（无凭据）；未配置 404 IDENTITY_DIRECTORY_NOT_CONFIGURED（登录页退化为仅手输凭据）",
+    "directory": "GET /api/jw/v2/customers → 前向探测 A GET /api/v2/customers（IR-03-1）；上游未实现 → 501 UPSTREAM_DIRECTORY_NOT_AVAILABLE+interfaceRequest，不伪造目录",
+    "workbenchReads": "GET /api/jw/v2/{customers/:id/artifacts|customers/:id/reports|reports/:id|assessments/:id|facilities/:id|financing-requests/:id(/use-readiness)|decision-packages/:id|findings/:id|inspections/:id(/snapshot|/next-actions|/summary)} → 白名单只读透传（会话必需，A 逐请求裁决；上游 4xx/5xx 原样透传；网络未知 502）",
+    "originals": "POST /api/jw/v2/actions/customers/:id/originals {requestId,kind?,factKey?,materialMeta?,objectRef?,file:{name,mime?,dataBase64}} → Edge 转换为工件登记（content.materialFile 信封 ≤512KB，IR-03-3 临时约定 v0）；校验失败 400 FILE_*，requestId 语义不变",
+    "workspace": "GET /api/jw/v2/customers/:id/workspace → {ok, customerId, principalId, snapshot:{customer,facilities,financingRequests,assessments,decisionStatus,findings,objectInventory,refsSource,refsExhaustive,totalsMinor,openItems,session?}, snapshotVersion(字符串seq), eventCursor, eventWindow, projection.freshness, source:'kernel'|'fixture'}（session 块来自该客户当前检查会话，上游不可用时缺省并在 projection.notes 说明；freshness 逐组件独立，无 all_ok）（goal-03：assessments/financing-requests 明细在本身份桶内缓存，事件引用该 id 或 TTL 过期即权威重取；命中时 projection.freshness[label].cached=true；同 (客户×身份×凭据) 在途 workspace 请求合并，只在途、不跨授权/版本）",
+    "events": "GET /api/jw/v2/customers/:id/events → SSE（event: cursor|business|resync|auth）；至少一次，客户端按 eventId 去重；Edge 进程重启后旧游标 → resync；凭据被拒/会话过期 → auth 帧后终止（C1.2）；慢客户端超 writableLength 上限 → resync 后断开；goal-03 补强：对本桶曾成功读取的客户，轮询中出现上游 404（A 越权/撤权统一 404，不泄露存在性）视同撤权信号 → auth 帧（code=CUSTOMER_ACCESS_REVOKED）后终止并销桶，不给旧订阅静默失联",
+    "eventsPage": "GET /api/jw/v2/customers/:id/events-page?afterSeq=&limit= → A 分页直读（逐请求凭据鉴权；live 专用，fixture 501 NOT_SUPPORTED）",
+    "actions": "POST /api/jw/v2/actions/** 白名单（v1 goals/projects + v2 credit 面）；requestId 必带；上游未知 502 UPSTREAM_UNKNOWN",
+    "messages": "POST /api/jw/v2/customers/:id/messages（audience=customer|internal；内部外发默认 403 AUDIENCE_MISMATCH，显式 confirmExternalSend 还须通过 messages:external-send 权限点——默认拒绝、--external-send-roles 显式授予；live 模式先以会话凭据校验目标客户可读，防错 customerId；requestId 同载荷重放 replayed:true、异载荷 409 REQUEST_ID_CONFLICT）",
+    "sameOriginFront": "--serve-front <dir>（goal-03 C3，默认关）：Edge 同源托管前端构建产物（'/' 与未知非资源路径 SPA 回退 index.html）；CSP connect-src 'self' 不放宽；API 命名空间 404 不被遮蔽；harness 路由优先",
+    "redeem": "POST /api/jw/v2/invitations/redeem {code, requestId?} → 匿名透传 A（无会话必需，CSRF 守卫内）；成功后凭据指纹进入本实例兑换登记（live 校验=静态目录∪兑换登记，均须过 A 探针）——A 撤权级联后即刻 401/403 终态"
+  },
+  "roleMatrix": {
+    "nineRoles": [
+      "customer_owner(客户实控人)",
+      "plant_manager(厂长)",
+      "customer_finance(客户财务)",
+      "business(业务)",
+      "jianwei(见微)",
+      "policy(政策)",
+      "credit(信审)",
+      "commerce(商务)",
+      "asset(资产)"
+    ],
+    "authorityNote": "正式额度动作权限由 A permission_matrix（服务端目录）裁决；jianwei 无默认额度权限；导演/Host/投屏账户不是审批人",
+    "clientKinds": [
+      "human(真实人员)",
+      "agent(明确标记的 Agent principal)",
+      "automated(自动化测试客户端，如实标注，不计入真人/真机)"
+    ]
+  },
+  "restrictedCapabilities": {
+    "threeDScene": "absent_in_front（本仓 Front 无 Unity/3D 场区；任务书前提与当前实现不符，二维页面即交付形态，如实记录）",
+    "video": "blocked_external_access（企微/TRTC 未获授权；Connectors E0/E1 本地部分另见其 CAPABILITY_MATRIX）",
+    "recording": "blocked_external_access",
+    "model": "not_configured（GLM transport 预留，0 调用）",
+    "realDisbursement": "simulation_only（受控模拟回执）",
+    "replayTrainingNamespace": "not_wired（回放/训练命名空间本轮未建；对外不可用时以明确标记的录制回放讲解，不计实时验收）"
+  },
+  "revision": "goal03e-1（2026-09-19 product-delivery goal-03 三路）：新增消费 A §11.2 工件单件读回（content）；新增通道签名 URL 归一代理（connectors/objects/:ref 原始字节透传，修复相对 URL 被 SPA 兜底吞掉的预览断链）；Edge 新增页内消息线程读面（GET /api/jw/v2/customers/:id/messages，Edge 本地面非上游消费，详见 goal-03 HANDOFF goal-03e 节）",
+  "upstreamChannel": {
+    "baseUrl": "--connectors-url（部署配置；本轮 http://127.0.0.1:17937）",
+    "auth": "X-Service-Token（--connectors-token-file / JW_CONNECTORS_TOKEN；仅服务端内存）",
+    "routesRead": [
+      "GET /api/jw/v2/connectors/processing/status?tid&cid",
+      "GET /api/jw/v2/connectors/processing/tasks/:taskId?tid",
+      "GET /api/jw/v2/connectors/evidence/preview?tid&eid&cid",
+      "GET /api/jw/v2/connectors/objects/:objectRef?op&tid&cid&exp&sig（goal-03e：Connectors 签名 URL 为相对路径 /objects/:ref，Edge 归一为本路由按原始字节透传（raw，content-type 保留）；会话必需 + HMAC 签名/有效期仍由 Connectors 验证）"
+    ],
+    "routesWrite": [
+      "POST /api/jw/v2/actions/connectors/intake/invitations",
+      "POST /api/jw/v2/actions/connectors/intake/accept",
+      "POST /api/jw/v2/actions/connectors/evidence/upload",
+      "POST /api/jw/v2/actions/connectors/evidence/manual-entry",
+      "POST /api/jw/v2/actions/connectors/evidence/correct-fact",
+      "POST /api/jw/v2/actions/connectors/questions/answer",
+      "POST /api/jw/v2/actions/connectors/questions/verify",
+      "POST /api/jw/v2/actions/connectors/processing/pause"
+    ],
+    "discipline": "白名单路由；requestId 强制（1..128）；确定性拒绝 4xx 原样透传；上游未知 → 502 UPSTREAM_UNKNOWN；浏览器请求头不透传"
   }
- },
- "edgeFacing": {
-  "session": "POST /api/jw/v2/session {credential} → 不透明 sessionId；上游凭据只存服务端会话记录，绝不出现在响应/静态资源",
-  "workspace": "GET /api/jw/v2/customers/:id/workspace → {ok, customerId, principalId, snapshot:{customer,facilities,financingRequests,assessments,decisionStatus,findings,objectInventory,refsSource,refsExhaustive,totalsMinor,openItems,session?}, snapshotVersion(字符串seq), eventCursor, eventWindow, projection.freshness, source:'kernel'|'fixture'}（session 块来自该客户当前检查会话，上游不可用时缺省并在 projection.notes 说明；freshness 逐组件独立，无 all_ok）（goal-03：assessments/financing-requests 明细在本身份桶内缓存，事件引用该 id 或 TTL 过期即权威重取；命中时 projection.freshness[label].cached=true；同 (客户×身份×凭据) 在途 workspace 请求合并，只在途、不跨授权/版本）",
-  "events": "GET /api/jw/v2/customers/:id/events → SSE（event: cursor|business|resync|auth）；至少一次，客户端按 eventId 去重；Edge 进程重启后旧游标 → resync；凭据被拒/会话过期 → auth 帧后终止（C1.2）；慢客户端超 writableLength 上限 → resync 后断开；goal-03 补强：对本桶曾成功读取的客户，轮询中出现上游 404（A 越权/撤权统一 404，不泄露存在性）视同撤权信号 → auth 帧（code=CUSTOMER_ACCESS_REVOKED）后终止并销桶，不给旧订阅静默失联",
-  "eventsPage": "GET /api/jw/v2/customers/:id/events-page?afterSeq=&limit= → A 分页直读（逐请求凭据鉴权；live 专用，fixture 501 NOT_SUPPORTED）",
-  "actions": "POST /api/jw/v2/actions/** 白名单（v1 goals/projects + v2 credit 面）；requestId 必带；上游未知 502 UPSTREAM_UNKNOWN",
-  "messages": "POST /api/jw/v2/customers/:id/messages（audience=customer|internal；内部外发默认 403 AUDIENCE_MISMATCH，显式 confirmExternalSend 还须通过 messages:external-send 权限点——默认拒绝、--external-send-roles 显式授予；live 模式先以会话凭据校验目标客户可读，防错 customerId；requestId 同载荷重放 replayed:true、异载荷 409 REQUEST_ID_CONFLICT）",
-  "sameOriginFront": "--serve-front <dir>（goal-03 C3，默认关）：Edge 同源托管前端构建产物（'/' 与未知非资源路径 SPA 回退 index.html）；CSP connect-src 'self' 不放宽；API 命名空间 404 不被遮蔽；harness 路由优先"
- },
- "roleMatrix": {
-  "nineRoles": [
-   "customer_owner(客户实控人)",
-   "plant_manager(厂长)",
-   "customer_finance(客户财务)",
-   "business(业务)",
-   "jianwei(见微)",
-   "policy(政策)",
-   "credit(信审)",
-   "commerce(商务)",
-   "asset(资产)"
-  ],
-  "authorityNote": "正式额度动作权限由 A permission_matrix（服务端目录）裁决；jianwei 无默认额度权限；导演/Host/投屏账户不是审批人",
-  "clientKinds": [
-   "human(真实人员)",
-   "agent(明确标记的 Agent principal)",
-   "automated(自动化测试客户端，如实标注，不计入真人/真机)"
-  ]
- },
- "restrictedCapabilities": {
-  "threeDScene": "absent_in_front（本仓 Front 无 Unity/3D 场区；任务书前提与当前实现不符，二维页面即交付形态，如实记录）",
-  "video": "blocked_external_access（企微/TRTC 未获授权；Connectors E0/E1 本地部分另见其 CAPABILITY_MATRIX）",
-  "recording": "blocked_external_access",
-  "model": "not_configured（GLM transport 预留，0 调用）",
-  "realDisbursement": "simulation_only（受控模拟回执）",
-  "replayTrainingNamespace": "not_wired（回放/训练命名空间本轮未建；对外不可用时以明确标记的录制回放讲解，不计实时验收）"
- },
- "revision": "goal03-1（2026-09-17 backend-upgrade goal-03）：明细缓存/合并/查询计数消费语义、事件 404 撤权断流补强、--serve-front 同源入口"
 }

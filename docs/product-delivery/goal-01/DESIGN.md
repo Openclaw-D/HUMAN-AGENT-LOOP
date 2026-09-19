@@ -82,3 +82,17 @@ API（全部 v2；除 redeem 外要求已验证内部 human，且对客户有 sc
 | R5 | 撤 grants 时同事务级联 `customer_identities.status='disabled'` | DESIGN §G2 原有意图（撤权即刻生效+重放拒绝），实现补齐；V3 测试锁定 |
 | R6 | redeem 支持 `requestId` 对账（重放返回既成事实、不重发凭据明文） | "数据已提交而响应丢失"反例的合法恢复路线（旅程反例 9 口径） |
 | R7 | G2 授予面比对按剥离 `material.` 前缀后的原始种类执行，落库保持调用方原样（CONTRACT §11 同步） | 04 路 DEF-G04N-02 接口对齐：02 coordinator 以 `material.<kind>` 命名空间登记；两侧任一收敛均安全。**代码+类型检查完成，运行时验证待 Docker 引擎恢复后跑 V4 扩展用例（kind=material.license→200 / material.site-photo→403）** |
+
+## 7｜续轮追加（2026-09-19 路B=任务01：④⑥⑦⑧；契约=CONTRACT §11.1/§11.2 + §11 追加段）
+
+受理 goal-03/04 四项接口需求，全部为加法交付；形状冻结见 CONTRACT §11.1/§11.2 与 ROUND-LOG 本轮小节。
+
+| 项 | 来源 | 交付 |
+|---|---|---|
+| ④ kind 双形态匹配 | IR-03-8④（呼应 DEF-G04N-02） | inspection 域材料比对四处（start 前置/核验项推导/next-actions 缺口/晚到重开）改为剥 `material.` 前缀按裸名匹配；落库/展示保持调用方原样 |
+| ⑥ 客户线程内应答 | IR-03-6 扩展 | 裁决=名册绑定：名册含 `{roleKey:'customer',kind:'human'}` 时 cit_*（§11 G2 链）隐式持有该角色；会话读对纯客户身份出**客户线程投影**（仅 audience=customer 问题+关联核验项）；回答/提问限 customer 受众；next-actions 403；小结强制 customer 受众；presence 可用。会话访问授权对纯客户身份跳过项目轴（其边界=租户+客户grant+名册；v1 项目资源不受影响） |
+| ⑦ 交付运行时服务身份 | DEF-G04N-04 A 侧 | 迁移 `010_service_identities.sql` + 身份链第三级（合成目录→customer_identities→service_identities）+ admin 三口（`POST /api/v2/service-identities`、`GET ...`、`POST .../:id/disable`）。凭据仅存 sha256、明文一次；禁用即刻不可认证。既有 service 三口与 createPackage 门语义零变更 |
+| ⑧ 单件读回 | IR-03-3 | `GET /api/v2/customers/:customerId/artifacts/:artifactId/content`：内部专用（客户角色 403）；信封 v0 `materialFile` 原样投影，非信封件 content 原样；只读回不落对象存储；被取代/重复件可读 |
+
+新增测试：`test/service-identity-artifact-content.test.mjs`（W1–W3/C1–C4，7 项）、
+`test/inspection-kind-customer-thread.test.mjs`（M1–M5，5 项）。

@@ -53,6 +53,11 @@ export interface EdgeSnapshotShapes {
     coverage?: { total?: number; required?: number; verified?: number; open?: number };
     items?: Array<{ itemId?: string; itemKey?: string; title?: string; status?: string; responsibleRole?: string }>;
   } | null;
+  // goal-03c：workspace 快照本就携带（kernel-store 事件 refs → 明细缓存），类型此前未登记
+  financingRequests?: Array<{
+    frId?: string; financingRequestId?: string; productType?: string; amountMinor?: number; currency?: string;
+    status?: string; externalState?: string;
+  }>;
   openItems?: Array<{ kind: string; ref?: string; needRole?: string; detail?: string; blockers?: string[] }>;
 }
 

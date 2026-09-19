@@ -209,7 +209,9 @@ function ixReplayOwnership(row: { principal_id: string | null }, principalId: st
   throw conflict('REQUEST_MISMATCH', `requestId 属于其他 principal：不泄露他人回执`);
 }
 
-/** 会话访问授权（A1.1/A1.2）：verified + 项目授权 + 租户授权；越权统一 NOT_FOUND（不泄露存在性）。 */
+/** 会话访问授权（A1.1/A1.2）：verified + 项目授权 + 租户授权；越权统一 NOT_FOUND（不泄露存在性）。
+ *  IR-03-6：纯客户身份不持 v1 项目授权（projects=[]），其会话边界=租户+客户grant+名册——
+ *  项目轴仅对内部身份强制；v1 项目资源（projects/goals/evidence）不受影响，仍走 authorizeProject。 */
   async function authorizeSessionAccess(
     q: { query(sql: string, values?: unknown[]): Promise<{ rows: unknown[] }> },
     auth: Auth, sessionId: string, forUpdate: boolean,
@@ -217,7 +219,7 @@ function ixReplayOwnership(row: { principal_id: string | null }, principalId: st
     const session = await sessionOr404(q, sessionId, forUpdate);
     requireVerified(auth);
     try {
-      authorizeProject(auth.principal, session.project_id);
+      if (!isPureCustomer(auth)) authorizeProject(auth.principal, session.project_id);
       authorizeTenant(auth.principal, session.tenant_id);
       await authorizeCustomer(auth.principal, session.customer_id, q);
     } catch {
@@ -357,6 +359,28 @@ function artifactObjectId(objectRef: unknown): string | null {
   return null;
 }
 
+/** IR-03-8④：材料 kind 双形态兼容——通道登记件为 `material.<kind>`，计划前置/期望 kind 惯用裸名。
+ *  比对一律按剥前缀后的裸名（与 DEF-G04N-02 registerArtifact 同口径）；落库/展示保持调用方原样。 */
+function bareKind(kind: string): string {
+  return kind.startsWith('material.') ? kind.slice('material.'.length) : kind;
+}
+
+/** expected kind 与实际工件 kind 集合的双形态匹配：裸名相等即满足。 */
+function kindSatisfied(expected: string, kinds: Set<string>): boolean {
+  if (kinds.has(expected)) return true;
+  const bare = bareKind(expected);
+  for (const k of kinds) {
+    if (bareKind(k) === bare) return true;
+  }
+  return false;
+}
+
+/** IR-03-6：纯客户身份 = 全部角色均为 'customer'（§11 G2 cit_* 链）。
+ *  名册含 {roleKey:'customer',kind:'human'} 时隐式持有该角色；其会话边界=租户+客户grant+名册，不经项目轴。 */
+function isPureCustomer(auth: Auth): boolean {
+  return auth.principal.roles.length > 0 && auth.principal.roles.every((r) => r === 'customer');
+}
+
 /** 写后重算：非终态核验项按 开放问题/已答问题/材料齐备 三事实推导状态。
  *  口述已登记（answered）≠ 材料已取得（waiting_evidence 解除）≠ 事实已核实（to_verify→人工 verify）。 */
 async function refreshItems(tx: PoolClient, session: SessionRow, h: IxHelpers, actorLabel: string | null): Promise<string[]> {
@@ -368,16 +392,17 @@ async function refreshItems(tx: PoolClient, session: SessionRow, h: IxHelpers, a
     if (['verified', 'conflict', 'deferred', 'stale_review', 'to_verify'].includes(it.status)) continue;
     const openQ = questions.find((q) => q.item_id === it.item_id && (q.status === 'open' || q.status === 'sent'));
     const answeredQ = questions.filter((q) => q.item_id === it.item_id && q.status === 'answered').pop();
-    const kindPresent = it.expected_evidence_kinds.every((k) => index.kinds.has(k));
+    // IR-03-8④：期望 kind 与现行工件 kind 双形态匹配（material.<kind> 前缀剥离后按裸名比较）
+    const kindOk = it.expected_evidence_kinds.every((k) => kindSatisfied(k, index.kinds));
     // goal-01 G2：锚定项的"自动核实"只认对象匹配材料（未锚定材料仅供人工核验，不满足自动推导）
     const objectSatisfied = it.object_ref === null
-      ? kindPresent
-      : it.expected_evidence_kinds.some((k) => index.byObject.get(it.object_ref!)?.has(k) ?? false);
+      ? kindOk
+      : it.expected_evidence_kinds.some((k) => kindSatisfied(k, index.byObject.get(it.object_ref!) ?? new Set()));
     let next: ItemStatus = it.status;
     if (openQ !== undefined) {
       next = 'waiting_answer';
     } else if (answeredQ !== undefined) {
-      if (!kindPresent) next = 'waiting_evidence';
+      if (!kindOk) next = 'waiting_evidence';
       else if (it.requires_human_verification) next = 'to_verify';
       else if (objectSatisfied) next = 'verified';
       else next = 'waiting_evidence';
@@ -696,18 +721,62 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
     }, guard);
   }
 
-  /** 读会话授权（A1.2/K01）：verified + 项目/租户授权 + 名册角色或 admin；越权统一 404。 */
-  async function readSessionAuthorized(credential: unknown, sessionId: string): Promise<SessionRow> {
+  /** 读会话授权（A1.2/K01）：verified + 项目/租户授权 + 名册角色或 admin；越权统一 404。
+   *  IR-03-6：纯客户身份（cit_*）经名册 'customer' 角色进入（调用方按身份分流投影）。 */
+  async function readSessionAuthorized(credential: unknown, sessionId: string): Promise<{ auth: Auth; session: SessionRow }> {
     const auth = await kernel.authOf(credential);
     const session = await authorizeSessionAccess(kernel.pool, auth, sessionId, false);
     const isRoster = auth.principal.roles.includes('admin') || session.roles.some((r) => auth.principal.roles.includes(r.roleKey));
     if (!isRoster) throw notFound('检查会话不存在');
-    return session;
+    return { auth, session };
   }
 
   async function getSession(sessionId: string, credential: unknown): Promise<Record<string, unknown>> {
-    const session = await readSessionAuthorized(credential, sessionId);
+    const { auth, session } = await readSessionAuthorized(credential, sessionId);
+    // IR-03-6：纯客户身份获客户线程投影（仅 customer 受众问题+关联核验项；内部作业面不外泄）
+    if (isPureCustomer(auth)) {
+      return { ok: true, snapshot: await customerThreadOf(kernel.pool, session) };
+    }
     return { ok: true, snapshot: await snapshotOf(kernel.pool, session) };
+  }
+
+  /** IR-03-6：纯客户身份的会话读投影——仅 customer 受众问题及其关联核验项；
+   *  不含名册/参与者/外发/会后待办/计划快照（内部作业面不外泄）。 */
+  async function customerThreadOf(tx: IxQueryable, session: SessionRow): Promise<Record<string, unknown>> {
+    const questions = await loadQuestions(tx, session.session_id);
+    const items = await loadItems(tx, session.session_id);
+    const cq = questions.filter((q) => q.audience === 'customer');
+    const itemIds = new Set(cq.map((q) => q.item_id).filter((v): v is string => v !== null));
+    const visibleItems = items.filter((i) => itemIds.has(i.item_id));
+    return {
+      sessionId: session.session_id,
+      customerId: session.customer_id,
+      title: session.title,
+      runStatus: session.run_status,
+      closureStatus: session.closure_status,
+      closureRevision: session.closure_revision,
+      version: session.version,
+      audience: 'customer',
+      items: visibleItems.map((i) => ({
+        itemId: i.item_id, itemKey: i.item_key, title: i.title, status: i.status, objectRef: i.object_ref,
+      })),
+      questions: cq.map((q) => {
+        const answer = q.answer as { text?: unknown; evidenceRefs?: unknown; conflict?: unknown; answeredAt?: unknown } | null;
+        return {
+          questionId: q.question_id, itemId: q.item_id,
+          itemKey: q.item_id !== null ? visibleItems.find((i) => i.item_id === q.item_id)?.item_key ?? null : null,
+          question: q.question, purpose: q.purpose, period: q.period, objectRef: q.object_ref,
+          status: q.status, followUpCount: q.follow_up_count,
+          answer: q.answer === null ? null : {
+            text: answer?.text ?? '',
+            evidenceRefs: answer?.evidenceRefs ?? [],
+            conflict: answer?.conflict === true,
+            answeredAt: answer?.answeredAt ?? null,
+          },
+        };
+      }),
+      availableActions: availableActionsOf(session).filter((a) => a === 'answer' || a === 'summary'),
+    };
   }
 
   async function snapshotOf(tx: IxQueryable, session: SessionRow): Promise<Record<string, unknown>> {
@@ -760,9 +829,13 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
     };
   }
 
-  /** 缺口驱动的下一步：由必要核验项/依赖/负责角色/目标回答人/当前证据版本推导；不由动画或固定脚本驱动。 */
+  /** 缺口驱动的下一步：由必要核验项/依赖/负责角色/目标回答人/当前证据版本推导；不由动画或固定脚本驱动。
+   *  IR-03-6：内部作业视图，纯客户身份不开放（客户线程经会话快照投影）。 */
   async function getNextActions(sessionId: string, credential: unknown): Promise<Record<string, unknown>> {
-    const session = await readSessionAuthorized(credential, sessionId);
+    const { auth, session } = await readSessionAuthorized(credential, sessionId);
+    if (isPureCustomer(auth)) {
+      throw forbidden('ROLE_FORBIDDEN', '缺口作业视图仅限内部名册（客户线程经会话快照）');
+    }
     const client = kernel.pool;
     {
       const items = await loadItems(client, session.session_id);
@@ -774,11 +847,11 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
         const itemQs = questions.filter((q) => q.item_id === it.item_id);
         const openQ = itemQs.find((q) => q.status === 'open' || q.status === 'sent');
         const answered = itemQs.some((q) => q.status === 'answered');
-        // goal-01 G2：锚定项缺口按对象匹配口径展示（与状态推导一致）
+        // goal-01 G2：锚定项缺口按对象匹配口径展示（与状态推导一致）；IR-03-8④：kind 双形态匹配
         const missingKinds = it.expected_evidence_kinds.filter((k) =>
           it.object_ref === null
-            ? !index.kinds.has(k)
-            : !(index.byObject.get(it.object_ref)?.has(k) ?? false));
+            ? !kindSatisfied(k, index.kinds)
+            : !kindSatisfied(k, index.byObject.get(it.object_ref) ?? new Set()));
         let blockedReason: string | null = null;
         let waitingFor: Record<string, unknown> | null = null;
         if (it.status === 'verified') {
@@ -948,11 +1021,12 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
           { currentPlanVersion: session.plan_version });
       }
       // 必要前提：plan_snapshot.prerequisites（kind 数组）须有当前工件；缺失给具体原因
+      // IR-03-8④：前置 kind 与通道登记件（material.<kind>）双形态匹配
       const prerequisites = Array.isArray((session.plan_snapshot as { prerequisites?: unknown }).prerequisites)
         ? ((session.plan_snapshot as { prerequisites: unknown[] }).prerequisites as unknown[]).map(String)
         : [];
       const kinds = (await currentArtifactIndex(tx, session.customer_id)).kinds;
-      const missing = prerequisites.filter((k) => !kinds.has(k));
+      const missing = prerequisites.filter((k) => !kindSatisfied(k, kinds));
       if (missing.length > 0) {
         throw conflict('NOT_READY', `计划必要前提未满足：缺材料 ${missing.join(', ')}`, { missing });
       }
@@ -1340,6 +1414,10 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       requireRosterAny(auth, session);
       const audience = frame.audience;
       if (audience !== 'customer' && audience !== 'internal') throw invalid('audience 必须 customer|internal');
+      // IR-03-6：纯客户身份只能提出 customer 受众问题（fail-closed）
+      if (isPureCustomer(auth) && audience !== 'customer') {
+        throw forbidden('ROLE_FORBIDDEN', '客户身份只能提出 customer 受众的问题');
+      }
       const targetRole = reqString(frame.targetRole, 'targetRole', 64);
       const rosterEntry = session.roles.find((r) => r.roleKey === targetRole);
       if (rosterEntry === undefined) throw invalid('targetRole 不在会话名册中');
@@ -1411,6 +1489,10 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       // 真人关键核验不得由 Agent 冒充：先于名册判定给出明确语义
       if (q.requires_human && auth.principal.kind !== 'human') {
         throw forbidden('ANSWER_REQUIRES_HUMAN', '该问题要求真人回答（关键核验不得由 Agent 冒充完成）');
+      }
+      // IR-03-6：纯客户身份只能回答 customer 受众问题（内部作业问答不向客户开放；fail-closed）
+      if (isPureCustomer(auth) && q.audience !== 'customer') {
+        throw forbidden('ROLE_FORBIDDEN', '客户身份只能回答 customer 受众的问题');
       }
       // 回答权限 = 目标回答角色
       requireRosterRole(auth, session, q.target_role);
@@ -1657,9 +1739,11 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
       const artObjectId = artifactObjectId((art.rows[0] as { object_ref: unknown }).object_ref);
       // 只重开受影响事项：期望 kind 命中且当前处于等待材料/已转待办状态；
       // goal-01 G2：锚定项只认对象匹配材料（未锚定/锚定其他对象不重开锚定项）
+      // IR-03-8④：期望 kind 与登记件 kind 双形态匹配（裸名相等即命中）
       const items = await loadItems(tx, sessionId);
       const affected = items.filter((i) =>
-        i.expected_evidence_kinds.includes(kind) && ['waiting_evidence', 'deferred', 'answered'].includes(i.status)
+        i.expected_evidence_kinds.some((k) => bareKind(k) === bareKind(kind))
+        && ['waiting_evidence', 'deferred', 'answered'].includes(i.status)
         && (i.object_ref === null || (artObjectId !== null && artObjectId === i.object_ref)));
       const reopened: string[] = [];
       for (const it of affected) {
@@ -1714,9 +1798,14 @@ export function buildInspectionCommands(kernel: Kernel): InspectionApi {
 
   async function getSummaries(sessionId: string, audience: string | null, revision: number | null, credential: unknown): Promise<Record<string, unknown>> {
     // A1.2/K01：小结读面统一走授权（verified + 项目/租户 + 名册或 admin）；客户版不再匿名开放
-    const session = await readSessionAuthorized(credential, sessionId);
-    const wanted = audience === null || audience === undefined ? null : reqString(audience, 'audience', 16);
+    const { auth } = await readSessionAuthorized(credential, sessionId);
+    let wanted = audience === null || audience === undefined ? null : reqString(audience, 'audience', 16);
     if (wanted !== null && wanted !== 'internal' && wanted !== 'customer') throw invalid('audience 必须 internal|customer');
+    // IR-03-6：纯客户身份强制 customer 受众（内部小结不向客户开放）
+    if (isPureCustomer(auth)) {
+      if (wanted === 'internal') throw forbidden('ROLE_FORBIDDEN', '内部小结不向客户身份开放');
+      wanted = 'customer';
+    }
     const rows = await kernel.pool.query(
       `SELECT summary_id, closure_revision, audience, content, created_at FROM inspection_summaries
        WHERE session_id = $1 ${wanted !== null ? 'AND audience = $2' : ''} ORDER BY closure_revision, audience`,

@@ -1,0 +1,64 @@
+[1] 生成合成原件包
+  21 个原件就绪
+[2] 准备 journey 专用库（jw-g04b-pg@15452）
+  jw_g04j / cnext_g04j 已重建
+[3] 启动 A 内核 @17933
+  A listening
+[3.5] admin 一次性初始化：激活规则包版本（USER_JOURNEY J1 前置动作；无激活版本时 A fail-closed 拒绝分析运行）
+  ✓ admin:rulepack-activated
+[4] A 建客户（业务身份）+ Connectors 客户映射种子
+  ✓ A-create-customer
+[4.5] DEF-G04N-02 定向复测：真实邀请兑换 → cit 凭据按 material.<kind> 命名空间登记（跨路对齐）
+  ✓ g04n02:invitation-created
+  ✓ g04n02:redeemed
+  ✓ g04n02:prefixed-granted-kind-accepted
+  ✓ g04n02:prefixed-ungranted-kind-rejected
+[5] 组装 Connectors（进程内 compose + startServer）
+[6] 受限邀请 → 客户接受 → 真实字节上传（一致组 + 失败样本）
+  ✓ intake-invitation
+  ✓ intake-accept
+  ✓ upload:A-statement-q3-plain.csv
+  ✓ upload:A-statement-q3.csv
+  ✓ upload:A-entity-register.txt
+  ✓ upload:A-ledger-q3.xlsx
+  ✓ upload:A-purchase-contract.pdf
+  ✓ upload:A-device-plate.png
+  ✓ upload:A-site-photo.png
+  ✓ upload:X1-statement-bad-date.csv
+  ✓ upload:X2-statement-bad-row.csv
+  ✓ upload:X3-unknown-format.bin
+  ✓ upload:X4-zip-traversal.zip
+  ✓ upload:L1-late-adverse.csv
+[7] tick 驱动处理至收敛
+  ✓ processing-advanced
+[8] 逐件断言（业务真值经 fact_assertions/parse_results；人工路线不伪造事实）
+  ✓ plain:parse-bank-csv
+  ✓ plain:inflow-1664500
+  ✓ plain:outflow-826900
+  ✓ plain:total-row-excluded
+  ✓ plain:fact-grade-candidate
+  ✓ quoted:totals-correct
+  ✓ entity:creditcode-fact
+  · xlsx:behavior: 任务止于 register_material:done→unzip:skipped→parse:done→facts:done→analyze:done→questions:done→register_results:done；派生子件 0 个
+  ✓ xlsx:no-zip-container-mishandling
+  ✓ pdf:text-extracted-truth
+  ✓ pdf:grade-candidate
+  ✓ manual-route:A-device-plate.png
+  ✓ manual-route:A-site-photo.png
+  ✓ x1:good-rows-kept-bad-dropped
+  ✓ x2:nonnumeric-excluded
+  ✓ x3:explicit-manual
+  ✓ x4:traversal-rejected
+  ✓ late-adverse:outflow-500000
+  ✓ late-adverse:quality-flag
+[9] A 侧可追溯性：字节 sha256 → 本地登记 → a_links → A 工件
+  ✓ trace:bytes-unmodified
+  ✓ trace:a-registration
+  ✓ trace:a-kind-grade
+[10] 缺陷复现项（修复前保持失败=金丝雀）
+  ✓ kd:register-results-reaches-a
+──────────────────────────────
+[journey-first-file] 门禁 41 项：41 过 / 0 败；缺陷复现项 2（0 仍复现）
+证据已写 C:\Users\22673\Desktop\JW\docs\product-delivery\goal-04\evidence\d2
+[11] 清理
+CANARY_EXIT=0

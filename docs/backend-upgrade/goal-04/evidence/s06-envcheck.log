@@ -1,0 +1,26 @@
+[env-check] 2026-09-17T16:45:03.792Z
+  PASS    node-version  {"actual":"v22.23.1","note":"交付口径：22.x（Front engines >=22.13）"}
+  PASS    git-input-version  {"head":"1ec0ee4e79a793d1c95363022cb7d06ea04a6a5a","dirtyFiles":50,"note":"本轮各任务交付为未提交工作区变更；封存以 dirty 指纹如实记录（提交需用户授权）"}
+  PASS    docker  {"runningContainers":20}
+  PASS    jw-containers  {"found":["jw-goal01-pg\tUp About an hour\t127.0.0.1:15446->5432/tcp","jw-cc-kernel-pg\tUp 13 minutes\t127.0.0.1:15444->5432/tcp","jw-connectors-pg\tUp 4 hours\t127.0.0.1:15443->5432/tcp","jw-v01-pg\tUp About an hour\t127.0.0.1:15442->5432/tcp","v7next-a-pg\tExited (0) 24 hours ago\t","jw-dify-1132-nginx-1\tExited (137) 5 days ago\t","jw-dify-1132-worker-1\tExited (137) 5 days ago\t","jw-dify-1132-worker_beat-1\tExited (137) 5 days ago\t","jw-dify-1132-api-1\tExited (0) 5 days ago\t","jw-dify-1132-plugin_daemon-1\tExited (137) 5 days ago\t","jw-dify-1132-web-1\tExited (0) 5 days ago\t","jw-dify-1132-db_postgres-1\tExited (0) 5 days ago\t","jw-dify-1132-redis-1\tExited (0) 5 days ago\t","jw-dify-1132-init_permissions-1\tExited (0) 5 days ago\t","jw-dify-1132-sandbox-1\tExited (2) 5 days ago\t","jw-dify-1132-weaviate-1\tExited (0) 5 days ago\t","jw-dify-1132-ssrf_proxy-1\tExited (137) 5 days ago\t"],"note":"只读列出；启动/停止走各自脚本的启动标识复核"}
+  BUSY    port-15442  {"expect":"jw-v01-pg (Back/START 形态)","note":"被占用：不强杀；确认归属后再决定复用或换端口"}
+  BUSY    port-15444  {"expect":"jw-cc-kernel-pg (任务一隔离库)","note":"被占用：不强杀；确认归属后再决定复用或换端口"}
+  FREE    port-15434  {"expect":"E1 测试段（期望空闲）","note":"空闲"}
+  FREE    port-17919  {"expect":"E1 测试段 A 内核（期望空闲）","note":"空闲"}
+  BUSY    port-48180  {"expect":"A 内核（JW 形态默认）","note":"被占用：不强杀；确认归属后再决定复用或换端口"}
+  BUSY    port-48200  {"expect":"Edge（任务三交付入口）","note":"被占用：不强杀；确认归属后再决定复用或换端口"}
+  FREE    port-48100  {"expect":"Connectors（任务02）","note":"空闲"}
+  FREE    port-3730  {"expect":"C mock","note":"空闲"}
+  FREE    port-3617  {"expect":"Front dev","note":"空闲"}
+  BUSY    port-3618  {"expect":"Front preview（Start-JW.cmd）","note":"被占用：不强杀；确认归属后再决定复用或换端口"}
+  PASS    migrations  {"files":["001_init.sql","002_customer_credit.sql","003_inspection_sessions.sql","004_decision_loop.sql","005_trust_gates_a1.sql","006_a2_a3_authority.sql","007_ledger_once.sql","008_domain_exemptions.sql"]}
+  PASS    consumed-surface  {"path":"Back/Edge/contract/consumed-surface-v1.json"}
+  PASS    front-dist  {"note":"dist 随仓库交付（改动源码后须 npm run build 更新）"}
+  PASS    lockfiles  {"found":["Back/A/package-lock.json","Front/package-lock.json"],"note":"Back/C、Back/Edge、Back/D 为零运行时依赖"}
+  PASS    rule-pack  {"path":"Back/C/rules/four-domain-rule-pack-v1.json"}
+  BLOCKED capability-video  {"note":"企微/TRTC 真实提供方未获授权（Connectors CAPABILITY_MATRIX）"}
+  BLOCKED capability-model  {"note":"真实模型未授权/未配置；GLM transport 预留 0 调用"}
+  BLOCKED capability-real-disbursement  {"note":"仅受控模拟回执（simulation_only）"}
+[env-check] 汇总 {"pass":9,"free":5,"busy":5,"warn":0,"blocked":3,"fail":0} → exit 0
+[env-check] BUSY 端口不会被本脚本处理；归属核实后由对应启动/停止脚本按启动标识操作。
+EXIT=0

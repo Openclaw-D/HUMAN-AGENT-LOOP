@@ -5,7 +5,7 @@
 //   - A/Edge 都带启动标识（marker+pidfile+heartbeat）；停止一律用 delivery-down.mjs 三证复核；
 //   - 身份目录/令牌来自被 Git 排除的 config/delivery-runtime.json（示例见 .example），
 //     本脚本不内嵌任何真实凭据；缺配置即失败关闭。
-// 用法：node scripts/delivery-up.mjs [--skip-frontend-hint] [--db-port 15442] [--kernel-port 48180] [--edge-port 48200]
+// 用法：node scripts/delivery-up.mjs [--skip-frontend-hint] [--db-port 15442] [--kernel-port 48180] [--edge-port 48200] [--db-container jw-v01-pg]
 import { execFile, spawn } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, statSync } from 'node:fs';
 import net from 'node:net';
@@ -50,6 +50,11 @@ const argOf = (name, dflt) => {
 const dbPort = Number(argOf('--db-port', process.env.JW_PG_PORT ?? DB_PORT));
 const kernelPort = Number(argOf('--kernel-port', process.env.JW_A_PORT ?? KERNEL_PORT));
 const edgePort = Number(argOf('--edge-port', process.env.JW_EDGE_PORT ?? EDGE_PORT));
+// 任务四 D2：支持本轮专用容器（默认 jw-v01-pg 不变，向后兼容）；容器本体仍须按 START.md 一次性人工创建
+const dbContainer = argOf('--db-container', process.env.JW_PG_CONTAINER ?? DB_CONTAINER);
+// 任务四 D3：--serve-front <dir> 透传给 edge-start（同源托管前端构建产物；goal-03 C3 交付形态）。
+// 省略时维持旧行为：前端用独立预览壳（start-preview.mjs，backendConnected:false 的本地模拟）。
+const serveFront = argOf('--serve-front', null);
 
 // ---- 0) 运行时配置（Git 排除；fail-closed） ----
 const cfgPath = path.join(EDGE_ROOT, 'config', 'delivery-runtime.json');
@@ -69,20 +74,20 @@ if (!existsSync(path.join(REPO_ROOT, 'Front', 'dist', 'index.html'))) fail('Fron
 ok('预检：node/docker/dist 就绪');
 
 // ---- 2) 独立 PG：已登记容器只 start 不 create ----
-const psA = await run('docker', ['ps', '-a', '--format', '{{.Names}}\t{{.Status}}', '--filter', `name=^${DB_CONTAINER}$`]);
-if (psA.err || !psA.stdout.includes(DB_CONTAINER)) {
-  fail(`容器 ${DB_CONTAINER} 不存在。请按 Back/START.md 一次性创建（docker run jw-v01-pg ...）；本脚本不代建容器`);
+const psA = await run('docker', ['ps', '-a', '--format', '{{.Names}}\t{{.Status}}', '--filter', `name=^${dbContainer}$`]);
+if (psA.err || !psA.stdout.includes(dbContainer)) {
+  fail(`容器 ${dbContainer} 不存在。请按 Back/START.md 一次性创建（docker run jw-v01-pg ...）；本脚本不代建容器`);
 }
 if (!psA.stdout.includes('Up')) {
-  const startR = await run('docker', ['start', DB_CONTAINER]);
-  if (startR.err) fail(`启动 ${DB_CONTAINER} 失败: ${startR.stderr.slice(0, 120)}`);
-  ok(`容器 ${DB_CONTAINER} 已启动（数据卷原样保留）`);
+  const startR = await run('docker', ['start', dbContainer]);
+  if (startR.err) fail(`启动 ${dbContainer} 失败: ${startR.stderr.slice(0, 120)}`);
+  ok(`容器 ${dbContainer} 已启动（数据卷原样保留）`);
 } else {
-  ok(`容器 ${DB_CONTAINER} 已在运行`);
+  ok(`容器 ${dbContainer} 已在运行`);
 }
 const pgReady = await (async () => {
   for (let i = 0; i < 30; i++) {
-    const r = await run('docker', ['exec', DB_CONTAINER, 'pg_isready', '-U', cfg.dbUser, '-d', cfg.dbName]);
+    const r = await run('docker', ['exec', dbContainer, 'pg_isready', '-U', cfg.dbUser, '-d', cfg.dbName]);
     if (!r.err) return true;
     await new Promise((x) => setTimeout(x, 800));
   }
@@ -108,7 +113,7 @@ ok(`数据库迁移已应用（A 迁移簿记：${mig.stdout.trim().split(/\r?\n
 
 // ---- 5) 权限矩阵幂等播种（合成开发矩阵；生产矩阵须公司批准录入） ----
 if (cfg.matrixSeedSql && typeof cfg.matrixSeedSql === 'string' && cfg.matrixSeedSql.length > 0) {
-  const seed = await run('docker', ['exec', DB_CONTAINER, 'psql', '-U', cfg.dbUser, '-d', cfg.dbName, '-v', 'ON_ERROR_STOP=1', '-c', cfg.matrixSeedSql]);
+  const seed = await run('docker', ['exec', dbContainer, 'psql', '-U', cfg.dbUser, '-d', cfg.dbName, '-v', 'ON_ERROR_STOP=1', '-c', cfg.matrixSeedSql]);
   if (seed.err) fail(`矩阵播种失败: ${seed.stderr.slice(0, 200)}`);
   ok('权限矩阵播种完成（配置内 SQL，幂等）');
 } else {
@@ -176,7 +181,8 @@ if (Array.isArray(cfg.authEntries) && cfg.authEntries.length > 0) {
 const edgeStart = await run(process.execPath, [path.join(EDGE_ROOT, 'scripts', 'edge-start.mjs'),
   '--port', String(edgePort), '--live', '--kernel-port', String(kernelPort), '--db-port', String(dbPort),
   '--auth-file', authPath, '--marker', `jw-delivery-edge-${aMarker.slice(-8)}`,
-  '--heartbeat', path.join(RUN_DIR, 'edge-heartbeat.json')], { timeout: 60000 });
+  '--run-dir', RUN_DIR,
+  ...(serveFront ? ['--serve-front', serveFront] : [])], { timeout: 60000 });
 if (edgeStart.err) fail(`Edge 启动失败: ${(edgeStart.stderr || edgeStart.err.message).slice(0, 300)}`);
 console.log(edgeStart.stdout.trim());
 ok('Edge（live 投影）已启动');
@@ -186,7 +192,12 @@ const ready = await waitHealth(`http://127.0.0.1:${edgePort}/healthz/ready`, (j)
 const vz = await fetch(`http://127.0.0.1:${edgePort}/versionz`).then((r) => r.json()).catch(() => ({}));
 console.log('──────────────────────────────────────────────');
 console.log(`[delivery-up] 就绪：${ready ? '是' : '否（查看 Edge /healthz/ready 逐依赖原因）'}`);
-console.log(`  前端预览   : cd Front && node start-preview.mjs   → http://127.0.0.1:3618/`);
+if (serveFront) {
+  console.log(`  前端(同源) : http://127.0.0.1:${edgePort}/  ← ${serveFront}（Edge 同源托管，工作本走同源 API）`);
+  console.log(`  前端(预览) : cd Front && node start-preview.mjs --port=3628（本地模拟形态，不连后台）`);
+} else {
+  console.log(`  前端预览   : cd Front && node start-preview.mjs   → http://127.0.0.1:3618/`);
+}
 console.log(`  Edge       : http://127.0.0.1:${edgePort}/  (build ${vz.buildId ?? '?'}, /harness/ 操作验证页)`);
 console.log(`  A 内核     : http://127.0.0.1:${kernelPort}/healthz`);
 console.log(`  停止       : 本窗口 Ctrl+C（推荐）；或另开窗口 node scripts/delivery-down.mjs`);

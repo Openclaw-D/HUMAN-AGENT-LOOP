@@ -1,0 +1,24 @@
+[d25] 文件集=8289（跟踪8267 + 新增22），文本扫描=6602
+[d25] HARD=0 REVIEW=278 INFO=559
+  REVIEW large_file: Achieve/Anthropic/V5/archive-cleanup-20260906/inventory.json
+  REVIEW large_file: Achieve/Anthropic/V5/archive-cleanup-20260906/plan.json
+  REVIEW credential_assignment: Achieve/Anthropic/V6/REPAIR_20260914_EVENING/main/runtime/app/lib/v5-preview/model-adapter/providers/http-fetch.mjs
+  REVIEW credential_assignment: Achieve/Anthropic/V6/REPAIR_20260914_EVENING/main/runtime/app/lib/v5-preview/model-adapter/providers/http-fetch.mjs
+  REVIEW credential_assignment: Achieve/Anthropic/V6/REPAIR_20260914_EVENING/qa/runtime/app-r1/lib/v5-preview/model-adapter/providers/http-fetch.mjs
+  REVIEW credential_assignment: Achieve/Anthropic/V6/REPAIR_20260914_EVENING/qa/runtime/app-r1/lib/v5-preview/model-adapter/providers/http-fetch.mjs
+  REVIEW credential_assignment: Achieve/Anthropic/V6/handoff/API_OVERNIGHT_20260913/transport/INTERFACE.md
+  REVIEW credential_assignment: Achieve/Anthropic/V6/handoff/API_OVERNIGHT_20260913/transport/server-http-transport.mjs
+  REVIEW credential_assignment: Achieve/Anthropic/V6/handoff/API_OVERNIGHT_20260913/transport/server-http-transport.mjs
+  REVIEW credential_assignment: Achieve/Anthropic/V6/handoff/NIGHT_SIMPLIFY_20260914/qa/runtime/app/lib/v5-preview/model-adapter/providers/http-fetch.mjs
+  REVIEW credential_assignment: Achieve/Anthropic/V6/handoff/NIGHT_SIMPLIFY_20260914/qa/runtime/app/lib/v5-preview/model-adapter/providers/http-fetch.mjs
+  REVIEW credential_assignment: Achieve/Anthropic/V7/backend-next/B/test/goal-graph.test.mjs
+  REVIEW credential_assignment: Achieve/Anthropic/V7/backend-next/B/test/redact.test.mjs
+  REVIEW credential_assignment: Achieve/Anthropic/V7/backend-next/B/test/three-way-send.test.mjs
+  REVIEW credential_assignment: Achieve/Anthropic/V7/backend-next/B/test/three-way-send.test.mjs
+  REVIEW credential_assignment: Achieve/Anthropic/V7/backend-next/D/suites/g8_gateway.test.mjs
+  REVIEW large_file: Achieve/Anthropic/archive/20260912-before-V6-CTRL-091531/V5/archive-cleanup-20260906/inventory.json
+  REVIEW large_file: Achieve/Anthropic/archive/20260912-before-V6-CTRL-091531/V5/archive-cleanup-20260906/plan.json
+  REVIEW large_file: Achieve/Anthropic/archive/20260912-before-V6-CTRL-091543/V5/archive-cleanup-20260906/inventory.json
+  REVIEW large_file: Achieve/Anthropic/archive/20260912-before-V6-CTRL-091543/V5/archive-cleanup-20260906/plan.json
+  报告: docs\backend-upgrade\goal-04\evidence\s03-scan-redacted.json
+EXIT=0

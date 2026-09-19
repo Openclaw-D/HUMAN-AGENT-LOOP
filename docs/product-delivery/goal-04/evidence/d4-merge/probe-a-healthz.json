@@ -1,0 +1,1 @@
+{"ok":true,"db":"up","model":"not_configured","principalVerifier":"configured","leaseSeconds":90,"contractVersion":"v1.3+v2.1-credit+decision-loop(task01+task02)","creditPolicy":{"capCnyMinor":1000000000,"matrixVersion":"matrix-delivery-synthetic","concentrationPolicyVersion":"conc-delivery-synthetic","coolingSeconds":null},"uptime":399.0587451}
