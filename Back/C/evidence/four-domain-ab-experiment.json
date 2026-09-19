@@ -1,5 +1,5 @@
 {
-  "runAt": "2026-09-19T02:02:26.974Z",
+  "runAt": "2026-09-19T02:36:40.064Z",
   "design": {
     "experimentType": "feature_ablation（功能消融）——不是\"多 Agent vs 单 Agent\"的因果实验",
     "arms": "single-assistant+rules（刻意移除冲突保留/域完成性/内容去重）vs four-domain+same-rules",
@@ -47,7 +47,7 @@
       "fourQuestions": 0,
       "singleQuestions": 0,
       "divergent": false,
-      "durationMs": 11
+      "durationMs": 20
     },
     {
       "caseId": "S07-dup-whitespace-variant-heldout",
@@ -58,7 +58,7 @@
       "fourQuestions": 0,
       "singleQuestions": 0,
       "divergent": false,
-      "durationMs": 3
+      "durationMs": 40
     },
     {
       "caseId": "S13-caliber-same-value-not-conflict-heldout",
@@ -69,7 +69,7 @@
       "fourQuestions": 0,
       "singleQuestions": 0,
       "divergent": false,
-      "durationMs": 3
+      "durationMs": 7
     },
     {
       "caseId": "S14-three-way-conflict-heldout",
@@ -80,7 +80,7 @@
       "fourQuestions": 0,
       "singleQuestions": 0,
       "divergent": true,
-      "durationMs": 2
+      "durationMs": 3
     },
     {
       "caseId": "S17-expired-mixed-heldout",
@@ -91,7 +91,7 @@
       "fourQuestions": 1,
       "singleQuestions": 0,
       "divergent": true,
-      "durationMs": 1
+      "durationMs": 2
     },
     {
       "caseId": "S22-asset-observed-plus-conflict-heldout",
@@ -135,7 +135,7 @@
       "fourQuestions": 0,
       "singleQuestions": 0,
       "divergent": false,
-      "durationMs": 1
+      "durationMs": 2
     },
     {
       "caseId": "S32-neg-correction-reuploaded-heldout",
@@ -146,7 +146,7 @@
       "fourQuestions": 0,
       "singleQuestions": 0,
       "divergent": false,
-      "durationMs": 1
+      "durationMs": 2
     },
     {
       "caseId": "S34-weak-video-unsupported-modality-heldout",
@@ -157,7 +157,7 @@
       "fourQuestions": 1,
       "singleQuestions": 1,
       "divergent": false,
-      "durationMs": 1
+      "durationMs": 2
     },
     {
       "caseId": "S36-weak-quality-flag-only-heldout",
