@@ -15,14 +15,15 @@ const arg = (name) => {
 
 async function probeServices() {
   const { tcpProbe, httpProbe, aKernelReadyPass } = await import('../src/probes.mjs');
-  // JW 自有形态（A@48180/PG@15442，见 Back/START.md）与旧工作区遗留（48080/15432）分开探测、分开标注。
+  // 端口清单可用 CLI 覆盖（任务四 D3：--pg-port/--kernel-port/--edge-port/--front-port）；
+  // 默认仍为 START.md 登记的 JW 自有形态与旧工作区遗留（分开探测、分开标注）。
   const ports = [
-    { name: 'pg-jw-15442', port: 15442 },
+    { name: 'pg-jw', port: Number(arg('pg-port') ?? 15442) },
     { name: 'pg-legacy-15432', port: 15432, legacy: true },
-    { name: 'front-3618', port: 3618 },
-    { name: 'kernel-jw-48180', port: 48180, health: true },
+    { name: 'front-preview', port: Number(arg('front-port') ?? 3618) },
+    { name: 'kernel-jw', port: Number(arg('kernel-port') ?? 48180), health: true },
     { name: 'kernel-legacy-48080', port: 48080, health: true, legacy: true },
-    { name: 'edge-48200', port: 48200 },
+    { name: 'edge-jw', port: Number(arg('edge-port') ?? 48200) },
   ];
   const results = [];
   for (const p of ports) {
@@ -37,8 +38,8 @@ async function probeServices() {
       entry.edgeVersionzResponds = vz.ok;
       if (!vz.ok) entry.notEdge = true;
     }
-    if (tcp.ok && p.name === 'edge-48200') {
-      const live = await httpProbe({ name: 'edge-live', url: 'http://127.0.0.1:48200/healthz/live', timeoutMs: 2000 })();
+    if (tcp.ok && p.name === 'edge-jw') {
+      const live = await httpProbe({ name: 'edge-live', url: `http://127.0.0.1:${p.port}/healthz/live`, timeoutMs: 2000 })();
       entry.health = { ok: live.ok, detail: live.detail };
     }
     results.push(entry);
@@ -48,12 +49,14 @@ async function probeServices() {
 
 async function main() {
   const { collectVersionSeal } = await import('../src/version.mjs');
+  // 能力位按当前交付如实标注（任务四 D3 复核）：credit=01 内核 v2 已交付；policy=03 工作本页面已交付；
+  // model=真实媒体/模型提供方未授权（D27-R 单列，不阻二维硬门）；video/recording=未接线。
   const capabilities = {
-    model: 'not_configured',        // A 契约：transport 未配置，0 真实调用
-    video: 'not_wired',             // 任务02 契约未冻结
+    model: 'not_configured',        // D27-R：真实模型提供方未授权，0 真实调用
+    video: 'not_wired',
     recording: 'not_wired',
-    policy: 'not_wired',            // 任务03 契约未冻结
-    credit: 'not_wired',            // 任务01 内核未落地
+    policy: 'wired_frontend',       // goal-03 工作本（Edge 同源托管 + A v2 面）
+    credit: 'wired_kernel_v2',      // goal-01 内核 v2（客户授信/检查会话/决策闭环/Gate 回执）
     docker: 'unknown_probe_below',
     note: '能力位逐一独立报告；禁止汇总为 all_ok',
   };

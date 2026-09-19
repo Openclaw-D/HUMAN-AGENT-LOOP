@@ -26,8 +26,51 @@ export const ACTION_ROUTES = [
   },
   {
     method: 'POST',
-    pattern: /^\/api\/jw\/v2\/actions\/customers\/([^/]+)\/(artifacts|relationships|assessments|facilities|financing-requests)$/,
+    pattern: /^\/api\/jw\/v2\/actions\/customers\/([^/]+)\/(artifacts|relationships|assessments|facilities|financing-requests|findings|decision-packages|reports)$/,
     upstream: (m) => `/api/v2/customers/${encodeURIComponent(m[1])}/${m[2]}`,
+  },
+  // ---- goal-03c 工作本写面：差异复核与决策闭环（consumed-surface 同步登记；鉴权/幂等全部由 A 再验证） ----
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/findings\/([^/]+)\/resolve$/,
+    upstream: (m) => `/api/v2/findings/${encodeURIComponent(m[1])}/resolve`,
+  },
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/decision-packages\/([^/]+)\/(revisions|domain-results|adoption|gate|refresh-currency)$/,
+    upstream: (m) => `/api/v2/decision-packages/${encodeURIComponent(m[1])}/${m[2]}`,
+  },
+  // ---- goal-03d 决策链补面：必需域豁免登记（human；豁免引用在冻结时由 A 服务端解析） ----
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/customers\/([^/]+)\/domain-exemptions$/,
+    upstream: (m) => `/api/v2/customers/${encodeURIComponent(m[1])}/domain-exemptions`,
+  },
+  // ---- IR-03-7 页面化撤权（admin 撤客户 grants 级联禁用客户身份；即刻生效） ----
+  {
+    method: 'DELETE',
+    pattern: /^\/api\/jw\/v2\/actions\/customers\/([^/]+)\/grants\/([^/]+)$/,
+    upstream: (m) => `/api/v2/customers/${encodeURIComponent(m[1])}/grants/${encodeURIComponent(m[2])}`,
+  },
+  // ---- goal-03c 受限邀请（A CONTRACT §11 G2；code 明文仅创建响应一次，Edge 不落日志） ----
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/customers\/([^/]+)\/invitations$/,
+    upstream: (m) => `/api/v2/customers/${encodeURIComponent(m[1])}/invitations`,
+  },
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/invitations\/([^/]+)\/revoke$/,
+    upstream: (m) => `/api/v2/invitations/${encodeURIComponent(m[1])}/revoke`,
+  },
+  // 受限原件上传（goal-03c；IR-03-3 临时约定 v0）：前端只发文件字段，Edge 服务端转换为
+  // A 工件登记载荷（content.materialFile 信封 ≤512KB base64）。文件字节真实落 A jsonb；
+  // 正式对象存储待任务01（IR-03-3a/b）落地后按版本化迁移替换本转换。
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/customers\/([^/]+)\/originals$/,
+    upstream: (m) => `/api/v2/customers/${encodeURIComponent(m[1])}/artifacts`,
+    transform: transformOriginals,
   },
   {
     method: 'POST',
@@ -77,6 +120,92 @@ export const ACTION_ROUTES = [
   },
 ];
 
+// goal-03d Connectors 写面（IR-02-C 消费面）：处理通道邀请/绑定、人工录入/更正、问答与获准复核、
+// 暂停。上游是 Connectors 服务令牌面（X-Service-Token，服务端持有）——requestId 纪律与 A 面一致
+// （Edge 强制携带；确定性拒绝 4xx 原样透传，A/通道结果未知 502 先对账）。
+export const CONNECTORS_ACTION_ROUTES = [
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/connectors\/intake\/invitations$/,
+    upstream: () => `/api/connectors/intake/invitations`,
+  },
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/connectors\/intake\/accept$/,
+    upstream: () => `/api/connectors/intake/accept`,
+  },
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/connectors\/evidence\/upload$/,
+    upstream: () => `/api/connectors/evidence/upload`,
+  },
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/connectors\/evidence\/manual-entry$/,
+    upstream: () => `/api/connectors/evidence/manual-entry`,
+  },
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/connectors\/evidence\/correct-fact$/,
+    upstream: () => `/api/connectors/evidence/correct-fact`,
+  },
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/connectors\/questions\/answer$/,
+    upstream: () => `/api/connectors/questions/answer`,
+  },
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/connectors\/questions\/verify$/,
+    upstream: () => `/api/connectors/questions/verify`,
+  },
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/connectors\/processing\/pause$/,
+    upstream: () => `/api/connectors/processing/pause`,
+  },
+];
+
+// 受限原件上传转换（goal-03c；IR-03-3 临时约定 v0）：只接受显式文件字段，产出 A 工件登记载荷。
+// 业务输入事实字段（factKey/objectRef/materialMeta 等）与信封并列透传；核验等级由 A 侧权威裁决。
+const MAX_ORIGINAL_BYTES = 512 * 1024;
+export class TransformError extends Error {
+  constructor(code, note) {
+    super(note || code);
+    this.code = code;
+    this.note = note;
+  }
+}
+export function transformOriginals(body) {
+  const file = body.file;
+  if (!file || typeof file !== 'object' || Array.isArray(file)) {
+    throw new TransformError('FILE_REQUIRED', '缺少 file 字段（{name, mime?, dataBase64}）');
+  }
+  if (typeof file.name !== 'string' || file.name.length === 0 || file.name.length > 200) {
+    throw new TransformError('FILE_NAME_INVALID', 'file.name 必须是 1..200 字符');
+  }
+  if (typeof file.dataBase64 !== 'string' || !/^[A-Za-z0-9+/]*={0,2}$/.test(file.dataBase64)) {
+    throw new TransformError('FILE_ENCODING_INVALID', 'file.dataBase64 必须是标准 base64 字符串');
+  }
+  const bytes = Buffer.from(file.dataBase64, 'base64');
+  if (bytes.length === 0) throw new TransformError('FILE_EMPTY', '文件内容为空');
+  if (bytes.length > MAX_ORIGINAL_BYTES) {
+    throw new TransformError('FILE_TOO_LARGE', `原件上限 ${MAX_ORIGINAL_BYTES} 字节（IR-03-3 临时约定 v0；正式存储待任务01）`);
+  }
+  const mime = typeof file.mime === 'string' && file.mime.length > 0 && file.mime.length <= 100 ? file.mime : 'application/octet-stream';
+  const out = {
+    requestId: body.requestId,
+    kind: typeof body.kind === 'string' && body.kind.length > 0 ? body.kind : 'original_upload',
+    content: {
+      materialFile: { name: file.name, mime, size: bytes.length, encoding: 'base64', data: file.dataBase64 },
+    },
+  };
+  for (const k of ['tenantId', 'factKey', 'grade', 'objectRef', 'materialMeta', 'projectId', 'provenance', 'supersedes', 'duplicateOf']) {
+    if (body[k] !== undefined) out[k] = body[k];
+  }
+  return out;
+}
+
 export function readJsonBody(req, { limitBytes = 1024 * 1024 } = {}) {
   return new Promise((resolve) => {
     let size = 0;
@@ -112,6 +241,7 @@ export function readJsonBody(req, { limitBytes = 1024 * 1024 } = {}) {
 export function createUpstreamProxy({
   baseUrl,
   credentialFor, // (session) => credential：服务端持有会话→上游凭据映射
+  headerName = 'X-Principal-Credential', // goal-03d：Connectors 面用 X-Service-Token
   timeoutMs = 8000,
   fetchImpl = fetch,
   routes = ACTION_ROUTES,
@@ -120,7 +250,8 @@ export function createUpstreamProxy({
     upstreamBaseUrl: baseUrl,
     async handle({ res, urlObj, session, log = () => { } }) {
       const pathname = urlObj.pathname;
-      const route = routes.find((r) => r.method === 'POST' && r.pattern.test(pathname));
+      const method = res.req?.method || 'POST';
+      const route = routes.find((r) => r.method === method && r.pattern.test(pathname));
       if (!route) {
         // 白名单语义：未登记的路径不是 404-透传代理，而是明确拒绝。
         res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
@@ -141,19 +272,31 @@ export function createUpstreamProxy({
         res.end(JSON.stringify({ ok: false, error: 'REQUEST_ID_REQUIRED', note: '动作必须携带客户端 requestId（1..128），响应丢失后用同 ID 重试' }));
         return;
       }
+      // 转换型路由（如受限原件上传）：Edge 侧载荷重组，校验失败按 400 显式拒绝（不改写 requestId 语义）。
+      let outBody = body;
+      if (route.transform) {
+        try {
+          outBody = route.transform(body);
+        } catch (e) {
+          const code = e instanceof TransformError ? e.code : 'TRANSFORM_FAILED';
+          res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+          res.end(JSON.stringify({ ok: false, error: code, note: e.message }));
+          return;
+        }
+      }
 
       const upstreamUrl = baseUrl.replace(/\/$/, '') + route.upstream(m);
       const started = Date.now();
       let upRes;
       try {
         upRes = await fetchImpl(upstreamUrl, {
-          method: 'POST',
+          method,
           headers: {
             'content-type': 'application/json',
             // 唯一放行的身份头：服务端映射的上游凭据。浏览器请求头不透传（含其伪造的凭据头）。
-            'X-Principal-Credential': credentialFor(session),
+            [headerName]: credentialFor(session),
           },
-          body: JSON.stringify(body),
+          body: JSON.stringify(outBody),
           signal: AbortSignal.timeout(timeoutMs),
         });
       } catch (e) {

@@ -6,12 +6,16 @@
 //   - 不删除任何数据；停止请用 scripts/edge-stop.mjs。
 import net from 'node:net';
 import { randomUUID } from 'node:crypto';
-import { existsSync, openSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, openSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const EDGE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const RUN_DIR = path.join(EDGE_ROOT, '.run');
+// 任务四 D2：--run-dir 支持隔离实例（并行验收不串用运行态）；默认 .run 行为不变。
+const argvIdx = process.argv.indexOf('--run-dir');
+const RUN_DIR = argvIdx >= 0 && process.argv[argvIdx + 1]
+  ? path.resolve(process.argv[argvIdx + 1])
+  : path.join(EDGE_ROOT, '.run');
 const PID_FILE = path.join(RUN_DIR, 'edge.pid');
 const HEARTBEAT_FILE = path.join(RUN_DIR, 'edge-heartbeat.json');
 const SERVER_ENTRY = path.join(EDGE_ROOT, 'src', 'server.mjs');
@@ -92,6 +96,7 @@ async function main() {
   const serveFront = arg('serve-front', null);
   if (serveFront) extraArgs.push('--serve-front', serveFront);
   const { spawn } = await import('node:child_process');
+  mkdirSync(RUN_DIR, { recursive: true });
   const out = openSync(DAEMON_LOG, 'a');
   const child = spawn(process.execPath, [
     SERVER_ENTRY, '--port', String(port), '--marker', marker, '--heartbeat', HEARTBEAT_FILE,

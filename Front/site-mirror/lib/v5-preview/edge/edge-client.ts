@@ -81,6 +81,8 @@ export function createEdgeClient({ baseUrl, fetchImpl = fetch }: EdgeClientOptio
 
     /** 显式结束会话（本地状态清除；服务端 TTL 到期自然失效）。 */
     endSession(): void { session = null; },
+    /** goal-03c 受控登录（principalId）：会话由 Edge 服务端以目录凭据建立，本层采纳会话态；凭据不经浏览器。 */
+    adoptSession(info: EdgeSessionInfo): void { session = info; },
 
     async workspace(customerId: string): Promise<WorkspaceResponse> {
       const s = authed();

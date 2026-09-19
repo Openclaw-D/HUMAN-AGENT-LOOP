@@ -11,7 +11,7 @@
     "build": "vite build --config preview/vite.config.mjs",
     "preview": "vite preview --config preview/vite.config.mjs --host 127.0.0.1 --port 3617 --strictPort",
     "typecheck": "tsc --noEmit -p preview/tsconfig.json",
-    "test": "node --experimental-strip-types --test preview/test/role-mock-adapter.test.mjs preview/test/edge-logic.test.mjs"
+    "test": "node --experimental-strip-types --test preview/test/role-mock-adapter.test.mjs preview/test/edge-logic.test.mjs preview/test/wb-logic.test.mjs"
   },
   "dependencies": {
     "react": "19.2.6",

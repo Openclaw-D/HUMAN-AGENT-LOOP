@@ -7,6 +7,7 @@
 //   POST /api/jw/v2/session                     凭据换不透明会话（服务端持映射；默认失败关闭）
 //   POST /api/jw/v2/actions/**                  动作代理：白名单转发固定上游，requestId 必带，凭据不落浏览器
 //   POST /api/jw/v2/customers/:id/messages      消息受众路由：customer/internal 分离，内部外发须显式确认+审计
+//   GET  /api/jw/v2/customers/:id/messages      消息线程读（goal-03e）：受众按会话角色裁决，?after 增量续拉
 //   GET  /api/jw/v2/audit                       审计只读（会话+audit:read）
 //   GET  /harness/**                            browser-harness 静态页（路径穿越防护 + CSP）
 // 读路径方法白名单仅 GET；写路径仅显式登记的 POST。未知路径 404。响应一律 no-store。
@@ -35,6 +36,10 @@ function parseCustomerId(urlObj) {
 
 const denyAll = async () => ({ ok: false, reason: 'PRINCIPAL_UNTRUSTED' });
 
+// goal-03c：本实例经手兑换的客户联系人凭据登记（A 动态身份的本地镜像，仅内存 sha256 指纹）。
+// 语义：live 校验 = 静态目录 ∪ 兑换登记，且都必须通过 A 目录探针；A 撤权级联后探针失败即终止。
+const redeemedDirectory = { byHash: new Map() };
+
 export function createEdgeServer({
   seal,
   probes = [],
@@ -45,8 +50,13 @@ export function createEdgeServer({
   sessionStore = null,
   verifyCredential = null,
   proxy = null,
+  readProxy = null, // goal-03c：GET 只读透传（白名单；A 是唯一授权裁决方）
+  connectorsProxy = null, // goal-03d：处理通道（Connectors IR-02-C）写面代理（X-Service-Token 服务端持有）
+  connectorsReadProxy = null, // goal-03d：处理通道读面代理（分段进度/任务回执/原件预览）
   messages = null,
+  messageStore = null, // goal-03e：页内消息线程存储（GET 读端点；发送侧入栈在消息路由内）
   auditSink = null,
+  identityDirectory = null, // goal-03c：受控身份目录 {list:[{principalId,roles,label,demo}], byPrincipal:Map}（不含凭据明文于响应）
   staticHandler = null,
   frontHandler = null, // goal-03 C3：同源受控前端（--serve-front <dir>；仅非 API 路径，SPA 回退 index.html）
   // CSRF 防护（D17）：额外允许的 Origin（如未来 staging 域名）；默认仅同源（Host 头比对）+ 无头非浏览器客户端
@@ -229,7 +239,14 @@ export function createEdgeServer({
     }
     const read = await readJsonBody(req);
     if (read.err) return sendJson(res, 400, { ok: false, error: read.err });
-    const credential = read.body.credential;
+    // 两种受控登录（goal-03c）：{credential} 手输凭据；{principalId} 受控身份目录选择
+    //（凭据由 Edge 服务端按目录查得，绝不回传）。两者都过同一 verifyCredential（live 下含 A 目录探针）。
+    let credential = typeof read.body.credential === 'string' ? read.body.credential : null;
+    if (!credential && typeof read.body.principalId === 'string') {
+      const entry = identityDirectory?.byPrincipal?.get(read.body.principalId);
+      if (!entry) return sendJson(res, 403, { ok: false, error: 'PRINCIPAL_UNTRUSTED', note: 'principalId 不在受控身份目录中' });
+      credential = entry.credential;
+    }
     if (typeof credential !== 'string' || credential.length === 0 || credential.length > 256) {
       return sendJson(res, 400, { ok: false, error: 'INVALID_CREDENTIAL' });
     }
@@ -237,6 +254,79 @@ export function createEdgeServer({
     if (!result.ok) return sendJson(res, 403, { ok: false, error: result.reason || 'PRINCIPAL_UNTRUSTED' });
     // 只返回不透明会话；凭据原文不再出现于任何响应。
     return sendJson(res, 200, { ok: true, session: result.session });
+  };
+
+  // 受控身份目录（goal-03c 路径一）：只列 principalId/roles/label/demo 元数据，凭据永不外泄；
+  // 未配置目录（既无 --auth-file 也非 fixture）→ 404 失败关闭，登录页退化为仅手输凭据。
+  const handleIdentities = async (res) => {
+    if (!identityDirectory) return sendJson(res, 404, { ok: false, error: 'IDENTITY_DIRECTORY_NOT_CONFIGURED', note: '未配置受控身份目录：仅支持手输凭据登录' });
+    return sendJson(res, 200, { ok: true, identities: identityDirectory.list });
+  };
+
+  // 客户目录（goal-03c 路径一）：上游 A 尚无清单端点（IR-03-1）。前向兼容——探测上游
+  // GET /api/v2/customers；上游 404/405（未实现）→ 501 显式缺口 + 接口编号，不伪造目录。
+  const handleDirectory = async (req, res, urlObj) => {
+    const session = requireSession(req, res);
+    if (!session) return;
+    if (!readProxy) {
+      return sendJson(res, 501, { ok: false, error: 'UPSTREAM_DIRECTORY_NOT_AVAILABLE', interfaceRequest: 'IR-03-1', note: 'A 尚无客户清单端点：目录页使用搜索（按客户标识直查）/新建/最近访问' });
+    }
+    try {
+      const upRes = await fetch(`${readProxy.upstreamBaseUrl.replace(/\/$/, '')}/api/v2/customers${urlObj.search || ''}`, {
+        headers: { 'X-Principal-Credential': session.credential },
+        signal: AbortSignal.timeout(5000),
+      });
+      if (upRes.status === 404 || upRes.status === 405) {
+        return sendJson(res, 501, { ok: false, error: 'UPSTREAM_DIRECTORY_NOT_AVAILABLE', interfaceRequest: 'IR-03-1', note: 'A 尚无客户清单端点：目录页使用搜索（按客户标识直查）/新建/最近访问' });
+      }
+      const text = await upRes.text();
+      return sendJson(res, upRes.status, text ? JSON.parse(text) : { ok: upRes.status < 400 });
+    } catch (e) {
+      const reason = e.name === 'TimeoutError' ? 'timeout' : String(e.cause?.code || e.message);
+      return sendJson(res, 502, { ok: false, error: 'UPSTREAM_UNKNOWN', reason });
+    }
+  };
+
+  // 受限邀请兑换（A CONTRACT §11 G2 的唯一匿名 v2 写口）：无会话必需（受邀人尚未有身份），
+  // 仍过 CSRF 写口守卫。code→凭据明文只经此一次转发给兑换者本人，Edge 不落日志、不存储；
+  // 已用/撤销/过期错误语义（409/410）原样透传。requestId 对账锚点由 A 记录。
+  const handleInvitationRedeem = async (req, res) => {
+    const read = await readJsonBody(req);
+    if (read.err) return sendJson(res, 400, { ok: false, error: read.err });
+    const code = read.body.code;
+    if (typeof code !== 'string' || code.length < 8 || code.length > 128) {
+      return sendJson(res, 400, { ok: false, error: 'INVALID_INVITATION_CODE' });
+    }
+    if (!proxy) return sendJson(res, 501, { ok: false, error: 'NOT_CONFIGURED' });
+    const upstreamUrl = `${proxy.upstreamBaseUrl.replace(/\/$/, '')}/api/v2/invitations/redeem`;
+    try {
+      const upRes = await fetch(upstreamUrl, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ code, ...(typeof read.body.requestId === 'string' ? { requestId: read.body.requestId } : {}) }),
+        signal: AbortSignal.timeout(8000),
+      });
+      const text = await upRes.text();
+      // A 是客户动态身份的唯一权威；Edge 仅登记"经本实例兑换"的凭据指纹，供会话交换的
+      // 目录侧双重校验使用（凭据明文只进服务端内存，永不落日志/响应外）。
+      try {
+        const okBody = text ? JSON.parse(text) : null;
+        if (upRes.status === 200 && okBody?.ok === true && typeof okBody.credential === 'string' && typeof okBody.principalId === 'string') {
+          const { createHash } = await import('node:crypto');
+          redeemedDirectory.byHash.set(createHash('sha256').update(String(okBody.credential)).digest('hex'), {
+            principalId: String(okBody.principalId),
+            roles: ['customer'],
+            label: `客户联系人 ${String(okBody.customerId ?? '')}（${String(okBody.role ?? 'customer')}）`,
+            demo: false,
+          });
+        }
+      } catch { /* 登记失败不影响兑换响应 */ }
+      log(`[redeem] -> ${upRes.status}（凭据明文不落日志）`);
+      return sendJson(res, upRes.status, text ? JSON.parse(text) : { ok: upRes.status < 400 });
+    } catch (e) {
+      const reason = e.name === 'TimeoutError' ? 'timeout' : String(e.cause?.code || e.message);
+      return sendJson(res, 502, { ok: false, error: 'UPSTREAM_UNKNOWN', reason });
+    }
   };
 
   const handleMessages = async (req, res, customerId) => {
@@ -260,6 +350,41 @@ export function createEdgeServer({
     }
     const result = await messages.handle({ session, customerId, body: read.body, log });
     return sendJson(res, result.status, result.body);
+  };
+
+  // 页内消息线程读（goal-03e，DEF-G04N-05）：GET /api/jw/v2/customers/:id/messages
+  // 会话必需 + messages:read + 目标客户对本会话凭据可读（与发送同源校验，fail-closed）。
+  // 受众边界由服务端强制：customer-only 会话只见 audience=customer（显式请求 internal → 403，
+  // 不以静默过滤掩盖越权）；?after=<cursor> 增量续拉（不漏不重），?limit 有界（≤500）。
+  const handleMessagesRead = async (req, res, customerId, urlObj) => {
+    const session = requireSession(req, res);
+    if (!session) return;
+    const verdict = await verify({ req, customerId, action: 'messages:read', session });
+    if (!verdict.ok) return sendJson(res, 403, { ok: false, error: verdict.reason || 'FORBIDDEN' });
+    if (!messageStore) return sendJson(res, 501, { ok: false, error: 'NOT_CONFIGURED', note: '消息线程读面未配置' });
+    const customerOnly = (session.roles ?? []).length > 0 && (session.roles ?? []).every((r) => r === 'customer');
+    const audienceParam = urlObj.searchParams.get('audience');
+    if (audienceParam !== null && audienceParam !== 'customer' && audienceParam !== 'internal') {
+      return sendJson(res, 400, { ok: false, error: 'INVALID_AUDIENCE', note: 'audience 必须是 customer|internal' });
+    }
+    if (customerOnly && audienceParam === 'internal') {
+      return sendJson(res, 403, { ok: false, error: 'FORBIDDEN', note: '客户联系人身份不可读内部协作消息' });
+    }
+    const audience = customerOnly ? 'customer' : audienceParam;
+    // 目标可读校验（与发送面同源）：live 用 store.checkCustomer（A 逐请求裁决）；fixture 放行。
+    if (typeof store?.checkCustomer === 'function') {
+      const target = await store.checkCustomer(customerId, { credential: session.credential }).catch((e) => ({ ok: false, code: 'UPSTREAM_UNKNOWN', status: 502, reason: String(e?.message || e) }));
+      if (!target?.ok) {
+        const status = target?.status === 403 ? 403 : target?.status === 404 ? 404 : 502;
+        return sendJson(res, status, { ok: false, error: target?.code || 'TARGET_UNVERIFIED', note: '目标客户对本会话不可读或校验失败：不返回消息' });
+      }
+    }
+    const { messages: items, cursor } = messageStore.list(customerId, {
+      audience,
+      afterSeq: Number(urlObj.searchParams.get('after')) || 0,
+      limit: Number(urlObj.searchParams.get('limit')) || 200,
+    });
+    return sendJson(res, 200, { ok: true, customerId, audience: audience ?? 'all', messages: items, cursor });
   };
 
   return http.createServer(async (req, res) => {
@@ -292,6 +417,10 @@ export function createEdgeServer({
 
         if (customerId && pathname.endsWith('/workspace')) return await handleWorkspace(req, res, customerId);
         if (customerId && pathname.endsWith('/events')) return await handleEvents(req, res, customerId, urlObj);
+
+        if (pathname === '/api/jw/v2/auth/identities') return await handleIdentities(res);
+        if (pathname === '/api/jw/v2/customers') return await handleDirectory(req, res, urlObj);
+        if (customerId && pathname.endsWith('/messages')) return await handleMessagesRead(req, res, customerId, urlObj);
 
         if (pathname === '/api/jw/v2/audit') {
           const session = requireSession(req, res);
@@ -344,6 +473,20 @@ export function createEdgeServer({
           }
         }
 
+        if (pathname.startsWith('/api/jw/v2/')) {
+          // goal-03d 分流：处理通道（Connectors IR-02-C）读面走服务令牌代理；其余仍为 A 读面。
+          if (connectorsReadProxy && pathname.startsWith('/api/jw/v2/connectors/')) {
+            const session = requireSession(req, res);
+            if (!session) return;
+            return await connectorsReadProxy.handle({ res, urlObj, session, log });
+          }
+          if (readProxy) {
+            const session = requireSession(req, res);
+            if (!session) return;
+            return await readProxy.handle({ res, urlObj, session, log });
+          }
+        }
+
         if (staticHandler && (pathname === '/harness' || pathname.startsWith('/harness/'))) {
           return staticHandler.handle({ res, urlObj });
         }
@@ -356,19 +499,26 @@ export function createEdgeServer({
         return sendJson(res, 404, { ok: false, error: 'NOT_FOUND' });
       }
 
-      if (req.method === 'POST') {
-        // 写路由 CSRF 守卫：所有 POST 一律先过 Origin/Sec-Fetch-Site 校验（GET 只读面不受影响）。
+      if (req.method === 'POST' || req.method === 'DELETE') {
+        // 写路由 CSRF 守卫：所有 POST/DELETE 一律先过 Origin/Sec-Fetch-Site 校验（GET 只读面不受影响）。
         const csrfFail = csrfCheck(req);
         if (csrfFail) {
-          log(`[csrf] rejected POST ${pathname}: ${csrfFail}`);
+          log(`[csrf] rejected ${req.method} ${pathname}: ${csrfFail}`);
           return sendJson(res, 403, { ok: false, error: 'CSRF_ORIGIN_REJECTED', detail: csrfFail });
         }
         if (pathname === '/api/jw/v2/session') return await handleSessionExchange(req, res);
+        if (pathname === '/api/jw/v2/invitations/redeem') return await handleInvitationRedeem(req, res);
         if (customerId && pathname.endsWith('/messages')) {
           if (!messages) return sendJson(res, 501, { ok: false, error: 'NOT_CONFIGURED' });
           return await handleMessages(req, res, customerId);
         }
         if (pathname.startsWith('/api/jw/v2/actions/')) {
+          // goal-03d 分流：处理通道写面（邀请/绑定/录入/更正/问答/暂停）走 Connectors 服务令牌代理。
+          if (connectorsProxy && pathname.startsWith('/api/jw/v2/actions/connectors/')) {
+            const session = requireSession(req, res);
+            if (!session) return;
+            return await connectorsProxy.handle({ res, urlObj, session, log });
+          }
           if (!proxy) return sendJson(res, 501, { ok: false, error: 'NOT_CONFIGURED' });
           const session = requireSession(req, res);
           if (!session) return;
@@ -440,7 +590,8 @@ export async function main(argv) {
   const { tcpProbe, httpProbe, aKernelReadyPass } = await import('./probes.mjs');
   const { createSessionStore } = await import('./session.mjs');
   const { createAuditSink } = await import('./audit.mjs');
-  const { createUpstreamProxy } = await import('./proxy.mjs');
+  const { createUpstreamProxy, CONNECTORS_ACTION_ROUTES } = await import('./proxy.mjs');
+  const { createReadProxy, CONNECTORS_READ_ROUTES } = await import('./readproxy.mjs');
   const { createMessageRouter } = await import('./messages.mjs');
   const { createStaticHandler } = await import('./static.mjs');
   const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
@@ -476,18 +627,25 @@ export async function main(argv) {
     store = createFixtureStore();
   }
 
-  // 身份目录（live）：--auth-file JSON {entries:[{credential, principalId, roles}]}; 只存服务端内存。
-  // 交换时以 A 只读探针（/api/v2/receipts/__jw-edge-probe__）复核凭据在 A 目录仍有效——目录与 A 双重校验。
+  // 身份目录（live）：--auth-file JSON {entries:[{credential, principalId, roles, label?, demo?}]};
+  // 只存服务端内存。交换时以 A 只读探针（/api/v2/receipts/__jw-edge-probe__）复核凭据在 A 目录仍有效
+  // ——目录与 A 双重校验。goal-03c：目录同时支撑受控登录（按 principalId 选择，凭据服务端查得）。
   const loadDirectory = async (p) => {
     const fs = await import('node:fs');
     const { createHash } = await import('node:crypto');
     const parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
-    const map = new Map();
+    const byHash = new Map();
+    const byPrincipal = new Map();
+    const list = [];
     for (const e of parsed.entries ?? []) {
       if (typeof e.credential !== 'string' || typeof e.principalId !== 'string') continue;
-      map.set(createHash('sha256').update(e.credential).digest('hex'), { principalId: e.principalId, roles: Array.isArray(e.roles) ? e.roles : [] });
+      const roles = Array.isArray(e.roles) ? e.roles : [];
+      const meta = { principalId: e.principalId, roles, label: typeof e.label === 'string' && e.label ? e.label : e.principalId, demo: e.demo === true };
+      byHash.set(createHash('sha256').update(e.credential).digest('hex'), meta);
+      byPrincipal.set(e.principalId, { ...meta, credential: e.credential });
+      list.push({ principalId: meta.principalId, roles: meta.roles, label: meta.label, demo: meta.demo });
     }
-    return map;
+    return { byHash, byPrincipal, list };
   };
   const directory = live && args['auth-file'] ? await loadDirectory(String(args['auth-file'])) : null;
   const probeKernelCredential = async (credential) => {
@@ -498,10 +656,11 @@ export async function main(argv) {
       return r.status === 200;
     } catch { return false; }
   };
-  const liveVerifier = (live && directory)
+  const liveVerifier = (live && (directory || redeemedDirectory))
     ? async ({ credential }) => {
       const { createHash } = await import('node:crypto');
-      const entry = directory.get(createHash('sha256').update(credential).digest('hex'));
+      const h = createHash('sha256').update(credential).digest('hex');
+      const entry = directory?.byHash.get(h) ?? redeemedDirectory.byHash.get(h);
       if (!entry) return { ok: false, reason: 'PRINCIPAL_UNTRUSTED' };
       if (!(await probeKernelCredential(credential))) return { ok: false, reason: 'PRINCIPAL_UNTRUSTED', note: 'A 目录探针未通过' };
       return { ok: true, principalId: entry.principalId, roles: entry.roles };
@@ -515,6 +674,17 @@ export async function main(argv) {
       : { ok: false, reason: 'PRINCIPAL_UNTRUSTED' })
     : null;
   const verifyCredential = live ? liveVerifier : fixtureVerifier;
+
+  // goal-03c 受控身份目录：live=auth-file 目录；fixture=单一合成演示身份。凭据只进 byPrincipal（服务端）。
+  let identityDirectory = null;
+  if (live && directory) {
+    identityDirectory = { list: directory.list, byPrincipal: directory.byPrincipal };
+  } else if (!live && fixtureVerifier) {
+    identityDirectory = {
+      list: [{ principalId: 'harness-admin', roles: ['admin'], label: '合成演示 · 管理员（训练）', demo: true }],
+      byPrincipal: new Map([['harness-admin', { credential: 'harness-demo-cred' }]]),
+    };
+  }
 
   // workspace/events 鉴权：live = 会话必需（真实客户/租户授权由 A 每请求裁决，Edge 不缓存）；
   // fixture = 语义自检放行。messages:external-send 是独立 Edge 权限点（C2.5）：
@@ -549,6 +719,10 @@ export async function main(argv) {
     return { messageId, state: 'sent_local_sink' };
   };
 
+  // 页内消息线程存储（goal-03e）：发送入栈在消息路由内；GET 读端点按角色裁决受众。
+  const { createMessageStore } = await import('./message-store.mjs');
+  const messageStore = createMessageStore({});
+
   const auditSink = createAuditSink();
   const sessionStore = createSessionStore({});
   const proxy = createUpstreamProxy({
@@ -557,8 +731,38 @@ export async function main(argv) {
     // fixture：E0 占位（真实凭据映射随 --live 落地）。
     credentialFor: live ? (session) => session.credential : (session) => `session:${session.principalId}`,
   });
+  // goal-03c 只读透传：仅 live 形态提供（fixture 无上游真实面，路由保持 404/501 如实拒绝）。
+  const readProxy = live
+    ? createReadProxy({ baseUrl: kernelBase, credentialFor: (session) => session.credential })
+    : null;
+
+  // goal-03d 处理通道（Connectors）代理：--connectors-url + 令牌文件（--connectors-token-file）
+  // 或 JW_CONNECTORS_TOKEN 环境变量。令牌只进服务端内存，不落日志/前端；未配置时相应面显式 404
+  // （PROXY_ROUTE_NOT_DECLARED / NOT_FOUND），页面如实标"处理通道未接入"。
+  let connectorsProxy = null;
+  let connectorsReadProxy = null;
+  const connectorsUrl = typeof args['connectors-url'] === 'string' ? args['connectors-url'] : null;
+  if (live && connectorsUrl) {
+    let token = process.env.JW_CONNECTORS_TOKEN || null;
+    if (!token && typeof args['connectors-token-file'] === 'string') {
+      const { readFileSync } = await import('node:fs');
+      token = readFileSync(String(args['connectors-token-file']), 'utf8').trim();
+    }
+    connectorsProxy = createUpstreamProxy({
+      baseUrl: connectorsUrl,
+      credentialFor: () => token ?? '',
+      headerName: 'X-Service-Token',
+      routes: CONNECTORS_ACTION_ROUTES,
+    });
+    connectorsReadProxy = createReadProxy({
+      baseUrl: connectorsUrl,
+      credentialFor: () => token ?? '',
+      headerName: 'X-Service-Token',
+      routes: CONNECTORS_READ_ROUTES,
+    });
+  }
   const messages = createMessageRouter({
-    deliver, auditSink,
+    deliver, auditSink, threadStore: messageStore,
     // live：发往客户前以本会话凭据校验目标客户可读（A 逐请求裁决，防错 customerId/越权外发）；
     // fixture：无上游目标面 → 不接校验（E0 语义自检）。
     validateTarget: live && typeof store.checkCustomer === 'function'
@@ -579,7 +783,7 @@ export async function main(argv) {
   const started = await startEdgeServer({
     port, seal, probes, store,
     auth: scopeAuth,
-    sessionStore, verifyCredential, proxy, messages, auditSink, staticHandler, frontHandler,
+    sessionStore, verifyCredential, proxy, readProxy, connectorsProxy, connectorsReadProxy, identityDirectory, messages, messageStore, auditSink, staticHandler, frontHandler,
     // CSRF 额外允许源：--allowed-origin 可重复，或 JW_EDGE_ALLOWED_ORIGINS 逗号分隔（staging 域名用）
     allowedOrigins: [
       ...argv.flatMap((a, i) => (a === '--allowed-origin' && argv[i + 1] && !argv[i + 1].startsWith('--') ? [argv[i + 1]] : [])),
@@ -590,8 +794,13 @@ export async function main(argv) {
   });
   console.log(`[edge] jw-edge listening on http://127.0.0.1:${started.port} (pid=${process.pid}) mode=${live ? 'live(kernel)' : 'fixture'}`);
   if (live) {
-    console.log(`[edge] live：A 内核 ${kernelBase}；workspace/events 需会话；身份目录=${directory ? 'auth-file' : '未配置(会话交换失败关闭)'}`);
+    console.log(`[edge] live：A 内核 ${kernelBase}；workspace/events 需会话；受控身份目录=${directory ? 'auth-file(可按 principalId 登录)' : '未配置(仅手输凭据，会话交换失败关闭)'}`);
     console.log('[edge] 消费面契约：Back/Edge/contract/consumed-surface-v1.json（上游漂移将原样报错，不伪装）');
+    console.log('[edge] 工作本读面：/api/jw/v2/customers/:id/{artifacts,reports}、/api/jw/v2/{reports,assessments,facilities,financing-requests,decision-packages,findings,inspections}/**（白名单透传，A 逐请求裁决）');
+    console.log('[edge] 受限原件上传：POST /api/jw/v2/actions/customers/:id/originals（≤512KB，IR-03-3 临时约定 v0；预览待上游单件读端点）');
+    console.log(connectorsProxy
+      ? `[edge] 处理通道：${connectorsUrl}（IR-02-C 消费面：/api/jw/v2/connectors/** 读、/api/jw/v2/actions/connectors/** 写；服务令牌只存服务端）`
+      : '[edge] 处理通道：未配置（--connectors-url + --connectors-token-file）；处理分段/预览/人工路线如实标未接入');
   } else {
     console.log('[edge] fixture 语义自检形态：加 --live 接真实内核投影');
   }
