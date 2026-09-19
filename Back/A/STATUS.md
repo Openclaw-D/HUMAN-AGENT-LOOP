@@ -1,5 +1,7 @@
 # A 路 STATUS（2026-09-16 夜间长程）
 
+> **2026-09-19 增量（V0.2 整改任务03：权威查询与授权支撑）**：CONTRACT 增至 §12（v2.5）——按客户权威分页清单（assessments/financing-requests，IR-03-A ②）、目录搜索标识统一、listArtifacts 处理引用、单件读同权收紧（客户角色 403）；迁移 011（两条索引）。五项待复验风险以真实 PG 反例复验（`test/risk-recheck-task03.test.mjs` 11/11；两条反例如实断言升级为待裁决 P-03a/b），disburse 边界与组织层级缺口登记于 `docs/v02-remediation/task-03/`（CURRENT_STATE/TEST_RESULTS/POLICY_PENDING/INTERFACE_CHANGES/NEXT_ACTION）。IR-03-A ③ 分析后不交付根修（§12.5）。测试容器 `jw-t03-pg@15461`（任务登记隔离资源）。以下为 2026-09-16 轮历史概要。
+
 更新时间：2026-09-16 06:45（北京时间，收口）。本文件只保留当前概要，历史过程见 evidence/。
 
 ## 05:00 监督落实（A 侧动作，05:20 完成）

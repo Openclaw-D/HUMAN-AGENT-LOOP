@@ -6,6 +6,10 @@
   "objectRoot": "path/to/.run/objects",
   "signingSecret": "GENERATE_RANDOM_32B_HEX",
   "serviceToken": "GENERATE_RANDOM_32B_HEX",
+  "callerBindings": [
+    { "token": "同 serviceToken（页面换权网关，如 Edge）", "caller": "edge-gateway", "mayDelegateActor": true, "_note": "任务02 actor 可信来源：仅此调用方可代理人类 actor（页面身份由网关裁决）；未配置 callerBindings 时默认把唯一 serviceToken 绑定为 edge-gateway" },
+    { "token": "REPLACE_内部自动化token", "caller": "internal-ops", "mayDelegateActor": false, "_note": "非代理调用方自报人类 actor 一律 403 ACTOR_NOT_DELEGABLE；未自报时以 svc:<caller> 服务身份执行" }
+  ],
   "wecom": {
     "allowRealWecom": false,
     "corpid": "REPLACE_corpid",

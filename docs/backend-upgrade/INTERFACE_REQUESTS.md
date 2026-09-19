@@ -54,8 +54,8 @@
 
 | 编号 | 目标域 | 状态 | 落点/说明 |
 |---|---|---|---|
-| IR-03-A ① | goal-01 | OPEN | |
-| IR-03-A ② | goal-01 | OPEN |（前轮已登记 consumed-surface upstreamGaps，此处并档） |
-| IR-03-A ③ | goal-01 | OPEN | |
+| IR-03-A ① | goal-01 | 已交付 | `GET /api/v2/customers`（CONTRACT §11 G1）；任务03 增补 search 匹配 customerId/legal_entity_ref（§12.2）。越权不可枚举语义同 getCustomer（404/不泄露存在性） |
+| IR-03-A ② | goal-01 | 已交付（A 侧） | `GET /api/v2/customers/:id/assessments`、`GET /api/v2/customers/:id/financing-requests`（CONTRACT §12.1；迁移 011）。Edge 切换权威清单并移除 `refsExhaustive=false` 由 goal-03 落地后回归 |
+| IR-03-A ③ | goal-01 | 分析后不交付（本轮） | 根修需提交时分配 seq（全事务串行点代价，与性能收口冲突）；bigserial 回滚缺口使"已提交水位"不可靠推导。结论与建议见 CONTRACT §12.5；Edge 窗口自愈缓解继续有效 |
 | IR-03-D ① | goal-04 | OPEN | |
 | IR-03-D ② | goal-04 | OPEN | |

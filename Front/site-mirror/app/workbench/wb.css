@@ -70,3 +70,30 @@
   .wb-rail { order: 2; }
   .wb-chat-cols { grid-template-columns: 1fr; }
 }
+
+/* ---- board-round-02 任务01：业务看板（阶段概览条/事项卡/可折叠沟通） ----
+   只做二维空间分区与展开交互：卡片+少量图标文字；动画仅限展开/状态更新/焦点转换；
+   尊重 prefers-reduced-motion。颜色语义全部带文字，不用颜色单独表义。 */
+.wb-stages { background: var(--wb-panel); border-bottom: 1px solid var(--wb-line); padding: 8px 16px 6px; display: flex; flex-direction: column; gap: 4px; }
+.wb-stages-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.wb-stage { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--wb-line); border-radius: 999px; padding: 2px 10px 2px 7px; font-size: 12px; background: #f7f9fb; color: var(--wb-dim); white-space: nowrap; }
+.wb-stage[data-state="done"] { background: #e3f2e9; border-color: #7cc49a; color: var(--wb-green); font-weight: 600; }
+.wb-stage[data-state="active"] { background: #e8f0fe; border-color: #9dbcea; color: var(--wb-blue); font-weight: 600; }
+.wb-stage[data-state="pending"] { background: #f7f9fb; border-color: var(--wb-line); color: var(--wb-gray); }
+.wb-stage[data-state="unsupported"] { background: #fff; border-style: dashed; color: var(--wb-gray); }
+.wb-stage-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--wb-gray); flex: none; }
+.wb-stage-dot[data-state="done"] { background: var(--wb-green); }
+.wb-stage-dot[data-state="active"] { background: var(--wb-blue); }
+.wb-stage-dot[data-state="unsupported"] { background: #fff; border: 1.5px solid var(--wb-gray); box-sizing: border-box; }
+.wb-stage-flag { font-style: normal; font-size: 10px; border: 1px solid var(--wb-line); border-radius: 6px; padding: 0 4px; color: var(--wb-gray); background: #fff; }
+.wb-kv.inline { border: 1px solid var(--wb-line); border-radius: 6px; padding: 1px 8px; background: #fff; }
+.wb-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.wb-matter { display: flex; flex-direction: column; gap: 6px; text-align: left; font: inherit; color: inherit; background: #fff; border: 1px solid var(--wb-line); border-radius: 10px; padding: 10px 12px; cursor: pointer; min-height: 96px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+.wb-matter:hover { border-color: var(--wb-blue); box-shadow: 0 2px 8px rgba(29, 95, 209, 0.10); }
+.wb-matter-head { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.wb-matter-head strong { font-size: 14px; }
+.wb-matter-body { display: flex; flex-direction: column; gap: 2px; }
+.wb-chatbar { background: var(--wb-panel); border-top: 1px solid var(--wb-line); padding: 6px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+@media (prefers-reduced-motion: reduce) {
+  .wb-matter { transition: none; }
+}

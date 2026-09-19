@@ -83,12 +83,19 @@ async function main() {
   const dbPort = arg('db-port', process.env.JW_PG_PORT || 15442);
   // live 模式（任务三 C2）：透传 --live/--auth-file/--allowed-origin；fixture-auth 仅非 live 时启用。
   // goal-03 C3：透传 --serve-front <dir>（同源受控前端托管，默认关闭）。
+  // 任务04 §三/§四：透传 --connectors-url/--connectors-token-file/--connectors-tenant（处理通道
+  // 消费面）与 --messages-file（消息+幂等回执持久库路径）。此前未透传 connectors 配置，导致
+  // 页面处理通道全部落入 A 面代理误报 PROXY_ROUTE_NOT_DECLARED（本轮已确认的问题 2）。
   const live = process.argv.includes('--live');
   const extraArgs = [];
   if (live) {
     extraArgs.push('--live');
     const authFile = arg('auth-file', null);
     if (authFile) extraArgs.push('--auth-file', authFile);
+    for (const name of ['connectors-url', 'connectors-token-file', 'connectors-tenant', 'messages-file']) {
+      const v = arg(name, null);
+      if (v) extraArgs.push(`--${name}`, v);
+    }
     for (let i = 0; i < process.argv.length; i++) {
       if (process.argv[i] === '--allowed-origin' && process.argv[i + 1]) extraArgs.push('--allowed-origin', process.argv[i + 1]);
     }

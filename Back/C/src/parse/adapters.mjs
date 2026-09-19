@@ -263,6 +263,39 @@ export function parseBankStatementCsv(text, { delimiter = null } = {}) {
 // key,value 声明提取（declared 级：内容是上传者的申报）
 // ---------------------------------------------------------------------------
 
+/** CSV key,value 声明表提取（任务02）：首行是 key/value 风格表头时按列定位（含可选 unit/caliber
+ *  列——值列只取值，不再把 `,元,权责发生` 整段并入值导致数值不可判读）；否则回退逐行提取。 */
+function extractKvCsvFacts(text) {
+  const rows = parseDelimitedRows(text);
+  if (rows.length >= 2) {
+    const header = (rows[0] ?? []).map(normHeader);
+    const keyCol = header.findIndex((h) => ['key', '键', '字段', '项目', '指标'].includes(h));
+    const valCol = header.findIndex((h) => ['value', '值', '数值', '金额'].includes(h));
+    if (keyCol >= 0 && valCol >= 0) {
+      const unitCol = header.findIndex((h) => ['unit', '单位'].includes(h));
+      const caliberCol = header.findIndex((h) => ['caliber', '口径'].includes(h));
+      const facts = [];
+      const problems = [];
+      for (let i = 1; i < rows.length; i++) {
+        const k = String(rows[i]?.[keyCol] ?? '').trim();
+        const rawVal = String(rows[i]?.[valCol] ?? '').trim();
+        if (k === '' && rawVal === '') continue;
+        if (TOTAL_ROW_RE.test(k)) continue;
+        if (k === '' || rawVal === '') { problems.push({ line: i + 1, detail: '空键或空值' }); continue; }
+        const num = parseAmountCell(rawVal);
+        const unit = unitCol >= 0 ? String(rows[i]?.[unitCol] ?? '').trim() : '';
+        const caliber = caliberCol >= 0 ? String(rows[i]?.[caliberCol] ?? '').trim() : '';
+        facts.push({
+          factKey: k, value: num != null ? num : rawVal, verificationLevel: 'declared',
+          unit: unit || null, caliber: caliber || null, sourceRefs: [i + 1],
+        });
+      }
+      if (facts.length > 0) return { facts, problems };
+    }
+  }
+  return extractKeyValueFacts(text);
+}
+
 function extractKeyValueFacts(text) {
   const facts = [];
   const problems = [];
@@ -684,7 +717,7 @@ export function parseArtifactBytes(buf, meta = {}) {
           return {
             ok: true, format: 'keyvalue_xlsx', parserVersion: `${PARSE_ADAPTERS_VERSION}:keyvalue-xlsx@1`,
             text: rows.map((r) => r.join('\t')).join('\n'),
-            declaredFacts: kv.facts.map((f) => ({ ...f, unit: meta.unit ?? null, caliber: meta.caliber ?? null })),
+            declaredFacts: kv.facts.map((f) => ({ ...f, unit: f.unit ?? meta.unit ?? null, caliber: f.caliber ?? meta.caliber ?? null })),
             qualityFlags: [...checkPeriodMismatch(meta, null), ...serialFlags], problems: kv.problems,
             ...(formulaRows.length > 0 ? { note: `公式缺缓存值行已拒绝：${formulaRows.join(',')}` } : {}),
             parseId: `prs-${stableHash({ sha: stableHash(buf.toString('latin1')), v: `${PARSE_ADAPTERS_VERSION}:keyvalue-xlsx@1` }).slice(0, 16)}`,
@@ -727,8 +760,9 @@ export function parseArtifactBytes(buf, meta = {}) {
     if (bank.ok) {
       return assembleBank(bank, 'bank_statement_csv', `${PARSE_ADAPTERS_VERSION}:bank-statement@1`, text, checkPeriodMismatch(meta, bank.aggregates), meta);
     }
-    // 非银行流水 CSV → key,value 声明表
-    const { facts, problems } = extractKeyValueFacts(text);
+    // 非银行流水 CSV → key,value 声明表（任务02：表头感知——首行为 key/value[/unit/caliber]
+    // 表头时按列提取，值列不再吞并单位/口径列；无表头回退逐行 key=value）
+    const { facts, problems } = extractKvCsvFacts(text);
     if (facts.length === 0) {
       return { ok: false, code: 'PARSE_FAILED', detail: 'CSV 既非银行流水表头也无可解析的 key,value 行', problems, manualEntry: true };
     }
@@ -737,7 +771,8 @@ export function parseArtifactBytes(buf, meta = {}) {
       parserVersion: `${PARSE_ADAPTERS_VERSION}:keyvalue-csv@1`, text,
       declaredFacts: facts.map((f) => ({
         factKey: f.factKey, value: f.value, verificationLevel: 'declared',
-        unit: meta.unit ?? null, caliber: meta.caliber ?? null, sourceRefs: [f.line],
+        unit: f.unit ?? meta.unit ?? null, caliber: f.caliber ?? meta.caliber ?? null,
+        sourceRefs: f.sourceRefs ?? [f.line],
       })),
       qualityFlags: checkPeriodMismatch(meta, null), problems,
       note: 'key,value 声明表：全部为 declared 级（上传者申报），非原件机器提取',
@@ -767,13 +802,17 @@ export function parseArtifactBytes(buf, meta = {}) {
   };
 }
 
-/** XLSX 两列 key/value 表识别（表头含 key/键/字段 列与 value/值/金额 列）。 */
+/** 表格 key/value 声明提取（XLSX 与 CSV 共用）：表头含 key/键/字段 列与 value/值/金额 列。
+ *  任务02 修复：值只取"值"列（此前 CSV 走自由文本正则，把"值,单位,口径"整段当值、表头行变
+ *  垃圾事实）；unit/caliber 列存在时逐行附着（声明列优先于上传元数据）。 */
 function extractKvTable(rows) {
   if (rows.length < 2) return null;
   const header = (rows[0] ?? []).map(normHeader);
   const keyCol = header.findIndex((h) => ['key', '键', '字段', '项目', '指标'].includes(h));
   const valCol = header.findIndex((h) => ['value', '值', '数值', '金额'].includes(h));
   if (keyCol < 0 || valCol < 0) return null;
+  const unitCol = header.findIndex((h) => ['unit', '单位'].includes(h));
+  const caliberCol = header.findIndex((h) => ['caliber', '口径'].includes(h));
   const facts = [];
   const problems = [];
   for (let i = 1; i < rows.length; i++) {
@@ -783,7 +822,11 @@ function extractKvTable(rows) {
     if (TOTAL_ROW_RE.test(k)) continue;
     if (k === '' || rawVal === '') { problems.push({ line: i + 1, detail: '空键或空值' }); continue; }
     const num = parseAmountCell(rawVal);
-    facts.push({ factKey: k, value: num != null ? num : rawVal, verificationLevel: 'declared', sourceRefs: [i + 1] });
+    facts.push({
+      factKey: k, value: num != null ? num : rawVal, verificationLevel: 'declared', sourceRefs: [i + 1],
+      ...(unitCol >= 0 ? { unit: String(rows[i]?.[unitCol] ?? '').trim() || null } : {}),
+      ...(caliberCol >= 0 ? { caliber: String(rows[i]?.[caliberCol] ?? '').trim() || null } : {}),
+    });
   }
   if (facts.length === 0) return null;
   return { facts, problems };

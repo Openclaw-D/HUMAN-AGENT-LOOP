@@ -168,7 +168,16 @@ export function makeABridge({
     return { ok: true, resultId: r.resultId ?? null };
   }
 
-  // ---- 读：对账 / 依据包发现 ----
+  // ---- 读：对账 / 客户权威核验 / 依据包发现 ----
+
+  /** 客户权威核验（任务02 受控映射链）：以 human business 凭据（客户范围=租户内 all）读 A 客户主档。
+   *  只读；返回 {ok:true, customer:{customerId,tenantId,legalEntityRef,displayName,…}} 或确定性错误
+   *  （NOT_FOUND=A 无此客户；其余=网络/凭据问题由调用方按可恢复等待处理）。 */
+  async function getCustomer(aCustomerId, { timeoutMs = 0 } = {}) {
+    const r = await call(credentials.registrar ?? credentials.service, 'GET',
+      `/api/v2/customers/${encodeURIComponent(aCustomerId)}`, undefined, { timeoutMs });
+    return { ok: true, customer: r.customer ?? null };
+  }
 
   async function getReceipt(requestId, { principalToken, timeoutMs = 0 } = {}) {
     try {
@@ -198,6 +207,6 @@ export function makeABridge({
     principalOf,
     registerArtifactOp, startRun, finishRun, registerGateReceipt, createFinding, recordDomainResult,
     reportProcessingStages,
-    getReceipt, decisionStatus,
+    getCustomer, getReceipt, decisionStatus,
   };
 }

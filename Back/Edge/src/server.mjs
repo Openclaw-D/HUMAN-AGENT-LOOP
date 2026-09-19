@@ -95,7 +95,10 @@ export function createEdgeServer({
 
   const runReadiness = async () => {
     const checks = await Promise.all(probes.map((p) => p().catch((e) => ({ name: p.name || 'probe', ok: false, detail: { error: String(e) } }))));
-    return { ok: checks.every((c) => c.ok), checks, capabilities: seal?.capabilities ?? {}, checkedAt: new Date().toISOString() };
+    // 聚合语义：advisory 检查（如"处理通道未配置"）如实显示但不参与聚合——Edge 的 ok 表示
+    // "已配置依赖全部就绪"；全链就绪由交付编排（delivery-up）在通道作为必需依赖时把关。
+    const gating = checks.filter((c) => !c.advisory);
+    return { ok: gating.every((c) => c.ok), checks, capabilities: seal?.capabilities ?? {}, checkedAt: new Date().toISOString() };
   };
 
   // CORS（任务三跨端口/跨机前端接线）：仅对显式允许列表源（--allowed-origin / JW_EDGE_ALLOWED_ORIGINS）
@@ -475,7 +478,11 @@ export function createEdgeServer({
 
         if (pathname.startsWith('/api/jw/v2/')) {
           // goal-03d 分流：处理通道（Connectors IR-02-C）读面走服务令牌代理；其余仍为 A 读面。
-          if (connectorsReadProxy && pathname.startsWith('/api/jw/v2/connectors/')) {
+          if (pathname.startsWith('/api/jw/v2/connectors/')) {
+            // 未配置处理通道时显式 503，不落入 A 读面误报 PROXY_ROUTE_NOT_DECLARED（任务04 问题3 根因链）。
+            if (!connectorsReadProxy) {
+              return sendJson(res, 503, { ok: false, error: 'CHANNEL_NOT_CONFIGURED', note: '处理通道未配置（--connectors-url + --connectors-token-file）：处理分段/预览/人工路线如实标未接入' });
+            }
             const session = requireSession(req, res);
             if (!session) return;
             return await connectorsReadProxy.handle({ res, urlObj, session, log });
@@ -514,7 +521,10 @@ export function createEdgeServer({
         }
         if (pathname.startsWith('/api/jw/v2/actions/')) {
           // goal-03d 分流：处理通道写面（邀请/绑定/录入/更正/问答/暂停）走 Connectors 服务令牌代理。
-          if (connectorsProxy && pathname.startsWith('/api/jw/v2/actions/connectors/')) {
+          if (pathname.startsWith('/api/jw/v2/actions/connectors/')) {
+            if (!connectorsProxy) {
+              return sendJson(res, 503, { ok: false, error: 'CHANNEL_NOT_CONFIGURED', note: '处理通道未配置（--connectors-url + --connectors-token-file）：处理动作如实标未接入' });
+            }
             const session = requireSession(req, res);
             if (!session) return;
             return await connectorsProxy.handle({ res, urlObj, session, log });
@@ -603,6 +613,9 @@ export async function main(argv) {
       recording: 'blocked_external_access',
       policy: 'simulation_rule_pack_v1.0.0 (boundary=simulation_only)',
       credit: 'v2_kernel (policy bits synthetic; 生产矩阵须公司批准录入)',
+      channel: (typeof args['connectors-url'] === 'string' && args['connectors-url'].length > 0)
+        ? 'wired (--connectors-url 配置；实际处理以 Connectors 驱动与 A bridge 运行为准)'
+        : 'not_wired (处理通道未配置)',
       note: '能力位逐一独立报告，永不汇总为 all_ok；受限能力见 contract/consumed-surface-v1.json',
     }
     : {
@@ -712,16 +725,22 @@ export async function main(argv) {
       : async () => ({ ok: true }));
 
   // E0 消息投递 seam：内存 sink；真实通道（企微客服/存档）属任务02。
+  // messageId 必须全局唯一（任务04 旅程缺陷修复：此前按进程内计数器 fixture-N 生成，
+  // 消息持久化后重启计数归零 → 与已存记录 UNIQUE 冲突，客户消息发送 500 INTERNAL）。
+  const { randomUUID: _uuid } = await import('node:crypto');
   const sentMessages = [];
   const deliver = async (msg) => {
-    const messageId = `fixture-${sentMessages.length + 1}`;
+    const messageId = `local-${_uuid()}`;
     sentMessages.push({ ...msg, messageId });
     return { messageId, state: 'sent_local_sink' };
   };
 
-  // 页内消息线程存储（goal-03e）：发送入栈在消息路由内；GET 读端点按角色裁决受众。
+  // 页内消息线程存储（goal-03e；任务04 §四持久化）：--messages-file <path>（.run 下，Git 排除）
+  // → node:sqlite 文件库（WAL），重启可恢复；未指定 → 进程内（E0 语义自检兼容）。
+  // 同一实例兼任消息 requestId 幂等回执的持久层（receiptStore）。
   const { createMessageStore } = await import('./message-store.mjs');
-  const messageStore = createMessageStore({});
+  const messagesFile = typeof args['messages-file'] === 'string' && args['messages-file'].length > 0 ? String(args['messages-file']) : null;
+  const messageStore = createMessageStore(messagesFile ? { file: messagesFile } : {});
 
   const auditSink = createAuditSink();
   const sessionStore = createSessionStore({});
@@ -737,8 +756,16 @@ export async function main(argv) {
     : null;
 
   // goal-03d 处理通道（Connectors）代理：--connectors-url + 令牌文件（--connectors-token-file）
-  // 或 JW_CONNECTORS_TOKEN 环境变量。令牌只进服务端内存，不落日志/前端；未配置时相应面显式 404
-  // （PROXY_ROUTE_NOT_DECLARED / NOT_FOUND），页面如实标"处理通道未接入"。
+  // 或 JW_CONNECTORS_TOKEN 环境变量。令牌只进服务端内存，不落日志/前端；未配置时相应面显式 503
+  // CHANNEL_NOT_CONFIGURED（不再落入 A 面代理误报 PROXY_ROUTE_NOT_DECLARED），页面如实标"处理通道未接入"。
+  //
+  // 任务04 §三·逐资源授权（Edge 是会话→服务令牌的唯一换权点，转发前必须裁决）：
+  //   - 角色边界：customer-only 会话仅可执行 access='customer'|'open' 的动作（上传/问答/接受邀请）；
+  //     access='internal'（邀请签发/人工转录/更正/获准复核/暂停恢复）一律 403 ROLE_FORBIDDEN；
+  //   - 客户归属：带目标客户（customerId/cid）的读写一律先以本会话凭据经 A checkCustomer 裁决
+  //     （A 逐请求授权，Edge 不缓存结论）；拒绝/不可读 → 不转发；缺失 → 400 失败关闭；
+  //   - 任务详情归属：页面只持 taskId——服务端先取回任务归属（customer_id）再校验，不可读 → 404
+  //     （不泄露存在性）；仅持有他人 taskId/evidenceId、改 query/body 的 customerId 都拿不到数据。
   let connectorsProxy = null;
   let connectorsReadProxy = null;
   const connectorsUrl = typeof args['connectors-url'] === 'string' ? args['connectors-url'] : null;
@@ -748,21 +775,53 @@ export async function main(argv) {
       const { readFileSync } = await import('node:fs');
       token = readFileSync(String(args['connectors-token-file']), 'utf8').trim();
     }
+    const { createChannelAuthorizers } = await import('./channel-authz.mjs');
+    const { writeAuthorize: connectorsWriteAuthorize, readAuthorize: connectorsReadAuthorize } = createChannelAuthorizers({ store, log: (m) => console.error(m) });
     connectorsProxy = createUpstreamProxy({
       baseUrl: connectorsUrl,
       credentialFor: () => token ?? '',
       headerName: 'X-Service-Token',
       routes: CONNECTORS_ACTION_ROUTES,
+      authorize: connectorsWriteAuthorize,
     });
     connectorsReadProxy = createReadProxy({
       baseUrl: connectorsUrl,
       credentialFor: () => token ?? '',
       headerName: 'X-Service-Token',
       routes: CONNECTORS_READ_ROUTES,
+      authorize: connectorsReadAuthorize,
     });
   }
+
+  // 任务04 §三·健康检查分项：处理通道进程（http）与通道鉴权前置（服务令牌 + 处理面可达）作为
+  // 独立 readiness 检查。处理驱动常驻与 A bridge 业务链路无法由 Edge 外部直接观测——不冒充
+  // "已验证"，驱动/桥接以页面处理推进与交付编排报告为准（驱动 lastTick 需求已交任务02）。
+  if (live && connectorsUrl) {
+    const connectorsTenant = typeof args['connectors-tenant'] === 'string' && args['connectors-tenant'] ? args['connectors-tenant'] : 'tenant_demo';
+    let channelToken = process.env.JW_CONNECTORS_TOKEN || null;
+    if (!channelToken && typeof args['connectors-token-file'] === 'string') {
+      const { readFileSync } = await import('node:fs');
+      channelToken = readFileSync(String(args['connectors-token-file']), 'utf8').trim();
+    }
+    probes.push(httpProbe({
+      name: 'connectors', url: `${connectorsUrl}/healthz`,
+      pass: (b, s) => s === 200 && b?.ok === true,
+      detailFields: ['ok', 'service', 'realWeCom', 'realTrtc'],
+    }));
+    probes.push(channelToken
+      ? httpProbe({
+        name: 'connectors-channel',
+        url: `${connectorsUrl}/api/connectors/processing/status?tid=${encodeURIComponent(connectorsTenant)}&cid=__edge_probe__`,
+        headers: { 'X-Service-Token': channelToken },
+        pass: (b, s) => s === 200 && b?.ok === true,
+        detailFields: ['ok', 'coordinatorVersion', 'rulesetVersion'],
+      })
+      : async () => ({ name: 'connectors-channel', ok: false, detail: { error: '服务令牌未配置（--connectors-token-file / JW_CONNECTORS_TOKEN）：通道鉴权前置不成立' } }));
+  } else if (live) {
+    probes.push(async () => ({ name: 'connectors', advisory: true, ok: false, detail: { configured: false, note: '处理通道未配置：相应读写在 Edge 侧显式 503 CHANNEL_NOT_CONFIGURED' } }));
+  }
   const messages = createMessageRouter({
-    deliver, auditSink, threadStore: messageStore,
+    deliver, auditSink, threadStore: messageStore, receiptStore: messageStore,
     // live：发往客户前以本会话凭据校验目标客户可读（A 逐请求裁决，防错 customerId/越权外发）；
     // fixture：无上游目标面 → 不接校验（E0 语义自检）。
     validateTarget: live && typeof store.checkCustomer === 'function'

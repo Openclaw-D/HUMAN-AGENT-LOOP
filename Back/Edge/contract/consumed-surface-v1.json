@@ -396,7 +396,7 @@
     "realDisbursement": "simulation_only（受控模拟回执）",
     "replayTrainingNamespace": "not_wired（回放/训练命名空间本轮未建；对外不可用时以明确标记的录制回放讲解，不计实时验收）"
   },
-  "revision": "goal03e-1（2026-09-19 product-delivery goal-03 三路）：新增消费 A §11.2 工件单件读回（content）；新增通道签名 URL 归一代理（connectors/objects/:ref 原始字节透传，修复相对 URL 被 SPA 兜底吞掉的预览断链）；Edge 新增页内消息线程读面（GET /api/jw/v2/customers/:id/messages，Edge 本地面非上游消费，详见 goal-03 HANDOFF goal-03e 节）",
+  "revision": "t4-r2-1（2026-09-19 board-round-02 任务04）：通道面新增 receipts 只读对账与 customers/link 受控登记两路由（消费任务02 已落地上游）；可信调用上下文=转发附加 x-jw-actor-principal/roles + 6 人工动作 actorField 会话覆写（防浏览器伪造 actor 经网关流入审计）；discipline 不变",
   "upstreamChannel": {
     "baseUrl": "--connectors-url（部署配置；本轮 http://127.0.0.1:17937）",
     "auth": "X-Service-Token（--connectors-token-file / JW_CONNECTORS_TOKEN；仅服务端内存）",
@@ -404,7 +404,8 @@
       "GET /api/jw/v2/connectors/processing/status?tid&cid",
       "GET /api/jw/v2/connectors/processing/tasks/:taskId?tid",
       "GET /api/jw/v2/connectors/evidence/preview?tid&eid&cid",
-      "GET /api/jw/v2/connectors/objects/:objectRef?op&tid&cid&exp&sig（goal-03e：Connectors 签名 URL 为相对路径 /objects/:ref，Edge 归一为本路由按原始字节透传（raw，content-type 保留）；会话必需 + HMAC 签名/有效期仍由 Connectors 验证）"
+      "GET /api/jw/v2/connectors/objects/:objectRef?op&tid&cid&exp&sig（goal-03e：Connectors 签名 URL 为相对路径 /objects/:ref，Edge 归一为本路由按原始字节透传（raw，content-type 保留）；会话必需 + HMAC 签名/有效期仍由 Connectors 验证）",
+      "GET /api/jw/v2/connectors/processing/receipts/:requestId?tid（任务04 round-02 消费任务02 IR-T01-3：a_links 对账簿只读；Edge 归属预检=真实取回回执行核 customer_id，命中不可读→404 不泄露存在性，未命中透传 found:false）"
     ],
     "routesWrite": [
       "POST /api/jw/v2/actions/connectors/intake/invitations",
@@ -414,7 +415,8 @@
       "POST /api/jw/v2/actions/connectors/evidence/correct-fact",
       "POST /api/jw/v2/actions/connectors/questions/answer",
       "POST /api/jw/v2/actions/connectors/questions/verify",
-      "POST /api/jw/v2/actions/connectors/processing/pause"
+      "POST /api/jw/v2/actions/connectors/processing/pause",
+      "POST /api/jw/v2/actions/connectors/customers/link（任务04 round-02 消费任务02 IR-04-2C 映射场景受控登记：internal 角色+目标客户 checkCustomer；legalEntityRef 归属证明由上游核验；actorField=requestedBy 会话覆写）"
     ],
     "discipline": "白名单路由；requestId 强制（1..128）；确定性拒绝 4xx 原样透传；上游未知 → 502 UPSTREAM_UNKNOWN；浏览器请求头不透传"
   }

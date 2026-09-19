@@ -4,7 +4,7 @@
 // 本面板不含任何批准/激活动作。
 import { useState } from 'react';
 import type { WbApi } from '../../lib/workbench/use-workbench';
-import { DEMO_TENANT, errorText, wbActionRequestId } from '../../lib/workbench/wb-logic';
+import { DEMO_TENANT, wbActionRequestId } from '../../lib/workbench/wb-logic';
 import { WbError, useAction } from './wb-parts';
 
 export function VerifyPanel({ wb, customerId }: { wb: WbApi; customerId: string }) {
@@ -88,15 +88,18 @@ export function VerifyPanel({ wb, customerId }: { wb: WbApi; customerId: string 
 
   const registerFinding = () => {
     if (!newFinding.trim()) return;
+    // requestId 在确认框打开时固定：失败/未知重试用同一编号，不换号盲重。
+    const requestId = wbActionRequestId('wb-fnd', customerId, 'finding', String(Date.now()));
     act.open(
       {
         title: '登记质量问题（差异）',
         lines: [`描述：${newFinding.trim()}`, `严重度：${severity}`, '登记后进入复核队列；未决差异会阻断后续正式动作（服务端强制）。'],
         confirmLabel: '登记',
+        requestId,
       },
       async () => {
         await client.action(`/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/findings`, {
-          requestId: `wb-fnd-${customerId}-${Date.now()}`.slice(0, 128),
+          requestId,
           tenantId: DEMO_TENANT,
           findingType: 'quality_issue',
           severity,
@@ -112,11 +115,17 @@ export function VerifyPanel({ wb, customerId }: { wb: WbApi; customerId: string 
     const reason = window.prompt('关闭理由（必填，写入后台审计）：');
     if (!reason || !reason.trim()) return;
     const evidenceRef = window.prompt('引用现行证据工件 artifactId（关闭关键复核必须引用现行证据）：');
+    const requestId = wbActionRequestId('wb-rsl', customerId, `resolve:${fid}`, String(Date.now()));
     act.open(
-      { title: `关闭复核 ${fid}`, lines: [`理由：${reason.trim()}`, evidenceRef ? `引用证据：${evidenceRef.trim()}` : '引用证据：无（仅限非关键差异）'], confirmLabel: '确认关闭' },
+      {
+        title: `关闭复核 ${fid}`,
+        lines: [`理由：${reason.trim()}`, evidenceRef ? `引用证据：${evidenceRef.trim()}` : '引用证据：无（仅限非关键差异）'],
+        confirmLabel: '确认关闭',
+        requestId,
+      },
       async () => {
         await client.action(`/api/jw/v2/actions/findings/${encodeURIComponent(fid)}/resolve`, {
-          requestId: `wb-rsl-${fid}-${Date.now()}`.slice(0, 128),
+          requestId,
           tenantId: DEMO_TENANT,
           outcome: 'resolved',
           note: reason.trim(),
@@ -129,10 +138,24 @@ export function VerifyPanel({ wb, customerId }: { wb: WbApi; customerId: string 
 
   const verifyItem = (itemId: string) => {
     if (!session?.sessionId) return;
+    const sid: string = session.sessionId;
     setVerifyErr(null);
-    client.action(`/api/jw/v2/actions/inspections/${encodeURIComponent(session.sessionId)}/items/${encodeURIComponent(itemId)}/verify`, {
-      requestId: `wb-vfy-${itemId}-${Date.now()}`.slice(0, 128),
-    }).then(() => wb.refresh()).catch((e) => setVerifyErr(errorText((e as { code?: string }).code, '核验未成功（角色或状态由服务端裁决）')));
+    // 人工核实是有权动作：套二次确认；requestId 在打开时固定，重试不换号。
+    const requestId = wbActionRequestId('wb-vfy', customerId, `verify:${itemId}`, String(Date.now()));
+    act.open(
+      {
+        title: '人工核实检查项',
+        lines: [`事项：${itemId}`, '核实结论进入检查会话记录；是否可核由名册角色与服务端裁决。'],
+        confirmLabel: '确认核实',
+        requestId,
+      },
+      async () => {
+        await client.action(`/api/jw/v2/actions/inspections/${encodeURIComponent(sid)}/items/${encodeURIComponent(itemId)}/verify`, {
+          requestId,
+        });
+        await wb.refresh();
+      },
+    );
   };
 
   const items = (session?.items ?? []) as Array<Record<string, unknown>>;

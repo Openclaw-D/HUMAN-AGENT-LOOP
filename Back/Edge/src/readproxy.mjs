@@ -2,6 +2,7 @@
 // Edge 不缓存、不加投影、不改错误语义——上游 4xx/5xx 原样透传，网络层未知 → 502 UPSTREAM_UNKNOWN。
 // 与写面（proxy.mjs）同一纪律：绝不做任意 URL 代理；未登记路径明确拒绝。
 // 注意：customer-only principal 对 artifacts/reports/内部读口的 403 由 A 结构保证（B13），Edge 原样呈现。
+import { trustedActorHeaders } from './channel-authz.mjs';
 
 export const READ_ROUTES = [
   {
@@ -67,6 +68,18 @@ export const READ_ROUTES = [
     action: 'invitations:read',
     upstream: (m) => `/api/v2/customers/${encodeURIComponent(m[1])}/invitations`,
   },
+  // ---- 任务04 消费 IR-03-A②（CONTRACT §12）：权威评估/融资申请清单（内部专用，A 逐请求裁决；
+  //      limit/cursor 透传，nextCursor=null=结束页） ----
+  {
+    pattern: /^\/api\/jw\/v2\/customers\/([^/]+)\/assessments$/,
+    action: 'assessments:read',
+    upstream: (m, search) => `/api/v2/customers/${encodeURIComponent(m[1])}/assessments${search || ''}`,
+  },
+  {
+    pattern: /^\/api\/jw\/v2\/customers\/([^/]+)\/financing-requests$/,
+    action: 'financing-requests:read',
+    upstream: (m, search) => `/api/v2/customers/${encodeURIComponent(m[1])}/financing-requests${search || ''}`,
+  },
   {
     pattern: /^\/api\/jw\/v2\/customers\/([^/]+)\/artifacts\/([^/]+)\/processing$/,
     action: 'artifacts:read',
@@ -101,22 +114,41 @@ export const READ_ROUTES = [
 // goal-03d Connectors 只读透传（IR-02-C 消费面）：处理分段进度/逐任务回执/原件预览签名 URL。
 // 上游是 Connectors 服务令牌面（X-Service-Token，服务端持有）——与 A 读面同一纪律：
 // 白名单路径、凭据不落浏览器、错误原样透传、网络层未知 → 502 UPSTREAM_UNKNOWN。
+//
+// 任务04 §三·逐资源授权元数据：Connectors 只认服务令牌，不重验页面身份——Edge 必须在转发前
+// 裁决会话与目标资源的归属关系：
+//   customerOf: 从 query 提取目标客户（status/preview/objects 的 cid）→ 非空则逐客户校验；
+//   ownership: 'task' 目标客户在任务行内（页面只持 taskId?tid）→ 转发前先由服务端取回任务
+//     归属并校验；不可读 → 404（不泄露存在性），绝不把他人 taskId 直接转发。
+//   ownership: 'receipt'（IR-T01-3 回执对账面）目标客户在 a_links 回执行内（页面只持
+//     requestId?tid）→ 同样预检；命中且不可读 → 404，回执不能凭 requestId 越权查询。
 export const CONNECTORS_READ_ROUTES = [
   {
     pattern: /^\/api\/jw\/v2\/connectors\/processing\/status$/,
     action: 'channel:read',
     upstream: (m, search) => `/api/connectors/processing/status${search || ''}`,
+    customerOf: (m, urlObj) => urlObj.searchParams.get('cid'),
   },
   {
     pattern: /^\/api\/jw\/v2\/connectors\/processing\/tasks\/([^/]+)$/,
     action: 'channel:read',
     upstream: (m, search) => `/api/connectors/processing/tasks/${encodeURIComponent(m[1])}${search || ''}`,
+    ownership: 'task',
+  },
+  {
+    // 按 requestId 查通道动作回执（IR-T01-3，任务02 已落地上游）：a_links 对账簿只读投影。
+    // 页面/对账方可两路合一（A 侧动作回执仍在 A /receipts/:requestId）；归属预检见上。
+    pattern: /^\/api\/jw\/v2\/connectors\/processing\/receipts\/([^/]+)$/,
+    action: 'channel:read',
+    upstream: (m, search) => `/api/connectors/processing/receipts/${encodeURIComponent(m[1])}${search || ''}`,
+    ownership: 'receipt',
   },
   {
     // 原件预览（IR-03-3 归宿之一）：魔数嗅探 + 短时签名 downloadUrl；Edge 不经手字节、不落公开目录
     pattern: /^\/api\/jw\/v2\/connectors\/evidence\/preview$/,
     action: 'channel:read',
     upstream: (m, search) => `/api/connectors/evidence/preview${search || ''}`,
+    customerOf: (m, urlObj) => urlObj.searchParams.get('cid'),
   },
   {
     // 通道原件字节（goal-03e 修复）：Connectors 签名 URL 为相对路径 /objects/:ref——同源 Edge 下
@@ -126,6 +158,7 @@ export const CONNECTORS_READ_ROUTES = [
     action: 'channel:read',
     upstream: (m, search) => `/objects/${encodeURIComponent(m[1])}${search || ''}`,
     raw: true,
+    customerOf: (m, urlObj) => urlObj.searchParams.get('cid'),
   },
 ];
 
@@ -136,6 +169,7 @@ export function createReadProxy({
   timeoutMs = 8000,
   fetchImpl = fetch,
   routes = READ_ROUTES,
+  authorize = null, // 任务04 §三：async ({route, m, urlObj, session, fetchImpl, baseUrl, headerName, credentialFor}) => null|{status, body}
 }) {
   return {
     upstreamBaseUrl: baseUrl,
@@ -149,6 +183,17 @@ export function createReadProxy({
         return;
       }
       const m = pathname.match(route.pattern);
+      // 逐资源授权（任务04 §三）：先于任何上游转发；task 归属预检由 authorize 自行取上游
+      // （fetchImpl/baseUrl/凭据经参数传入，代理不重复实现取数逻辑）。
+      if (authorize) {
+        const verdict = await authorize({ route, m, urlObj, session, fetchImpl, baseUrl, headerName, credentialFor });
+        if (verdict) {
+          log(`[read] ${pathname} authorize-reject ${verdict.status}`);
+          res.writeHead(verdict.status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+          res.end(JSON.stringify(verdict.body));
+          return;
+        }
+      }
       const upstreamUrl = baseUrl.replace(/\/$/, '') + route.upstream(m, urlObj.search || '');
       const started = Date.now();
       let upRes;
@@ -158,6 +203,8 @@ export function createReadProxy({
           headers: {
             // 唯一放行的身份头：服务端映射的上游凭据（浏览器请求头不透传）。
             [headerName]: credentialFor(session),
+            // 可信调用上下文（IR-04-2A-3）：服务端从会话派生，浏览器不可伪造。
+            ...trustedActorHeaders(session),
           },
           signal: AbortSignal.timeout(timeoutMs),
         });

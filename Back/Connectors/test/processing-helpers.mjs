@@ -144,7 +144,9 @@ export async function makeProcessingHarness({
     aCredential: aBaseUrl ? (aConfig?.credentials?.uploadFallback ?? 'tok-connector') : null,
     aFetchImpl,
     a: aBaseUrl ? { defaultTenantId: TENANT, ...(aConfig ?? {}) } : null,
-    processing,
+    // 无 A 的 harness=显式本地-only 声明（任务02：A 未配置时任务不得冒充全链完成；
+    // 严格默认 blocked_a_unavailable 属产品语义，本地-only 测试在此显式豁免）。显式传参可覆盖。
+    processing: { localOnlyCompletion: aBaseUrl == null, ...processing },
   });
   const server = await startServer(svc, {
     port,

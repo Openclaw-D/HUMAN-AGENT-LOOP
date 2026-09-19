@@ -2,11 +2,16 @@
 // 依据包全链——冻结（Gate 回执引用/域依赖声明/收口引用/豁免引用）、包详情（四域意见与当前性）、
 // 域结果登记（域目录角色引用真实运行，authority=none 恒定）、包绑定提案、approver 正式决定
 // （二次确认+幂等）。全部以 A 服务端裁决为准：条件未满足如实阻断，不提供绕过。
+// 任务01 修复面：内部引用（Gate 回执/分析运行/工件/依据包）由系统从客户现行材料清单与
+// 处理通道真实回执关联，业务人员只选业务对象、界面显示来源与版本；不再要求手填
+// runId/packageId/规则版本。缺真实回执时如实显示并说明（服务端同样拒绝），不生成
+// 分析完成/Gate/批准状态。手工引用仅保留为显式例外路径。
 import { useCallback, useEffect, useState } from 'react';
 import type { WbApi } from '../../lib/workbench/use-workbench';
 import {
-  buildConfirmPlan, completedRunRefs, DEMO_TENANT, decisionView, errorText, latestGateReceiptRef,
-  wbActionRequestId,
+  buildConfirmPlan, collectRunRefs, DEMO_TENANT, decisionView, errorText, latestGateReceiptRef,
+  pickedFactKeys, summarizeArtifacts, wbActionRequestId,
+  type ArtifactRow,
 } from '../../lib/workbench/wb-logic';
 import { fmtAmount } from '../../lib/v5-preview/edge/edge-logic';
 import { WbError, useAction } from './wb-parts';
@@ -15,7 +20,16 @@ const DOMAINS = ['policy', 'credit', 'commerce', 'asset'] as const;
 const DOMAIN_LABEL: Record<string, string> = { policy: '政策域', credit: '信审域', commerce: '商务域', asset: '资产域' };
 const DOMAIN_ROLE: Record<string, string> = { policy: 'policy', credit: 'credit', commerce: 'commerce', asset: 'asset' };
 
-interface DepRow { domain: string; artifactIds: string; factKeys: string; rulePackVersion: string; enabled: boolean }
+const KIND_TEXT: Record<string, string> = {
+  purchase_contract: '购销合同', invoice: '发票', equipment_list: '设备清单',
+  bank_statement: '银行流水', financial_statement: '财务报表', original_upload: '其他原件',
+  ledger_book: '账表', entity_register: '主体登记', device_photo: '设备照片', site_photo: '现场照片', document_sample: '其他文件',
+};
+const GRADE_TEXT: Record<string, string> = { unverified: '未核验', source_supported: '来源支撑', verified: '已核验' };
+
+function artifactLabel(r: ArtifactRow): string {
+  return `${KIND_TEXT[r.kind] ?? r.kind} · ${r.period ?? '期间—'}`;
+}
 
 export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: string }) {
   const client = wb.client;
@@ -31,22 +45,30 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
   const [months, setMonths] = useState('36');
   const [frAmount, setFrAmount] = useState('100000000');
   const [frType, setFrType] = useState('direct_leasing');
-  const [proposePackageId, setProposePackageId] = useState('');
   const act = useAction();
 
-  // 依据包冻结表单
-  const [gateReceiptId, setGateReceiptId] = useState('');
-  const [depRows, setDepRows] = useState<DepRow[]>(DOMAINS.map((d) => ({ domain: d, artifactIds: '', factKeys: '', rulePackVersion: '', enabled: d === 'credit' })));
+  // 系统关联引用：客户现行材料清单 + 处理通道回执（Gate/运行/规则版本）。读取失败如实显示。
+  const [materials, setMaterials] = useState<ArtifactRow[] | null>(null);
+  const [gateRef, setGateRef] = useState<{ id: string | null; loaded: boolean }>({ id: null, loaded: false });
+  const [runsByDomain, setRunsByDomain] = useState<Record<string, string[]>>({});
+  const [chanRuleVersion, setChanRuleVersion] = useState('');
+  const [refsTaskId, setRefsTaskId] = useState('');
+  const [refsErr, setRefsErr] = useState<string | null>(null);
+  const [refsLoading, setRefsLoading] = useState(false);
+
+  // 依据包冻结：勾选业务对象（现行材料），系统组装 artifactIds/factKeys/规则版本
+  const [depEnabled, setDepEnabled] = useState<Record<string, boolean>>({ credit: true });
+  const [depPicked, setDepPicked] = useState<Record<string, Record<string, boolean>>>({});
+  const [manualArtifactIds, setManualArtifactIds] = useState<Record<string, string>>({});
   const [freezeMsg, setFreezeMsg] = useState<string | null>(null);
   const [exemptions, setExemptions] = useState<Array<{ exemptionId: string; domain: string; status: string }>>([]);
   const [pickedExemptions, setPickedExemptions] = useState<Record<string, boolean>>({});
 
-  // 域结果登记表单
+  // 域结果登记：运行引用由下拉选择（通道回执），目标包=当前依据包（系统关联）
   const [drDomain, setDrDomain] = useState('');
   const [drRunId, setDrRunId] = useState('');
   const [drSummary, setDrSummary] = useState('');
   const [drFindingType, setDrFindingType] = useState('observation');
-  const [drPackageId, setDrPackageId] = useState('');
   const [drAdopt, setDrAdopt] = useState(false);
   const [drAdoptNote, setDrAdoptNote] = useState('');
 
@@ -71,7 +93,50 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
 
   useEffect(() => { void loadExemptions(); }, [loadExemptions]);
 
+  // 系统关联引用加载：现行材料清单 + 最新通道任务回执（Gate/各域运行/规则版本）。
+  const loadRefs = useCallback(async () => {
+    if (!client) return;
+    setRefsLoading(true);
+    setRefsErr(null);
+    try {
+      const j = await client.read(`/api/jw/v2/customers/${encodeURIComponent(customerId)}/artifacts`);
+      setMaterials(summarizeArtifacts((j.artifacts ?? []) as Array<Record<string, unknown>>).rows.filter((r) => r.current));
+    } catch { setMaterials(null); }
+    try {
+      const st = await client.channelStatus(customerId);
+      const tasks = (st.tasks ?? []) as Array<Record<string, unknown>>;
+      setChanRuleVersion(String((st as { rulesetVersion?: string }).rulesetVersion ?? ''));
+      const last = tasks.length > 0 ? String(tasks[tasks.length - 1].task_id ?? '') : '';
+      if (last) {
+        const tr = await client.channelTask(last);
+        const body = ((tr.task ?? tr) as Record<string, unknown>);
+        const ops = (body.aOps ?? []) as Array<Record<string, unknown>>;
+        setGateRef({ id: latestGateReceiptRef(ops), loaded: true });
+        setRunsByDomain(collectRunRefs(ops));
+        setRefsTaskId(last);
+      } else {
+        setGateRef({ id: null, loaded: true });
+        setRunsByDomain({});
+        setRefsTaskId('');
+      }
+    } catch {
+      setGateRef((g) => ({ ...g, loaded: true }));
+      setRunsByDomain({});
+      setRefsTaskId('');
+      setRefsErr('处理通道回执读取失败：无法系统关联 Gate/运行引用（通道未接入或未完成时如实显示，不假装有真实运行）。');
+    } finally {
+      setRefsLoading(false);
+    }
+  }, [client, customerId]);
+
+  useEffect(() => { void loadRefs(); }, [loadRefs]);
+
   if (!client) return null;
+
+  const effDrDomain = drDomain || myDomainRoles[0] || '';
+  const domainRuns = runsByDomain[effDrDomain] ?? [];
+  const effRunId = drRunId && domainRuns.includes(drRunId) ? drRunId : (domainRuns[0] ?? '');
+  const basisPackageId = basis?.packageId ?? '';
 
   const runAction = (action: string, path: string, extraBody: Record<string, unknown>, lines: string[]) => {
     const requestId = wbActionRequestId('wb-act', customerId, action, String(Date.now()));
@@ -81,71 +146,39 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
     });
   };
 
-  // 从处理通道回执读 Gate 回执/运行引用/规则版本（真实链产物；读不到如实提示）。
-  const syncFromChannel = async () => {
-    setFreezeMsg(null);
-    try {
-      const st = await client.channelStatus(customerId);
-      const tasks = (st.tasks ?? []) as Array<Record<string, unknown>>;
-      const last = tasks.length > 0 ? String(tasks[tasks.length - 1].task_id ?? '') : '';
-      if (!last) { setFreezeMsg('通道内暂无处理任务：先在材料页把原件送进处理通道并等其完成。'); return; }
-      const taskRes = await client.channelTask(last);
-      const taskBody = ((taskRes.task ?? taskRes) as Record<string, unknown>);
-      const ops = (taskBody.aOps ?? []) as Array<Record<string, unknown>>;
-      const gate = latestGateReceiptRef(ops);
-      const runs = completedRunRefs(ops);
-      setGateReceiptId(gate ?? '');
-      const ruleV = String((st as { rulesetVersion?: string }).rulesetVersion ?? '');
-      setDepRows((prev) => prev.map((r) => ({
-        ...r,
-        enabled: r.enabled || Boolean(runs[r.domain]),
-        rulePackVersion: r.rulePackVersion || ruleV,
-      })));
-      setDrRunId(Object.values(runs)[0] ?? '');
-      setFreezeMsg(gate
-        ? `已从通道任务回执读取：Gate 回执 ${gate.slice(0, 24)}…、${Object.keys(runs).length} 个域运行引用、规则版本 ${ruleV || '—'}`
-        : '通道回执中尚无已登记的 Gate 回执（处理未完成或未链接 A 客户）——冻结将被服务端拒绝，请等处理链完成。');
-    } catch (e) {
-      setFreezeMsg(errorText((e as { code?: string }).code, '处理通道读取失败：可手动粘贴 Gate 回执引用'));
-    }
-  };
-
   const freezePackage = () => {
-    const domainDeps = depRows
-      .filter((r) => r.enabled)
-      .map((r) => ({
-        domain: r.domain,
-        artifactIds: r.artifactIds.split(/[\s,，;；]+/).filter(Boolean),
-        factKeys: r.factKeys.split(/[\s,，;；]+/).filter(Boolean),
-        ...(r.rulePackVersion ? { rulePackVersion: r.rulePackVersion } : {}),
-      }));
-    if (domainDeps.length === 0) { setFreezeMsg('至少声明一个域依赖（必需域须有结果或有效豁免，服务端按政策强制）。'); return; }
+    const domainDeps = DOMAINS
+      .filter((d) => depEnabled[d] === true)
+      .map((d) => {
+        const pickedIds = Object.entries(depPicked[d] ?? {}).filter(([, v]) => v).map(([k]) => k);
+        const manual = (manualArtifactIds[d] ?? '').split(/[\s,，;；]+/).filter(Boolean);
+        const useManual = manual.length > 0;
+        const artifactIds = useManual ? manual : pickedIds;
+        const factKeys = useManual ? [] : pickedFactKeys(materials ?? [], pickedIds);
+        return { domain: d, artifactIds, factKeys, ...(chanRuleVersion ? { rulePackVersion: chanRuleVersion } : {}) };
+      })
+      .filter((d) => d.artifactIds.length > 0);
+    if (domainDeps.length === 0) { setFreezeMsg('至少为一个域声明材料依赖：勾选该域的现行材料（系统从档案清单关联），或在例外路径手工引用。'); return; }
     const requestId = wbActionRequestId('wb-pkg', customerId, 'freeze', String(Date.now()));
     const lines = [
-      `Gate 回执：${gateReceiptId || '（未引用——无 Gate 结论的包不可能就绪）'}`,
-      `域依赖：${domainDeps.map((d) => `${DOMAIN_LABEL[d.domain]}×${d.artifactIds.length}件`).join('、') || '无'}`,
+      gateRef.id
+        ? `Gate 回执：${gateRef.id.slice(0, 26)}…（来源：处理通道任务回执${refsTaskId ? ` ${refsTaskId.slice(0, 16)}…` : ''}）`
+        : 'Gate 回执：未引用（尚未读到真实 Gate 回执——无 Gate 结论的包不可能就绪）',
+      `域依赖：${domainDeps.map((d) => `${DOMAIN_LABEL[d.domain]}×${d.artifactIds.length}件${d.factKeys.length > 0 ? `·事实键${d.factKeys.length}` : ''}`).join('、') || '无'}`,
+      `规则版本：${chanRuleVersion || '未读取到（由服务端按当前激活版本裁决）'}`,
       sessionId ? `收口引用：会话 ${sessionId.slice(0, 18)}…（修订号服务端解析）` : '收口引用：无（如政策要求会先被拒）',
       `豁免引用：${Object.entries(pickedExemptions).filter(([, v]) => v).map(([k]) => k.slice(0, 12) + '…').join('、') || '无'}`,
-      '冻结后依据=包版本；候选≠批准。',
+      '工件/Gate/规则版本引用均由系统从真实清单与回执关联；冻结后依据=包版本；候选≠批准。',
     ];
     act.open(buildConfirmPlan('package.freeze', `客户 ${customerId}`, lines, requestId), async () => {
-      const r = await client.freezePackage(customerId, {
+      await client.freezePackage(customerId, {
         requestId,
-        ...(gateReceiptId ? { gateReceiptId } : {}),
+        ...(gateRef.id ? { gateReceiptId: gateRef.id } : {}),
         domainDeps,
         ...(sessionId ? { inspectionRevision: { sessionId } } : {}),
         ...(Object.values(pickedExemptions).some(Boolean) ? { exemptions: Object.entries(pickedExemptions).filter(([, v]) => v).map(([exemptionId]) => ({ exemptionId })) } : {}),
       });
       setFreezeMsg(null);
-      const pkgId = String(r.packageId ?? '');
-      if (pkgId) {
-        setProposePackageId(pkgId);
-        setDrPackageId(pkgId);
-        setDepRows((prev) => prev.map((row) => {
-          const declared = domainDeps.find((d) => d.domain === row.domain);
-          return declared ? { ...row, artifactIds: declared.artifactIds.join(', '), factKeys: declared.factKeys.join(', '), rulePackVersion: declared.rulePackVersion ?? row.rulePackVersion } : row;
-        }));
-      }
       await wb.refresh();
     });
   };
@@ -162,34 +195,35 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
   };
 
   const registerDomainResult = () => {
-    const packageId = drPackageId || basis?.packageId || '';
-    if (!packageId) { setPkgErr('尚无依据包：先冻结依据包，再登记域意见。'); return; }
-    if (!drDomain) { setPkgErr('选择要登记的域（须与我的目录角色一致）。'); return; }
-    if (!drRunId) { setPkgErr('填写真实分析运行引用（材料页处理通道回执中的 A 运行 a_ref）。'); return; }
+    if (!basisPackageId) { setPkgErr('尚无依据包：先冻结依据包，再登记域意见。'); return; }
+    if (!effDrDomain) { setPkgErr('选择要登记的域（须与我的目录角色一致）。'); return; }
+    if (!effRunId) { setPkgErr('该域尚无已完成的真实分析运行回执：不能登记（服务端也会拒绝非真实运行）。'); return; }
     if (!drSummary.trim()) { setPkgErr('填写域意见摘要（业务语言；正式效力仍属人）。'); return; }
-    const row = depRows.find((r) => r.domain === drDomain);
-    const requestId = wbActionRequestId('wb-dres', customerId, `dr:${drDomain}`, String(Date.now()));
+    const pickedIds = Object.entries(depPicked[effDrDomain] ?? {}).filter(([, v]) => v).map(([k]) => k);
+    const manual = (manualArtifactIds[effDrDomain] ?? '').split(/[\s,，;；]+/).filter(Boolean);
+    const artifactIds = manual.length > 0 ? manual : pickedIds;
+    const requestId = wbActionRequestId('wb-dres', customerId, `dr:${effDrDomain}`, String(Date.now()));
     const lines = [
-      `包：${packageId} · 域：${DOMAIN_LABEL[drDomain] ?? drDomain}`,
-      `运行引用：${drRunId.slice(0, 26)}…（须为已完成运行；失败运行被服务端拒绝）`,
+      `包：${basisPackageId.slice(0, 26)}…（当前依据包，系统关联）· 域：${DOMAIN_LABEL[effDrDomain] ?? effDrDomain}`,
+      `运行引用：${effRunId.slice(0, 26)}…（来源：处理通道任务回执${refsTaskId ? ` ${refsTaskId.slice(0, 16)}…` : ''}；须为已完成运行，失败运行被服务端拒绝）`,
       `意见：${drSummary.trim().slice(0, 60)}…（authority=none，服务端强制）`,
       drAdopt ? `同时记录采用决定（人 + 理由：${drAdoptNote.trim().slice(0, 40)}…）` : '不记录采用（仅登记意见）',
     ];
     act.open(buildConfirmPlan('package.domain-result', `客户 ${customerId}`, lines, requestId), async () => {
-      await client.recordDomainResult(packageId, {
+      await client.recordDomainResult(basisPackageId, {
         requestId,
-        domain: drDomain,
-        analysisRun: { runId: drRunId },
-        opinion: { findingType: drFindingType, summary: drSummary.trim(), domain: drDomain, authority: 'none' },
+        domain: effDrDomain,
+        analysisRun: { runId: effRunId },
+        opinion: { findingType: drFindingType, summary: drSummary.trim(), domain: effDrDomain, authority: 'none' },
         deps: {
-          artifactIds: (row?.artifactIds ?? '').split(/[\s,，;；]+/).filter(Boolean),
-          factKeys: (row?.factKeys ?? '').split(/[\s,，;；]+/).filter(Boolean),
-          ...(row?.rulePackVersion ? { rulePackVersion: row.rulePackVersion } : {}),
+          artifactIds,
+          factKeys: pickedFactKeys(materials ?? [], pickedIds),
+          ...(chanRuleVersion ? { rulePackVersion: chanRuleVersion } : {}),
         },
         ...(drAdopt && drAdoptNote.trim() ? { adoption: { adopted: true, rationale: drAdoptNote.trim() } } : {}),
       });
       setDrSummary('');
-      await openPackage(packageId);
+      await openPackage(basisPackageId);
       await wb.refresh();
     });
   };
@@ -244,26 +278,41 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
         </div>
       )}
 
-      <h3 className="wb-h2" style={{ marginTop: 12 }}>冻结决策依据包（credit/business · Gate 只收服务端回执引用）</h3>
+      <h3 className="wb-h2" style={{ marginTop: 12 }}>冻结决策依据包（credit/business · 引用系统关联，Gate 只收服务端回执引用）</h3>
       <div className="wb-card dim">
         <div className="wb-row">
-          <button className="wb-btn small ghost" onClick={() => void syncFromChannel()}>从处理通道回执读取 Gate/运行/规则版本</button>
+          <button className="wb-btn small ghost" onClick={() => void loadRefs()} disabled={refsLoading}>{refsLoading ? '读取中…' : '重新读取现行材料与通道回执'}</button>
           <span className="wb-sub">收口会话：{sessionId ? sessionId.slice(0, 18) + '…' : '无（收口引用可选）'}</span>
         </div>
+        <WbError error={refsErr} onDismiss={() => setRefsErr(null)} />
         <WbError error={freezeMsg} onDismiss={() => setFreezeMsg(null)} />
-        <div className="wb-field"><label>Gate 回执引用（gateReceiptId，来自处理链 A 回执）</label>
-          <input className="wb-input" value={gateReceiptId} onChange={(e) => setGateReceiptId(e.target.value)} placeholder="从处理通道读取或粘贴" />
+        <div className="wb-kv"><span className="k">Gate 回执（系统关联）</span>
+          <span>{gateRef.id
+            ? `${gateRef.id.slice(0, 30)}…（来源：处理通道任务回执${refsTaskId ? ` ${refsTaskId.slice(0, 16)}…` : ''}）`
+            : gateRef.loaded ? '未读到真实 Gate 回执（通道未完成或未链接 A）——冻结仍可提交，但该包不可能就绪（服务端同口径）' : '读取中…'}</span>
         </div>
+        <div className="wb-kv"><span className="k">规则版本（系统关联）</span><span>{chanRuleVersion || '未读取到（由服务端按当前激活版本裁决）'}</span></div>
         <table className="wb-table">
-          <thead><tr><th>纳入</th><th>域</th><th>工件（逗号分隔 artifactId）</th><th>事实键（可选）</th><th>规则版本</th></tr></thead>
+          <thead><tr><th>纳入</th><th>域</th><th>该域依赖的现行材料（勾选即引用，系统从档案清单关联）</th></tr></thead>
           <tbody>
-            {depRows.map((r) => (
-              <tr key={r.domain}>
-                <td><input type="checkbox" checked={r.enabled} onChange={(e) => setDepRows((prev) => prev.map((x) => (x.domain === r.domain ? { ...x, enabled: e.target.checked } : x)))} aria-label={`纳入${DOMAIN_LABEL[r.domain]}`} /></td>
-                <td>{DOMAIN_LABEL[r.domain]}</td>
-                <td><input className="wb-input" style={{ width: '100%' }} value={r.artifactIds} onChange={(e) => setDepRows((prev) => prev.map((x) => (x.domain === r.domain ? { ...x, artifactIds: e.target.value } : x)))} placeholder="现行工件 ID" /></td>
-                <td><input className="wb-input" style={{ width: '100%' }} value={r.factKeys} onChange={(e) => setDepRows((prev) => prev.map((x) => (x.domain === r.domain ? { ...x, factKeys: e.target.value } : x)))} placeholder="可选" /></td>
-                <td><input className="wb-input" style={{ width: 150 }} value={r.rulePackVersion} onChange={(e) => setDepRows((prev) => prev.map((x) => (x.domain === r.domain ? { ...x, rulePackVersion: e.target.value } : x)))} placeholder="如 sim-pack@1" /></td>
+            {DOMAINS.map((d) => (
+              <tr key={d}>
+                <td><input type="checkbox" checked={depEnabled[d] === true} onChange={(e) => setDepEnabled((prev) => ({ ...prev, [d]: e.target.checked }))} aria-label={`纳入${DOMAIN_LABEL[d]}`} /></td>
+                <td>{DOMAIN_LABEL[d]}</td>
+                <td>
+                  {materials === null && <span className="wb-sub">材料清单读取失败或为空：可用下方例外路径手工引用（服务端仍会校验真实性）。</span>}
+                  {materials !== null && materials.length === 0 && <span className="wb-sub">客户档案暂无现行材料。</span>}
+                  {materials !== null && materials.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                      {materials.map((m) => (
+                        <label key={m.artifactId} className="wb-sub" title={`${m.artifactId}${m.createdAt ? ` · ${m.createdAt}` : ''}`}>
+                          <input type="checkbox" checked={depPicked[d]?.[m.artifactId] === true} onChange={(ev) => setDepPicked((prev) => ({ ...prev, [d]: { ...(prev[d] ?? {}), [m.artifactId]: ev.target.checked } }))} />
+                          {' '}{artifactLabel(m)}{m.factKey ? ` · ${m.factKey}` : ''}{m.grade && GRADE_TEXT[m.grade] ? ` · ${GRADE_TEXT[m.grade]}` : ''}
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -280,29 +329,46 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
           </div>
         )}
         {(isCredit || isBusiness) && <button className="wb-btn" onClick={freezePackage}>冻结依据包</button>}
+        <details style={{ marginTop: 8 }}>
+          <summary className="wb-sub">例外路径：手工引用工件 ID（仅当引用不在上方清单；普通办理不需要，服务端仍校验真实性）</summary>
+          <div className="wb-row" style={{ marginTop: 6 }}>
+            {DOMAINS.map((d) => (
+              <div key={d} className="wb-field" style={{ width: 170 }}><label>{DOMAIN_LABEL[d]}</label>
+                <input className="wb-input" value={manualArtifactIds[d] ?? ''} onChange={(e) => setManualArtifactIds((prev) => ({ ...prev, [d]: e.target.value }))} placeholder="逗号分隔 artifactId（可选）" aria-label={`${DOMAIN_LABEL[d]}手工工件引用`} />
+              </div>
+            ))}
+          </div>
+          <p className="wb-note">手工引用覆盖对应域的勾选；此路径不产生任何分析或 Gate 结论。</p>
+        </details>
         <p className="wb-note">必需域来自批准政策（服务端强制）：未登记结果的必需域须有有效豁免；Gate 未登记的包不可能就绪。豁免本身由 admin/业务在 A 登记后在此引用。</p>
       </div>
 
-      <h3 className="wb-h2" style={{ marginTop: 12 }}>登记域意见（域目录角色 · 引用真实运行 · authority=none）</h3>
+      <h3 className="wb-h2" style={{ marginTop: 12 }}>登记域意见（域目录角色 · 运行引用系统关联 · authority=none）</h3>
       <div className="wb-card dim">
         {myDomainRoles.length === 0 && <p className="wb-note">我的目录角色不含域专员（policy/credit/commerce/asset）：登记入口不显示（服务端同样拒绝）。</p>}
         {myDomainRoles.length > 0 && (
           <>
             <div className="wb-row">
               <div className="wb-field" style={{ width: 130 }}><label>域</label>
-                <select className="wb-select" value={drDomain || myDomainRoles[0]} onChange={(e) => setDrDomain(e.target.value)}>
+                <select className="wb-select" aria-label="登记域" value={effDrDomain} onChange={(e) => { setDrDomain(e.target.value); setDrRunId(''); }}>
                   {myDomainRoles.map((d) => <option key={d} value={d}>{DOMAIN_LABEL[d]}</option>)}
                 </select>
               </div>
               <div className="wb-field" style={{ width: 150 }}><label>意见类型</label>
-                <select className="wb-select" value={drFindingType} onChange={(e) => setDrFindingType(e.target.value)}>
+                <select className="wb-select" aria-label="意见类型" value={drFindingType} onChange={(e) => setDrFindingType(e.target.value)}>
                   <option value="observation">观察</option>
                   <option value="concern">关注</option>
                   <option value="blocker">阻断项</option>
                 </select>
               </div>
-              <div className="wb-field" style={{ flex: 1 }}><label>分析运行引用（runId，处理通道回执）</label>
-                <input className="wb-input" value={drRunId} onChange={(e) => setDrRunId(e.target.value)} placeholder="如 run-xxx（须为已完成运行）" />
+              <div className="wb-field" style={{ flex: 1 }}><label>分析运行（系统从通道任务回执关联{refsTaskId ? ` · 任务 ${refsTaskId.slice(0, 14)}…` : ''}）</label>
+                {domainRuns.length > 0 ? (
+                  <select className="wb-select" value={effRunId} onChange={(e) => setDrRunId(e.target.value)} aria-label="分析运行引用">
+                    {domainRuns.map((r) => <option key={r} value={r}>{r.slice(0, 34)}…（处理通道回执）</option>)}
+                  </select>
+                ) : (
+                  <span className="wb-sub">{refsLoading ? '读取通道回执中…' : '该域暂无已完成的真实分析运行回执——不能登记（服务端同样拒绝非真实运行）。'}</span>
+                )}
               </div>
             </div>
             <div className="wb-field"><label>域意见摘要（业务语言）</label>
@@ -311,10 +377,8 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
             <div className="wb-row">
               <label className="wb-sub"><input type="checkbox" checked={drAdopt} onChange={(e) => setDrAdopt(e.target.checked)} /> 同时记录采用决定</label>
               {drAdopt && <input className="wb-input" style={{ flex: 1 }} value={drAdoptNote} onChange={(e) => setDrAdoptNote(e.target.value)} placeholder="采用理由（必填，记录采用人/依据版本由服务端补全）" />}
-              <div className="wb-field" style={{ width: 220 }}><label>目标包</label>
-                <input className="wb-input" value={drPackageId || basis?.packageId || ''} onChange={(e) => setDrPackageId(e.target.value)} placeholder="默认当前依据包" />
-              </div>
-              <button className="wb-btn" onClick={registerDomainResult}>登记域意见</button>
+              <span className="wb-sub">目标包：{basisPackageId ? `${basisPackageId.slice(0, 24)}…（当前依据包，系统关联）` : '未冻结——先冻结依据包'}</span>
+              <button className="wb-btn" onClick={registerDomainResult} disabled={domainRuns.length === 0 || !basisPackageId}>登记域意见</button>
             </div>
           </>
         )}
@@ -376,23 +440,24 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
             <input className="wb-input" style={{ width: 150 }} value={amountMinor} onChange={(e) => setAmountMinor(e.target.value)} />
             <span>期限（月）：</span>
             <input className="wb-input" style={{ width: 80 }} value={months} onChange={(e) => setMonths(e.target.value)} />
-            <span>依据包：</span>
-            <input className="wb-input" style={{ width: 220 }} value={proposePackageId || basis?.packageId || ''} onChange={(e) => setProposePackageId(e.target.value)} placeholder="包绑定提案（BASIS_PACKAGE_REQUIRED 门）" />
+            <span>依据包（系统关联）：</span>
+            <span className="wb-sub">{basisPackageId
+              ? `${basisPackageId.slice(0, 24)}…（当前依据包，修订 r${basis?.revision ?? '?'}）`
+              : '未冻结——正式提案会被服务端 BASIS_PACKAGE_REQUIRED 拒绝'}</span>
             <button
               className="wb-btn"
               onClick={() => {
                 const latest = assessments[assessments.length - 1];
-                const packageId = proposePackageId || basis?.packageId || '';
                 if (!latest?.assessmentId) return;
-                if (!packageId) { setPkgErr('正式提案必须绑定依据包：先冻结依据包（服务端 BASIS_PACKAGE_REQUIRED 强制）。'); return; }
+                if (!basisPackageId) { setPkgErr('正式提案必须绑定依据包：先冻结依据包（服务端 BASIS_PACKAGE_REQUIRED 强制）。'); return; }
                 runAction('facility.propose', `/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/facilities`, {
                   productType: 'direct_leasing',
                   approvedAmountMinor: Number(amountMinor) || 0,
                   currency: 'CNY',
                   termMonths: Number(months) || undefined,
                   assessmentId: String(latest.assessmentId),
-                  packageId,
-                }, [`提案（候选）：${fmtAmount(Number(amountMinor) || 0)} / ${months} 个月`, `绑定评估：${String(latest.assessmentId).slice(0, 20)}…`, `绑定依据包：${packageId.slice(0, 20)}…`, '候选≠批准：需有权人正式批准。']);
+                  packageId: basisPackageId,
+                }, [`提案（候选）：${fmtAmount(Number(amountMinor) || 0)} / ${months} 个月`, `绑定评估：${String(latest.assessmentId).slice(0, 20)}…`, `绑定依据包：${basisPackageId.slice(0, 20)}…（系统关联当前依据包）`, '候选≠批准：需有权人正式批准。']);
               }}
             >提交额度提案（候选）</button>
             {assessments.length === 0 && <span className="wb-note">提案须绑定评估：请先创建评估。</span>}

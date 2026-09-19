@@ -128,11 +128,13 @@ export function makeIntakeService(store, { bindings }) {
     return { ok: true, bindingId, status: 'active' };
   }
 
-  /** 上传范围检查（供上传路径调用）：邀请必须 accepted、未过期未撤销、kind 在该角色的获准清单、对象在锚定范围。 */
+  /** 上传范围检查（供上传路径调用）：邀请必须 accepted、未过期未撤销、kind 在该角色的获准清单、对象在锚定范围。
+   *  任务02（IR-04-2A-1）：返回邀请归属 customer_id——调用方必须与上传声明的 customerId 比对，
+   *  不一致拒绝（伪造客户字段不得借他人邀请上传）。 */
   async function checkUploadScope({ tenantId, invitationId, kind, objectRef = null }) {
     if (!tenantId || !invitationId || !kind) throw new ConnError('INVALID_INPUT', 'checkUploadScope: tenantId/invitationId/kind required');
     const rows = (await store.query(
-      `SELECT role, allowed_evidence_kinds, object_refs, status, expires_at FROM intake_invitations
+      `SELECT customer_id, role, allowed_evidence_kinds, object_refs, status, expires_at FROM intake_invitations
        WHERE tenant_id=$1 AND invitation_id=$2`,
       [tenantId, invitationId],
     )).rows;
@@ -148,7 +150,7 @@ export function makeIntakeService(store, { bindings }) {
     if (Array.isArray(objects) && objects.length > 0 && (objectRef == null || !objects.includes(objectRef))) {
       throw new ConnError('CUSTOMER_SCOPE_MISMATCH', `checkUploadScope: 对象 ${objectRef ?? '(无)'} 不在该邀请的锚定范围`);
     }
-    return { ok: true, role: inv.role };
+    return { ok: true, role: inv.role, customerId: inv.customer_id };
   }
 
   /** 撤销邀请：停用尚未接受的邀请；已接受的邀请撤销后其上传范围检查立即失效。 */

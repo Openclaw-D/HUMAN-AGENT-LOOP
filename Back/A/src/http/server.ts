@@ -158,6 +158,9 @@ export function startHttpServer(kernel: Kernel, port: number): Promise<Server> {
     route('GET', '/api/v2/customers/:customerId/artifacts', async (_q, _s, p, _sp, body) => C.listArtifacts(cred(body, _q), S(p.customerId)));
     route('GET', '/api/v2/customers/:customerId/artifacts/:artifactId/content', async (_q, _s, p, _sp, body) => C.getArtifactContent(cred(body, _q), S(p.customerId), S(p.artifactId)));
     route('POST', '/api/v2/customers/:customerId/assessments', async (_q, _s, p, _sp, body) => C.createAssessment(F(body), S(p.customerId)));
+    // 任务03 IR-03-A ②：按客户权威分页清单（事件窗口引用的替代事实源；契约见 CONTRACT §12）
+    route('GET', '/api/v2/customers/:customerId/assessments', async (_q, _s, p, sp, body) => C.listCustomerAssessments(cred(body, _q), S(p.customerId), { limit: sp.get('limit'), cursor: sp.get('cursor') }));
+    route('GET', '/api/v2/customers/:customerId/financing-requests', async (_q, _s, p, sp, body) => C.listCustomerFinancingRequests(cred(body, _q), S(p.customerId), { limit: sp.get('limit'), cursor: sp.get('cursor') }));
     route('GET', '/api/v2/assessments/:assessmentId', async (_q, _s, p, _sp, body) => C.getAssessment(cred(body, _q), S(p.assessmentId)));
     route('POST', '/api/v2/assessments/:assessmentId/candidate', async (_q, _s, p, _sp, body) => C.submitCandidate(F(body), S(p.assessmentId)));
     route('POST', '/api/v2/assessments/:assessmentId/submit-review', async (_q, _s, p, _sp, body) => C.submitForReview(F(body), S(p.assessmentId)));

@@ -498,6 +498,9 @@ CREATE TABLE IF NOT EXISTS processing_flags (
 -- ============================================================================
 
 -- 客户↔A 客户持久映射（生产须来自授权客户目录/归集流程；配置仅可种子）
+-- 任务02 受控映射链：linked_by ∈ config_seed|auto_authoritative_same_id|controlled_registration；
+-- 链接必须经 A 权威核验（存在+租户归属，映射场景另附 legal_entity_ref 归属证明）后落库；
+-- 禁止按文件名/企业同名/前缀推断（无此类代码路径）。
 CREATE TABLE IF NOT EXISTS a_customer_links (
   tenant_id TEXT NOT NULL,
   customer_id TEXT NOT NULL,
@@ -508,6 +511,9 @@ CREATE TABLE IF NOT EXISTS a_customer_links (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   PRIMARY KEY (tenant_id, customer_id)
 );
+ALTER TABLE a_customer_links ADD COLUMN IF NOT EXISTS legal_entity_ref TEXT;  -- 受控登记时的归属证明（A 档案一致才落）
+ALTER TABLE a_customer_links ADD COLUMN IF NOT EXISTS verified_via TEXT;      -- 核验方式：a_get_customer（权威读）
+ALTER TABLE a_customer_links ADD COLUMN IF NOT EXISTS linked_by_actor TEXT;   -- 受控登记请求操作者（留痕）
 
 -- A 操作登记：entity_type ∈ material|derived|supersede|run|gate|finding|domain_result
 CREATE TABLE IF NOT EXISTS a_links (

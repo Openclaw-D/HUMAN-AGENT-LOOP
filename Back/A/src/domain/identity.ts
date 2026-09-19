@@ -117,8 +117,11 @@ export function buildIdentityCommands(kernel: Kernel): IdentityApi {
       const search = (opts.search ?? '').trim();
       if (search.length > 0) {
         if (search.length > 100) throw invalid('search 过长（≤100）');
+        // 任务03（与任务一/前端"按名称/标识搜索"统一）：同一词同时匹配客户名称与标识
+        // （customerId、legal_entity_ref）。授权过滤（租户/grants）仍在搜索条件之外先行生效。
         vals.push(`%${search}%`);
-        conds.push(`c.display_name ILIKE $${vals.length}`);
+        const p = `$${vals.length}`;
+        conds.push(`(c.display_name ILIKE ${p} OR c.customer_id ILIKE ${p} OR c.legal_entity_ref ILIKE ${p})`);
       }
       if (opts.cursor) {
         const cur = decodeCursor(opts.cursor);

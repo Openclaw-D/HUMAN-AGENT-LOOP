@@ -198,6 +198,9 @@ export interface CreditV2Api {
   submitForReview(frame: V2Frame, assessmentId: string): Promise<Record<string, unknown>>;
   decideAssessment(frame: V2Frame, assessmentId: string): Promise<Record<string, unknown>>;
   getAssessment(credential: unknown, assessmentId: string): Promise<Record<string, unknown>>;
+  /** 任务03 IR-03-A ②：按客户权威分页清单（Edge 快照引用改走权威查询，替代事件窗口发现）。 */
+  listCustomerAssessments(credential: unknown, customerId: string, opts: { limit?: unknown; cursor?: unknown }): Promise<Record<string, unknown>>;
+  listCustomerFinancingRequests(credential: unknown, customerId: string, opts: { limit?: unknown; cursor?: unknown }): Promise<Record<string, unknown>>;
   proposeFacility(frame: V2Frame, customerId: string): Promise<Record<string, unknown>>;
   approveFacility(frame: V2Frame, facilityId: string): Promise<Record<string, unknown>>;
   activateFacility(frame: V2Frame, facilityId: string): Promise<Record<string, unknown>>;
@@ -542,8 +545,13 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       }
       const res = await kernel.pool.query(
         `SELECT a.artifact_id, a.kind, a.fact_key, a.sha256, a.supersedes, a.superseded_by, a.duplicate_of, a.created_at,
-                a.provenance, a.object_ref, a.material_meta, f.value, f.grade
+                a.provenance, a.object_ref, a.material_meta, f.value, f.grade,
+                p.stage AS proc_stage, p.run_ref AS proc_run_ref, p.failure_reason AS proc_failure_reason, p.next_action AS proc_next_action
          FROM evidence_artifacts a LEFT JOIN fact_assertions f ON f.artifact_id = a.artifact_id
+         LEFT JOIN LATERAL (
+           SELECT stage, run_ref, failure_reason, next_action FROM artifact_processing ap
+           WHERE ap.artifact_id = a.artifact_id ORDER BY ap.id DESC LIMIT 1
+         ) p ON true
          WHERE a.customer_id=$1 ORDER BY a.created_at`, [customerId],
       );
       // 独立证明计数（3.1/B01）：派生链按根归并；同一声明的清单/生成场景/截图只计一件
@@ -590,6 +598,10 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
           value: r.value, grade: r.grade, createdAt: r.created_at,
           provenance: r.provenance, objectRef: r.object_ref, materialMeta: r.material_meta,
           current: r.superseded_by === null,
+          // 任务03（IR-03-A ②"必要的处理引用"）：登记后无处理记录 = null（页面按 registered 展示，口径同 §11 my/materials）
+          processing: r.proc_stage === null || r.proc_stage === undefined ? null : {
+            stage: r.proc_stage, runRef: r.proc_run_ref, failureReason: r.proc_failure_reason, nextAction: r.proc_next_action,
+          },
         })),
         factConflicts: (conflictRes.rows as Record<string, unknown>[]).map((r) => ({ factKey: r.fact_key, assertionCount: Number(r.n) })),
         independentProofs,
@@ -787,7 +799,9 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       const res = await kernel.pool.query(`SELECT * FROM credit_assessments WHERE assessment_id=$1`, [assessmentId]);
       if (res.rows.length === 0) throw notFound('评估不存在');
       const row = res.rows[0] as Record<string, unknown>;
+      // 任务03：单件读与清单读同权（内部专用；客户联系人身份 403——B13 口径，先按租户/grant 裁决 404 再拦角色）。
       await scopeByRow(kernel, { credential }, row.tenant_id as string, row.customer_id as string);
+      await requireInternalRead(kernel, credential, '评估');
       return {
         ok: true,
         assessment: {
@@ -796,6 +810,70 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
           ruleVersion: row.rule_version, candidate: row.candidate, version: Number(row.version),
           createdAt: row.created_at, updatedAt: row.updated_at,
         },
+      };
+    },
+
+    // ---- 任务03 IR-03-A ②：按客户权威分页清单（assessments / financing-requests） ----------------
+    // 事件窗口只能"发现"引用（refsExhaustive=false）；权威清单以业务表为准：租户/grant/角色过滤、
+    // 键集分页只基于业务 id（id 前缀含毫秒时间戳，字典序≈创建时间倒序；created_at 微秒经 JS 毫秒
+    // 编码有截断，禁止用作游标键——口径同 §11 客户目录）。重启/长历史/撤权后同一查询语义不变。
+
+    listCustomerAssessments: async (credential, customerId, opts) => {
+      await lookupCustomer(kernel, credential, customerId);
+      await requireInternalRead(kernel, credential, '评估清单');
+      const limitRaw = opts.limit === undefined || opts.limit === null || opts.limit === '' ? 20 : Number(opts.limit);
+      if (!Number.isInteger(limitRaw) || limitRaw < 1 || limitRaw > 100) throw invalid('limit 必须 1..100');
+      const conds: string[] = ['customer_id=$1'];
+      const params: unknown[] = [customerId];
+      if (opts.cursor !== undefined && opts.cursor !== null && opts.cursor !== '') {
+        params.push(decodeListCursor(opts.cursor));
+        conds.push(`assessment_id < $${params.length}`);
+      }
+      params.push(limitRaw + 1);
+      const res = await kernel.pool.query(
+        `SELECT assessment_id, status, stale, stale_reasons, evidence_snapshot, snapshot_hash, rule_version, candidate, version, created_at, updated_at
+         FROM credit_assessments WHERE ${conds.join(' AND ')} ORDER BY assessment_id DESC LIMIT $${params.length}`, params);
+      const rows = res.rows as Record<string, unknown>[];
+      const hasMore = rows.length > limitRaw;
+      const page = hasMore ? rows.slice(0, limitRaw) : rows;
+      const last = page[page.length - 1] as Record<string, unknown> | undefined;
+      return {
+        ok: true,
+        customerId,
+        assessments: page.map((r) => ({
+          assessmentId: r.assessment_id, status: r.status, stale: r.stale, staleReasons: r.stale_reasons,
+          evidenceSnapshot: r.evidence_snapshot, snapshotHash: r.snapshot_hash, ruleVersion: r.rule_version,
+          candidate: r.candidate, version: Number(r.version), createdAt: r.created_at, updatedAt: r.updated_at,
+        })),
+        nextCursor: hasMore && last ? encodeListCursor(String(last.assessment_id)) : null,
+      };
+    },
+
+    listCustomerFinancingRequests: async (credential, customerId, opts) => {
+      await lookupCustomer(kernel, credential, customerId);
+      await requireInternalRead(kernel, credential, '融资申请清单');
+      const limitRaw = opts.limit === undefined || opts.limit === null || opts.limit === '' ? 20 : Number(opts.limit);
+      if (!Number.isInteger(limitRaw) || limitRaw < 1 || limitRaw > 100) throw invalid('limit 必须 1..100');
+      const conds: string[] = ['customer_id=$1'];
+      const params: unknown[] = [customerId];
+      if (opts.cursor !== undefined && opts.cursor !== null && opts.cursor !== '') {
+        params.push(decodeListCursor(opts.cursor));
+        conds.push(`fr_id < $${params.length}`);
+      }
+      params.push(limitRaw + 1);
+      const res = await kernel.pool.query(
+        `SELECT fr_id, facility_id, product_type, amount_minor, currency, equipment_refs, contract_refs,
+                status, external_state, external_ref, reserved_until, version, created_at, updated_at
+         FROM financing_requests WHERE ${conds.join(' AND ')} ORDER BY fr_id DESC LIMIT $${params.length}`, params);
+      const rows = res.rows as Record<string, unknown>[];
+      const hasMore = rows.length > limitRaw;
+      const page = hasMore ? rows.slice(0, limitRaw) : rows;
+      const last = page[page.length - 1] as Record<string, unknown> | undefined;
+      return {
+        ok: true,
+        customerId,
+        financingRequests: page.map(projectFr),
+        nextCursor: hasMore && last ? encodeListCursor(String(last.fr_id)) : null,
       };
     },
 
@@ -1446,7 +1524,9 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
       const fr = await kernel.pool.query(`SELECT * FROM financing_requests WHERE fr_id=$1`, [frId]);
       if (fr.rows.length === 0) throw notFound('融资申请不存在');
       const row = fr.rows[0] as Record<string, unknown>;
+      // 任务03：单件读与清单读同权（内部专用；客户联系人身份 403——B13 口径，先按租户/grant 裁决 404 再拦角色）。
       await scopeByRow(kernel, { credential }, row.tenant_id as string, row.customer_id as string);
+      await requireInternalRead(kernel, credential, '融资申请');
       return { ok: true, financingRequest: projectFr(row) };
     },
 
@@ -1887,6 +1967,37 @@ function projectFr(row: Record<string, unknown>): Record<string, unknown> {
     externalState: row.external_state, reservedUntil: row.reserved_until, version: Number(row.version),
     createdAt: row.created_at, updatedAt: row.updated_at,
   };
+}
+
+// ---------------------------------------------------------------------------
+// 任务03 IR-03-A ②：权威清单公共件（键集分页 + 内部读权限）。
+// 游标仅基于业务 id（全局唯一、前缀含毫秒时间戳）；created_at 微秒精度经 JS 毫秒编码有截断，
+// 禁止用作游标键（口径同 §11 客户目录）。重启/长历史/撤权后同一游标语义不变。
+// ---------------------------------------------------------------------------
+
+function encodeListCursor(id: string): string {
+  return Buffer.from(JSON.stringify({ id }), 'utf8').toString('base64url');
+}
+
+function decodeListCursor(cursor: unknown): string {
+  if (typeof cursor !== 'string' || cursor.length === 0) throw invalid('cursor 无效');
+  try {
+    const parsed = JSON.parse(Buffer.from(cursor, 'base64url').toString('utf8')) as { id?: unknown };
+    if (typeof parsed.id !== 'string' || parsed.id.length === 0) throw new Error('bad');
+    return parsed.id;
+  } catch {
+    throw invalid('cursor 无效');
+  }
+}
+
+/** 内部读权限（B13 口径，some 语义）：客户联系人身份对 v2 信用域内部读一律 403 PERMISSION_DENIED；
+ *  匿名/未验证由 authenticate+requireVerified 拒绝。越权（非本租户/grant）已在 scopeByRow/lookupCustomer 统一 404。 */
+async function requireInternalRead(kernel: Kernel, credential: unknown, what: string): Promise<void> {
+  const auth = await authenticate(kernel.verifierForV2(), credential);
+  requireVerified(auth);
+  if (auth.principal.roles.some((r) => r === 'customer')) {
+    throw forbidden('PERMISSION_DENIED', `${what}仅限内部身份访问`);
+  }
 }
 
 /** A3.1/K12：加锁后重读申请行——首次读仅用于定位/授权；业务合法性判断一律用客户锁内新读

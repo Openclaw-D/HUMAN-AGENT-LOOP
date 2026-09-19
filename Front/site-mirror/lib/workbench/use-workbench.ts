@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { EdgeHttpError, type EdgeSessionInfo } from '../v5-preview/edge/edge-client';
 import { createWbClient, type WbClient, type IdentityMeta } from './wb-client';
+import { clearRecent } from './recent-store';
 import { type EdgePhase, type EdgeSnapshotShapes } from '../v5-preview/edge/edge-logic';
 
 const RECONNECT_BASE_MS = 1500;
@@ -57,6 +58,8 @@ export function useWorkbench(baseUrl: string): WbApi {
   const epochRef = useRef(0);
   const customerIdRef = useRef<string | null>(null);
   customerIdRef.current = customerId;
+  const sessionRef = useRef<EdgeSessionInfo | null>(null);
+  sessionRef.current = session;
   const phaseRef = useRef<EdgePhase>('off');
   phaseRef.current = phase;
   const backoffRef = useRef(0);
@@ -296,6 +299,9 @@ export function useWorkbench(baseUrl: string): WbApi {
   }, [clearTimers, session, stopStream]);
 
   const logout = useCallback(() => {
+    const s = sessionRef.current;
+    // 退出清理当前身份的最近访问桶（最近访问按身份分区，见 recent-store）
+    if (s) clearRecent(s.principalId);
     epochRef.current += 1;
     clearTimers();
     stopStream();

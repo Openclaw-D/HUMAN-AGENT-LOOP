@@ -7,6 +7,8 @@
 
 // 白名单：Back/CONTRACT.md §4 v1 敏感写 + 任务三消费面（consumed-surface-v1.json）的
 // v2 客户授信写与检查会话写。新内核路由以消费面快照为准登记，不做任意 URL 代理。
+import { trustedActorHeaders } from './channel-authz.mjs';
+
 export const ACTION_ROUTES = [
   {
     method: 'POST',
@@ -57,6 +59,13 @@ export const ACTION_ROUTES = [
     method: 'POST',
     pattern: /^\/api\/jw\/v2\/actions\/customers\/([^/]+)\/invitations$/,
     upstream: (m) => `/api/v2/customers/${encodeURIComponent(m[1])}/invitations`,
+  },
+  // ---- 任务04 round-02：规则版本正式激活（A CONTRACT A2.7/K10；A 侧强制 human + policy/admin
+  //      目录角色，Edge 只做白名单与会话凭据转发；换版审计/单激活约束由 A 服务端承担） ----
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/rule-pack-versions\/activate$/,
+    upstream: () => `/api/v2/rule-pack-versions/activate`,
   },
   {
     method: 'POST',
@@ -123,46 +132,87 @@ export const ACTION_ROUTES = [
 // goal-03d Connectors 写面（IR-02-C 消费面）：处理通道邀请/绑定、人工录入/更正、问答与获准复核、
 // 暂停。上游是 Connectors 服务令牌面（X-Service-Token，服务端持有）——requestId 纪律与 A 面一致
 // （Edge 强制携带；确定性拒绝 4xx 原样透传，A/通道结果未知 502 先对账）。
+//
+// 任务04 §三·逐资源授权元数据（Edge 是会话→服务令牌的唯一换权点，必须在转发前裁决）：
+//   access: 'internal'    仅内部角色（customer-only 会话一律 403 ROLE_FORBIDDEN）；
+//   access: 'customer'    内部与客户身份皆可，但目标客户必须对本会话凭据可读（A 逐请求裁决）；
+//   access: 'open'        邀请令牌本身就是授权（accept：持 token 才可调），不再叠加客户校验；
+//   customerOf: 从路径/query/载荷提取目标客户——非空则逐资源校验，缺失则 400 失败关闭。
+//   actorField: 上游人工动作面的 actor 归属字段（Connectors IR-04-2A-3 token→调用方绑定语义：
+//     Edge 令牌是 mayDelegateActor 网关，body 自报即被采信）——转发前必须用会话派生 principal
+//     覆写，浏览器伪造的 body actor 不得经网关流入审计。
 export const CONNECTORS_ACTION_ROUTES = [
   {
     method: 'POST',
     pattern: /^\/api\/jw\/v2\/actions\/connectors\/intake\/invitations$/,
     upstream: () => `/api/connectors/intake/invitations`,
+    access: 'internal',
+    customerOf: (m, urlObj, body) => body?.customerId ?? null,
   },
   {
     method: 'POST',
     pattern: /^\/api\/jw\/v2\/actions\/connectors\/intake\/accept$/,
     upstream: () => `/api/connectors/intake/accept`,
+    access: 'open',
+    customerOf: null,
   },
   {
     method: 'POST',
     pattern: /^\/api\/jw\/v2\/actions\/connectors\/evidence\/upload$/,
     upstream: () => `/api/connectors/evidence/upload`,
+    access: 'customer',
+    customerOf: (m, urlObj, body) => body?.customerId ?? null,
   },
   {
     method: 'POST',
     pattern: /^\/api\/jw\/v2\/actions\/connectors\/evidence\/manual-entry$/,
     upstream: () => `/api/connectors/evidence/manual-entry`,
+    access: 'internal',
+    customerOf: (m, urlObj, body) => body?.customerId ?? null,
+    actorField: 'enteredBy',
   },
   {
     method: 'POST',
     pattern: /^\/api\/jw\/v2\/actions\/connectors\/evidence\/correct-fact$/,
     upstream: () => `/api/connectors/evidence/correct-fact`,
+    access: 'internal',
+    customerOf: (m, urlObj, body) => body?.customerId ?? null,
+    actorField: 'correctedBy',
   },
   {
     method: 'POST',
     pattern: /^\/api\/jw\/v2\/actions\/connectors\/questions\/answer$/,
     upstream: () => `/api/connectors/questions/answer`,
+    access: 'customer',
+    customerOf: (m, urlObj, body) => body?.customerId ?? null,
+    actorField: 'answerer',
   },
   {
     method: 'POST',
     pattern: /^\/api\/jw\/v2\/actions\/connectors\/questions\/verify$/,
     upstream: () => `/api/connectors/questions/verify`,
+    access: 'internal',
+    customerOf: (m, urlObj, body) => body?.customerId ?? null,
+    actorField: 'verifiedBy',
   },
   {
     method: 'POST',
     pattern: /^\/api\/jw\/v2\/actions\/connectors\/processing\/pause$/,
     upstream: () => `/api/connectors/processing/pause`,
+    access: 'internal',
+    customerOf: (m, urlObj, body) => body?.customerId ?? null,
+    actorField: 'actor',
+  },
+  // ---- 任务02 受控客户映射登记（IR-04-2C 方案 R 映射场景；同 ID 场景由处理链权威核验自动接通，
+  //      页面无需调用）：internal 动作 + 目标客户逐资源校验。legalEntityRef 归属证明由上游
+  //      Connectors 经 A 档案一致后才落库，Edge 只做会话角色与客户可读裁决。
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/connectors\/customers\/link$/,
+    upstream: () => `/api/connectors/customers/link`,
+    access: 'internal',
+    customerOf: (m, urlObj, body) => body?.customerId ?? null,
+    actorField: 'requestedBy',
   },
 ];
 
@@ -245,6 +295,7 @@ export function createUpstreamProxy({
   timeoutMs = 8000,
   fetchImpl = fetch,
   routes = ACTION_ROUTES,
+  authorize = null, // 任务04 §三：async ({route, m, urlObj, body, session}) => null|{status, body}；转发前逐资源裁决
 }) {
   return {
     upstreamBaseUrl: baseUrl,
@@ -272,6 +323,16 @@ export function createUpstreamProxy({
         res.end(JSON.stringify({ ok: false, error: 'REQUEST_ID_REQUIRED', note: '动作必须携带客户端 requestId（1..128），响应丢失后用同 ID 重试' }));
         return;
       }
+      // 逐资源授权（任务04 §三）：先于任何上游转发；裁决拒绝不触达上游、不泄露上游存在性。
+      if (authorize) {
+        const verdict = await authorize({ route, m, urlObj, body, session });
+        if (verdict) {
+          log(`[proxy] ${pathname} authorize-reject ${verdict.status} requestId=${requestId}`);
+          res.writeHead(verdict.status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+          res.end(JSON.stringify(verdict.body));
+          return;
+        }
+      }
       // 转换型路由（如受限原件上传）：Edge 侧载荷重组，校验失败按 400 显式拒绝（不改写 requestId 语义）。
       let outBody = body;
       if (route.transform) {
@@ -284,6 +345,11 @@ export function createUpstreamProxy({
           return;
         }
       }
+      // actor 归属覆写（IR-04-2A-3）：Edge 令牌在 Connectors 是 mayDelegateActor 网关——body 自报
+      // actor 会被采信，故转发前必须以会话派生 principal 覆写，浏览器伪造值不得经网关流入审计。
+      if (route.actorField && typeof session?.principalId === 'string' && session.principalId.length > 0) {
+        outBody = { ...outBody, [route.actorField]: session.principalId };
+      }
 
       const upstreamUrl = baseUrl.replace(/\/$/, '') + route.upstream(m);
       const started = Date.now();
@@ -295,6 +361,8 @@ export function createUpstreamProxy({
             'content-type': 'application/json',
             // 唯一放行的身份头：服务端映射的上游凭据。浏览器请求头不透传（含其伪造的凭据头）。
             [headerName]: credentialFor(session),
+            // 可信调用上下文（IR-04-2A-3）：服务端从会话派生，浏览器不可伪造；上游归属/留痕以此为准。
+            ...trustedActorHeaders(session),
           },
           body: JSON.stringify(outBody),
           signal: AbortSignal.timeout(timeoutMs),

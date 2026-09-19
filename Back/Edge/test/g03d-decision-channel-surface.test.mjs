@@ -2,7 +2,7 @@
 //   1) A 决策链读面：decision-status / domain-exemptions GET 透传（会话凭据映射、未登记 404）
 //   2) A 写面：domain-exemptions POST、DELETE grants（IR-03-7 页面化撤权——requestId 纪律、CSRF 生效）
 //   3) Connectors 读面（IR-02-C）：processing/status、tasks/:id、evidence/preview → X-Service-Token
-//      服务端持有；浏览器请求头不透传；未配置时显式 404（不伪造通道）
+//      服务端持有；浏览器请求头不透传；未配置时显式 503 CHANNEL_NOT_CONFIGURED（不伪造通道，也不落入 A 面误报 PROXY_ROUTE_NOT_DECLARED——任务04 问题3）
 //   4) Connectors 写面：intake/upload/manual-entry/questions/pause 经 requestId 强制与白名单
 // 全部自足（随机端口可控上游，无 docker/PG/A 实例）。
 import test from 'node:test';
@@ -240,7 +240,7 @@ test('Connectors 读面：status/tasks/preview 以 X-Service-Token 转发（令�
     assert.ok(conn.received.every((x) => x.path.startsWith('/api/connectors/')), '上游路径为 Connectors 面');
 
     const rNone = await fetch(`http://127.0.0.1:${edgeWithout.port}/api/jw/v2/connectors/processing/status?tid=t1&cid=cust-1`, { headers: { 'x-jw-session': await session(edgeWithout.port) } });
-    assert.equal(rNone.status, 404, '未配置通道：显式 404（不伪造通道面）');
+    assert.equal(rNone.status, 503, '未配置通道：显式 503 CHANNEL_NOT_CONFIGURED（任务04 问题3 修复：不再落入 A 面误报 PROXY_ROUTE_NOT_DECLARED）');
   } finally {
     await edgeWith.close(); await edgeWithout.close(); await conn.close(); await a.close();
   }

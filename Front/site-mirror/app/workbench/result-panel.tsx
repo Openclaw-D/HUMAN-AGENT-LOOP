@@ -1,8 +1,10 @@
 // goal-03c 结果面板（路径六）：正式记录留存与导出——决策回执对账（requestId）、
 // 报告三视图生成与导出（json/markdown，按 A 受众分权）、最近事件（正式历史只追加）。
+// board-round-02 任务01（IR-T01-3 页面面落地）：两路对账合一——A 动作回执（A /receipts）与
+// 处理通道动作回执（a_links 对账簿投影）同页可查，均按对账编号、不换号盲重。
 import { useCallback, useEffect, useState } from 'react';
 import type { WbApi } from '../../lib/workbench/use-workbench';
-import { errorText, fmtWhen } from '../../lib/workbench/wb-logic';
+import { errorText, fmtWhen, wbActionRequestId } from '../../lib/workbench/wb-logic';
 import { WbError, useAction } from './wb-parts';
 
 export function ResultPanel({ wb, customerId }: { wb: WbApi; customerId: string }) {
@@ -11,6 +13,8 @@ export function ResultPanel({ wb, customerId }: { wb: WbApi; customerId: string 
   const [loadErr, setLoadErr] = useState<string | null>(null);
   const [requestId, setRequestId] = useState('');
   const [receiptText, setReceiptText] = useState<string | null>(null);
+  const [channelRequestId, setChannelRequestId] = useState('');
+  const [channelReceiptText, setChannelReceiptText] = useState<string | null>(null);
   const [events, setEvents] = useState<Array<{ eventId: string; eventType?: string; at?: string }> | null>(null);
   const names: Record<string, string> = { internal_summary: '内部小结', customer_supplement: '客户补充材料', use_prep_sheet: '用信准备表' };
   const act = useAction();
@@ -42,11 +46,13 @@ export function ResultPanel({ wb, customerId }: { wb: WbApi; customerId: string 
       setLoadErr(`生成「${names[kind] ?? kind}」需要${subjects[kind] ?? '主体'}：当前尚不存在（服务端结构校验同口径）。`);
       return;
     }
+    // requestId 在确认框打开时固定：失败/结果未知后重试仍用同一编号，不换号盲重。
+    const requestId = wbActionRequestId('wb-rep', customerId, `report:${kind}`, String(Date.now()));
     act.open(
-      { title: `生成报告：${names[kind] ?? kind}`, lines: ['同状态重生成返回同一份（幂等）；分受众查看权由服务端裁决。'], confirmLabel: '生成' },
+      { title: `生成报告：${names[kind] ?? kind}`, lines: ['同状态重生成返回同一份（幂等）；分受众查看权由服务端裁决。'], confirmLabel: '生成', requestId },
       async () => {
         await client.action(`/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/reports`, {
-          requestId: `wb-rep-${customerId}-${Date.now()}`.slice(0, 128),
+          requestId,
           tenantId: 't1',
           kind,
           subjectId,
@@ -79,6 +85,23 @@ export function ResultPanel({ wb, customerId }: { wb: WbApi; customerId: string 
       setReceiptText(r.found ? `找到正式回执：${JSON.stringify(r.receipt, null, 2)}` : '未找到该编号的回执（可能属于其他身份，或命令未到达后台）。');
     } catch (e) {
       setReceiptText(errorText((e as { code?: string }).code, '对账查询失败'));
+    }
+  };
+
+  // 通道动作回执（IR-T01-3 页面面）：a_links 对账簿按对账编号查询——处理链动作与 A 动作两路对账同页合一。
+  const reconcileChannel = async () => {
+    setChannelReceiptText(null);
+    if (!channelRequestId.trim()) return;
+    try {
+      const r = await client.channelReceipt(channelRequestId.trim());
+      setChannelReceiptText(r.found
+        ? `找到通道对账回执：${JSON.stringify(r.receipt, null, 2)}`
+        : '对账簿未命中该编号：通道登记动作的对账编号形如 ptx-…（在「材料·处理」页任务回执的对账编号列）；A 动作请用上方 A 回执查询。');
+    } catch (e) {
+      const err = e as { status?: number; code?: string };
+      setChannelReceiptText(err.status === 404 || err.status === 503
+        ? `通道对账口当前不可用（${err.code ?? err.status}）：如实等待接线，不冒充查无回执。`
+        : errorText(err.code, '通道对账查询失败'));
     }
   };
 
@@ -121,13 +144,18 @@ export function ResultPanel({ wb, customerId }: { wb: WbApi; customerId: string 
         </table>
       )}
 
-      <h3 className="wb-h2" style={{ marginTop: 14 }}>提交结果对账（requestId）</h3>
-      <p className="wb-note">关键提交结果未知时：保留编号，不换号重发。在此查询正式回执。</p>
+      <h3 className="wb-h2" style={{ marginTop: 14 }}>提交结果对账（requestId · 两路合一）</h3>
+      <p className="wb-note">关键提交结果未知时：保留编号，不换号重发。A 档案动作（建档/材料/评估/提案/决定/报告）在下方 A 回执口查询；处理通道动作（上传/登记/回写）的对账编号形如 ptx-…，在下方通道对账口查询（任务回执的对账编号列可复制）。结果未知时先用同号重试语义恢复，不另起新编号。</p>
       <div className="wb-row">
-        <input className="wb-input" style={{ width: 320 }} value={requestId} onChange={(e) => setRequestId(e.target.value)} placeholder="粘贴提交时的幂等编号" />
-        <button className="wb-btn ghost" onClick={() => void reconcile()}>查询回执</button>
+        <input className="wb-input" style={{ width: 320 }} value={requestId} onChange={(e) => setRequestId(e.target.value)} placeholder="A 动作：粘贴提交时的幂等编号" aria-label="A 动作对账编号" />
+        <button className="wb-btn ghost" onClick={() => void reconcile()}>查询 A 回执</button>
       </div>
       {receiptText && <pre className="wb-card" style={{ whiteSpace: 'pre-wrap', fontSize: 12 }}>{receiptText}</pre>}
+      <div className="wb-row">
+        <input className="wb-input" style={{ width: 320 }} value={channelRequestId} onChange={(e) => setChannelRequestId(e.target.value)} placeholder="通道动作：如 ptx-…（任务回执对账编号列）" aria-label="通道动作对账编号" />
+        <button className="wb-btn ghost" onClick={() => void reconcileChannel()}>查询通道对账回执</button>
+      </div>
+      {channelReceiptText && <pre className="wb-card" style={{ whiteSpace: 'pre-wrap', fontSize: 12 }}>{channelReceiptText}</pre>}
 
       <h3 className="wb-h2" style={{ marginTop: 14 }}>正式历史（只追加，不静默改写）</h3>
       <div className="wb-actions"><button className="wb-btn ghost" onClick={() => void loadEvents()}>加载最近事件（≤50 条窗口）</button></div>

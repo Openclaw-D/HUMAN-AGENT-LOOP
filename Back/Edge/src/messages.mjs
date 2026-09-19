@@ -1,10 +1,12 @@
-// 消息受众路由（任务04 S3 / D09 E0；任务03 C2.5 收紧）：customer 与 internal 两种受众分别处理；
-// 内部内容外发默认拒绝（403 AUDIENCE_MISMATCH），显式 confirmExternalSend 还须通过
-// messages:external-send 权限点（server 层校验）并强制审计；送达未知如实返回，不标已读。
-// validateTarget（live）：发往客户前以本会话凭据向 A 校验目标客户可读，防错 customerId。
-// requestId 幂等：同 ID 同载荷重放 → 原结果 + replayed:true；同 ID 异载荷 → 409 冲突。
-export function createMessageRouter({ deliver, auditSink, validateTarget = null, threadStore = null }) {
-  const seen = new Map(); // requestId -> { fingerprint, result }（进程内幂等表，条目有界）
+// 消息受众路由（任务04 S3 / D09 E0；任务03 C2.5 收紧；任务04 §四·恢复重写幂等回执）：
+// customer 与 internal 两种受众分别处理；内部内容外发默认拒绝（403 AUDIENCE_MISMATCH），
+// 显式 confirmExternalSend 还须通过 messages:external-send 权限点（server 层校验）并强制审计；
+// 送达未知如实返回，不标已读。validateTarget（live）：发往客户前以本会话凭据向 A 校验目标客户
+// 可读，防错 customerId。requestId 幂等：同 ID 同载荷重放 → 原结果 + replayed:true；
+// 同 ID 异载荷 → 409 冲突。回执经 receiptStore 持久化（进程重启后重放仍返回原回执）；
+// 未提供 receiptStore 时退回进程内有界 Map（E0 兼容）。
+export function createMessageRouter({ deliver, auditSink, validateTarget = null, threadStore = null, receiptStore = null }) {
+  const seen = new Map(); // requestId -> { fingerprint, result }（无 receiptStore 时的进程内兜底，条目有界）
   const fingerprintOf = (body) => JSON.stringify({ audience: body.audience, text: body.text, threadId: body.threadId ?? null, internalContent: body.internalContent === true });
 
   return {
@@ -38,9 +40,10 @@ export function createMessageRouter({ deliver, auditSink, validateTarget = null,
         }
       }
 
-      // requestId 幂等表（有界：1024 条，超出丢最旧）
+      // requestId 幂等（持久回执优先；重放不二次投递、不二次入栈）：
+      // 鉴权与受众守卫先行（撤权后重放不得借缓存），命中回执再返回原结果。
       const fp = fingerprintOf(body);
-      const prior = seen.get(requestId);
+      const prior = (receiptStore?.getReceipt(requestId)) ?? seen.get(requestId) ?? null;
       if (prior) {
         if (prior.fingerprint !== fp) {
           return { status: 409, body: { ok: false, error: 'REQUEST_ID_CONFLICT', note: '同 requestId 已用于不同载荷：拒绝执行，换新 ID 前先核对' } };
@@ -106,8 +109,12 @@ export function createMessageRouter({ deliver, auditSink, validateTarget = null,
         delivery: { messageId: result.messageId ?? 'unknown', state: result.state || 'unknown' },
         note: '送达未知时不标已读；客户端以服务端状态为准',
       };
-      if (seen.size >= 1024) seen.delete(seen.keys().next().value);
-      seen.set(requestId, { fingerprint: fp, result: responseBody });
+      if (receiptStore) {
+        receiptStore.putReceipt(requestId, fp, responseBody, { customerId });
+      } else {
+        if (seen.size >= 1024) seen.delete(seen.keys().next().value);
+        seen.set(requestId, { fingerprint: fp, result: responseBody });
+      }
       return { status: 200, body: responseBody };
     },
   };

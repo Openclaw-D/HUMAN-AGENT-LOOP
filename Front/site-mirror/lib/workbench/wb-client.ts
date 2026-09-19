@@ -215,6 +215,11 @@ export function createWbClient({ baseUrl, fetchImpl = fetch }: { baseUrl: string
     channelAction: <T = Record<string, unknown>>(path: string, body: Record<string, unknown>) =>
       inner.action<T>(`/api/jw/v2/actions/connectors/${path}`, body),
 
+    /** 通道回执按对账编号查询（IR-T01-3 消费面）。页面面路由由 Edge 白名单登记；
+     *  未登记/未配置时 404/503 原样上抛，调用方如实显示"对账口未接线"，不冒充查无回执。 */
+    channelReceipt: (requestId: string) =>
+      getJson(`/api/jw/v2/connectors/processing/receipts/${encodeURIComponent(requestId)}?tid=${encodeURIComponent('t1')}`),
+
     action: <T = Record<string, unknown>>(path: string, body: Record<string, unknown>) => inner.action<T>(path, body),
     sendMessage: (customerId: string, body: Parameters<EdgeClient['sendMessage']>[1]) => inner.sendMessage(customerId, body),
     /** 页内消息线程读（DEF-G04N-05 修复面）：?audience 过滤 + ?after 游标增量；受众边界由服务端裁决。 */

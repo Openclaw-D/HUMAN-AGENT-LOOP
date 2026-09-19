@@ -1,6 +1,7 @@
 // 任务三 C4·受控交付停止编排（与 delivery-up 配对）：
-//   Edge 用既有 edge-stop.mjs（三证复核）；A 用本脚本三证复核（pidfile + heartbeat 新鲜 + 端口内容标识=healthz.contractVersion）。
-//   纪律：任何一证不符 → 拒绝 kill（exit 5），只报告；绝不按 PID 盲杀；不删数据卷；
+//   Edge 用既有 edge-stop.mjs（三证复核）；A/Connectors 用本脚本多证复核
+//   （pidfile + heartbeat 新鲜 + 端口内容标识 + 命令行 marker；任务04 §三把 Connectors 纳入停止流程）。
+//   纪律：任何一证不符 → 拒绝 kill（exit 5），只报告；绝不按 PID 盲杀；不删数据卷/对象存储；
 //   --with-db 才停止数据库容器（数据卷保留，仅停库；容器名随 --db-container，默认 jw-v01-pg）。
 // 用法：node scripts/delivery-down.mjs [--with-db] [--db-container jw-v01-pg]
 import { execFile } from 'node:child_process';
@@ -31,6 +32,40 @@ const refuse = (m) => { console.error(`[delivery-down] ✗ 拒绝停止：${m}�
 // ---- 1) Edge（既有安全停止：三证复核在 edge-stop.mjs 内；run-dir 与 delivery-up 隔离实例配对） ----
 const edgeStop = await run(process.execPath, [path.join(EDGE_ROOT, 'scripts', 'edge-stop.mjs'), '--run-dir', RUN_DIR], 30000);
 console.log(edgeStop.stdout.trim() || edgeStop.stderr.trim() || '[delivery-down] edge-stop 无输出');
+
+// ---- 1.5) Connectors（任务04 §三：多证复核后停止；顺序在 A 之前——桥接消费方先下线） ----
+const connectorsPidFile = path.join(RUN_DIR, 'connectors.pid');
+if (!existsSync(connectorsPidFile)) {
+  console.log('[delivery-down] Connectors pidfile 不存在：可能未由 delivery-up 启动（不采取任何动作）');
+} else {
+  let rec = null;
+  try { rec = JSON.parse(readFileSync(connectorsPidFile, 'utf8')); } catch { refuse('Connectors pidfile 损坏（不可解析）'); }
+  let alive = false;
+  try { process.kill(rec.pid, 0); alive = true; } catch { alive = false; }
+  if (!alive) {
+    rmSync(connectorsPidFile, { force: true });
+    console.log(`[delivery-down] Connectors pidfile 记录的 pid=${rec.pid} 已不存在：仅清理过期记录，未杀任何进程`);
+  } else {
+    const hbAge = rec.heartbeatAt ? Date.now() - Date.parse(rec.heartbeatAt) : Number.POSITIVE_INFINITY;
+    if (hbAge > HEARTBEAT_MAX_AGE_MS) refuse(`Connectors heartbeat 过期（${Math.round(hbAge / 1000)}s 前）：不像是本脚本管理的实例在心跳`);
+    let contentOk = false;
+    try {
+      const r = await fetch(`http://127.0.0.1:${rec.port}/healthz`, { signal: AbortSignal.timeout(2000) });
+      const j = await r.json();
+      contentOk = j?.ok === true && j?.service === 'jw-connectors';
+    } catch { contentOk = false; }
+    if (!contentOk) refuse(`端口 ${rec.port} 的 /healthz 不含 Connectors 标识（service=jw-connectors）：端口内容与 pidfile 不符`);
+    let markerOk = false;
+    try {
+      const ps = await run('powershell', ['-NoProfile', '-Command', `(Get-CimInstance Win32_Process -Filter "ProcessId=${rec.pid}").CommandLine`], 15000);
+      markerOk = String(ps.stdout || '').includes(String(rec.marker));
+    } catch { markerOk = false; }
+    if (!markerOk) refuse('Connectors 命令行复核未通过：进程命令行不含本脚本写入的 --delivery-marker 标识');
+    process.kill(rec.pid);
+    ok(`Connectors 已停止 pid=${rec.pid}（pid+heartbeat+端口标识+命令行 marker 多证相符；对象存储与库数据原样保留）`);
+    rmSync(connectorsPidFile, { force: true });
+  }
+}
 
 // ---- 2) A 内核（三证：pidfile 存在且 pid 存活；heartbeat 新鲜；端口 /healthz 带 contractVersion） ----
 if (!existsSync(aPidFile)) {

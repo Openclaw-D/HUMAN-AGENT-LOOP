@@ -236,10 +236,15 @@ export function makeEvidenceService(store) {
       if (!f?.factKey || f.value == null) throw new ConnError('INVALID_INPUT', 'manualEntry: facts[].factKey/value 必填');
     }
     const art = (await store.query(
-      `SELECT completeness, verification_state, object_refs FROM evidence_artifacts WHERE tenant_id=$1 AND evidence_id=$2`,
+      `SELECT customer_id, completeness, verification_state, object_refs FROM evidence_artifacts WHERE tenant_id=$1 AND evidence_id=$2`,
       [tenantId, evidenceId],
     )).rows[0];
     if (!art) throw new ConnError('NOT_FOUND', `evidence ${evidenceId}`);
+    // 任务02（IR-04-2A-3 资源归属面）：材料必须归属声明的客户——不得借他人材料把事实
+    // 录入到别的客户名下（跨户事实注入口子闭合；与 upload/preview 同一对账口径）。
+    if (art.customer_id !== customerId) {
+      throw new ConnError('CUSTOMER_MISMATCH', `evidence ${evidenceId} belongs to customer ${art.customer_id}, not ${customerId}`);
+    }
     if (art.completeness === 'needs_followup') {
       throw new ConnError('INVALID_STATE', 'manualEntry: 待补（不可读）材料须先补齐重传，不能对缺失原件录入事实');
     }
@@ -287,13 +292,14 @@ export function makeEvidenceService(store) {
 
 
   /** IR-03-8②：人工事实（录入/更正/复核升级）变更后，把受影响材料的处理任务从终态重入分析。
-   *  只重入 done/needs_followup（failed=确定性拒绝、blocked_unknown=等对账，各有语义不越权改写）；
-   *  游标置 analyze：已 registered 的 A 操作经 a_links 状态零重复。 */
+   *  只重入 done/needs_followup（failed=确定性拒绝、blocked_unknown/blocked_*=等对账/等待，各有语义不越权改写）；
+   *  游标置 analyze：已 registered 的 A 操作经 a_links 状态零重复。
+   *  任务02：重入=新分析轮（非失败重试）→ max_attempts+1，attempts 保持单调（G3 runRef 尝试代数）。 */
   async function requeueForAnalysis(tenantId, evidenceIds) {
     const ids = (Array.isArray(evidenceIds) ? evidenceIds : []).filter((x) => typeof x === 'string' && x);
     if (ids.length === 0) return { ok: true, requeued: 0 };
     const r = await store.query(
-      `UPDATE processing_tasks SET status='queued', stage_cursor='analyze', leased_until=NULL, leased_by=NULL,
+      `UPDATE processing_tasks SET status='queued', max_attempts=max_attempts+1, stage_cursor='analyze', leased_until=NULL, leased_by=NULL,
          note=COALESCE(note,'') || ' | 人工事实变更：重入分析（以现行事实状态为准）', updated_at=now()
        WHERE tenant_id=$1 AND evidence_id = ANY($2::text[]) AND status IN ('done','needs_followup') RETURNING task_id`,
       [tenantId, ids],

@@ -15,7 +15,9 @@ import {
   channelTaskRows,
   channelOpRows,
   latestGateReceiptRef,
+  collectRunRefs,
   completedRunRefs,
+  pickedFactKeys,
   mergeThread,
   previewKind,
   envelopeDataUrl,
@@ -82,11 +84,11 @@ test('幂等键：稳定、同动作同键、跨动作不串、≤128', () => {
   assert.ok(a1.length <= 128);
 });
 
-test('二次确认计划：包含对象与幂等编号', () => {
+test('二次确认计划：包含对象；幂等编号在 plan.requestId（由确认对话框统一渲染对账块）', () => {
   const p = buildConfirmPlan('facility.approve', 'cust_1', ['金额：500 万'], 'wb-act:cust_1:facility.approve:n1');
   assert.match(p.title, /正式批准额度/);
   assert.ok(p.lines.some((l) => l.includes('cust_1')));
-  assert.ok(p.lines.some((l) => l.includes('wb-act:cust_1:facility.approve:n1')));
+  assert.equal(p.requestId, 'wb-act:cust_1:facility.approve:n1');
 });
 
 test('沟通分列：对客户与内部显式分开', () => {
@@ -131,6 +133,27 @@ test('通道任务行：状态/分段中文投影；blocked_unknown 如实显示
   assert.equal(rows[1].tone, 'yellow');
   assert.ok(rows[1].statusText.includes('对账中'));
   assert.equal(rows[2].cursorText, '完成');
+});
+
+test('collectRunRefs：每域全部已登记运行引用（按出现顺序去重），供下拉选择不手填', () => {
+  const ops = [
+    { entity_type: 'run', local_id: 'cust-1:credit', a_ref: 'run_a', status: 'registered' },
+    { entity_type: 'run', local_id: 'cust-1:credit', a_ref: 'run_a', status: 'registered' },
+    { entity_type: 'run', local_id: 'cust-1:credit', a_ref: 'run_b', status: 'registered' },
+    { entity_type: 'run', local_id: 'cust-1:policy', a_ref: 'run_p', status: 'registered' },
+    { entity_type: 'run', local_id: 'cust-1:asset', a_ref: 'run_x', status: 'unknown' },
+  ];
+  assert.deepEqual(collectRunRefs(ops), { credit: ['run_a', 'run_b'], policy: ['run_p'] });
+});
+
+test('pickedFactKeys：勾选材料的 factKey 去重收集；未勾选/无键为空', () => {
+  const rows = [
+    { artifactId: 'a1', factKey: 'cash_balance', current: true },
+    { artifactId: 'a2', factKey: 'cash_balance', current: true },
+    { artifactId: 'a3', factKey: null, current: true },
+  ];
+  assert.deepEqual(pickedFactKeys(rows, ['a1', 'a2', 'a3']), ['cash_balance']);
+  assert.deepEqual(pickedFactKeys(rows, []), []);
 });
 
 test('通道 A 侧留痕行：实体中文名/Gate 引用/运行引用提取', () => {
@@ -230,4 +253,65 @@ test('提案确认计划：facility.propose 标题与依据包绑定行进确认
   assert.match(p.title, /额度提案/);
   assert.ok(p.lines.some((l) => l.includes('pkg_9')), '确认框必须展示所绑定的依据包引用');
   assert.match(errorText('BASIS_PACKAGE_REQUIRED'), /必须绑定依据包/, '409 业务语言如实映射');
+});
+
+// ---------------------------------------------------------------------------
+// board-round-02 任务01：方案R 统一链投影 + 业务看板阶段概览（纯逻辑新增面）
+// ---------------------------------------------------------------------------
+import {
+  channelBridgeView,
+  deriveLifecycleStages,
+  deriveBoardSummary,
+} from '../../site-mirror/lib/workbench/wb-logic.ts';
+
+test('方案R 通道任务投影：blocked_* 等待态与 aRegistered/bridgeState 逐任务字段映射', () => {
+  const rows = channelTaskRows([
+    { task_id: 't1', evidence_id: 'e1', kind: 'bank_statement', status: 'blocked_link', stage_cursor: 'parse', attempts: 2, failure_code: 'A_CUSTOMER_NOT_IN_A' },
+    { task_id: 't2', evidence_id: 'e2', kind: 'invoice', status: 'running', aRegistered: false, bridgeState: 'none' },
+    { task_id: 't3', evidence_id: 'e3', kind: 'invoice', status: 'done', aRegistered: true, bridgeState: 'registered' },
+  ]);
+  assert.match(rows[0].statusText, /被阻断（A 客户关联未建立/, 'blocked_link 等待态业务语言（自动续跑，不冒充失败/完成）');
+  assert.match(errorText(rows[0].failureCode), /A 档案中未找到对应客户/, 'failure_code → 业务语言');
+  assert.equal(rows[1].bridgeText, '未回写 A', '运行中任务如实显示未回写');
+  assert.equal(rows[2].bridgeText, '已回写 A 档案', 'registered=已回写');
+  assert.equal(rows[2].bridgeTone, 'green');
+});
+
+test('方案R 诚实性核心：done 且未回写 A 不得呈现为全链完成（本地完成标注）', () => {
+  const localDone = channelBridgeView('done', false, 'none');
+  assert.match(localDone.text, /本地完成（未回写 A：不等于全链完成）/, 'localOnly/done+未回写 ≠ 全链完成');
+  assert.equal(localDone.tone, 'yellow');
+  assert.match(channelBridgeView('done', true, 'registered').text, /已回写 A/);
+  assert.match(channelBridgeView('running', false, 'unknown').text, /A 登记对账中/);
+  assert.equal(channelBridgeView('running', null, null).tone, 'gray', '字段缺失=未知，不猜');
+});
+
+test('业务看板阶段概览：空快照=全部未开始+结清未支持；服务端字段驱动各段状态', () => {
+  const empty = deriveLifecycleStages(null);
+  assert.equal(empty.length, 7, '商机/尽调/政策/信审/商务/资产/结清 七段');
+  assert.equal(empty.find((s) => s.key === 'settle').state, 'unsupported', '结清如实标未支持（不编造）');
+  assert.ok(empty.every((s) => s.key !== 'settle' ? s.state === 'pending' || s.state === 'unsupported' : true));
+
+  const rows = deriveLifecycleStages({
+    customer: { customerId: 'cus_1', displayName: '喀什客户', status: 'active' },
+    session: { runStatus: 'in_progress' },
+    decisionStatus: { basis: { packageId: 'pkg_1', currency: [{ domain: 'policy', currency: 'current' }, { domain: 'credit', currency: 'stale' }] } },
+    facilities: [{ status: 'proposed' }],
+    financingRequests: [{ status: 'submitted' }],
+  });
+  assert.equal(rows.find((s) => s.key === 'opportunity').state, 'done');
+  assert.equal(rows.find((s) => s.key === 'due_diligence').state, 'active');
+  assert.equal(rows.find((s) => s.key === 'policy').state, 'done', '域 currency=current → 该段有当前产出（≠批准）');
+  assert.equal(rows.find((s) => s.key === 'credit').state, 'active', 'stale=需更新');
+  assert.equal(rows.find((s) => s.key === 'commerce').state, 'active', '设施候选≠批准');
+  assert.equal(rows.find((s) => s.key === 'asset').state, 'active');
+  assert.equal(rows.find((s) => s.key === 'settle').state, 'unsupported');
+});
+
+test('业务看板顶部摘要：融资申请与授信额度分列；采购金额不以授信额度冒充', () => {
+  const lines = deriveBoardSummary({ financingRequests: [{ status: 'submitted' }], facilities: [{ status: 'active' }] });
+  assert.ok(lines.some((l) => l.label === '融资申请'), '融资申请独立行');
+  assert.ok(lines.some((l) => l.label === '授信额度'), '授信额度独立行（额度≠项目融资）');
+  const purchase = lines.find((l) => l.label === '项目采购金额');
+  assert.match(purchase.value, /不用授信额度冒充/, '采购金额诚实标注数据来源边界');
 });

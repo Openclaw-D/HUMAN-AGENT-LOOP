@@ -1,8 +1,10 @@
 // goal-03c 客户视图（受邀客户联系人身份）：只呈现获准披露内容——我的材料（处理阶段/失败原因/
-// 下一动作白名单投影）、受限上传（allowedKinds 服务端强制）、对内消息。不含内部评估/额度/报告。
+// 下一动作白名单投影）、受限上传（allowedKinds 服务端强制）、对内消息。
+// board-round-02 任务01（方案R 统一链）：提交只有一个入口——通道面上传，处理推进与 A 档案登记
+// 由后台自动完成；无通道绑定时如实阻断并引导一次性绑定，不降级走档案直传、不重复上传。
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { WbApi } from '../../lib/workbench/use-workbench';
-import { buildOriginalEnvelope, errorText, fmtWhen, mergeThread, type PendingSend, type RemoteThreadMsg } from '../../lib/workbench/wb-logic';
+import { bytesToBase64, errorText, fmtWhen, MAX_ORIGINAL_BYTES, mergeThread, wbActionRequestId, type PendingSend, type RemoteThreadMsg } from '../../lib/workbench/wb-logic';
 import { WbError, useAction } from './wb-parts';
 
 interface MyMaterial {
@@ -10,7 +12,16 @@ interface MyMaterial {
   stage?: string; failureReason?: string | null; nextAction?: string | null;
 }
 
-const KINDS = ['invoice', 'purchase_contract', 'equipment_list', 'bank_statement', 'financial_statement'];
+const KINDS = [
+  { v: 'invoice', t: '发票' },
+  { v: 'purchase_contract', t: '购销合同' },
+  { v: 'bank_statement', t: '银行流水' },
+  { v: 'ledger_book', t: '账表' },
+  { v: 'entity_register', t: '主体登记' },
+  { v: 'device_photo', t: '设备照片' },
+  { v: 'site_photo', t: '现场照片' },
+  { v: 'document_sample', t: '其他文件' },
+];
 
 const STAGE_LABEL: Record<string, { tone: string; text: string }> = {
   registered: { tone: 'off', text: '已登记（待处理）' },
@@ -24,9 +35,11 @@ const STAGE_LABEL: Record<string, { tone: string; text: string }> = {
 export function CustomerPortal({ wb, customerId, onLogout }: { wb: WbApi; customerId: string; onLogout: () => void }) {
   const client = wb.client;
   const [mats, setMats] = useState<MyMaterial[] | null>(null);
-  const [kind, setKind] = useState(KINDS[0]);
+  const [kind, setKind] = useState(KINDS[0].v);
   const [loadErr, setLoadErr] = useState<string | null>(null);
   const [fileMsg, setFileMsg] = useState<string | null>(null);
+  const [invitationId, setInvitationId] = useState<string | null>(null);
+  const [tokenInput, setTokenInput] = useState('');
   const [pending, setPending] = useState<PendingSend[]>([]);
   const [remote, setRemote] = useState<RemoteThreadMsg[]>([]);
   const [text, setText] = useState('');
@@ -94,28 +107,57 @@ export function CustomerPortal({ wb, customerId, onLogout }: { wb: WbApi; custom
   const myPrincipalId = wb.session?.principalId ?? '';
   const thread = mergeThread(pending, remote, myPrincipalId).customer;
 
+  // 一次性通道绑定（方案R）：把办理人提供的通道令牌换成上传绑定。绑定后本门户所有提交
+  // 都走通道面（处理推进与 A 档案登记由后台自动完成）；无绑定时提交如实阻断。
+  const acceptBinding = () => {
+    if (!tokenInput.trim()) { setFileMsg('请先粘贴办理人提供的通道令牌'); return; }
+    const requestId = wbActionRequestId('wb-cbind', customerId, 'bind', String(Date.now()));
+    act.open(
+      {
+        title: '关联处理通道（一次性绑定）',
+        lines: ['粘贴的通道令牌将换取本材料的上传绑定（一次有效）。绑定后提交的材料直接进入常驻处理链，处理结果由后台自动登记回"我的材料"。'],
+        confirmLabel: '确认绑定',
+        requestId,
+      },
+      async () => {
+        const r = await client.channelAction<{ invitationId?: string; bindingId?: string; existed?: boolean }>('intake/accept', {
+          requestId, tenantId: 't1', token: tokenInput.trim(), provider: 'portal',
+          providerUserId: `portal:${customerId}:${wb.session?.principalId ?? 'contact'}:${Date.now().toString(36)}`,
+        });
+        if (r.invitationId) setInvitationId(r.invitationId);
+        setTokenInput('');
+        setFileMsg(r.existed === true ? '该绑定已存在（幂等接受）——可直接提交材料。' : null);
+      },
+    );
+  };
+
   const submit = () => {
     const f = fileRef.current?.files?.[0];
     if (!f) { setFileMsg('请先选择文件'); return; }
+    if (!invitationId) { setFileMsg('尚未关联处理通道：请向办理人索取通道令牌并在上方完成一次性绑定。提交入口只有一个（处理链），不会让你重复上传或另走档案通道。'); return; }
     void f.arrayBuffer().then(async (buf) => {
-      const pre = buildOriginalEnvelope({ name: f.name, mime: f.type, bytes: new Uint8Array(buf) });
-      if (!pre.ok) { setFileMsg(pre.message); return; }
+      const bytes = new Uint8Array(buf);
+      if (bytes.length === 0) { setFileMsg('文件内容为空'); return; }
+      if (bytes.length > MAX_ORIGINAL_BYTES) { setFileMsg(`提交当前受限 ${Math.floor(MAX_ORIGINAL_BYTES / 1024)}KB（受限上传通道）`); return; }
       setFileMsg(null);
+      // requestId 在确认框打开时固定：确认失败/结果未知后重试仍用同一编号（服务端幂等吸收），不换号盲重。
+      const requestId = wbActionRequestId('wb-cup', customerId, 'upload', String(Date.now()));
       act.open(
         {
-          title: '提交材料（受限范围内）',
+          title: '提交材料（一次提交 · 自动登记）',
           lines: [
-            `文件：${pre.envelope.name}（${pre.envelope.size} 字节）`,
-            `种类：${kind}（须在邀请授权白名单内，服务端强制）`,
-            '客户申报不产生核验等级；处理进度将在"我的材料"中可见。',
+            `文件：${f.name}（${bytes.length} 字节）`,
+            `种类：${KINDS.find((k) => k.v === kind)?.t ?? kind}（实际可传范围以邀请授权白名单为准，服务端强制）`,
+            '提交后进入常驻处理链（解压→解析→事实→分析），登记与处理进度自动回写"我的材料"——不需要重复提交或另走其他通道。客户申报不产生核验等级，扫描件走人工路线，不伪装 OCR。',
           ],
           confirmLabel: '确认提交',
+          requestId,
         },
         async () => {
-          await client.uploadOriginal(customerId, {
-            requestId: `wb-cup-${customerId}-${Date.now()}`.slice(0, 128),
-            kind,
-            file: { name: pre.envelope.name, mime: pre.envelope.mime, dataBase64: pre.envelope.data },
+          await client.channelAction('evidence/upload', {
+            requestId, tenantId: 't1', customerId, invitationId, kind,
+            contentBase64: bytesToBase64(bytes), contentType: f.type || 'application/octet-stream',
+            periodFrom: null, periodTo: null,
           });
           if (fileRef.current) fileRef.current.value = '';
           await load();
@@ -170,18 +212,30 @@ export function CustomerPortal({ wb, customerId, onLogout }: { wb: WbApi; custom
           })}
         </section>
         <section className="wb-panel" aria-label="提交材料">
-          <h3 className="wb-h2">提交材料（≤512KB 受限通道）</h3>
+          <h3 className="wb-h2">提交材料（一次提交 · 自动登记回"我的材料"）</h3>
+          {invitationId
+            ? <p className="wb-note"><span className="wb-badge live">处理通道已关联</span> 提交后自动进入处理链，进度见左侧"我的材料"。</p>
+            : <div className="wb-card dim">
+                <h3 className="wb-h2">第一步：关联处理通道（一次性）</h3>
+                <p className="wb-note">向办理人索取通道令牌，粘贴后绑定。未绑定时提交不可用（如实阻断）——不会让你把材料登记到无人处理的通道外。</p>
+                <div className="wb-row">
+                  <input className="wb-input" style={{ flex: 1 }} value={tokenInput} onChange={(e) => setTokenInput(e.target.value)}
+                    placeholder="粘贴办理人提供的通道令牌" aria-label="通道令牌" />
+                  <button className="wb-btn" onClick={acceptBinding}>关联通道</button>
+                </div>
+              </div>}
           <div className="wb-row">
             <div className="wb-field" style={{ width: 200 }}><label>材料种类（邀请授权范围）</label>
               <select className="wb-select" value={kind} onChange={(e) => setKind(e.target.value)}>
-                {KINDS.map((k) => <option key={k} value={k}>{k}</option>)}
+                {KINDS.map((k) => <option key={k.v} value={k.v}>{k.t}</option>)}
               </select>
             </div>
           </div>
           <div className="wb-row">
             <input type="file" ref={fileRef} aria-label="选择文件" />
-            <button className="wb-btn" onClick={submit}>提交</button>
+            <button className="wb-btn" onClick={submit} disabled={!invitationId} title={invitationId ? '' : '先关联处理通道（第一步）'}>提交</button>
           </div>
+          {!invitationId && <p className="wb-note warn">提交按钮暂不可用：先完成上方一次性通道绑定。</p>}
           <WbError error={fileMsg} onDismiss={() => setFileMsg(null)} />
           {act.node}
           <h3 className="wb-h2" style={{ marginTop: 14 }}>与办理方沟通（双向 · 服务端线程为准）</h3>

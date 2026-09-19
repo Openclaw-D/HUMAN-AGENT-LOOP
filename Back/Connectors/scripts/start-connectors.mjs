@@ -77,6 +77,8 @@ const server = await startServer(svc, {
   wecomConfig: { token: callbackToken, aesKey: aesKeyFromEncodingAESKey(encodingAESKey), corpid: config.wecom.corpid ?? 'corpid_demo', defaultTenantId: config.defaultTenantId },
   trtcCallbackKey: config.trtcCallbackKey ?? config.signingSecret,
   serviceToken: config.serviceToken,
+  // 任务02 actor 可信来源：令牌→调用方绑定（未配置=默认唯一 serviceToken 绑定为页面换权网关）
+  callerBindings: fileCfg.callerBindings ?? null,
 });
 // goal-02：资料处理常驻驱动（解压/解析/分析/提问持久任务；关闭恢复依赖任务表+租约）
 if (svc.processing) {

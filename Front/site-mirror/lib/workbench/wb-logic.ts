@@ -1,6 +1,8 @@
 // goal-03c 客户工作本·纯逻辑层（可单测，零 React/DOM 依赖——btoa 由调用方注入或浏览器全局）。
 // 纪律：颜色语义=绿(指定事项完成≠授信通过)/蓝(进行中)/红(明确禁止失败)/灰(未知未开始)，全部带文字；
 // 候选≠批准≠可用 文案直出服务端字段；错误码→业务语言，不向用户暴露内部栈。
+// 注意：本模块保持零 import（wb-logic.test.mjs 经 node strip-types 直载，ESM 不解析无扩展名导入）；
+// 需要的展示小工具就地内联实现，不引 edge-logic。
 
 /** IR-03-3 临时约定 v0：原件字节上限（与 Edge src/proxy.mjs transformOriginals 一致，客户端先行预检）。 */
 export const MAX_ORIGINAL_BYTES = 512 * 1024;
@@ -91,6 +93,15 @@ const ERROR_TEXT: Record<string, string> = {
   NOT_READY: '前置条件未满足：按缺口提示补齐后重试',
   ANALYSIS_RUN_NOT_COMPLETED: '该分析运行未完成（失败/超时不算完成）：不能作为域结论登记',
   ARTIFACT_SUPERSEDED: '材料已被取代或重复：依据包须引用现行件，先补正后再冻结',
+  // ---- 方案R 统一上传链（任务02 冻结语义）：阻断/等待态与通道面错误 → 业务语言 ----
+  CHANNEL_NOT_CONFIGURED: '处理通道未接入（部署未配置通道上游）：上传/处理链路暂不可用，如实等待补齐，不以档案登记冒充处理',
+  ROLE_FORBIDDEN: '当前身份不可执行该处理动作（客户联系人无内部处理权限：邀请签发/转录/更正/复核/暂停）',
+  CUSTOMER_MISMATCH: '材料归属与目标客户不一致：已拒绝，不登记到他人名下',
+  CUSTOMER_REQUIRED: '缺少目标客户标识：逐资源授权失败关闭，请求未执行',
+  A_CUSTOMER_NOT_IN_A: 'A 档案中未找到对应客户：材料停在通道等待关联登记，恢复后自动续跑（勿重复提交）',
+  A_TENANT_MISMATCH: 'A 客户租户不匹配：材料停在通道等待处理，请核对建档租户（勿重复提交）',
+  A_UNREACHABLE: 'A 暂不可达：材料停在通道，恢复后自动续跑登记（勿重复提交）',
+  A_UPLOAD_PRINCIPAL_MISSING: 'A 登记凭据缺失：材料停在通道等待部署配置（勿重复提交）',
 };
 
 export function errorText(code: string | undefined | null, fallback?: string): string {
@@ -182,7 +193,8 @@ export function buildConfirmPlan(action: string, targetLabel: string, detailLine
   };
   return {
     title: `确认：${titles[action] ?? action}`,
-    lines: [...detailLines, `对象：${targetLabel}`, `幂等编号：${requestId}`, '提交后进入后台正式记录；结果未知时请用该编号对账，不要换号重发。'],
+    // 幂等编号不再重复进 lines：ConfirmDialog 统一渲染"对账编号"块（含失败重试不换号说明）。
+    lines: [...detailLines, `对象：${targetLabel}`, '提交后进入后台正式记录；结果未知时请用对账编号查询回执，不要换号重发。'],
     confirmLabel: '确认提交',
     requestId,
   };
@@ -343,6 +355,11 @@ export interface ChannelTaskRow {
   attempts: number;
   failureCode: string | null;
   updatedAt: string | null;
+  /** 方案R（任务02 冻结）：A 回写状态逐任务字段——aRegistered=bool、bridgeState=registered|unknown|failed|none。 */
+  aRegistered: boolean | null;
+  bridgeState: 'registered' | 'unknown' | 'failed' | 'none' | null;
+  bridgeText: string;
+  bridgeTone: 'green' | 'blue' | 'red' | 'gray' | 'yellow';
 }
 
 const CHANNEL_TASK_STATUS: Record<string, { text: string; tone: ChannelTaskRow['tone'] }> = {
@@ -351,6 +368,9 @@ const CHANNEL_TASK_STATUS: Record<string, { text: string; tone: ChannelTaskRow['
   done: { text: '已完成', tone: 'green' },
   needs_followup: { text: '待补件/转人工', tone: 'yellow' },
   blocked_unknown: { text: '对账中（上游结果未知，勿重复提交）', tone: 'yellow' },
+  // 方案R 可恢复等待态（任务02 冻结）：等待态保留游标、退避自动重入，不消耗失败预算。
+  blocked_link: { text: '被阻断（A 客户关联未建立：等映射登记后自动续跑，勿重复提交）', tone: 'yellow' },
+  blocked_a_unavailable: { text: '被阻断（A 登记面不可用：恢复后自动续跑，勿重复提交）', tone: 'yellow' },
   failed: { text: '失败（原因见下）', tone: 'red' },
   skipped_duplicate: { text: '重复件已跳过', tone: 'gray' },
 };
@@ -370,11 +390,35 @@ export function channelStageText(stage: string): string {
   return CHANNEL_STAGE_TEXT[stage] ?? stage;
 }
 
+/** A 回写状态 → 页面文字（任务02 冻结语义：done 且未回写 A 不得呈现为全链完成）。 */
+export function channelBridgeView(
+  status: string,
+  aRegistered: boolean | null,
+  bridgeState: ChannelTaskRow['bridgeState'],
+): { text: string; tone: ChannelTaskRow['bridgeTone'] } {
+  if (status === 'done' && (bridgeState === 'none' || aRegistered === false)) {
+    return { text: '本地完成（未回写 A：不等于全链完成）', tone: 'yellow' };
+  }
+  switch (bridgeState) {
+    case 'registered': return { text: '已回写 A 档案', tone: 'green' };
+    case 'unknown': return { text: 'A 登记对账中（勿重复提交）', tone: 'yellow' };
+    case 'failed': return { text: 'A 回写失败（原因见任务回执）', tone: 'red' };
+    case 'none': return { text: '未回写 A', tone: 'gray' };
+    default: return { text: 'A 回写状态未知', tone: 'gray' };
+  }
+}
+
 export function channelTaskRows(tasks: Array<Record<string, unknown>>): ChannelTaskRow[] {
   return (tasks ?? []).map((t) => {
     const status = String(t.status ?? 'queued');
     const st = CHANNEL_TASK_STATUS[status] ?? { text: status, tone: 'gray' as const };
     const cursor = String(t.stage_cursor ?? '');
+    const aRegistered = typeof t.aRegistered === 'boolean' ? t.aRegistered : null;
+    const rawBridge = t.bridgeState == null ? null : String(t.bridgeState);
+    const bridgeState = (rawBridge === 'registered' || rawBridge === 'unknown' || rawBridge === 'failed' || rawBridge === 'none')
+      ? rawBridge as ChannelTaskRow['bridgeState']
+      : null;
+    const bridge = channelBridgeView(status, aRegistered, bridgeState);
     return {
       taskId: String(t.task_id ?? ''),
       evidenceId: String(t.evidence_id ?? ''),
@@ -387,6 +431,10 @@ export function channelTaskRows(tasks: Array<Record<string, unknown>>): ChannelT
       attempts: Number(t.attempts ?? 0),
       failureCode: t.failure_code == null ? null : String(t.failure_code),
       updatedAt: t.updated_at == null ? null : String(t.updated_at),
+      aRegistered,
+      bridgeState,
+      bridgeText: bridge.text,
+      bridgeTone: bridge.tone,
     };
   });
 }
@@ -443,7 +491,7 @@ export function latestGateReceiptRef(aOps: Array<Record<string, unknown>>): stri
   return rows.length === 0 ? null : String(rows[rows.length - 1].aRef);
 }
 
-/** 从通道 aOps 取各域已完成的 A 分析运行引用（域结果登记的 runId 建议值）。 */
+/** 从通道 aOps 取各域已完成的 A 分析运行引用（每域最新一个；域结果登记的 runId 建议值）。 */
 export function completedRunRefs(aOps: Array<Record<string, unknown>>): Record<string, string> {
   const out: Record<string, string> = {};
   for (const r of channelOpRows(aOps)) {
@@ -452,6 +500,28 @@ export function completedRunRefs(aOps: Array<Record<string, unknown>>): Record<s
     if (m) out[m[1]] = r.aRef;
   }
   return out;
+}
+
+/** 从通道 aOps 取各域全部已登记的 A 分析运行引用（按出现顺序；供域结果登记下拉选择，不手填）。 */
+export function collectRunRefs(aOps: Array<Record<string, unknown>>): Record<string, string[]> {
+  const out: Record<string, string[]> = {};
+  for (const r of channelOpRows(aOps)) {
+    if (r.entityType !== 'run' || !r.aRef || r.status !== 'registered') continue;
+    const m = r.localId.match(/^[^:]+:(policy|credit|commerce|asset)$/);
+    if (!m) continue;
+    const list = out[m[1]] ?? (out[m[1]] = []);
+    if (!list.includes(r.aRef)) list.push(r.aRef);
+  }
+  return out;
+}
+
+/** 勾选材料 → 该域依赖的 factKeys（所选材料 factKey 去重；无则空）。 */
+export function pickedFactKeys(rows: ArtifactRow[], pickedIds: string[]): string[] {
+  const keys = new Set<string>();
+  for (const r of rows) {
+    if (pickedIds.includes(r.artifactId) && r.factKey) keys.add(r.factKey);
+  }
+  return [...keys];
 }
 
 /** 通道分段进度文本：cursor 阶段序 + 中文说明；blocked_unknown 如实显示"对账中"。 */
@@ -486,6 +556,104 @@ export function base64ToBytes(dataBase64: string): Uint8Array {
   const out = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
   return out;
+}
+
+// ---------------------------------------------------------------------------
+// 业务看板·生命周期阶段概览（board-round-02 任务01）：从工作台快照的服务端字段做
+// 展示投影。纪律：职责/阶段不强制一一串行（并行呈现，不做流水线推进器）；
+// 状态全部来自服务端字段映射，不推导业务结论；后端没有的能力（起租/租后/结清）
+// 如实标"未支持"，不用本地状态编造。
+// ---------------------------------------------------------------------------
+
+export type LifecycleStageState = 'done' | 'active' | 'pending' | 'unsupported';
+
+export interface LifecycleStageRow {
+  key: string;
+  label: string;
+  state: LifecycleStageState;
+  /** 状态依据（服务端字段/口径），供详情查看；不放业务结论。 */
+  basis: string;
+}
+
+type LifecycleSnap = {
+  customer?: { customerId?: string; displayName?: string; status?: string } | null;
+  session?: { runStatus?: string; closureStatus?: string } | null;
+  decisionStatus?: {
+    basis?: { packageId?: string; currency?: Array<{ domain?: string; currency?: string }> } | null;
+    facilityTotalsMinor?: { active?: number; approvedInactive?: number } | null;
+  } | null;
+  facilities?: Array<{ status?: string }> | null;
+  assessments?: Array<{ candidate?: unknown } | null> | null;
+  financingRequests?: Array<{ status?: string }> | null;
+  totalsMinor?: { outstanding?: number } | null;
+};
+
+/** 金额（分）→ 展示串（与 edge-logic fmtAmount 同口径的本地内联版；本模块零 import）。 */
+function fmtWan(minor: number): string {
+  const WAN = 1_000_000;
+  return Math.abs(minor) >= WAN
+    ? `${(minor / WAN).toLocaleString('zh-CN', { maximumFractionDigits: 2 })} 万元`
+    : `${(minor / 100).toLocaleString('zh-CN', { maximumFractionDigits: 2 })} 元`;
+}
+
+export function deriveLifecycleStages(snap: LifecycleSnap | null): LifecycleStageRow[] {
+  const s = snap ?? {};
+  const rows: LifecycleStageRow[] = [];
+  // 商机·建档：客户档案存在即有产出（打开客户的前提）。
+  rows.push(
+    s.customer?.customerId
+      ? { key: 'opportunity', label: '商机·建档', state: 'done', basis: `客户档案 ${s.customer.customerId}（状态 ${s.customer.status ?? '未知'}）` }
+      : { key: 'opportunity', label: '商机·建档', state: 'pending', basis: '客户档案未打开' },
+  );
+  // 尽调·检查：检查会话 runStatus/closureStatus（服务端状态，不推测结论）。
+  const run = s.session?.runStatus;
+  if (!s.session || !run) rows.push({ key: 'due_diligence', label: '尽调·检查', state: 'pending', basis: '尚无检查会话' });
+  else if (run === 'ended' || run === 'closed') rows.push({ key: 'due_diligence', label: '尽调·检查', state: 'done', basis: `检查会话 ${run}` });
+  else rows.push({ key: 'due_diligence', label: '尽调·检查', state: 'active', basis: `检查会话 ${run}` });
+  // 政策/信审：依据包域当前性判定（current=该域结论当前；stale=需更新；无=未开始）。
+  const verdicts = s.decisionStatus?.basis?.currency ?? [];
+  const domainRow = (domain: string, key: string, label: string) => {
+    const v = verdicts.find((d) => d.domain === domain);
+    if (!v) { rows.push({ key, label, state: 'pending', basis: '无该域当前性判定（未开始/未知）' }); return; }
+    if (v.currency === 'current') rows.push({ key, label, state: 'done', basis: `该域结论当前（${v.currency}；当前≠批准）` });
+    else rows.push({ key, label, state: 'active', basis: `该域当前性=${v.currency ?? '未知'}（需按当前版本更新）` });
+  };
+  domainRow('policy', 'policy', '政策·规则');
+  domainRow('credit', 'credit', '信审·评估');
+  // 商务·额度：设施状态（proposed=候选≠批准；active=已激活）。
+  const facilities = s.facilities ?? [];
+  if (facilities.some((f) => f.status === 'active')) rows.push({ key: 'commerce', label: '商务·额度', state: 'done', basis: '存在已激活额度设施' });
+  else if (facilities.length > 0) rows.push({ key: 'commerce', label: '商务·额度', state: 'active', basis: `存在设施（状态 ${[...new Set(facilities.map((f) => f.status ?? '?'))].join('/')}；候选≠批准）` });
+  else rows.push({ key: 'commerce', label: '商务·额度', state: 'pending', basis: '尚无额度设施' });
+  // 资产·用信：融资申请/在途敞口（用信=资产形成；仅显示服务端状态）。
+  const frs = s.financingRequests ?? [];
+  const outstanding = s.totalsMinor?.outstanding ?? 0;
+  if (outstanding > 0) rows.push({ key: 'asset', label: '资产·用信', state: 'active', basis: `在途敞口 ${fmtWan(outstanding)}（服务端权威投影）` });
+  else if (frs.length > 0) rows.push({ key: 'asset', label: '资产·用信', state: 'active', basis: `融资申请 ${frs.length} 笔（状态 ${[...new Set(frs.map((f) => f.status ?? '?'))].join('/')}）` });
+  else rows.push({ key: 'asset', label: '资产·用信', state: 'pending', basis: '尚无用信/敞口' });
+  // 结清：后端无起租/租后/结清完整能力——如实标未支持，不编造。
+  rows.push({ key: 'settle', label: '结清·合同', state: 'unsupported', basis: '后端未提供起租/租后/结清完整能力（如实标注，不用本地状态编造）' });
+  return rows;
+}
+
+/** 看板顶部摘要：融资金额（融资申请清单）与授信额度分开——采购金额无权威字段时不编造。 */
+export function deriveBoardSummary(snap: LifecycleSnap | null): Array<{ label: string; value: string; tone: 'neutral' | 'warn' | 'info' }> {
+  const s = snap ?? {};
+  const lines: Array<{ label: string; value: string; tone: 'neutral' | 'warn' | 'info' }> = [];
+  const frs = s.financingRequests ?? [];
+  if (frs.length > 0) {
+    lines.push({ label: '融资申请', value: `${frs.length} 笔在册（金额与状态以融资申请清单为准）`, tone: 'info' });
+  } else {
+    lines.push({ label: '融资申请', value: '尚无融资申请登记', tone: 'neutral' });
+  }
+  const facilities = s.facilities ?? [];
+  if (facilities.length > 0) {
+    lines.push({ label: '授信额度', value: `${facilities.length} 个额度设施（额度≠项目融资，两者分列不互冒）`, tone: 'neutral' });
+  } else {
+    lines.push({ label: '授信额度', value: '尚无额度设施', tone: 'neutral' });
+  }
+  lines.push({ label: '项目采购金额', value: '以合同/发票原件登记为准（系统未单列采购金额字段，不用授信额度冒充）', tone: 'warn' });
+  return lines;
 }
 
 /** 对象字节魔数嗅探：上游 /objects 常回 octet-stream，按 PNG/JPEG/GIF 魔数识别图片 mime（供内联 data:URL）。 */

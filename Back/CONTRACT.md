@@ -1,6 +1,6 @@
-# V7 backend-next CONTRACT v1.3（A 路独占 writer；2026-09-16；按 03:05 监督纠偏实现 DEF-01 语义候选）
+# V7 backend-next CONTRACT v1.3（A 路独占 writer；2026-09-16；按 03:05 监督纠偏实现 DEF-01 语义候选）｜v2 增量登记最新至 §12（v2.5，2026-09-19 任务03：权威查询与授权支撑）
 
-状态：`v1.3`（v1.2 及之前为 FROZEN 文字；**v1.3 新增部分为 CANDIDATE——语义 PENDING-USER-RULING**，反例分析与候选说明见 `A/DEF01-analysis.md`）。本合同是 backend-next 四路唯一共享接口；B/C/D 只读，接口变更只能在各自目录写 `interface-change-request.md`，A 裁量后升版本号发布（新增可选字段=小版本；破坏性=v1.x+迁移说明）。上一轮 `V7/backend/CONTRACT.md`（JSON 存储 v0.2）被本合同取代：业务事实已迁入 PostgreSQL 事务存储（真实本机容器，非内存桩）。
+状态：`v1.3`（v1.2 及之前为 FROZEN 文字；**v1.3 新增部分为 CANDIDATE——语义 PENDING-USER-RULING**，反例分析与候选说明见 `A/DEF01-analysis.md`）。本合同是 backend-next 四路唯一共享接口；B/C/D 只读，接口变更只能在各自目录写 `interface-change-request.md`，A 裁量后升版本号发布（新增可选字段=小版本；破坏性=v1.x+迁移说明）。上一轮 `V7/backend/CONTRACT.md`（JSON 存储 v0.2）被本合同取代：业务事实已迁入 PostgreSQL 事务存储（真实本机容器，非内存桩）。§8 起为 v2 增量登记（§8/§9/§10/§11/§12 = 任务02/任务01审核轮/goal-01/goal-01交付轮/任务03），登记性指针不改变 §0–§7 已冻结文字的效力。
 
 **v1.2 → v1.3 变更（DEF-01 语义候选，监督纠偏 03:05；待用户裁决）**：
 反例：三代链 intake→assess→recommendation（recommendation 不直接绑定证据）全部推进到 accepted/candidate 后取代 facts——v1.2 下 recommendation 完全不受影响，可被无提示验收/决定，依据链根部已被推翻而下游不可见。
@@ -236,3 +236,47 @@ blocked ──(deps accepted+输入kind当前证据齐备)──▶ ready ──
 - **响应 200** `{ok:true, artifact:{artifactId, customerId, kind, factKey, sha256, createdAt, createdBy, supersededBy, duplicateOf, materialFile}}`——`materialFile` 为信封 v0 投影 `{name, mime, size, encoding:'base64', data}`（content JSON 含 `materialFile` 时原样取出；非信封件为 null，结构化事实经 `content` 字段原样返回）。被取代/重复件同样可读（历史可审计；行内 `supersededBy/duplicateOf` 如实携带）。
 - **错误码**：404 `NOT_FOUND`（不存在/不属本客户/无授权）；无新增错误码。`data` 大小即登记时信封上限（≤512KB base64，Edge 侧约定）；A 不做二次转码。
 - **Edge 代理约定（03 路消费）**：`/api/jw/v2/connectors/...` 同型只读代理；A 侧响应 `Cache-Control: no-store`（既有全局行为，预览不缓存）。
+
+## 12｜v2.5 增量契约登记（2026-09-19，任务03 集成 writer：权威查询与授权支撑）
+
+来源：V0.2 整改任务03（`docs/v02-remediation/task-03/`，自有文档与测试证据在其目录）。基线 `main@8dcef63`。v1（§0–§7）与 §8–§11 语义除下述显式增补外不变。迁移 `011_authoritative_reads.sql`（只新增两条索引，无表/列/数据改写；回退=删索引）。
+
+### 12.1 权威清单（IR-03-A ②；事件窗口引用的替代事实源）
+
+- **`GET /api/v2/customers/:customerId/assessments`** → `{ok, customerId, assessments:[{assessmentId, status, stale, staleReasons, evidenceSnapshot, snapshotHash, ruleVersion, candidate, version, createdAt, updatedAt}], nextCursor}`。
+- **`GET /api/v2/customers/:customerId/financing-requests`** → `{ok, customerId, financingRequests:[单件 GET 同一投影（projectFr）], nextCursor}`。
+- **鉴权**：已验证**内部** principal（roles 含 `customer` → 403 `PERMISSION_DENIED`，B13 some 口径；匿名 403）；租户+客户授权同 v2 读口（越权/grant 不在册 → 404，不泄露存在性）。
+- **分页**：`limit` 默认 20、上限 100；键集游标仅基于业务 id（`assessment_id`/`fr_id`，全局唯一、前缀含毫秒时间戳，字典序≈创建时间倒序）；`created_at` 微秒精度经 JS 毫秒编码有截断，禁止用作游标键（口径同 §11 G1）。排序=id 降序；重启/长历史/撤权后同一游标语义不变。
+- **单件读同权（收紧）**：`GET /api/v2/assessments/:id`、`GET /api/v2/financing-requests/:frId` 与清单同权——客户联系人身份 403（先按租户/grant 裁决 404，再拦角色，不泄露存在性）。存量内部消费方（Edge 服务端凭据）不受影响。
+- **消费方动作（03/Edge，未决）**：工作台快照的 assessments/financingRequests 引用可从 `refsSource='event_buffer', refsExhaustive=false` 切换为本清单（切换与移除标注由 Edge 落地后回归）。
+
+### 12.2 目录搜索统一（与任务一/前端"按名称/标识搜索"对齐）
+
+- `GET /api/v2/customers?search=` 同一词现在匹配 `display_name` **或** `customer_id` **或** `legal_entity_ref`（ILIKE）；租户/grants 过滤仍先行于搜索（未授权客户按不存在处理）。此前只匹配名称。
+
+### 12.3 材料清单处理引用（additive）
+
+- `GET /api/v2/customers/:customerId/artifacts` 每件新增 `processing: {stage, runRef, failureReason, nextAction} | null`（最新一条处理回执；无记录=null，页面按 registered 展示，口径同 §11 G3 `my/materials`）。既有字段不变。
+
+### 12.4 五项风险的复验结论（真实 PG 反例，`test/risk-recheck-task03.test.mjs` 11/11；不把历史全绿当关闭）
+
+1. **Gate 回执绑定**：rulesetVersion 必须=当前激活版本（409 `STALE_BASIS`）、仅 kind=service、跨客户引用 404、换版后提交点 `GATE_STALE_RULES`→409 `STALE_BASIS`——**全部按契约成立**。反例：`inputDigest/evidenceRefs` 为自报字段，不经 A 侧输入校验（对比：分析运行的 digest 由 A 在 start 盖章）。是否收紧（Gate 也走运行盖章）= 待裁决，见 12.6。
+2. **冻结检查会话回退/新增**：closure_status 无回退路径；closed 终态写命令一律 409 `INSPECTION_CLOSED`；晚到材料推进 closure_revision 后**旧包引用不失效**（冻结 `closureRevision/closureStatus` 可见，消费方可察觉漂移）——与 INSPECTION_SESSION_V1 §7.4 逐字一致，**这是有效契约行为不是缺陷**；需新收口=发新修订。
+3. **豁免**：登记点拒绝撤销（409 `POLICY_PENDING`）、过期（409）、跨客户（404）——按 §10 成立。反例：**冻结后撤销不追溯**——既有冻结包仍就绪、提交点仍放行（契约文字"只阻断新引用，历史冻结包不改写"的字面后果）；是否在提交点复验豁免有效性=政策裁决项，见 12.6。
+4. **晚到分析**：域结果摘要=运行 start 时 A 盖章 digest；"run 启动→材料取代→finish→登记"链路下域读时判 `changed/deps_changed`，**不成为当前依据**；同包登记不同依赖集 400（新材料进新修订）；旧 run 复登只维持 changed（fail-closed）。
+5. **撤权与正式批准**：grant 撤销后同 requestId 重放被当前授权拒绝（不借缓存，K02）；kind=service 一律 403 于 requireHuman 门（批准/出账等正式动作）；§11.1 签发的 service 身份 disable 后即刻不可认证、回执重放同样 403。
+
+### 12.5 IR-03-A ③（事件提交序/水位）结论：本轮不交付根修，登记分析
+
+`outbox_events.seq` 为 `bigserial`（事务内分配）：并发未提交事务可造成短时乱序；**回滚事务会留下永久序号缺口**，因此"最高已提交水位"无法从只读查询可靠推导（读者看不到未提交行，也无法区分"未提交"与"已回滚缺口"）。根修=提交时分配 seq（需全局计数器行或等价机制，引入全事务串行点，与 goal-01 性能收口冲突），属存储层设计决策。现状缓解（Edge 滞后重查窗口 128 + eventId 去重 + gap 标注，窗口内自愈已验）不阻塞交付。**A 侧本轮零改动**；如需根修，请走专门性能/语义轮次立项。
+
+### 12.6 政策待裁决项（本轮不制定新政策）
+
+- **P-03a Gate 回执输入绑定**：是否要求 Gate 回执像分析运行一样由 A 盖章输入摘要（涉及 C 路规则引擎对接形状）。
+- **P-03b 豁免撤销的提交点效力**：撤销是否应阻断"引用该豁免的既有冻结包"的后续正式动作（当前=不阻断，契约字面）。
+- **P-03c disburse 当前性门**：见 `docs/v02-remediation/task-03/POLICY_PENDING.md`（现状=跳过包当前性复查为 §9 A3 有效契约 K14c；边界清单与裁决问题已列，本轮零代码改动）。
+- **P-03d 客户身份对 v2 其余读面的口径**：评估/融资申请单件+清单已收紧为内部专用（12.1）；`getCustomer/getFacility/exposure/decision-status` 等其余面仍按 grant 授权可被客户身份读取，是否统一收紧=待裁决（无已知消费方受影响）。
+
+### 12.7 组织层级（V0.2 地图视角）：只登记数据建议与接口缺口，本轮不建平台
+
+全国—可配置大区—省级门店—客户的组织树与业绩/资产/新客视角**不在本轮实现**。现有客户目录响应不含大区/门店/坐标/业绩指标；"有客户额度"不等于"有门店业绩"。最小数据建议与接口缺口清单见 `docs/v02-remediation/task-03/POLICY_PENDING.md` §2。

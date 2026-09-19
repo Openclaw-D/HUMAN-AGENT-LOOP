@@ -1,44 +1,28 @@
-// goal-03d/e 材料·原件面板：A 档案（权威材料清单/受限上传 ≤512KB/版本取代链）+ 处理通道卡
-// （常驻解析链分段进度/A 侧回执留痕/签名 URL 预览——IR-02-C 消费面）。goal-03e：A 档案件预览
-// 经单件读回（IR-03-3 / CONTRACT §11.2）接线——信封件内联/下载，非信封件如实显示无字节，不伪造预览。
-import { useCallback, useEffect, useRef, useState } from 'react';
+// board-round-02 任务01·材料·原件面板（方案R 统一链）：
+// A 权威材料清单（aBridge 回写结果）+ 单件读回预览（IR-03-3/§11.2）+ A G3 处理状态 +
+// 统一提交链（channel-card：一次提交进通道，自动回写 A——不再有 A 直传/通道二选一）。
+import { useCallback, useEffect, useState } from 'react';
 import type { WbApi } from '../../lib/workbench/use-workbench';
 import {
-  base64ToBytes, buildOriginalEnvelope, envelopeDataUrl, errorText, fmtWhen, previewKind, summarizeArtifacts,
+  base64ToBytes, envelopeDataUrl, errorText, fmtWhen, previewKind, summarizeArtifacts,
   type ArtifactRow, type PreviewKind,
 } from '../../lib/workbench/wb-logic';
-import { WbError, useAction } from './wb-parts';
+import { WbError } from './wb-parts';
 import { ChannelCard } from './channel-card';
 
 type PreviewState =
   | { artifactId: string; phase: 'loading' }
   | { artifactId: string; phase: 'ready'; kind: PreviewKind; name: string; mime: string; size: number | null; dataUrl?: string; text?: string; bytes?: Uint8Array; supersededBy: string | null; contentJson: string | null };
 
-const KINDS = [
-  { v: 'purchase_contract', t: '购销合同' },
-  { v: 'invoice', t: '发票' },
-  { v: 'equipment_list', t: '设备清单' },
-  { v: 'bank_statement', t: '银行流水' },
-  { v: 'financial_statement', t: '财务报表' },
-  { v: 'original_upload', t: '其他原件' },
-];
-
 export function OriginalsPanel({ wb, customerId, onChanged }: { wb: WbApi; customerId: string; onChanged?: () => void }) {
   const client = wb.client;
   const [rows, setRows] = useState<ArtifactRow[] | null>(null);
   const [conflicts, setConflicts] = useState<Array<{ factKey: string; assertionCount: number }>>([]);
   const [loadErr, setLoadErr] = useState<string | null>(null);
-  const [kind, setKind] = useState('original_upload');
-  const [factKey, setFactKey] = useState('');
-  const [subject, setSubject] = useState('');
-  const [period, setPeriod] = useState('');
-  const [fileMsg, setFileMsg] = useState<string | null>(null);
   const [procDetail, setProcDetail] = useState<{ artifactId: string; current: Record<string, unknown> | null; history: Array<Record<string, unknown>> } | null>(null);
   const [procErr, setProcErr] = useState<string | null>(null);
   const [preview, setPreview] = useState<PreviewState | null>(null);
   const [previewErr, setPreviewErr] = useState<string | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
-  const act = useAction();
 
   const load = useCallback(async () => {
     if (!client) return;
@@ -116,47 +100,12 @@ export function OriginalsPanel({ wb, customerId, onChanged }: { wb: WbApi; custo
     window.setTimeout(() => URL.revokeObjectURL(url), 10000);
   };
 
-  const submit = () => {
-    const f = fileRef.current?.files?.[0];
-    if (!f) { setFileMsg('请先选择文件'); return; }
-    void f.arrayBuffer().then(async (buf) => {
-      const pre = buildOriginalEnvelope({ name: f.name, mime: f.type, bytes: new Uint8Array(buf) });
-      if (!pre.ok) { setFileMsg(pre.message); return; }
-      setFileMsg(null);
-      act.open(
-        {
-          title: '上传原件（受限通道）',
-          lines: [
-            `文件：${pre.envelope.name}（${pre.envelope.mime || '未知类型'}，${pre.envelope.size} 字节）`,
-            `材料种类：${KINDS.find((k) => k.v === kind)?.t ?? kind}${factKey ? ` · 事实键 ${factKey}` : ''}`,
-            subject ? `主体：${subject}` : '主体：未填',
-            period ? `期间：${period}` : '期间：未填',
-            '说明：原件字节经受限通道登记入客户档案（≤512KB）；核验等级由后台核定，客户申报不产生等级。',
-          ],
-          confirmLabel: '确认上传',
-        },
-        async () => {
-          await client.uploadOriginal(customerId, {
-            requestId: `wb-up-${customerId}-${Date.now()}`.slice(0, 128),
-            kind,
-            factKey: factKey || undefined,
-            materialMeta: { ...(subject ? { subjectRef: subject } : {}), ...(period ? { period } : {}) },
-            file: { name: pre.envelope.name, mime: pre.envelope.mime, dataBase64: pre.envelope.data },
-          });
-          if (fileRef.current) fileRef.current.value = '';
-          await load();
-          onChanged?.();
-        },
-      );
-    });
-  };
-
   return (
     <div>
-      <h3 className="wb-h2">材料清单（服务端权威：A evidence_artifacts）</h3>
+      <h3 className="wb-h2">材料清单（服务端权威：A evidence_artifacts · 方案R 下由处理链自动回写）</h3>
       <WbError error={loadErr} onDismiss={() => setLoadErr(null)} />
       {rows === null && <p className="wb-note">加载中…</p>}
-      {rows !== null && rows.length === 0 && <p className="wb-note">暂无材料。用下方表单上传第一份原件。</p>}
+      {rows !== null && rows.length === 0 && <p className="wb-note">暂无材料。用下方「材料提交与处理链」上传第一份原件——一次提交，自动登记回本清单并推进处理。</p>}
       {rows !== null && rows.length > 0 && (
         <table className="wb-table">
           <thead><tr><th>种类</th><th>事实键</th><th>等级</th><th>状态</th><th>主体/期间</th><th>对象锚定</th><th>登记时间</th><th>处理</th></tr></thead>
@@ -249,33 +198,8 @@ export function OriginalsPanel({ wb, customerId, onChanged }: { wb: WbApi; custo
           <ul>{conflicts.map((c) => <li key={c.factKey}>{c.factKey}：{c.assertionCount} 个现行断言，需人工复核</li>)}</ul>
         </div>
       )}
-      <div className="wb-card dim" style={{ marginTop: 10 }}>
-        <h3 className="wb-h2">上传原件（受限通道 ≤512KB）</h3>
-        <p className="wb-note warn">说明：原件预览已接线——A 档案件走单件读回（IR-03-3/§11.2，上行清单「预览」按钮）；处理通道件走 Connectors 签名 URL（下方通道卡）。上游不可用时如实报错，不提供伪造预览。</p>
-        <div className="wb-row">
-          <div className="wb-field" style={{ width: 160 }}><label>材料种类</label>
-            <select className="wb-select" value={kind} onChange={(e) => setKind(e.target.value)}>
-              {KINDS.map((k) => <option key={k.v} value={k.v}>{k.t}</option>)}
-            </select>
-          </div>
-          <div className="wb-field" style={{ width: 160 }}><label>事实键（可选）</label>
-            <input className="wb-input" value={factKey} onChange={(e) => setFactKey(e.target.value)} placeholder="如 invoice_total" />
-          </div>
-          <div className="wb-field" style={{ width: 150 }}><label>主体（可选）</label>
-            <input className="wb-input" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="如 远山精密" />
-          </div>
-          <div className="wb-field" style={{ width: 130 }}><label>期间（可选）</label>
-            <input className="wb-input" value={period} onChange={(e) => setPeriod(e.target.value)} placeholder="如 2026-07" />
-          </div>
-        </div>
-        <div className="wb-row">
-          <input type="file" ref={fileRef} aria-label="选择原件文件" />
-          <button className="wb-btn" onClick={submit}>上传登记</button>
-        </div>
-        <WbError error={fileMsg} onDismiss={() => setFileMsg(null)} />
-        {act.node}
-      </div>
-      <ChannelCard wb={wb} customerId={customerId} onChanged={onChanged} />
+      <p className="wb-note warn">材料提交只有一个入口（下方「材料提交与处理链」）：一次上传进常驻处理链，A 档案登记由后台自动回写——不再提供 A 直传表单，不需要选择链路或重复上传。原件预览已接线：A 档案件走单件读回（IR-03-3/§11.2，上行清单「预览」按钮）；处理链件走 Connectors 签名 URL。上游不可用时如实报错，不提供伪造预览。</p>
+      <ChannelCard wb={wb} customerId={customerId} onChanged={() => { void load(); onChanged?.(); }} />
     </div>
   );
 }

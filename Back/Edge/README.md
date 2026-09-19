@@ -15,6 +15,8 @@
 cd Back/Edge
 node scripts/edge-start.mjs          # 默认 127.0.0.1:48200；JW 部署形态探测 A@48180、PG@15442
   # --port N / --kernel-port N / --db-port N 可覆盖（或环境变量 JW_EDGE_PORT / JW_A_PORT / JW_PG_PORT）
+  # --connectors-url URL --connectors-token-file F [--connectors-tenant t1]  # 处理通道消费面（live）
+  # --messages-file <path>        # 消息+幂等回执持久库（node:sqlite；缺省=进程内，E0 兼容）
 curl http://127.0.0.1:48200/versionz        # 版本封存（buildId/gitSha/sourceDirty/dist/contract/migration/能力位/规则包/依赖锁）
 curl http://127.0.0.1:48200/healthz/live    # liveness：只表示进程存活
 curl http://127.0.0.1:48200/healthz/ready   # readiness：逐依赖独立结果，DB down 不包装为就绪
@@ -23,6 +25,47 @@ node scripts/version-seal.mjs --probe  # 版本封存 → docs/customer-next/acc
 ```
 
 端口被占→exit 24 不抢占；双开→exit 23；停止不删除任何数据。运行态文件在 `.run/`（Git 排除）。
+
+## 任务04 §三/§四 增量（2026-09-19）
+
+- **处理通道装配闭环**：`scripts/delivery-up.mjs --config config/delivery-runtime.acceptance.json` 完整启动
+  PG→A 迁移/播种→A 内核→**Connectors（常驻处理驱动+对象存储+A bridge；合成配置写 Connectors/.run/config.delivery.json，
+  经 CONNECTORS_CONFIG 指向，绝不覆盖既有 .run/config.json）**→Edge（透传 --connectors-url/--connectors-token-file）。
+  未透传通道配置时，页面 `/api/jw/v2/(actions/)?connectors/**` 显式 503 `CHANNEL_NOT_CONFIGURED`
+  （修复此前落入 A 面代理误报 `PROXY_ROUTE_NOT_DECLARED` 的根因链）。`--without-connectors` 显式豁免（全链结论降级 NOT_RUN）。
+- **逐资源授权**（`src/channel-authz.mjs`）：Connectors 上游只认服务令牌，Edge 换权点转发前裁决——
+  customer-only 会话仅可 上传/问答/接受邀请（`access: 'customer'|'open'`），内部动作（邀请签发/人工转录/更正/获准复核/暂停）403 `ROLE_FORBIDDEN`；
+  带目标客户的读写先经 A `checkCustomer` 裁决（缺失 400 失败关闭）；仅持 taskId → 服务端取回任务归属（`customer_id`）再校验，不可读统一 404 不泄露存在性。
+- **健康检查分项**：readiness = kernel-a（A 内核 db=up）/ db（TCP）/ connectors（进程）/ connectors-channel（服务令牌+处理面）
+  独立报告；未配置通道=advisory 检查（如实显示，不参与聚合）；聚合就绪由 delivery-up 全链把关。
+  驱动 lastTick 与桥接业务链路无法由 Edge 外部观测——不冒充已验证（IR-04-2B）。
+- **资源台账**：delivery-up 写 `.run/delivery/resources.json`（实例名/端口/PID/marker/日志/归属；B 执行器不常驻的判定记录）。
+  delivery-down 停止顺序 Edge→Connectors→A（Connectors 多证复核=pidfile+heartbeat+`service=jw-connectors`+命令行 marker）。
+- **消息与恢复**：`--messages-file`（node:sqlite，WAL）持久化页内线程与发送 requestId 幂等回执；重启后线程/回执可查，
+  重放 `replayed:true` 不二次入栈。分页语义：增量 `after=N` 返回 seq>N 的**最早**一页（升序），cursor=本页最后一条
+  （空页=N 本身）——修复"after=0、limit=2 返回 4,5、cursor=5 后 1..3 永久丢失"；保留窗口裁剪显式 `truncated:true+retentionBase`。
+- **权威清单消费**（问题8，CONTRACT §12）：workspace 的 assessments/financing-requests 改由
+  `GET /api/v2/customers/:id/{assessments,financing-requests}` 权威清单投影（`refsSource='authoritative_list'`），
+  事件窗口引用仅作上游未升级回退（如实标注）；读面路由同步开放（limit/cursor 透传）。
+
+## 任务04 board-round-02 增量（2026-09-19 晚）
+
+- **新增通道路由代理（消费任务02 已落地面上游）**：
+  - `GET /api/jw/v2/connectors/processing/receipts/:requestId?tid=`（IR-T01-3 通道回执对账）：Edge 转发前
+    真实取回上游回执行做归属预检——命中且 `customer_id` 不可读 → 404（不泄露存在性），未命中透传
+    `found:false`。**回执不能凭 requestId 越权查询**。
+  - `POST /api/jw/v2/actions/connectors/customers/link`（IR-04-2C 方案 R 映射场景受控登记）：internal 角色 +
+    目标客户 checkCustomer 裁决；legalEntityRef 归属证明由上游 Connectors 核验。
+- **可信调用上下文**（与任务02 token→调用方绑定配套，IR-04-2A-3）：
+  - 转发服务令牌面一律附加 `x-jw-actor-principal` / `x-jw-actor-roles`（`channel-authz.mjs trustedActorHeaders`
+    由会话派生；浏览器请求头不透传，伪造同名头无效）；
+  - 6 个人工动作路由转发前以会话 principal **覆写 body actor 字段**（correct-fact→correctedBy、manual-entry→
+    enteredBy、pause→actor、questions/verify→verifiedBy、questions/answer→answerer、customers/link→requestedBy）
+    ——Edge 令牌在上游是 mayDelegateActor 网关，不覆写则浏览器伪造 body actor 会被采信。
+- **必需域政策受控入口**（`scripts/delivery-up.mjs` §5.5）：仅当运行配置显式声明 `requiredDomainsPolicy`
+  （annotation 必须含"非公司制度"或"经公司批准"标注）才播种 `domain_requirement_policies` 并向 A 透传
+  `--required-domains-policy`；未声明维持 POLICY_PENDING fail-closed。不 SQL 补业务状态、不伪造 Gate 回执。
+- 测试：`test/t4-trusted-actor.test.mjs`（5 组）；全量套件 72/72。
 
 ## live 模式（任务三 C2：真实内核投影）
 

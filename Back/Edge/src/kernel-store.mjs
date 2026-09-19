@@ -342,8 +342,28 @@ export function createKernelStore({
       }
       return data;
     };
-    const assessments = (await Promise.all(refs.assessmentIds.map((id) => cachedDetail(`ass:${id}`, id, `assessment:${id}`, '/api/v2/assessments')))).filter(Boolean);
-    const financingRequests = (await Promise.all(refs.frIds.map((id) => cachedDetail(`fr:${id}`, id, `fr:${id}`, '/api/v2/financing-requests')))).filter(Boolean);
+    // 任务04 问题8（IR-03-A② 落地）：评估/融资申请改消费任务三权威清单（CONTRACT §12）——
+    // 服务端逐请求鉴权、键集游标稳定；事件窗口引用仅作上游未升级时的回退（如实标注非穷尽）。
+    // 清单 limit=100；超过单页 → refsExhaustive=false + note（整页分页走读面路由）。
+    const asList = await settle('assessmentList', `/api/v2/customers/${enc}/assessments?limit=100`, (r) => ({ items: r.assessments ?? [], nextCursor: r.nextCursor ?? null }));
+    const frList = await settle('financingRequestList', `/api/v2/customers/${enc}/financing-requests?limit=100`, (r) => ({ items: r.financingRequests ?? [], nextCursor: r.nextCursor ?? null }));
+    let assessments;
+    let financingRequests;
+    let refsSource;
+    let refsExhaustive;
+    if (asList !== null && frList !== null) {
+      assessments = asList.items.slice(0, MAX_LIST_ITEMS);
+      financingRequests = frList.items.slice(0, MAX_LIST_ITEMS);
+      refsSource = 'authoritative_list';
+      refsExhaustive = asList.nextCursor === null && frList.nextCursor === null;
+      if (!refsExhaustive) notes.push('权威清单超过单页上限（limit=100）：快照非穷尽；整页分页走 /api/jw/v2/customers/:id/{assessments,financing-requests}');
+    } else {
+      refsSource = 'event_buffer';
+      refsExhaustive = false;
+      assessments = (await Promise.all(refs.assessmentIds.map((id) => cachedDetail(`ass:${id}`, id, `assessment:${id}`, '/api/v2/assessments')))).filter(Boolean);
+      financingRequests = (await Promise.all(refs.frIds.map((id) => cachedDetail(`fr:${id}`, id, `fr:${id}`, '/api/v2/financing-requests')))).filter(Boolean);
+      notes.push('权威清单不可用（见 freshness.assessmentList/financingRequestList）：回退事件窗口引用（非穷尽）');
+    }
 
     let session = null;
     if (refs.sessionId) {
@@ -366,8 +386,8 @@ export function createKernelStore({
       objectInventory,
       financingRequests,
       assessments,
-      refsSource: 'event_buffer',
-      refsExhaustive: false,
+      refsSource,
+      refsExhaustive,
       session,
       openItems: [],
     };

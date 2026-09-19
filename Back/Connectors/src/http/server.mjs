@@ -14,14 +14,19 @@ import { verifyTrtcSignature, parseTrtcEvent } from '../rtc/trtc.mjs';
  * 所有读带 tenant 作用域；错误码统一 {ok:false,error}。
  */
 
-export async function startServer(svc, { port = 48100, wecomConfig, trtcCallbackKey, serviceToken }) {
+export async function startServer(svc, { port = 48100, wecomConfig, trtcCallbackKey, serviceToken, callerBindings = null }) {
   const server = createServer(async (req, res) => {
     const url = new URL(req.url, `http://127.0.0.1:${port}`);
     try {
       const body = await readBody(req);
 
       if (req.method === 'GET' && url.pathname === '/healthz') {
-        return json(res, 200, { ok: true, service: 'jw-connectors', realWeCom: 'blocked_external_access', realTrtc: 'blocked_external_access' });
+        // IR-04-2B：处理驱动只读观测（不改变既有字段；driverStarted=false 且未装配 processing 亦如实）
+        return json(res, 200, {
+          ok: true, service: 'jw-connectors',
+          realWeCom: 'blocked_external_access', realTrtc: 'blocked_external_access',
+          processing: svc.processing ? svc.processing.driverStatus() : { driverStarted: false, notWired: true },
+        });
       }
 
       if (url.pathname === '/callbacks/wecom') {
@@ -66,12 +71,45 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
         return res.end(buf);
       }
 
-      // 以下需服务令牌。
-      if (!serviceToken || req.headers['x-service-token'] !== serviceToken) {
+      // ---- 任务02 · actor 可信来源（IR-04-2A-3 冻结语义：token→调用方绑定）----
+      // 服务令牌是服务间信任，不是资源授权；人类 actor 只能由"已认证网关"代理陈述，
+      // 依据是部署配置的令牌→调用方绑定，不是任何新增 header 的存在性（存在≠可信）。
+      // callerBindings: [{ token, caller, mayDelegateActor }]，每个绑定令牌都是独立的服务间凭据；
+      // 未配置时默认把唯一 serviceToken 绑定为页面换权网关（本部署=Edge，会话→逐资源授权
+      // 见 Back/Edge/src/channel-authz.mjs）。
+      // 非代理调用方：自报人类 actor → 403 ACTOR_NOT_DELEGABLE（不静默改写审计语义）；
+      // 未自报 → 以调用方服务身份生成（svc:<caller>，actorSource=token_binding）供内部自动化。
+      // 显式配置 callerBindings 后，未绑定令牌在人工动作面一律 403 CALLER_NOT_TRUSTED（fail closed）。
+      const callerBindingsMap = new Map(
+        ((Array.isArray(callerBindings) && callerBindings.length > 0)
+          ? callerBindings
+          : [{ token: serviceToken, caller: 'edge-gateway', mayDelegateActor: true }]
+        ).filter((x) => x?.token).map((x) => [x.token, x]),
+      );
+      const callerBindingOf = () => callerBindingsMap.get(req.headers['x-service-token']) ?? null;
+
+      // 以下需服务令牌（唯一 serviceToken 或任一已绑定调用方令牌）。
+      if (!serviceToken || !(req.headers['x-service-token'] === serviceToken || callerBindingsMap.has(req.headers['x-service-token']))) {
         return json(res, 403, { ok: false, error: 'PRINCIPAL_UNTRUSTED' });
       }
       const tid = url.searchParams.get('tid');
       const route = `${req.method} ${url.pathname}`;
+      /** 人工动作 actor 上下文：返回 {actor, actorSource, caller} 注入请求体；网关未声明时返回 null=维持服务层原校验。 */
+      const actorCtx = (b, field) => {
+        const binding = callerBindingOf();
+        if (!binding) throw new ConnError('CALLER_NOT_TRUSTED', '服务令牌未绑定调用方：人工动作面拒绝（callerBindings 未含此令牌）');
+        const claimed = b?.[field];
+        if (claimed != null && claimed !== '') {
+          if (binding.mayDelegateActor !== true) {
+            throw new ConnError('ACTOR_NOT_DELEGABLE', `调用方 ${binding.caller} 令牌无 actor 代理权：${field} 自报拒绝（依据 token 绑定，非 header 存在性）`);
+          }
+          return { actor: claimed, actorSource: 'gateway_delegated', caller: binding.caller };
+        }
+        if (binding.mayDelegateActor !== true) {
+          return { actor: `svc:${binding.caller}`, actorSource: 'token_binding', caller: binding.caller };
+        }
+        return null;
+      };
 
       if (route === 'POST /api/connectors/sessions') {
         const b = JSON.parse(body);
@@ -137,13 +175,24 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
         const b = JSON.parse(body);
         if (!svc.objectStore) throw new ConnError('INTERNAL', 'objectStore not wired');
         // 1) 范围门：邀请须 accepted、kind 获准、对象在锚定范围（W01）；多锚点逐一校验
+        //    IR-04-2A-1（任务02）：邀请归属客户必须与声明的 customerId 一致——伪造客户字段
+        //    不得借他人邀请把材料登记到别的客户名下（跨户混淆口子闭合）。
         const anchors = [...(Array.isArray(b.objectRefs) ? b.objectRefs : []), ...(b.objectRef ? [b.objectRef] : [])];
+        let invCustomerId = null;
+        const scopeCheck = async (objectRef) => {
+          const sc = await svc.intake.checkUploadScope({ tenantId: b.tenantId, invitationId: b.invitationId, kind: b.kind, objectRef });
+          if (invCustomerId == null) invCustomerId = sc.customerId ?? null;
+          else if (sc.customerId != null && sc.customerId !== invCustomerId) throw new ConnError('INTERNAL', '邀请归属客户不一致（数据异常）');
+          return sc;
+        };
         if (anchors.length === 0) {
-          await svc.intake.checkUploadScope({ tenantId: b.tenantId, invitationId: b.invitationId, kind: b.kind, objectRef: null });
+          await scopeCheck(null);
         } else {
-          for (const anchor of anchors) {
-            await svc.intake.checkUploadScope({ tenantId: b.tenantId, invitationId: b.invitationId, kind: b.kind, objectRef: anchor });
-          }
+          for (const anchor of anchors) await scopeCheck(anchor);
+        }
+        if (!b.customerId) throw new ConnError('INVALID_INPUT', 'upload: customerId 必填');
+        if (invCustomerId != null && invCustomerId !== b.customerId) {
+          throw new ConnError('CUSTOMER_MISMATCH', `邀请 ${b.invitationId} 归属客户 ${invCustomerId}，与声明 customerId ${b.customerId} 不一致：拒绝（材料不落库）`);
         }
         // 2) 原件入受控对象存储（内容哈希由对象存储落库；get 时复核）
         let objectRef = b.objectRef ?? null;
@@ -192,6 +241,8 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
       }
       if (route === 'POST /api/connectors/evidence/verify') {
         const b = JSON.parse(body);
+        const act = actorCtx(b, 'verifiedBy');
+        if (act) { b.verifiedBy = act.actor; b._actor = { source: act.actorSource, caller: act.caller }; }
         return json(res, 200, { ok: true, ...(await svc.evidence.verifyArtifact(b)) });
       }
       if (route === 'POST /api/connectors/evidence/coverage') {
@@ -202,17 +253,28 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
       // ---- goal-02（产品交付·任务二）· 人工路线：录入/更正/预览 ----
       if (route === 'POST /api/connectors/evidence/manual-entry') {
         if (!svc.evidence.manualEntry) throw new ConnError('INTERNAL', 'manualEntry not wired');
-        return json(res, 200, { ok: true, ...(await svc.evidence.manualEntry(JSON.parse(body))) });
+        const mb = JSON.parse(body);
+        const act = actorCtx(mb, 'enteredBy');
+        if (act) { mb.enteredBy = act.actor; mb._actor = { source: act.actorSource, caller: act.caller }; }
+        return json(res, 200, { ok: true, ...(await svc.evidence.manualEntry(mb)) });
       }
       if (route === 'POST /api/connectors/evidence/correct-fact') {
         const b = JSON.parse(body);
+        const actC = actorCtx(b, 'correctedBy');
+        if (actC) b.correctedBy = actC.actor;
         if (!b.reason || !b.correctedBy) throw new ConnError('INVALID_INPUT', 'correct-fact: reason/correctedBy 必填（更正可回溯；更正≠核验完成）');
         // 更正事实继承原事实的锚定与来源（对象/期间/来源件不变），仅取值与理由更新
         const orig = (await svc.store.query(
-          `SELECT subject, predicate, object_ref, period_from, period_to, from_artifacts, unit FROM fact_assertions WHERE fact_id=$1 AND tenant_id=$2`,
+          `SELECT customer_id, subject, predicate, object_ref, period_from, period_to, from_artifacts, unit FROM fact_assertions WHERE fact_id=$1 AND tenant_id=$2`,
           [b.correctsFactId, b.tenantId],
         )).rows[0];
         if (!orig) throw new ConnError('NOT_FOUND', `fact ${b.correctsFactId}`);
+        // 任务02（IR-04-2A-3 资源归属面）：被更正事实必须归属声明客户——不得借更正他客户事实
+        // 把修订链/新事实挂到别的客户名下（customerId 缺失时以事实归属为准，不另行推断）。
+        if (!b.customerId) b.customerId = orig.customer_id;
+        else if (orig.customer_id !== b.customerId) {
+          throw new ConnError('CUSTOMER_MISMATCH', `fact ${b.correctsFactId} belongs to customer ${orig.customer_id}, not ${b.customerId}`);
+        }
         const fact = {
           tenantId: b.tenantId, customerId: b.customerId,
           subject: b.fact?.subject ?? orig.subject,
@@ -234,9 +296,9 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
         // A 回写：被更正事实所在材料已在 A 登记 → 以取代关系登记更正版（业务凭据；登记≠核验）
         let aSync = 'skipped_no_bridge';
         if (svc.aBridge && created.factId) {
-          const artId = (await svc.store.query(
-            `SELECT artifact_id FROM fact_assertions WHERE fact_id=$1 AND tenant_id=$2`, [b.correctsFactId, b.tenantId],
-          )).rows[0]?.artifact_id ?? null;
+          // 来源件 = 原事实 from_artifacts 首件（evidence_artifacts 以 evidence_id 为键，无 artifact_id 列）
+          const artId = Array.isArray(orig.from_artifacts) ? (orig.from_artifacts[0] ?? null)
+            : (JSON.parse(orig.from_artifacts ?? '[]')[0] ?? null);
           const matLink = artId ? (await svc.store.query(
             `SELECT a_ref FROM a_links WHERE tenant_id=$1 AND entity_type IN ('material','supersede') AND local_id=$2 AND status='registered' AND a_ref IS NOT NULL ORDER BY created_at DESC LIMIT 1`,
             [b.tenantId, artId],
@@ -285,10 +347,14 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
       if (route === 'GET /api/connectors/evidence/preview') {
         if (!tid || !url.searchParams.get('eid')) throw new ConnError('INVALID_INPUT', 'preview: tid/eid 必填');
         const art = (await svc.store.query(
-          `SELECT object_ref, sha256, kind, completeness FROM evidence_artifacts WHERE tenant_id=$1 AND evidence_id=$2`,
+          `SELECT object_ref, sha256, kind, completeness, customer_id FROM evidence_artifacts WHERE tenant_id=$1 AND evidence_id=$2`,
           [tid, url.searchParams.get('eid')],
         )).rows[0];
         if (!art) throw new ConnError('NOT_FOUND', 'evidence not found');
+        // IR-04-2A-2（任务02）：工件归属客户必须与 cid 一致（与 evidence/media-url 同款对账）——
+        // 不得为任意 (eid, cid) 组合铸造"合法"签名 URL。
+        const cid = url.searchParams.get('cid') ?? '';
+        if (art.customer_id !== cid) throw new ConnError('MEDIA_URL_CUSTOMER_MISMATCH', 'artifact belongs to another customer');
         let format = 'unknown'; let size = 0; let previewSafe = false;
         if (art.object_ref) {
           const buf = await svc.objectStore.get(art.object_ref);
@@ -296,10 +362,34 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
           const sniff = detectFormat(buf, {});
           format = sniff.name;
           previewSafe = sniff.previewSafe === true || sniff.family === 'pdf' || sniff.family === 'zipish' || sniff.family === 'csv' || sniff.family === 'text';
-          const downloadUrl = svc.objectStore.sign({ objectRef: art.object_ref, op: 'get', tenantId: tid, customerId: url.searchParams.get('cid') ?? '', ttlSec: 120 });
-          return json(res, 200, { ok: true, evidenceId: url.searchParams.get('eid'), format, size, sha256: art.sha256, completeness: art.completeness, previewSafe, downloadUrl, note: '原件字节经短时签名 URL 获取（当前权限内），无公开媒体目录' });
+          const downloadUrl = svc.objectStore.sign({ objectRef: art.object_ref, op: 'get', tenantId: tid, customerId: cid, ttlSec: 120 });
+          return json(res, 200, { ok: true, evidenceId: url.searchParams.get('eid'), customerId: art.customer_id, format, size, sha256: art.sha256, completeness: art.completeness, previewSafe, downloadUrl, note: '原件字节经短时签名 URL 获取（当前权限内），无公开媒体目录' });
         }
-        return json(res, 200, { ok: true, evidenceId: url.searchParams.get('eid'), format, size, sha256: art.sha256, completeness: art.completeness, previewSafe: false, downloadUrl: null });
+        return json(res, 200, { ok: true, evidenceId: url.searchParams.get('eid'), customerId: art.customer_id, format, size, sha256: art.sha256, completeness: art.completeness, previewSafe: false, downloadUrl: null });
+      }
+
+      // ---- 任务02 · 受控客户映射登记（映射场景专用；同 ID 场景由处理链权威核验自动接通）----
+      if (route === 'POST /api/connectors/customers/link') {
+        if (!svc.processing?.registerCustomerLink) throw new ConnError('INTERNAL', 'processing not wired');
+        const b = JSON.parse(body);
+        const act = actorCtx(b, 'requestedBy');
+        if (act) b.requestedBy = act.actor;
+        return json(res, 200, { ok: true, ...(await svc.processing.registerCustomerLink({
+          tenantId: b.tenantId, customerId: b.customerId, aCustomerId: b.aCustomerId,
+          legalEntityRef: b.legalEntityRef ?? null, requestedBy: b.requestedBy ?? 'api',
+        })) });
+      }
+      // ---- IR-T01-3：按 requestId 查询通道动作回执（只读；a_links 对账簿）----
+      if (route.startsWith('GET /api/connectors/processing/receipts/')) {
+        if (!tid) throw new ConnError('INVALID_INPUT', 'tid（tenantId）必填');
+        const requestId = url.pathname.slice('/api/connectors/processing/receipts/'.length);
+        const row = (await svc.store.query(
+          `SELECT link_id, tenant_id, customer_id, task_id, entity_type, local_id, a_customer_id, a_ref, request_id, principal_id, status, detail, created_at, updated_at
+           FROM a_links WHERE tenant_id=$1 AND request_id=$2`,
+          [tid, decodeURIComponent(requestId)],
+        )).rows[0];
+        if (!row) return json(res, 200, { ok: true, found: false, requestId: decodeURIComponent(requestId) });
+        return json(res, 200, { ok: true, found: true, requestId: row.request_id, receipt: row, note: '通道动作对账簿（a_links）；A 动作回执在 A 侧 /receipts/:requestId' });
       }
 
       // ---- goal-02 · 处理协调面（持久任务/进度回执/问题准备/暂停）----
@@ -323,6 +413,8 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
       if (route === 'POST /api/connectors/processing/pause') {
         if (!svc.processing) throw new ConnError('INTERNAL', 'processing not wired');
         const b = JSON.parse(body);
+        const act = actorCtx(b, 'actor');
+        if (act) b.actor = act.actor;
         return json(res, 200, { ok: true, ...(await svc.processing.setPause({ tenantId: b.tenantId, customerId: b.customerId ?? null, paused: b.paused === true, actor: b.actor ?? 'api' })) });
       }
       if (route === 'GET /api/connectors/questions/pending') {
@@ -333,11 +425,15 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
       if (route === 'POST /api/connectors/questions/answer') {
         if (!svc.processing) throw new ConnError('INTERNAL', 'processing not wired');
         const b = JSON.parse(body);
+        const act = actorCtx(b, 'answerer');
+        if (act) { b.answerer = act.actor; b._actor = { source: act.actorSource, caller: act.caller }; }
         return json(res, 200, { ok: true, ...(await svc.processing.recordAnswer({ tenantId: b.tenantId, customerId: b.customerId, questionKey: b.questionKey, answerText: b.answerText, answerer: b.answerer })) });
       }
       if (route === 'POST /api/connectors/questions/verify') {
         if (!svc.processing) throw new ConnError('INTERNAL', 'processing not wired');
         const b = JSON.parse(body);
+        const act = actorCtx(b, 'verifiedBy');
+        if (act) { b.verifiedBy = act.actor; b._actor = { source: act.actorSource, caller: act.caller }; }
         return json(res, 200, { ok: true, ...(await svc.processing.verifyQuestion({ tenantId: b.tenantId, customerId: b.customerId, questionKey: b.questionKey, verifiedBy: b.verifiedBy, note: b.note })) });
       }
 

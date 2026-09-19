@@ -3,10 +3,23 @@
   "dbUser": "jw",
   "dbPassword": "jw-local-demo",
   "dbName": "jw",
-  "principalTokens": "tok-biz1=biz1:human:business:all:t1,tok-jw1=jw1:human:jianwei:all:t1,tok-cred1=cred1:human:credit:all:t1,tok-comm1=comm1:human:commerce:all:t1,tok-asset1=asset1:human:asset:all:t1,tok-app1=app1:human:approver:all:t1,tok-dir1=dir1:human:director:all:t1,tok-cust1=cust1:human:customer:all:t1,tok-adm1=adm1:human:admin:all:all",
+  "principalTokens": "tok-biz1=biz1:human:business:all:t1,tok-jw1=jw1:human:jianwei:all:t1,tok-cred1=cred1:human:credit:all:t1,tok-comm1=comm1:human:commerce:all:t1,tok-asset1=asset1:human:asset:all:t1,tok-app1=app1:human:approver:all:t1,tok-dir1=dir1:human:director:all:t1,tok-cust1=cust1:human:customer:all:t1,tok-svc1=svc1:service:service:all:t1,tok-adm1=adm1:human:admin:all:all",
   "creditMatrix": "matrix-delivery-synthetic",
   "creditConcentration": "conc-delivery-synthetic",
   "matrixSeedSql": "INSERT INTO permission_matrix (matrix_version, role, action, allowed, max_amount_minor) VALUES ('matrix-delivery-synthetic','approver','facility.approve',true,1000000000),('matrix-delivery-synthetic','approver','facility.activate',true,NULL),('matrix-delivery-synthetic','approver','facility.suspend',true,NULL),('matrix-delivery-synthetic','approver','facility.reduce',true,NULL),('matrix-delivery-synthetic','business','fr.confirm-external',true,1000000000) ON CONFLICT (matrix_version, role, action) DO NOTHING;",
+  "connectors": {
+    "_note": "任务04 §三：完整启动必需段（--without-connectors 显式豁免时全链就绪结论降级 NOT_RUN）。signingSecret/serviceToken/encodingAESKey 缺省由 delivery-up 随机生成（只经服务端传递，不入 Git）；tenantId 与前端 tid 及 A 租户一致；a.credentials 令牌必须出现在 principalTokens；customerLinks 种子仅 Connectors→A 工件回写需要时配置（customerId → {aCustomerId, projectId?}，A v2 客户ID）。callbackToken 为合成验收值（本地回调验签必需，真实企微出站恒关闭）。以下均为公开合成演示值。",
+    "port": 48100,
+    "tenantId": "t1",
+    "pg": { "database": "cnext" },
+    "wecom": { "callbackToken": "synthetic-acceptance-callback-token" },
+    "a": {
+      "credentials": { "service": "tok-svc1", "registrar": "tok-biz1" },
+      "customerLinks": {}
+    },
+    "driverIntervalMs": 2000,
+    "outboundPolicy": "suggest_only"
+  },
   "authEntries": [
     { "credential": "tok-biz1", "principalId": "biz1", "roles": ["business"] },
     { "credential": "tok-jw1", "principalId": "jw1", "roles": ["jianwei"] },

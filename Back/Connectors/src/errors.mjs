@@ -14,6 +14,14 @@ export const ERR = {
   BINDING_AMBIGUOUS: { code: 'BINDING_AMBIGUOUS', http: 409 },
   BINDING_QUARANTINED: { code: 'BINDING_QUARANTINED', http: 409 },
   CUSTOMER_SCOPE_MISMATCH: { code: 'CUSTOMER_SCOPE_MISMATCH', http: 403 },
+  // 任务02 受控映射链 + 上传归属一致性（IR-04-2A-1）
+  CUSTOMER_MISMATCH: { code: 'CUSTOMER_MISMATCH', http: 403 },          // 上传声明 customerId 与邀请归属客户不一致
+  LINK_CONFLICT: { code: 'LINK_CONFLICT', http: 409 },                  // 客户已映射到不同 A 客户（不覆盖不劫持）
+  LINK_OWNERSHIP_MISMATCH: { code: 'LINK_OWNERSHIP_MISMATCH', http: 422 }, // legalEntityRef 与 A 档案不一致
+  A_UNREACHABLE: { code: 'A_UNREACHABLE', http: 503 },                  // A 权威核验不可达（可重试）
+  // 任务02 actor 可信来源（IR-04-2A-3）：token→调用方绑定，非代理调用方不得自报人类 actor
+  ACTOR_NOT_DELEGABLE: { code: 'ACTOR_NOT_DELEGABLE', http: 403 },      // 该调用方令牌无 actor 代理权（自报被拒）
+  CALLER_NOT_TRUSTED: { code: 'CALLER_NOT_TRUSTED', http: 403 },        // 显式 callerBindings 未含此令牌（人工动作面 fail closed）
   TENANT_SCOPE_MISMATCH: { code: 'TENANT_SCOPE_MISMATCH', http: 403 },
   AUDIENCE_MISMATCH: { code: 'AUDIENCE_MISMATCH', http: 403 },
   MEDIA_URL_EXPIRED: { code: 'MEDIA_URL_EXPIRED', http: 403 },

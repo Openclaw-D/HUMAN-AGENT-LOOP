@@ -313,7 +313,7 @@ test('P09 超时未知：A 材料登记超时 → blocked_unknown；回执对账
     port: PORT,
     aBaseUrl: 'http://127.0.0.1:48080',
     aFetchImpl: scriptedFetch,
-    aConfig: { tenantId: TENANT, credentials: { service: 'tok-svc', uploadFallback: 'tok-cust-f' } },
+    aConfig: { tenantId: TENANT, credentials: { service: 'tok-svc', registrar: 'tok-reg', uploadFallback: 'tok-cust-f' } },
     processing: { aCustomerLinks: { [CUST]: { aCustomerId: 'cus-a-1' } }, aTimeoutMs: 300 },
   });
   try {
