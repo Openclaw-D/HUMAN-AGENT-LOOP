@@ -190,3 +190,29 @@ blocked ──(deps accepted+输入kind当前证据齐备)──▶ ready ──
 - 测试：`test/evidence-object-match.test.mjs`（G2-1..5）、`test/domain-exemptions.test.mjs`（X1..X7）；全量回归 **114/114**（自有隔离容器 jw-goal01-pg@15446，pg16）。
 
 **性能（A3；接口语义不变）**：getCustomerExposure 批量桶推导（O(1) 查询）、reserve 响应桶由门内快照+增量推导、reverifyBasis/提额证据批量取锁读——全部为读合并与重复消除；门序、锁序、事务边界、失败语义一律不变。量化对照见 `docs/backend-upgrade/goal-01/PERF_BEFORE_AFTER.md`。
+
+## 11｜v2.4 增量契约登记（2026-09-18，goal-01 四任务产品交付轮·路径01 集成 writer）
+
+来源：`JW_product_delivery_four_tasks` 任务01（提取通用可信核心，交付可供页面办理的租赁业务服务）；设计冻结与消费者清单见 `docs/product-delivery/goal-01/DESIGN.md`。基线 `v02-goal1234-delivery@e4ed7a5`。v1（§0–§7）与 §8–§10 语义不变；本节全部为加法。迁移 `009_customer_invitations.sql`（只新增对象，回退=保留对象停用入口）。
+
+**G1 客户目录（权威分页查询）**
+- `GET /api/v2/customers?search=&limit=&cursor=`：已验证**内部** principal 专用（roles 含 `customer` → 403；匿名 403）；租户与客户授权服务器端过滤（`customers='grant'` 仅见 `principal_customer_grants` 在册客户，不可见即不存在）。响应 `{customers:[{customerId,displayName,status,createdBy,createdAt}], nextCursor}`；`limit` 默认 20、上限 100；键集游标仅基于 `customer_id`（全局唯一；`created_at` 微秒精度经 JS 毫秒编码有截断，禁止用作游标键）。
+
+**G2 受限邀请与客户联系人身份**
+- 新表 `customer_invitations`（code_sha256 UNIQUE；role∈customer-owner/customer-finance/customer-plant；allowed_kinds 非空 jsonb；status active/used/revoked；expires_at；redeem_request_id 对账锚点）与 `customer_identities`（A 内核首批 DB 侧动态身份；credential_sha256 UNIQUE；status active/disabled）。
+- API：`POST /api/v2/customers/:id/invitations`（human business/admin；body role/allowedKinds[]/subjectRef?/expiresInHours?默认168上限720/note?）→ 返回 `code` 明文仅此一次；`GET /api/v2/customers/:id/invitations`（内部，不含 code）；`POST /api/v2/invitations/:invitationId/revoke`（即刻生效；used/revoked → 409）；`POST /api/v2/invitations/redeem`（**唯一匿名 v2 写口**；body code/requestId?）。
+- 兑换语义：未知码统一 404 `INVITATION_NOT_FOUND`（不泄露存在性）；已用 409 `INVITATION_ALREADY_USED`（同 requestId 重放 → 200 `replayed:true` 对账响应，**不重发凭据明文**——凭据只在首次响应出现）；已撤销 410 `INVITATION_REVOKED`；已过期 410 `INVITATION_EXPIRED`。恰一次由 `status='active'` 行级竞争保证。兑换创建 customer_identities 行 + principal_customer_grants 行 + audit + `INVITATION_REDEEMED` 事件。
+- **身份校验链扩展**：`authenticate` 在进程内合成目录未命中时查 `customer_identities`（sha256、active）→ Principal `{kind:'human', roles:['customer'], projects:[], tenants:[租户], customers:'grant'}`。受邀角色只存 DB 不进 roles——防止绕开"纯客户角色"边界（见下）。匿名 redeem 之外全部走既有门序；鉴权先于幂等缓存回放（K02 语义不变）。
+- **撤权级联**：admin 经既有 `DELETE /api/v2/customers/:id/grants/:principalId` 撤 grants 时，同事务级联 `customer_identities.status='disabled'`——该凭据即刻不可认证，重放同样 403。
+- **邀请授予面（服务端强制）**：客户联系人身份 `registerArtifact` 时 `kind` 必须 ∈ 其 allowed_kinds（否则 403 PERMISSION_DENIED）；grade 提升既有 K04 规则不变。内部身份不受 allowed_kinds 约束。
+- **B13 加固**：`listArtifacts` 客户角色拦截由 `roles.every(r=>r==='customer')` 改为 `some(...)`（混合角色同样拒绝；存量身份无混合角色，行为不变）。
+
+**G3 材料处理状态（服务身份回执制 + 获准披露）**
+- 新表 `artifact_processing`（UNIQUE(artifact_id, run_ref, stage_rank)；stage∈received/parsed/analyzed/needs_review/failed）。
+- 写口 `POST /api/v2/customers/:id/artifacts/:artifactId/processing`：**仅 kind=service**（human 403）；body 单段或 `stages[]`（1..20）；`runRef` 1..128；**同一 runRef 内 stage_rank 严格递增**（回退/重复/同档互斥 → 409 `PROCESSING_STAGE_REGRESSION`）；**新 runRef = 新处理尝试**，可从任意 stage 重开（failed 后重解析是合法恢复路径，按尝试序如实留痕）。`stage=failed` 必须给 `failureReason`；`failed|needs_review` 必须给 `nextAction`（页面要能解释下一动作）。幂等经既有 requestId 门；成功发 `ARTIFACT_PROCESSING_UPDATED` 事件。载荷白名单校验，金额/价格字段禁入（§3.1 口径），不承载任何授信语义。
+- 读口 `GET /api/v2/customers/:id/artifacts/:artifactId/processing`（内部，客户角色 403）→ `{current, history[]}`。
+- **客户侧获准披露** `GET /api/v2/my/materials`（仅客户联系人身份；内部 403）→ 本客户工件白名单投影 `{artifactId, kind, createdAt, duplicateOf, stage(未处理=registered), failureReason?, nextAction?}`——不含 grade/事实值/provenance/内部摘要；`listArtifacts` 行为不变（客户角色仍 403）。
+
+**测试**：`test/invitations-directory.test.mjs` V1–V6（目录 grants 过滤/搜索/分页/匿名；邀请全生命周期与 requestId 对账；撤权级联+重放不借缓存；授予面与核验等级；获准披露白名单；处理状态单调/尝试/失败解释）。全量回归见 `docs/product-delivery/goal-01/TEST_RESULTS.md`。
+
+**对消费方（03/Edge、02/Connectors）**：Edge 会话绑定可用 redeem 凭据；目录/材料状态为本轮冻结面。Connectors 协调器如需推进 A 侧处理状态，经服务身份调 G3 写口（确定性 requestId 纪律同 a_register），不得直写 A 表。

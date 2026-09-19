@@ -37,6 +37,9 @@ export interface Config {
   principals: { credentialSha256: string; principal: Principal }[];
   /** GLM-5.2 transport 预留：本轮恒为 null（未配置），相关命令如实 MODEL_NOT_CONFIGURED。 */
   modelTransport: null;
+  /** 本次启动随机数（仅测试 harness 注入）：/healthz 回显，供启动方确认"是我起的内核"——
+   *  四任务轮并行实测：同端口段被其他会话的同指纹 A 内核抢占时，healthz/鉴权探测都可能误绑（faulty-verifier 内核连鉴权探测都过不了）。 */
+  bootNonce: string | null;
   outboxPollMs: number;
   outboxMaxAttempts: number;
   withDispatcher: boolean;
@@ -109,6 +112,7 @@ export function loadConfig(argv: string[]): Config {
     leaseSeconds: leaseArg !== undefined ? Number(leaseArg) : envInt('V7NEXT_A_LEASE_SECONDS', DEFAULTS.leaseSeconds),
     principals,
     modelTransport: null,
+    bootNonce: arg('boot-nonce') ?? null,
     outboxPollMs: envInt('V7NEXT_A_OUTBOX_POLL_MS', DEFAULTS.outboxPollMs),
     outboxMaxAttempts: envInt('V7NEXT_A_OUTBOX_MAX_ATTEMPTS', DEFAULTS.outboxMaxAttempts),
     withDispatcher: argv.includes('--dispatch'),

@@ -74,3 +74,25 @@
 - 冷却口径收窄（修订 B11）：只硬阻断激活/恢复与客户级向上提额申请，不再冻结既有合法用信可用额（K18 与 B11 展示断言并存：staleBlockers 如实展示 cooling_active，但 hardBlockers 才清零可用）。提额请求机制（credit_limit_requests）：在途唯一/次数窗口/实质新证据/nextEligibleAt 全部客户级持久，跨业务员不可绕行；重试经幂等不重复计数；配置全显式（--limit-increase-*），未配置=对应约束不存在，不编造默认。
 - 修复既有潜伏缺陷：lazyExpire 账目 INSERT 参数错位（$3 未被 SQL 引用，触发 PG "could not determine data type"——该路径此前无测试覆盖）；computeBuckets 超安全整数显式 500（K16 白盒注入验证）；检查会话提问自增会话版本（两个冻结测试共同编码的行为）。
 - 测试纪律：K01–K18 全部先失败后通过；并发用真实 PG 客户锁屏障（pg_locks 轮询），不用随机 sleep；既有正向测试语义保留、机器适配（decision-loop B01–B14 经 Gate 回执+服务身份运行+政策必需域+真实收口会话重放；customer-credit/ledger-property 等加 --allow-legacy-basis）。全量 102 项 101 pass/0 fail/1 skip（crash 套件容器重启用例按资源边界守卫跳过）。接口破坏（v1 匿名读口关闭）已在 CONTRACT §9 向任务03 提示。
+
+## goal-03 实施决定（2026-09-18，四任务产品交付轮·路径03：客户入口与办理工作台）
+
+来源：`JW_product_delivery_four_tasks` 任务03。范围 Front/**、Back/Edge/src/**、Back/Edge/contract/**、Edge 非 e1 测试；无 Git 提交；零真实模型/渠道/资金调用。基线 `v02-goal1234-delivery@e4ed7a5`，自有隔离栈（PG jw-g03c-pg@15456、A 17933、Edge 17935 同源托管 dist；未开 --allow-legacy-basis）。设计/测试/页面清单见 `docs/product-delivery/goal-03/`。
+
+- **双形态一入口**：真实办理（受控登录→客户目录→客户工作本，全部经 Edge BFF，凭据不落浏览器）与训练演示（v5-preview 六角色本地模拟原样保留、训练横幅显式标注）在根入口分开；页面不实现审批状态机，权威全部以 A/回执为准。
+- **受控登录**：Edge 新增身份目录元数据端点（无凭据字段）与 principalId 登录（服务端查目录换会话）；live 校验=静态目录∪本实例兑换登记，均须通过 A 目录探针；无角色下拉，角色由服务端裁决只读展示。
+- **客户工作本（§4 布局）**：主体区六页签（材料·原件/核验/问题·补证/方案·决定/结果/受限邀请）+右栏（待办/四域/额度决策要点）+底部沟通常驻（对客户/内部显式分列）；客户联系人身份自动分流至受限门户（获准披露白名单投影、授权内上传、撤权级联即终态）。
+- **受限原件上传（IR-03-3 临时约定 v0）**：文件字节经 Edge 服务端转换落 A evidence_artifacts.content（信封 ≤512KB base64），核验等级仍由 A 裁决（客户申报恒 unverified）；预览待 A 单件读端点，UI 显式"待上游"不伪造。
+- **诚实降级原则**：目录在 A G1 落地前以 501+IR 编号呈现（不伪造清单）；问题明细无列表端点则仅展示服务端 next-actions+本会话问题（IR-03-6）；提案/批准被 BASIS_PACKAGE_REQUIRED 结构性阻断即业务语言呈现（不开兼容核）；报告按主体绑定，前提缺失显式提示。
+- **错误/状态语义**：错误码→业务语言映射（不含内部栈）；绿=指定事项完成≠授信通过；写动作全部二次确认+稳定 requestId 幂等；502 结果未知→"对账中"不重复提交；撤权/过期=终态回登录不复活。
+- **并行协作事实**：01 路在本轮期间落地 CONTRACT §11 v2.4（目录/邀请/客户动态身份/材料处理状态），与本路 INTERFACE_REQUESTS IR-03-1/2/3 对齐后即接线实测；无文件冲突。
+
+## 任务01 实施决定（2026-09-18，四任务产品交付轮）
+
+来源：`JW_product_delivery_four_tasks` 任务01（范围 Back/A/**、A 迁移与依赖、Back/CONTRACT.md、docs/product-delivery/goal-01/）。基线 `v02-goal1234-delivery@e4ed7a5`（PR#4 分支，本轮期间经用户合并入 main）。本轮增量=**契约 v2.4 加法**（CONTRACT §11；迁移 009 只增不改）：
+
+- **客户目录权威查询**（J1.1）：`GET /api/v2/customers` 内部身份专用、grants 服务器端过滤、键集游标仅用 customer_id（created_at 微秒经 JS 毫秒编码有截断，实测会跨页重复，禁作游标键）。
+- **受限邀请+客户联系人身份**（J1.1/J1.2）：邀请码/凭据仅存 sha256、明文一次；redeem 为唯一匿名 v2 写口，恰一次由 status 竞争保证，同 requestId 对账不重发凭据；`customer_identities` 为内核首批 DB 侧动态身份（校验链=合成目录未命中→查表），roles 恒 `['customer']`——受邀角色只存 DB，防止绕开"纯客户角色"边界（实测抓到 B13 的 every→some 越权缺陷，双向修复）；撤 grants 同事务级联停用身份，重放先鉴权后幂等（K02 语义不动）；授予面（allowed_kinds）服务端强制仅约束邀请身份，既有合成客户 principal 旧行为零变更；处理桥 `material.<kind>` 命名空间按剥前缀比对（04 路 DEF-G04N-02 对齐，落库保持原样）。
+- **材料处理状态权威投影**（J1.2/J1.3）：仅 kind=service 回执制；runRef 内阶段严格递增、新 runRef=新尝试；failed 必须 failureReason+nextAction；客户侧仅 `my/materials` 白名单披露，无金额/授信语义。
+- **测试工具加固**（Back/A/test/utils.mjs，四路并行实测）：/healthz 内核指纹防误绑外来服务、迁移完成等待、admin 鉴权探测、端口段 48100–49100+重试 6 次；`npm test` 父 runner 吞内层 TAP（仅透传退出码）如实登记。
+- 测试：invitations-directory V1–V6 新增；**120 项（基线 114+新增 6）全部有最终代码态通过证据，0 fail/1 skip（容器守卫）**；A22 迁移清单按惯例补 009。四路并行负载下整跑两次中断的经过与分层证据矩阵见 docs/product-delivery/goal-01/TEST_RESULTS.md。契约消费方：03（Edge 会话绑定/目录/上传进度）、02（processing 写口），见 goal-01/INTERFACE_REQUESTS.md。

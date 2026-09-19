@@ -220,6 +220,17 @@ export function startHttpServer(kernel: Kernel, port: number): Promise<Server> {
     route('GET', '/api/v2/customers/:customerId/domain-exemptions', async (_q, _s, p, _sp, body) => AN.listDomainExemptions(cred(body, _q), S(p.customerId)));
     route('DELETE', '/api/v2/domain-exemptions/:exemptionId', async (_q, _s, p, _sp, body) => AN.revokeDomainExemption(F(body), S(p.exemptionId)));
 
+    // ---- v2.4 身份与办理面（goal-01 四任务轮；契约见 CONTRACT §11）----
+    const ID = k.identity;
+    route('GET', '/api/v2/customers', async (_q, _s, _p, sp, body) => ID.listCustomersDirectory(cred(body, _q), { search: sp.get('search'), limit: sp.get('limit'), cursor: sp.get('cursor') }));
+    route('POST', '/api/v2/customers/:customerId/invitations', async (_q, _s, p, _sp, body) => ID.createInvitation(F(body), S(p.customerId)));
+    route('GET', '/api/v2/customers/:customerId/invitations', async (_q, _s, p, _sp, body) => ID.listInvitations(cred(body, _q), S(p.customerId)));
+    route('POST', '/api/v2/invitations/:invitationId/revoke', async (_q, _s, p, _sp, body) => ID.revokeInvitation(F(body), S(p.invitationId)));
+    route('POST', '/api/v2/invitations/redeem', async (_q, _s, _p, _sp, body) => ID.redeemInvitation(F(body)));
+    route('POST', '/api/v2/customers/:customerId/artifacts/:artifactId/processing', async (_q, _s, p, _sp, body) => ID.recordArtifactProcessing(F(body), S(p.customerId), S(p.artifactId)));
+    route('GET', '/api/v2/customers/:customerId/artifacts/:artifactId/processing', async (_q, _s, p, _sp, body) => ID.getArtifactProcessing(cred(body, _q), S(p.customerId), S(p.artifactId)));
+    route('GET', '/api/v2/my/materials', async (_q, _s, _p, _sp, body) => ID.listMyMaterials(cred(body, _q)));
+
     // ---- 检查会话（任务一；契约见 Back/A/docs/INSPECTION_SESSION_V1.md）----
     const IX = k.ix;
     route('POST', '/api/v1/projects/:projectId/inspections', async (_q, _s, p, _sp, body) => IX.createSession(F(body), S(p.projectId)));
