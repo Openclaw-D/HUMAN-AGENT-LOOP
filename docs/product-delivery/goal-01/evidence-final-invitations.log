@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: V1 客户目录：grants 过滤、搜索、游标分页、匿名拒绝
+ok 1 - V1 客户目录：grants 过滤、搜索、游标分页、匿名拒绝
+  ---
+  duration_ms: 124.7447
+  type: 'test'
+  ...
+# Subtest: V2 邀请生命周期：创建/兑换恰一次/过期/撤销/requestId 对账；agent 不可创建
+ok 2 - V2 邀请生命周期：创建/兑换恰一次/过期/撤销/requestId 对账；agent 不可创建
+  ---
+  duration_ms: 256.7263
+  type: 'test'
+  ...
+# Subtest: V3 撤权级联：身份停用+重放不借缓存回执
+ok 3 - V3 撤权级联：身份停用+重放不借缓存回执
+  ---
+  duration_ms: 74.1085
+  type: 'test'
+  ...
+# Subtest: V4 邀请授予面：材料种类服务端强制；核验等级不可自提
+ok 4 - V4 邀请授予面：材料种类服务端强制；核验等级不可自提
+  ---
+  duration_ms: 234.7277
+  type: 'test'
+  ...
+# Subtest: V5 my/materials：获准披露白名单；内部视图边界保持
+ok 5 - V5 my/materials：获准披露白名单；内部视图边界保持
+  ---
+  duration_ms: 126.4398
+  type: 'test'
+  ...
+# Subtest: V6 处理状态：service 专用、runRef 内单调、新尝试可重开、失败须给下一动作
+ok 6 - V6 处理状态：service 专用、runRef 内单调、新尝试可重开、失败须给下一动作
+  ---
+  duration_ms: 212.5073
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2995.8565

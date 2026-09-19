@@ -69,3 +69,27 @@
 ## 性能
 
 本路无新增热点路径：目录=键集分页单查询；my/materials=单查询 LATERAL；处理状态写=既有门序逐段 INSERT。goal-01 轮 PERF 基准（`docs/backend-upgrade/goal-01/PERF_BEFORE_AFTER.md`）对应代码路径未触碰，不重跑、不冒充新链数据。
+
+---
+
+## 续轮（2026-09-19 路B=任务01：④⑥⑦⑧）
+
+环境同上（jw-goal01-pg@15446；独立临时库；`--test-concurrency=1` 串行）；`tsc --noEmit` 通过。
+被测代码：分支 `v02-goal1234-delivery` 工作树（基线含本轮全部增量变更）。
+
+### 结论
+
+**132 项 = 前轮 120 + 本轮新增 12（④⑥ 5 项 + ⑦⑧ 7 项）：131 pass / 0 fail / 1 skip**
+（skip = crash 套件容器重启用例的既有资源边界守卫，口径与前轮一致；未设 JW_A_TEST_PG_CONTAINER 不碰非本测试容器）。
+
+- 新套件 1：`test/service-identity-artifact-content.test.mjs` W1–W3 / C1–C4 → **7/7**（⑦ 服务身份签发/幂等重放/停用即刻失效/跨租户 404/svc 可达 Gate 回执与处理状态写口/页面链冒烟：svc Gate 回执 → human 冻结包 → 提案带 packageId 过 BASIS 门、无包仍 409；⑧ 信封 v0 投影/非信封 content 原样/cit_* 403/匿名 403/跨客户 404/被取代件可读）。
+- 新套件 2：`test/inspection-kind-customer-thread.test.mjs` M1–M5 → **5/5**（④ material.<kind>↔裸 kind 双形态：start 前置双向/缺失 409 missing/晚到重开/缺口消失；⑥ cit_* 名册 customer 角色读线程投影/回答/提问受众门/presence/内部受众 403/名册无 customer 404/next-actions 403/小结强制 customer 受众）。
+- 存量适配：customer-credit A22 迁移清单断言 001–009 → **001–010**（本轮新增 010_service_identities.sql；迁移中断恢复/幂等语义本身不变）。
+- 全量证据：`evidence-roundB-final.log`（直跑 TAP，132 项）。
+- 过程记录：首轮 ④⑥ 套件遗漏 `test.after(k.stop)`（pg 池不关导致 runner 不退出，进程清理+补注册后正常）；A22 清单断言按历轮惯例更新，非产品缺陷。
+
+### 新增交付面一览（契约终版见 CONTRACT §11.1/§11.2）
+
+- `POST/GET /api/v2/service-identities`、`POST /api/v2/service-identities/:principalId/disable`
+- `GET /api/v2/customers/:customerId/artifacts/:artifactId/content`
+- 迁移 `010_service_identities.sql`

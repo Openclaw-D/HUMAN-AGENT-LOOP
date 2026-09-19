@@ -54,3 +54,36 @@
   **运行时验证 PENDING**——16:44 发现 Docker Desktop 引擎未运行，jw-goal01-pg@15446 无法启动；引擎恢复后跑
   `JW_A_ADMIN_DB_URL='postgres://goal01:goal01-local@127.0.0.1:15446/postgres' node --test test/invitations-directory.test.mjs` 即可闭环。
 - 宿主机 Docker 引擎状态影响全部四路；02 路的 DEF-G04N-01/03 修复后由 04 路复测。
+
+---
+
+## 续轮（2026-09-19 路B=任务01）：④⑥⑦⑧ 接口需求交付
+
+### 变更清单（增量，未 commit）
+
+| 文件 | 变更 |
+|---|---|
+| `Back/A/migrations/010_service_identities.sql` | 新增 service_identities 表（DEF-G04N-04 A 侧；只增不改） |
+| `Back/A/src/domain/identity.ts` | 身份链第三级 service_identities（kind=service）；admin 签发/列表/停用三口 |
+| `Back/A/src/domain/credit.ts` | `getArtifactContent` 单件读回（§11.2） |
+| `Back/A/src/domain/inspection.ts` | ④ kind 双形态匹配四处；⑥ 客户线程投影/受众门/小结过滤/会话授权项目轴豁免 |
+| `Back/A/src/http/server.ts` | +4 路由（service-identities ×3、artifact content ×1） |
+| `Back/CONTRACT.md` | §11.1/§11.2 追加登记（只增不改既有语义） |
+| `Back/A/test/service-identity-artifact-content.test.mjs` | W1–W3/C1–C4（7 项） |
+| `Back/A/test/inspection-kind-customer-thread.test.mjs` | M1–M5（5 项） |
+
+### 消费者接线点
+
+- **03/Edge（DEF-G04N-04 关闭路径）**：admin 签发 svc 凭据（Edge 服务端保管，勿入前端）→ Gate 回执（svc）→ 分析运行 start/finish（svc）→ 域结果（域目录角色 human）→ 依据包冻结（credit/business human）→ 提案带 `packageId`（A 侧既有权威校验）。页面预览经 Edge 受控代理 `GET /api/v2/customers/:id/artifacts/:artifactId/content`。
+- **03/客户线程（IR-03-6）**：会话名册加 `{roleKey:'customer',kind:'human'}`；cit_* 直接 `GET /api/v1/inspections/:id`（自动获客户线程投影）+ 既有 answer 端点回答。无新端点。
+- **02/处理通道（IR-03-8④）**：以 `material.<kind>` 登记即可，检查会话材料前置/核验/重开全部双形态兼容，无需改称呼。
+
+### 测试入口
+
+```
+cd Back/A
+JW_A_ADMIN_DB_URL='postgres://goal01:goal01-local@127.0.0.1:15446/postgres' node --test test/service-identity-artifact-content.test.mjs   # 7/7
+JW_A_ADMIN_DB_URL='postgres://goal01:goal01-local@127.0.0.1:15446/postgres' node --test test/inspection-kind-customer-thread.test.mjs    # 5/5
+```
+
+全量回归（132 项口径）见 TEST_RESULTS.md 续轮段。

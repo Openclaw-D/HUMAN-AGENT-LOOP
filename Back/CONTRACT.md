@@ -216,3 +216,23 @@ blocked ──(deps accepted+输入kind当前证据齐备)──▶ ready ──
 **测试**：`test/invitations-directory.test.mjs` V1–V6（目录 grants 过滤/搜索/分页/匿名；邀请全生命周期与 requestId 对账；撤权级联+重放不借缓存；授予面与核验等级；获准披露白名单；处理状态单调/尝试/失败解释）。全量回归见 `docs/product-delivery/goal-01/TEST_RESULTS.md`。
 
 **对消费方（03/Edge、02/Connectors）**：Edge 会话绑定可用 redeem 凭据；目录/材料状态为本轮冻结面。Connectors 协调器如需推进 A 侧处理状态，经服务身份调 G3 写口（确定性 requestId 纪律同 a_register），不得直写 A 表。
+
+### §11.1 交付运行时服务身份（DEF-G04N-04 A 侧；2026-09-19 路B=任务01 冻结形状）
+
+**背景**：G2/A2/G3 的 service 专用写口（`rule-gate-receipts`、`analysis-runs/start|finish`、`artifacts/:id/processing`）在交付运行时无 kind=service 可认证主体，依据包可信链不可达 → 页面正式提案恒 409 `BASIS_PACKAGE_REQUIRED`（该门语义本身不变）。本节补齐"交付运行时补 service 主体"（DEFECTS owner-01 项）。
+
+- **迁移 `010_service_identities.sql`**（只新增对象；回退=保留对象停用入口）：`service_identities(principal_id PK, tenant_id, display_name, credential_sha256 UNIQUE, status active|disabled, created_by, created_at, disabled_at, disabled_by)`。
+- **身份校验链扩展（加法）**：`authenticate` 合成目录 → `customer_identities` 未命中后，再查 `service_identities`（sha256、active）→ Principal `{kind:'service', roles:['service'], projects:[], tenants:[创建时绑定租户], customers:'all'}`。凭据仅存 sha256，明文只在创建响应出现一次（`svc_` 前缀，纪律同邀请码）。
+- **API（全部 admin 人类专用）**：
+  - `POST /api/v2/service-identities` `{requestId, tenantId(必填), displayName?≤128}` → 200 `{ok, principalId(svc_*), credential(明文仅此一次), tenantId, displayName, status:'active'}`；403 非人类/非 admin；幂等经 requestId（重放不重发明文）。
+  - `GET /api/v2/service-identities` → `{ok, identities:[{principalId, tenantId, displayName, status, createdAt, disabledAt}]}`（无凭据派生字段）。
+  - `POST /api/v2/service-identities/:principalId/disable` `{requestId}` → 200 `{ok, status:'disabled'}`，**即刻不可认证，重放同样 403**（语义同撤权级联）；已禁用重复禁用 → 409 `NOT_READY`；跨租户/不存在 → 404。
+- **不改变既有门**：service 三口（Gate 回执/分析运行/处理状态）与 createPackage（human credit/business）权限语义一字不动；本节只提供"可认证的 service 主体"。**03 路页面消费链**：admin 签发 svc 凭据 → Edge/Connectors 服务端保管 → 页面动作触达：Gate 回执登记（svc）→ 分析运行 start/finish（svc）→ 域结果登记（policy/credit/commerce/asset 目录角色，human）→ 依据包冻结（human credit/business，`POST /api/v2/customers/:id/decision-packages`）→ 提案显式携带 `packageId`（既有权威校验：存在+属本客户，404 语义不变）。
+
+### §11.2 工件单件读回（IR-03-3；2026-09-19 路B=任务01 冻结形状）
+
+- **`GET /api/v2/customers/:customerId/artifacts/:artifactId/content`**：原件预览数据源（供 Edge 受控代理）；**只读回**，不落对象存储、不产生任何写路径。
+- **鉴权**：已验证**内部** principal（roles 含 `customer` → 403 `PERMISSION_DENIED`，B13 口径；匿名 403）；租户+客户授权同 v2 读口（`grant` 模式不在册 → 404，不泄露存在性）。
+- **响应 200** `{ok:true, artifact:{artifactId, customerId, kind, factKey, sha256, createdAt, createdBy, supersededBy, duplicateOf, materialFile}}`——`materialFile` 为信封 v0 投影 `{name, mime, size, encoding:'base64', data}`（content JSON 含 `materialFile` 时原样取出；非信封件为 null，结构化事实经 `content` 字段原样返回）。被取代/重复件同样可读（历史可审计；行内 `supersededBy/duplicateOf` 如实携带）。
+- **错误码**：404 `NOT_FOUND`（不存在/不属本客户/无授权）；无新增错误码。`data` 大小即登记时信封上限（≤512KB base64，Edge 侧约定）；A 不做二次转码。
+- **Edge 代理约定（03 路消费）**：`/api/jw/v2/connectors/...` 同型只读代理；A 侧响应 `Cache-Control: no-store`（既有全局行为，预览不缓存）。

@@ -19,7 +19,10 @@ const CUSTOMER_ROLES = ['customer-owner', 'customer-finance', 'customer-plant'] 
 const STAGE_RANK: Record<string, number> = { received: 1, parsed: 2, analyzed: 3, needs_review: 4, failed: 4 };
 
 /** 客户联系人身份（customer_identities）：目录分离后的第一批 DB 侧动态身份。
- *  projects=[] → 不获得任何 v1 项目授权；customers='grant' → 授权走 principal_customer_grants（撤权即刻生效）。 */
+ *  projects=[] → 不获得任何 v1 项目授权；customers='grant' → 授权走 principal_customer_grants（撤权即刻生效）。
+ *  §11.1（DEF-G04N-04 A 侧）：customer_identities 未命中再查 service_identities（交付运行时的
+ *  kind=service 可认证主体）→ Principal {kind:'service', roles:['service'], tenants:[绑定租户], customers:'all'}；
+ *  既有 service 三口（Gate 回执/分析运行/处理状态）门语义不变，此处只提供可认证主体。 */
 export function chainCustomerIdentityVerifier(base: PrincipalVerifier | null, pool: Pool): PrincipalVerifier {
   return async (credential: string): Promise<Principal | null> => {
     if (base) {
@@ -29,18 +32,29 @@ export function chainCustomerIdentityVerifier(base: PrincipalVerifier | null, po
     const res = await pool.query(
       `SELECT principal_id, tenant_id, customer_id, role FROM customer_identities
        WHERE credential_sha256=$1 AND status='active' LIMIT 1`, [sha256(credential)]);
-    if (res.rows.length === 0) return null;
-    const r = res.rows[0] as Record<string, string | undefined>;
-    const principalId = r.principal_id;
-    const tenantId = r.tenant_id;
-    const customerId = r.customer_id;
-    const role = r.role;
-    if (!principalId || !tenantId || !customerId || !role) return null;
-    // roles 只授 'customer'：受邀角色保存在 customer_identities（DB），不进 Principal.roles——
-    // 否则会绕开"纯客户角色"边界检查（如 B13 证据清单），也不产生任何内部角色授权。
+    if (res.rows.length > 0) {
+      const r = res.rows[0] as Record<string, string | undefined>;
+      const principalId = r.principal_id;
+      const tenantId = r.tenant_id;
+      const customerId = r.customer_id;
+      const role = r.role;
+      if (!principalId || !tenantId || !customerId || !role) return null;
+      // roles 只授 'customer'：受邀角色保存在 customer_identities（DB），不进 Principal.roles——
+      // 否则会绕开"纯客户角色"边界检查（如 B13 证据清单），也不产生任何内部角色授权。
+      return {
+        principalId, kind: 'human', roles: ['customer'],
+        projects: [], tenants: [tenantId], customers: 'grant', displayName: '',
+      };
+    }
+    const svc = await pool.query(
+      `SELECT principal_id, tenant_id, display_name FROM service_identities
+       WHERE credential_sha256=$1 AND status='active' LIMIT 1`, [sha256(credential)]);
+    if (svc.rows.length === 0) return null;
+    const s = svc.rows[0] as Record<string, string | undefined>;
+    if (!s.principal_id || !s.tenant_id) return null;
     return {
-      principalId, kind: 'human', roles: ['customer'],
-      projects: [], tenants: [tenantId], customers: 'grant', displayName: '',
+      principalId: s.principal_id, kind: 'service', roles: ['service'],
+      projects: [], tenants: [s.tenant_id], customers: 'all', displayName: s.display_name ?? '',
     };
   };
 }
@@ -54,6 +68,9 @@ export interface IdentityApi {
   recordArtifactProcessing(frame: RequestFrame, customerId: string, artifactId: string): Promise<Record<string, unknown>>;
   getArtifactProcessing(credential: unknown, customerId: string, artifactId: string): Promise<Record<string, unknown>>;
   listMyMaterials(credential: unknown): Promise<Record<string, unknown>>;
+  createServiceIdentity(frame: RequestFrame): Promise<Record<string, unknown>>;
+  listServiceIdentities(credential: unknown): Promise<Record<string, unknown>>;
+  disableServiceIdentity(frame: RequestFrame, principalId: string): Promise<Record<string, unknown>>;
 }
 
 type Row = Record<string, unknown>;
@@ -426,6 +443,80 @@ export function buildIdentityCommands(kernel: Kernel): IdentityApi {
           failureReason: r.failure_reason, nextAction: r.next_action,
         })),
       };
+    },
+
+    // ---- §11.1 交付运行时服务身份（DEF-G04N-04 A 侧；admin 人类专用） ----------------
+
+    createServiceIdentity: (frame) => {
+      return withCommandV2(kernel, frame, 'service-identity.create', frame.tenantId as string, async (tx, h, ctx) => {
+        requireHuman(ctx, 'service-identity.create');
+        requireDirectoryRole(ctx, ['admin'], 'service-identity.create');
+        const stored = await ctx.replayed(tx);
+        if (stored !== null) return stored;
+        const displayName = frame.displayName === undefined || frame.displayName === null
+          ? '' : reqString(frame.displayName, 'displayName', 128);
+        const principalId = newId('svc');
+        // 凭据仅存 sha256；明文只在本次响应出现（纪律同邀请码；重放不重发明文）
+        const credential = `svc_${randomBytes(24).toString('base64url')}`;
+        await tx.query(
+          `INSERT INTO service_identities (principal_id, tenant_id, display_name, credential_sha256, created_by)
+           VALUES ($1,$2,$3,$4,$5)`,
+          [principalId, ctx.tenantId, displayName, sha256(credential), ctx.actor],
+        );
+        await h.audit({
+          actor: ctx.actor, action: 'service_identity_created', targetType: 'service_identity', targetId: principalId,
+          summary: `签发交付运行时服务身份（租户 ${ctx.tenantId}${displayName ? `；${displayName}` : ''}）`,
+          payload: { tenantId: ctx.tenantId },
+        });
+        await h.emit('SERVICE_IDENTITY_CREATED', null, { principalId, tenantId: ctx.tenantId });
+        return { ok: true, principalId, credential, tenantId: ctx.tenantId, displayName, status: 'active' };
+      });
+    },
+
+    async listServiceIdentities(credential) {
+      const auth = await authenticate(kernel.verifierForV2(), credential);
+      requireVerified(auth);
+      requireInternal(auth.principal.roles, '服务身份列表');
+      if (!auth.principal.roles.includes('admin')) {
+        throw forbidden('PERMISSION_DENIED', '服务身份列表仅限 admin');
+      }
+      const res = await kernel.pool.query(
+        `SELECT principal_id, tenant_id, display_name, status, created_by, created_at, disabled_at, disabled_by
+         FROM service_identities ORDER BY created_at DESC, principal_id`);
+      return {
+        ok: true,
+        identities: (res.rows as Row[]).map((r) => ({
+          principalId: r.principal_id, tenantId: r.tenant_id, displayName: r.display_name,
+          status: r.status, createdBy: r.created_by, createdAt: r.created_at,
+          disabledAt: r.disabled_at, disabledBy: r.disabled_by,
+        })),
+      };
+    },
+
+    disableServiceIdentity: (frame, principalId) => {
+      return withCommandV2(kernel, frame, 'service-identity.disable', frame.tenantId as string, async (tx, h, ctx) => {
+        requireHuman(ctx, 'service-identity.disable');
+        requireDirectoryRole(ctx, ['admin'], 'service-identity.disable');
+        const row0 = await tx.query(`SELECT tenant_id, status FROM service_identities WHERE principal_id=$1`, [principalId]);
+        if (row0.rows.length === 0) throw notFound('服务身份不存在');
+        const owner = row0.rows[0] as Row;
+        if (owner.tenant_id !== ctx.tenantId) throw notFound('服务身份不存在');
+        const stored = await ctx.replayed(tx);
+        if (stored !== null) return stored;
+        if (owner.status !== 'active') {
+          throw conflict('NOT_READY', `服务身份当前 ${owner.status}：仅 active 可禁用`);
+        }
+        await tx.query(
+          `UPDATE service_identities SET status='disabled', disabled_at=now(), disabled_by=$2 WHERE principal_id=$1`,
+          [principalId, ctx.actor],
+        );
+        await h.audit({
+          actor: ctx.actor, action: 'service_identity_disabled', targetType: 'service_identity', targetId: principalId,
+          summary: '服务身份停用（即刻不可认证；重放同样 403）', payload: {},
+        });
+        await h.emit('SERVICE_IDENTITY_DISABLED', null, { principalId });
+        return { ok: true, principalId, status: 'disabled' };
+      });
     },
   };
 }

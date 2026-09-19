@@ -814,7 +814,7 @@ test('A22 迁移中断/重复运行：可恢复，不损毁旧项目/证据/审�
     const migDir = new URL('../migrations/', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
     const files = readdirSync(migDir).filter((f) => f.endsWith('.sql')).sort();
     // 任务02 集成：迁移清单已扩展（003=任务一检查会话，004=决策闭环）；本用例核心是"中断可恢复"
-    assert.deepEqual(files, ['001_init.sql', '002_customer_credit.sql', '003_inspection_sessions.sql', '004_decision_loop.sql', '005_trust_gates_a1.sql', '006_a2_a3_authority.sql', '007_ledger_once.sql', '008_domain_exemptions.sql', '009_customer_invitations.sql']); // 005–007=任务01 审核修复增量；008=goal-01 豁免登记；009=四任务轮 v2.4 邀请/身份/处理状态
+    assert.deepEqual(files, ['001_init.sql', '002_customer_credit.sql', '003_inspection_sessions.sql', '004_decision_loop.sql', '005_trust_gates_a1.sql', '006_a2_a3_authority.sql', '007_ledger_once.sql', '008_domain_exemptions.sql', '009_customer_invitations.sql', '010_service_identities.sql']); // 005–007=任务01 审核修复增量；008=goal-01 豁免登记；009=四任务轮 v2.4 邀请/身份/处理状态；010=§11.1 交付运行时服务身份
     await pool.query(`CREATE TABLE IF NOT EXISTS schema_migrations (name text PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now())`);
     await pool.query('BEGIN');
     await pool.query(readFileSync(`${migDir}001_init.sql`, 'utf8'));
@@ -835,8 +835,8 @@ test('A22 迁移中断/重复运行：可恢复，不损毁旧项目/证据/审�
     assert.equal(projCount.rows[0].n, 1);
     // 正常迁移 + 重复运行
     const ran1 = await migrate(pool);
-    // 任务02 集成 + 任务01 审核修复：一次 migrate 依序补齐 002–007
-    assert.deepEqual(ran1, ['002_customer_credit.sql', '003_inspection_sessions.sql', '004_decision_loop.sql', '005_trust_gates_a1.sql', '006_a2_a3_authority.sql', '007_ledger_once.sql', '008_domain_exemptions.sql', '009_customer_invitations.sql']);
+    // 任务02 集成 + 任务01 审核修复：一次 migrate 依序补齐 002–010
+    assert.deepEqual(ran1, ['002_customer_credit.sql', '003_inspection_sessions.sql', '004_decision_loop.sql', '005_trust_gates_a1.sql', '006_a2_a3_authority.sql', '007_ledger_once.sql', '008_domain_exemptions.sql', '009_customer_invitations.sql', '010_service_identities.sql']);
     const ran2 = await migrate(pool);
     assert.deepEqual(ran2, []);
     const projAfter = await pool.query(`SELECT customer_id FROM projects WHERE project_id='p-a22'`);
@@ -852,7 +852,7 @@ test('A22 迁移中断/重复运行：可恢复，不损毁旧项目/证据/审�
     k = null;
     const pool2 = openPool(db.url);
     const migCount = await pool2.query(`SELECT count(*)::int AS n FROM schema_migrations`);
-    assert.equal(migCount.rows[0].n, 9); // 001–009（008=goal-01 豁免登记；009=四任务轮 v2.4 邀请/身份/处理状态）
+    assert.equal(migCount.rows[0].n, 10); // 001–010（008=goal-01 豁免登记；009=四任务轮 v2.4；010=§11.1 服务身份）
     await pool2.end();
   } finally {
     if (k !== null) await k.stop().catch(() => {});

@@ -17,7 +17,7 @@
   origin、**未合并、未经用户验收**。本轮产出如何与 main 合流（merge PR#4 或新 PR）留用户裁决。
 - **脏文件**：仅未跟踪 `JW_product_delivery_four_tasks/`（任务书，MANIFEST 含 sha256）与
   `docs/product-delivery/`（本轮各路文档，goal-04 由并行会话写入中）。
-- **任务书**：`JW_product_delivery_four_tasks/JW_product_delivery_four_tasks/`（00_START_HERE、01..04 分任务、
+- **任务书**：`JW_product_delivery_four_tasks/`（00_START_HERE、01..04 分任务、
   FOUR_TASKS_COMPLETE=超集、MANIFEST.json）。本路以 01_CORE_AND_LEASING_BOUNDARIES.md + 总书共同标准为准。
 - **共享契约**：Back/CONTRACT.md v1.3 + §8(v2.1 决策闭环/检查会话) + §9(v2.2 A1/A2/A3) + §10(v2.3 豁免登记制/
   对象锚定/性能)。全量回归基线 114/114（jw-goal01-pg@15446）。
