@@ -72,8 +72,26 @@ export function makeIntakeService(store, { bindings }) {
       verifiedBy: `invitation:${inv.invitation_id}`, threadScope,
     });
     if (bound.existed) {
-      // 同一联系人重复接受：幂等返回既有绑定，但绝不把邀请状态二次推进
-      return { invitationId: inv.invitation_id, bindingId: bound.bindingId, bindingStatus: bound.status, role: inv.role, customerId: inv.customer_id, existed: true };
+      // IR-03-8③ 绑定幂等回执：同联系人↔同客户的既有绑定（candidate/active）不使新邀请空转——
+      // 本邀请显式推进 accepted 并挂接既有绑定（不新建、不二次推进绑定状态）；
+      // 同 token 重放仍被上方"一次有效"拦截，语义不变。
+      const upd = await store.query(
+        `UPDATE intake_invitations SET status='accepted', accepted_binding_id=$3, accepted_at=now()
+         WHERE invitation_id=$1 AND tenant_id=$2 AND status='pending' RETURNING invitation_id`,
+        [inv.invitation_id, tenantId, bound.bindingId],
+      );
+      if (upd.rows.length > 0) {
+        await audit(store, {
+          tenantId, actor: `invitation:${inv.invitation_id}`, action: 'INVITATION_ACCEPTED', targetType: 'binding', targetId: bound.bindingId,
+          summary: `customer=${inv.customer_id} role=${inv.role} binding=${bound.status}(既有绑定幂等挂接；未验证)`,
+        });
+      }
+      return {
+        invitationId: inv.invitation_id, bindingId: bound.bindingId, bindingStatus: bound.status,
+        role: inv.role, customerId: inv.customer_id, existed: true,
+        invitationAccepted: upd.rows.length > 0,
+        note: upd.rows.length > 0 ? '既有绑定：本邀请已幂等挂接为 accepted（接受≠验证）' : '邀请此前已接受（幂等重放）',
+      };
     }
     await store.query(`UPDATE participant_bindings SET status='candidate' WHERE binding_id=$1 AND tenant_id=$2`, [bound.bindingId, tenantId]);
     await store.query(

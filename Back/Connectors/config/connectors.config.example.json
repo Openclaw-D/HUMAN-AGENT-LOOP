@@ -14,5 +14,28 @@
     "encodingAESKey": "REPLACE_43_CHAR_ENCODING_AES_KEY"
   },
   "trtc": { "callbackKey": "REPLACE_trtc_callback_key", "allowRealTrtc": false },
-  "a": { "baseUrl": "http://127.0.0.1:48080", "credential": "tok-business" }
+  "a": {
+    "baseUrl": "http://127.0.0.1:48080",
+    "credential": "tok-business",
+    "tenantId": "tenant_demo",
+    "bridge": true,
+    "credentials": {
+      "service": "REPLACE_kind_service_principal_token（analysis-runs/Gate回执/findings 专用）",
+      "registrar": "REPLACE_human_business_token（派生解析工件/包域结果登记）",
+      "reviewer": "REPLACE_human_business_token（人工复核回写）",
+      "upload": { "customer_owner": "REPLACE_客户角色principal_token", "customer_finance": "REPLACE_...", "customer_worker": "REPLACE_..." },
+      "uploadFallback": "REPLACE_缺省上传者token"
+    },
+    "customerLinks": { "cust-demo-1": { "aCustomerId": "cust_xxx（A v2 客户ID）", "projectId": "proj_xxx（可选，v1 项目）" } },
+    "timeoutMs": 5000
+  },
+  "processing": {
+    "driverIntervalMs": 2000,
+    "concurrency": 2,
+    "maxTasksPerCustomerPerHour": null,
+    "outboundPolicy": "suggest_only",
+    "aPackageDomainResults": false,
+    "aCustomerLinks": { "cust-demo-1": { "aCustomerId": "cust_xxx（A v2 客户ID）", "projectId": "proj_xxx（可选，v1 项目）" } },
+    "_note": "processing.aCustomerLinks 种子现经 start-connectors 透传（IR-03-8⑤）；缺省时兼容 a.customerLinks。种子仅首次落 a_customer_links，表为权威；生产须来自授权客户目录，不由材料推断"
+  }
 }

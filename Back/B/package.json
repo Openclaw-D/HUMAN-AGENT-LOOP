@@ -5,7 +5,7 @@
   "type": "module",
   "description": "V7 backend-next lane B: persistent goal execution & trusted routing (LangGraph JS persistent checkpoint + independent worker + Celery isolated spike)",
   "scripts": {
-    "test": "node --test --test-force-exit test/three-way-send.test.mjs test/router.test.mjs test/redact.test.mjs test/resume-identity.test.mjs test/contract-stub.test.mjs test/goal-graph.test.mjs test/crash-recovery.test.mjs test/worker-fencing.test.mjs test/def03-resume-resend.test.mjs test/budget.test.mjs test/four-domain.test.mjs test/four-domain-matrix.test.mjs",
+    "test": "node --test --test-force-exit test/three-way-send.test.mjs test/router.test.mjs test/redact.test.mjs test/resume-identity.test.mjs test/contract-stub.test.mjs test/goal-graph.test.mjs test/crash-recovery.test.mjs test/worker-fencing.test.mjs test/def03-resume-resend.test.mjs test/budget.test.mjs test/four-domain.test.mjs test/four-domain-matrix.test.mjs test/fs-lock-recovery.test.mjs test/inspection-dispatcher.test.mjs test/question-arbiter.test.mjs",
     "test:unit": "node --test --test-force-exit test/three-way-send.test.mjs test/router.test.mjs test/redact.test.mjs test/resume-identity.test.mjs test/contract-stub.test.mjs",
     "test:graph": "node --test --test-force-exit test/goal-graph.test.mjs test/crash-recovery.test.mjs",
     "test:worker": "node --test --test-force-exit test/worker-fencing.test.mjs test/def03-resume-resend.test.mjs",

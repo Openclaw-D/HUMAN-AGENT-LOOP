@@ -12,7 +12,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 export const ROOT = join(__dirname, '..');
 export const TENANT = 'tenant_proc';
 export const SIGNING_SECRET = 'proc_test_signing_secret';
-export const BASE_PG = { host: '127.0.0.1', port: 15443, user: 'cnext', password: 'cnext', database: 'cnext' };
+// 测试 PG 端口可用 CONNECTORS_TEST_PG_PORT 覆盖（并行轮次各自专用容器，避免共享容器干扰假失败）
+export const BASE_PG = {
+  host: '127.0.0.1',
+  port: Number(process.env.CONNECTORS_TEST_PG_PORT ?? 15443),
+  user: process.env.CONNECTORS_TEST_PG_USER ?? 'cnext',
+  password: process.env.CONNECTORS_TEST_PG_PASSWORD ?? 'cnext',
+  database: process.env.CONNECTORS_TEST_PG_DATABASE ?? 'cnext',
+};
 
 // ---------- 固定测试数据（DESIGN §2；全部原始字节） ----------
 
@@ -121,6 +128,7 @@ export async function makeProcessingHarness({
   processing = {},
   aBaseUrl = null,
   aFetchImpl = null,
+  aConfig = null,
   fakeTransport = null,
 } = {}) {
   const created = await createTestDatabase(BASE_PG);
@@ -133,8 +141,9 @@ export async function makeProcessingHarness({
     serviceToken: 'proc_service_token',
     wecomTransport: fakeTransport ?? new FakeWecomTransport(),
     aBaseUrl,
-    aCredential: aBaseUrl ? 'tok-connector' : null,
+    aCredential: aBaseUrl ? (aConfig?.credentials?.uploadFallback ?? 'tok-connector') : null,
     aFetchImpl,
+    a: aBaseUrl ? { defaultTenantId: TENANT, ...(aConfig ?? {}) } : null,
     processing,
   });
   const server = await startServer(svc, {

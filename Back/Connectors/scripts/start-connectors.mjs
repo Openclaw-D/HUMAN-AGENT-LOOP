@@ -38,6 +38,10 @@ const config = {
   trtcCallbackKey: fileCfg.trtc?.callbackKey,
   aBaseUrl: fileCfg.a?.baseUrl ?? null,
   aCredential: fileCfg.a?.credential ?? null,
+  a: fileCfg.a ?? null,
+  // IR-03-8⑤：processing 配置（含 aCustomerLinks 客户映射种子）原本被丢弃——现透传进 compose
+  // （compose 侧兼容 a.customerLinks 种子形态；a_customer_links 表落库后为权威）
+  processing: fileCfg.processing ?? null,
   defaultTenantId: fileCfg.defaultTenantId ?? 'tenant_demo',
   port: Number(fileCfg.port ?? 48100),
 };

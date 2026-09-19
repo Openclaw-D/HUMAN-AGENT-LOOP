@@ -1,0 +1,83 @@
+{
+  "runAt": "2026-09-17T22:11:00.821Z",
+  "batchDesign": "8 流水 CSV（其中 4 份同字节重复）+4 声明 txt+2 ZIP(各含 csv/txt/pdf) = 22 次上传 → 约 30 个处理任务",
+  "equivalence": {
+    "gateSemanticsEqual": true,
+    "questionCoverageEqual": true,
+    "manualEntryShaEqual": true,
+    "needsFollowupShaEqual": true
+  },
+  "modelCalls": {
+    "naive_full": 0,
+    "selective": 0,
+    "note": "确定性管线零模型调用（两臂同）；真实账单未接入=未知，不记 0"
+  },
+  "naive_full": {
+    "strategy": "naive_full",
+    "uploads": 18,
+    "uploadMs": 310,
+    "processMs": 2595,
+    "parseExecuted": 20,
+    "parseCached": 0,
+    "domainComputeRuns": 80,
+    "domainReuseRuns": 0,
+    "factsInserted": "48",
+    "needsFollowup": 2,
+    "outboundSends": 100,
+    "questionRows": 7,
+    "taskRows": 24,
+    "memHeapUsedMb": 17.8,
+    "modelCalls": 0,
+    "gateSemantics": [
+      "{\"result\":\"HOLD_FOR_REVIEW\",\"ruleIds\":[\"SIM-ASSET-OWNERSHIP-01\",\"SIM-CASH-COVERAGE-01\",\"SIM-CASH-COVERAGE-STRESSED-01\",\"SIM-CUSTOMER-CONCENTRATION-01\",\"SIM-ENTITY-IDENTITY-01\"],\"domainStatus\":[[\"asset\",\"completed\"],[\"commerce\",\"completed\"],[\"credit\",\"completed\"],[\"policy\",\"completed\"]],\"release\":[[\"provide_evidence\",\"entity_identity_verified\",null],[\"provide_evidence\",\"equipment_ownership_verified\",null],[\"provide_evidence\",\"monthly_debt_service\",null],[\"provide_evidence\",\"monthly_debt_service\",null],[\"provide_evidence\",\"monthly_operating_cash_flow\",null],[\"provide_evidence\",\"monthly_operating_cash_flow\",null],[\"provide_evidence\",\"top1_customer_revenue_share\",null]]}",
+      "{\"result\":\"NEEDS_EVIDENCE\",\"ruleIds\":[\"SIM-ASSET-OWNERSHIP-01\",\"SIM-CASH-COVERAGE-01\",\"SIM-CASH-COVERAGE-STRESSED-01\",\"SIM-CUSTOMER-CONCENTRATION-01\",\"SIM-ENTITY-IDENTITY-01\"],\"domainStatus\":[[\"asset\",\"completed\"],[\"commerce\",\"completed\"],[\"credit\",\"completed\"],[\"policy\",\"completed\"]],\"release\":[[\"provide_evidence\",\"entity_identity_verified\",null],[\"provide_evidence\",\"equipment_ownership_verified\",null],[\"provide_evidence\",\"monthly_debt_service\",null],[\"provide_evidence\",\"monthly_debt_service\",null],[\"provide_evidence\",\"monthly_operating_cash_flow\",null],[\"provide_evidence\",\"monthly_operating_cash_flow\",null],[\"provide_evidence\",\"top1_customer_revenue_share\",null]]}"
+    ],
+    "needsFollowupSha": [
+      "14bcd090baf31edba64e9cbd8cdfc15f943344aa72cb3675ad8e91bfcbce03ad"
+    ],
+    "questionTargetSet": [
+      "entity_identity_verified",
+      "equipment_ownership_verified",
+      "monthly_debt_service",
+      "monthly_operating_cash_flow",
+      "top1_customer_revenue_share"
+    ],
+    "manualEntrySha": [
+      "14bcd090baf31edba64e9cbd8cdfc15f943344aa72cb3675ad8e91bfcbce03ad"
+    ]
+  },
+  "selective": {
+    "strategy": "selective",
+    "uploads": 18,
+    "uploadMs": 332,
+    "processMs": 1516,
+    "parseExecuted": 15,
+    "parseCached": 6,
+    "domainComputeRuns": 26,
+    "domainReuseRuns": 34,
+    "factsInserted": "38",
+    "needsFollowup": 1,
+    "outboundSends": 5,
+    "questionRows": 6,
+    "taskRows": 24,
+    "memHeapUsedMb": 19.1,
+    "modelCalls": 0,
+    "gateSemantics": [
+      "{\"result\":\"HOLD_FOR_REVIEW\",\"ruleIds\":[\"SIM-ASSET-OWNERSHIP-01\",\"SIM-CASH-COVERAGE-01\",\"SIM-CASH-COVERAGE-STRESSED-01\",\"SIM-CUSTOMER-CONCENTRATION-01\",\"SIM-ENTITY-IDENTITY-01\"],\"domainStatus\":[[\"asset\",\"completed\"],[\"commerce\",\"completed\"],[\"credit\",\"completed\"],[\"policy\",\"completed\"]],\"release\":[[\"provide_evidence\",\"entity_identity_verified\",null],[\"provide_evidence\",\"equipment_ownership_verified\",null],[\"provide_evidence\",\"monthly_debt_service\",null],[\"provide_evidence\",\"monthly_debt_service\",null],[\"provide_evidence\",\"monthly_operating_cash_flow\",null],[\"provide_evidence\",\"monthly_operating_cash_flow\",null],[\"provide_evidence\",\"top1_customer_revenue_share\",null]]}",
+      "{\"result\":\"NEEDS_EVIDENCE\",\"ruleIds\":[\"SIM-ASSET-OWNERSHIP-01\",\"SIM-CASH-COVERAGE-01\",\"SIM-CASH-COVERAGE-STRESSED-01\",\"SIM-CUSTOMER-CONCENTRATION-01\",\"SIM-ENTITY-IDENTITY-01\"],\"domainStatus\":[[\"asset\",\"completed\"],[\"commerce\",\"completed\"],[\"credit\",\"completed\"],[\"policy\",\"completed\"]],\"release\":[[\"provide_evidence\",\"entity_identity_verified\",null],[\"provide_evidence\",\"equipment_ownership_verified\",null],[\"provide_evidence\",\"monthly_debt_service\",null],[\"provide_evidence\",\"monthly_debt_service\",null],[\"provide_evidence\",\"monthly_operating_cash_flow\",null],[\"provide_evidence\",\"monthly_operating_cash_flow\",null],[\"provide_evidence\",\"top1_customer_revenue_share\",null]]}"
+    ],
+    "needsFollowupSha": [
+      "14bcd090baf31edba64e9cbd8cdfc15f943344aa72cb3675ad8e91bfcbce03ad"
+    ],
+    "questionTargetSet": [
+      "entity_identity_verified",
+      "equipment_ownership_verified",
+      "monthly_debt_service",
+      "monthly_operating_cash_flow",
+      "top1_customer_revenue_share"
+    ],
+    "manualEntrySha": [
+      "14bcd090baf31edba64e9cbd8cdfc15f943344aa72cb3675ad8e91bfcbce03ad"
+    ]
+  }
+}

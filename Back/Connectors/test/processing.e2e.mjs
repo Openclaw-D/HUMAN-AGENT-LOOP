@@ -277,34 +277,44 @@ test('P08 auto_whitelist 才外发：白名单策略经 send 外发，question_k
   } finally { await h.dispose(); }
 });
 
-test('P09 超时未知：A 登记超时 → blocked_unknown；回执对账恢复且 POST 恰一次（不换 ID 重发）', async () => {
+test('P09 超时未知：A 材料登记超时 → blocked_unknown；回执对账恢复且材料 POST 恰一次（不换 ID 重发）', async () => {
   const calls = [];
-  let failPost = true;
+  let aDown = true; // true=A 不可达（回执 404）；false=回执出现（模拟 A 已落账）
+  const isMatPost = (c) => c.method === 'POST' && /\/artifacts$/.test(c.url) && String(c.reqId ?? '').endsWith('-mat');
   const scriptedFetch = async (url, init = {}) => {
-    calls.push({ method: init.method ?? 'GET', url: String(url) });
-    if (String(url).endsWith('/projects/proj-x')) {
-      return { ok: true, status: 200, json: async () => ({ ok: true, projectInputVersion: 1 }) };
-    }
-    if (String(url).includes('/evidence') && (init.method ?? 'GET') === 'POST') {
-      if (failPost) {
+    const u = String(url);
+    calls.push({ method: init.method ?? 'GET', url: u, reqId: (() => { try { return JSON.parse(init.body ?? '{}').requestId ?? ''; } catch { return ''; } })() });
+    if (u.includes('/api/v2/customers/') && u.endsWith('/artifacts') && (init.method ?? 'GET') === 'POST') {
+      const body = JSON.parse(init.body ?? '{}');
+      if (String(body.requestId ?? '').endsWith('-mat') && aDown) {
         const e = new Error('simulated gateway timeout');
         e.name = 'TimeoutError';
         throw e;
       }
-      return { ok: true, status: 200, json: async () => ({ ok: true, evidence: { evidenceId: 'aev-1' } }) };
+      const isMat = String(body.requestId ?? '').endsWith('-mat');
+      return { ok: true, status: 200, json: async () => ({ ok: true, artifactId: isMat ? 'aart-mat-1' : 'aart-der-1', duplicateOf: null }) };
     }
-    if (String(url).includes('/receipts/')) {
-      return failPost
-        ? { ok: true, status: 404, json: async () => ({ ok: false }) }
-        : { ok: true, status: 200, json: async () => ({ ok: true, requestId: 'ptx-reconciled', replayed: true }) };
+    if (u.includes('/analysis-runs/start') && (init.method ?? 'GET') === 'POST') {
+      return { ok: true, status: 200, json: async () => ({ ok: true, runId: `run-${calls.length}`, inputDigest: 'dig' }) };
     }
-    return { ok: true, status: 404, json: async () => ({ ok: false }) };
+    if (/\/analysis-runs\/[^/]+\/finish$/.test(u) && (init.method ?? 'GET') === 'POST') {
+      return { ok: true, status: 200, json: async () => ({ ok: true, runId: 'run-x', status: 'completed' }) };
+    }
+    if (u.endsWith('/rule-gate-receipts') && (init.method ?? 'GET') === 'POST') {
+      return { ok: true, status: 200, json: async () => ({ ok: true, receiptId: 'gr-1', result: 'NEEDS_EVIDENCE', rulesetVersion: 'v' }) };
+    }
+    if (u.includes('/api/v2/receipts/')) {
+      if (aDown) return { ok: false, status: 404, json: async () => ({ ok: false, error: 'NOT_FOUND' }) };
+      return { ok: true, status: 200, json: async () => ({ ok: true, requestId: 'ptx-reconciled', artifactId: 'aart-mat-1', replayed: true }) };
+    }
+    return { ok: true, status: 404, json: async () => ({ ok: false, error: 'NOT_FOUND' }) };
   };
   const h = await makeProcessingHarness({
     port: PORT,
     aBaseUrl: 'http://127.0.0.1:48080',
     aFetchImpl: scriptedFetch,
-    processing: { aProjectByCustomer: { [CUST]: 'proj-x' }, aTimeoutMs: 300 },
+    aConfig: { tenantId: TENANT, credentials: { service: 'tok-svc', uploadFallback: 'tok-cust-f' } },
+    processing: { aCustomerLinks: { [CUST]: { aCustomerId: 'cus-a-1' } }, aTimeoutMs: 300 },
   });
   try {
     const inv = await setupInvitation(h.api);
@@ -313,15 +323,23 @@ test('P09 超时未知：A 登记超时 → blocked_unknown；回执对账恢复
     let st = await h.api(`/api/connectors/processing/status?tid=${TENANT}&cid=${CUST}`, null, { method: 'GET' });
     const task = st.tasks[0];
     assert.equal(task.status, 'blocked_unknown', '结果未知：保持 unknown，不伪装成功/失败');
-    assert.equal(task.failure_code, 'A_REGISTER_UNKNOWN');
-    const postCount1 = calls.filter((c) => c.method === 'POST').length;
+    assert.equal(task.failure_code, 'A_MATERIAL_UNKNOWN');
+    const detail = await fetchDetail(h, task.task_id);
+    assert.equal(detail.task.aOps.find((x) => x.entity_type === 'material').status, 'unknown', 'a_links 留痕 unknown');
+    const matPosts = () => calls.filter((c) => isMatPost(c) && aDown !== undefined).length;
+    const before = calls.filter((c) => isMatPost(c)).length;
     await driveToEnd(h.api);
-    assert.equal(calls.filter((c) => c.method === 'POST').length, postCount1, 'unknown 期间绝不重发');
-    failPost = false; // 回执出现（模拟 A 已落账）
-    await driveToEnd(h.api);
+    assert.equal(calls.filter((c) => isMatPost(c)).length, before, 'unknown 期间绝不重发材料登记');
+    void matPosts;
+    aDown = false; // 回执出现（模拟 A 已落账：幂等重放返回原 artifactId）
+    await driveToEnd(h.api, { maxRounds: 16 });
     st = await h.api(`/api/connectors/processing/status?tid=${TENANT}&cid=${CUST}`, null, { method: 'GET' });
-    assert.equal(st.tasks[0].status, 'done', '回执对账确认后恢复');
-    assert.equal(calls.filter((c) => c.method === 'POST').length, postCount1, '对账路径 POST 恰一次');
+    assert.equal(st.tasks[0].status, 'done', '回执对账确认后恢复并完成全链');
+    assert.equal(calls.filter((c) => isMatPost(c)).length, before, '恢复后材料登记仍未重发（补的是派生件登记）');
+    const detail2 = await fetchDetail(h, task.task_id);
+    assert.equal(detail2.task.aOps.find((x) => x.entity_type === 'material').status, 'registered');
+    const link = (await h.store.query(`SELECT a_ref FROM a_links WHERE request_id=$1`, [`ptx-${task.task_id}-mat`])).rows[0];
+    assert.equal(link.a_ref, 'aart-mat-1', '对账从 A 幂等回执取回 A 工件 ID');
   } finally { await h.dispose(); }
 });
 

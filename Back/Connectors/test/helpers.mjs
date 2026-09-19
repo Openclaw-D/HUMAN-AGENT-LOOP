@@ -18,7 +18,14 @@ import { LocalLoopAdapter } from '../src/rtc/trtc.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
-export const BASE_PG = { host: '127.0.0.1', port: 15443, user: 'cnext', password: 'cnext', database: 'cnext' };
+// 测试 PG 可用 CONNECTORS_TEST_PG_PORT/USER/PASSWORD/DATABASE 覆盖（并行轮次各自专用容器，避免共享容器干扰假失败）
+export const BASE_PG = {
+  host: '127.0.0.1',
+  port: Number(process.env.CONNECTORS_TEST_PG_PORT ?? 15443),
+  user: process.env.CONNECTORS_TEST_PG_USER ?? 'cnext',
+  password: process.env.CONNECTORS_TEST_PG_PASSWORD ?? 'cnext',
+  database: process.env.CONNECTORS_TEST_PG_DATABASE ?? 'cnext',
+};
 export const TENANT = 'tenant_test';
 export const SIGNING_SECRET = 'test_signing_secret_do_not_use_in_prod';
 

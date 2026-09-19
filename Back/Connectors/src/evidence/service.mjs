@@ -40,9 +40,10 @@ export function makeEvidenceService(store) {
     let duplicateOf = null;
     let sameSourceFlag = null;
     if (a.sha256) {
+      // IR-03-8③ 判重收敛到客户级：跨客户同字节各自独立处理（A 侧按客户隔离，本侧不得跨客户误判 skipped_duplicate）
       const dup = await store.query(
-        `SELECT evidence_id FROM evidence_artifacts WHERE tenant_id=$1 AND sha256=$2 AND evidence_id != $3 LIMIT 1`,
-        [a.tenantId, a.sha256, evidenceId],
+        `SELECT evidence_id FROM evidence_artifacts WHERE tenant_id=$1 AND customer_id=$2 AND sha256=$3 AND evidence_id != $4 LIMIT 1`,
+        [a.tenantId, a.customerId, a.sha256, evidenceId],
       );
       if (dup.rows.length > 0) duplicateOf = dup.rows[0].evidence_id;
     }
@@ -191,11 +192,12 @@ export function makeEvidenceService(store) {
     }
     const untrusted = flagUntrustedContent(f.objectValue) ;
     await store.query(
-      `INSERT INTO fact_assertions (fact_id, tenant_id, customer_id, statement, subject, predicate, object_value, unit, from_observations, from_artifacts, source_mode, object_ref, period_from, period_to)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
+      `INSERT INTO fact_assertions (fact_id, tenant_id, customer_id, statement, subject, predicate, object_value, unit, from_observations, from_artifacts, source_mode, object_ref, period_from, period_to, entry_mode, value_json)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
       [factId, f.tenantId, f.customerId, f.statement ?? `${f.subject} ${f.predicate} = ${f.objectValue}`, f.subject, f.predicate, String(f.objectValue), f.unit ?? null,
        JSON.stringify(f.fromObservations ?? []), JSON.stringify(f.fromArtifacts ?? []), f.sourceMode ?? 'real',
-       f.objectRef ?? null, f.periodFrom ?? null, f.periodTo ?? null],
+       f.objectRef ?? null, f.periodFrom ?? null, f.periodTo ?? null,
+       f.entryMode ?? null, f.valueJson === undefined ? null : JSON.stringify(f.valueJson)],
     );
     if (untrusted.instructionLike) {
       await store.query(`UPDATE fact_assertions SET stale_reason='contains_instruction_like_text', status='candidate' WHERE fact_id=$1`, [factId]);
@@ -221,11 +223,88 @@ export function makeEvidenceService(store) {
     return { factId, status: 'candidate', authority: 'none', conflicts, untrusted };
   }
 
-  /** 显式更正：只有真正的更正关系才 supersede（I17/S4）。 */
+  /** goal-02·B2 人工录入（扫描/图片等机器不可解析材料的"原件可见、来源可选、人工录入"产品入口）。
+   *  录入事实=转录（observation quality=human_transcription，附来源定位与录入人）；
+   *  录入 ≠ 人工核验：verified 只能经 verifyQuestion/verifyArtifact 由获准复核产生。
+   *  同内容重录走 contentKey 确定性幂等（零重复候选）。needs_followup（不可读/缺页）材料拒绝录入。 */
+  async function manualEntry({ tenantId, customerId, evidenceId, facts = [], enteredBy, reason }) {
+    if (!tenantId || !customerId || !evidenceId || !enteredBy || !reason) {
+      throw new ConnError('INVALID_INPUT', 'manualEntry: tenantId/customerId/evidenceId/enteredBy/reason 必填');
+    }
+    if (!Array.isArray(facts) || facts.length === 0) throw new ConnError('INVALID_INPUT', 'manualEntry: facts 必须非空数组');
+    for (const f of facts) {
+      if (!f?.factKey || f.value == null) throw new ConnError('INVALID_INPUT', 'manualEntry: facts[].factKey/value 必填');
+    }
+    const art = (await store.query(
+      `SELECT completeness, verification_state, object_refs FROM evidence_artifacts WHERE tenant_id=$1 AND evidence_id=$2`,
+      [tenantId, evidenceId],
+    )).rows[0];
+    if (!art) throw new ConnError('NOT_FOUND', `evidence ${evidenceId}`);
+    if (art.completeness === 'needs_followup') {
+      throw new ConnError('INVALID_STATE', 'manualEntry: 待补（不可读）材料须先补齐重传，不能对缺失原件录入事实');
+    }
+    const anchor = Array.isArray(art.object_refs) && art.object_refs.length > 0 ? art.object_refs[0] : null;
+    const segmentId = `manual:${evidenceId}:${Date.now().toString(36)}`;
+    const summary = facts.map((f) => `${f.factKey}=${f.value}`).join('; ').slice(0, 2000);
+    const obs = await addObservation({
+      tenantId, artifactId: evidenceId, obsKind: 'manual_entry', segmentId, state: 'final',
+      text: `人工录入（录入人 ${enteredBy}；理由 ${String(reason).slice(0, 200)}）：${summary}`,
+      quality: ['human_transcription'],
+    });
+    const results = [];
+    for (const f of facts) {
+      const contentKey = sha256Hex(JSON.stringify({
+        t: tenantId, c: customerId, s: anchor ?? `customer:${customerId}`, p: f.factKey, v: f.value,
+        u: f.unit ?? null, pf: f.periodFrom ?? null, pt: f.periodTo ?? null, src: evidenceId, mode: 'manual',
+      }));
+      const r = await assertFact({
+        tenantId, customerId, contentKey,
+        subject: anchor ?? `customer:${customerId}`, predicate: f.factKey, objectValue: f.value, unit: f.unit ?? null,
+        statement: `人工录入（${enteredBy}）：${anchor ?? customerId} ${f.factKey} = ${f.value}（来源定位 ${f.location ?? '未定位'}；转录≠核验）`,
+        fromObservations: [obs.observationId],
+        fromArtifacts: [evidenceId], objectRef: anchor, periodFrom: f.periodFrom ?? null, periodTo: f.periodTo ?? null,
+        sourceMode: 'real',
+        entryMode: 'manual_entry', valueJson: f.value,
+      });
+      results.push({ factId: r.factId, existed: r.existed === true, conflicts: r.conflicts });
+    }
+    // 材料到位语义推进：该件的转人工问题 → material_received（录入完成；verified 仍须人工复核）
+    await store.query(
+      `UPDATE prepared_questions SET status='material_received',
+         note=COALESCE(note,'') || ' | 人工录入完成（材料到位≠核验）', updated_at=now()
+       WHERE tenant_id=$1 AND customer_id=$2 AND binding->>'questionId' = $3
+         AND status IN ('needs_human','suggested','queued_outbound','outbound_paused','send_unknown','send_failed')`,
+      [tenantId, customerId, `q-manual-${evidenceId}`],
+    );
+    // IR-03-8②：人工事实已变更 → 该件处理任务重入分析（从 analyze 续跑；事实状态为分析输入权威）
+    const requeued = await requeueForAnalysis(tenantId, [evidenceId]);
+    await audit(store, {
+      tenantId, actor: enteredBy, action: 'FACTS_MANUAL_ENTERED', targetType: 'evidence', targetId: evidenceId,
+      summary: `人工录入 ${facts.length} 项（转录≠核验；reason=${String(reason).slice(0, 80)}）`,
+    });
+    return { ok: true, observationId: obs.observationId, facts: results, note: '录入=转录（source_supported 语义，来源已留痕）；核验须另行由获准人员执行' };
+  }
+
+
+  /** IR-03-8②：人工事实（录入/更正/复核升级）变更后，把受影响材料的处理任务从终态重入分析。
+   *  只重入 done/needs_followup（failed=确定性拒绝、blocked_unknown=等对账，各有语义不越权改写）；
+   *  游标置 analyze：已 registered 的 A 操作经 a_links 状态零重复。 */
+  async function requeueForAnalysis(tenantId, evidenceIds) {
+    const ids = (Array.isArray(evidenceIds) ? evidenceIds : []).filter((x) => typeof x === 'string' && x);
+    if (ids.length === 0) return { ok: true, requeued: 0 };
+    const r = await store.query(
+      `UPDATE processing_tasks SET status='queued', stage_cursor='analyze', leased_until=NULL, leased_by=NULL,
+         note=COALESCE(note,'') || ' | 人工事实变更：重入分析（以现行事实状态为准）', updated_at=now()
+       WHERE tenant_id=$1 AND evidence_id = ANY($2::text[]) AND status IN ('done','needs_followup') RETURNING task_id`,
+      [tenantId, ids],
+    );
+    return { ok: true, requeued: r.rows.length };
+  }
+
   async function correctFact({ tenantId, correctsFactId, fact }) {
     const orig = await store.query(`SELECT * FROM fact_assertions WHERE fact_id=$1 AND tenant_id=$2`, [correctsFactId, tenantId]);
     if (orig.rows.length === 0) throw new ConnError('NOT_FOUND', `fact ${correctsFactId}`);
-    const created = await assertFact({ ...fact, tenantId });
+    const created = await assertFact({ ...fact, tenantId, entryMode: 'correction', valueJson: fact.objectValue ?? fact.value });
     await store.query(
       `UPDATE fact_assertions SET status='superseded', superseded_by=$3 WHERE fact_id=$1 AND tenant_id=$2`,
       [correctsFactId, tenantId, created.factId],
@@ -236,6 +315,8 @@ export function makeEvidenceService(store) {
       [tenantId, correctsFactId],
     );
     await audit(store, { tenantId, actor: 'evidence-service', action: 'FACT_CORRECTED', targetType: 'fact', targetId: created.factId, summary: `corrects=${correctsFactId}` });
+    // IR-03-8②：更正改变现行事实状态 → 来源材料重入分析（新输入=新收口，不覆写历史）
+    await requeueForAnalysis(tenantId, Array.isArray(orig.rows[0].from_artifacts) ? orig.rows[0].from_artifacts : []);
     return created;
   }
 
@@ -247,7 +328,7 @@ export function makeEvidenceService(store) {
     return r.rows;
   }
 
-  return { registerArtifact, verifyArtifact, evidenceCoverage, independentEvidenceCount, addObservation, assertFact, correctFact, listArtifacts, flagUntrustedContent };
+  return { registerArtifact, verifyArtifact, evidenceCoverage, independentEvidenceCount, addObservation, assertFact, correctFact, manualEntry, requeueForAnalysis, listArtifacts, flagUntrustedContent };
 }
 
 export { sha256Hex };

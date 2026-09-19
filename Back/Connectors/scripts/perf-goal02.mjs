@@ -15,7 +15,7 @@ import {
 } from '../test/processing-helpers.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const OUT_DIR = process.argv[2] ?? join(__dirname, '..', '..', '..', 'docs', 'backend-upgrade', 'goal-02', 'evidence');
+const OUT_DIR = process.argv[2] ?? join(__dirname, '..', '..', '..', 'docs', 'product-delivery', 'goal-02', 'evidence');
 const CUST = 'cust-perf-1';
 
 if (!(await pgAvailable())) {
