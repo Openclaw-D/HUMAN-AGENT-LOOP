@@ -46,7 +46,7 @@
 
 - facilities/financingRequests 相关底层代码（A/Edge/读模型）：历史数据与既有测试依赖，本轮只停用默认入口，不删兼容层（04 §7）。
 - `wb-logic.ts` 其余通道/线程/预览投影：当前主屏与面板在用。
-- Achieve/Anthropic/ 历史快照：不在本路 ownership，且按根部纪律只读。
+- docs/archive/Achieve/Anthropic/ 历史快照：不在本路 ownership，且按根部纪律只读。
 
 ## 三、引用核验与构建证据
 

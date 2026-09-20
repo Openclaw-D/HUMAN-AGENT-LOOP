@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 const EDGE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const BACK_ROOT = path.resolve(EDGE_ROOT, '..');
 const REPO_ROOT = path.resolve(BACK_ROOT, '..');
-const MATERIALS = path.join(REPO_ROOT, 'Materials', 'kashgar-demo-v1');
+const MATERIALS = path.join(REPO_ROOT, 'docs', 'materials', 'kashgar-demo-v1');
 const OUT_DIR = path.join(REPO_ROOT, 'docs', 'v0.3', 'zcode', 'serial-remainder');
 const TENANT = 'tenant_proc';
 

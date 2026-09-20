@@ -6,11 +6,11 @@ import {parseArtifactBytes,PARSE_ADAPTERS_VERSION} from '../../../Back/C/src/par
 import {projectSemanticFacts,SEMANTIC_FACTS_VERSION} from '../../../Back/C/src/parse/semantic-facts.mjs';
 const root=process.cwd();
 const sha=b=>createHash('sha256').update(b).digest('hex');
-const index=JSON.parse(await fs.readFile('Materials/kashgar-demo-v1/case-index.json','utf8'));
+const index=JSON.parse(await fs.readFile('docs/materials/kashgar-demo-v1/case-index.json','utf8'));
 const picks=[['originals/接口财务2025.csv','financial_statement'],['originals/接口设备.csv','equipment_list'],['originals/银行流水.csv','statement'],['originals/D02-主体登记资料.pdf','legal_document'],['originals/D09-销售合同与交付凭据.pdf','order_contract'],['originals/D02-主体登记资料.md','legal_document'],['originals/工艺示意.svg','site_evidence'],['经营台账.xlsx','financial_statement']];
 const results=[];
 for(const c of index.cases)for(const [name,kind] of picks){
- const file=`Materials/kashgar-demo-v1/${c.id}/${name}`,bytes=await fs.readFile(file);
+ const file=`docs/materials/kashgar-demo-v1/${c.id}/${name}`,bytes=await fs.readFile(file);
  const out=parseArtifactBytes(bytes,{fileName:path.basename(name),currency:'CNY',unit:name.includes('接口')?'wan':'yuan',subjectId:c.id});
  const sem=projectSemanticFacts({kind,parseResult:out});
  const exactName=kind==='legal_document'?(out.text??'').includes(c.name):null;

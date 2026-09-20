@@ -5,6 +5,7 @@
 import type { WbApi } from '../../lib/workbench/use-workbench';
 import type { TakeoffCellView } from '../../lib/workbench/takeoff-projection';
 import { takeoffDomainName, takeoffRowName } from '../../lib/workbench/takeoff-projection';
+import { ObjectIcon } from './ui-icons';
 
 
 const DOMAIN_TODO: Record<string, string> = {
@@ -45,10 +46,10 @@ export function TakeoffCellDetail({ wb, cell, onOpenPanel, onOpenAssistant, onVi
           <div key={i} className="tk-item"><span className="tk-dot yellow" />转会后待办：{f.reason ?? '—'} → {f.nextAction ?? '待定'}</div>
         ))}
         <div className="tk-toolbar">
-          {cell.row === 'analysis' && onOpenAssistant && <button className="tk-btn primary" onClick={onOpenAssistant}>查看{takeoffDomainName(cell.domain)}分析</button>}
-          {cell.row === 'input' && onViewMaterials && <button className="tk-btn" onClick={onViewMaterials}>查看材料原件</button>}
+          {cell.row === 'analysis' && onOpenAssistant && <button className="tk-btn primary" onClick={onOpenAssistant}><ObjectIcon name="analysis" size={30}/>查看{takeoffDomainName(cell.domain)}分析</button>}
+          {cell.row === 'input' && onViewMaterials && <button className="tk-btn" onClick={onViewMaterials}><ObjectIcon name="materials" size={30}/>查看材料原件</button>}
           {cell.allowedActions.filter(() => cell.row !== 'analysis' || !onOpenAssistant).map((a) => (
-            <button key={a.key} className="tk-btn small" onClick={() => onOpenPanel(a.key)}>{{materials:'补充材料',verify:'核验材料',qa:'问题与补证',proposal:'查看建议方案',result:'查看办理结果'}[a.key]}</button>
+            <button key={a.key} className="tk-btn small" onClick={() => onOpenPanel(a.key)}><ObjectIcon name={{materials:'materials',verify:'verify',qa:'analysis',proposal:'commerce',result:'closure'}[a.key]} size={28}/>{{materials:'补充材料',verify:'核验材料',qa:'问题与补证',proposal:'查看建议方案',result:'查看办理结果'}[a.key]}</button>
           ))}
           {cell.allowedActions.length === 0 && !(cell.row === 'analysis' && onOpenAssistant) && <span className="tk-asst-note">暂无可办理动作。</span>}
         </div>

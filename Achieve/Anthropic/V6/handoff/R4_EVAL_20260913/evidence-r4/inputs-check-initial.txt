@@ -1,6 +1,0 @@
-== inputs-check（MAIN integration-inputs 落位核对）
-  未发现任何输入包。缺件清单与精确可运行方法：
-  1) MAIN 隔离运行场景后执行：node V6/handoff/R4_EVAL_20260913/tools/export-trajectory-from-store.mjs --store <remote-store.json> --session <sessionId> --out V6/handoff/R4_MAIN_20260913/integration-inputs/<批次号>/trajectory-<n>.json
-  2) 按 docs/MOBILE_MEASUREMENT_SCHEMA.md 产出量测 JSON 放入同批次目录（文件名含 measurement），截图同放（佐证，不参与判定）；
-  3) ≥3 条 product_export 轨迹 + ≥1 份量测后，C 运行 inputs-check --receipts 逐包出 ACCEPTANCE_RECEIPT。
-  合计：轨迹 0/≥3，量测 0/≥1 → BLOCKED（缺输入，不冒充产品证据）

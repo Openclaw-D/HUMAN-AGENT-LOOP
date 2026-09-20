@@ -1,8 +1,0 @@
-{
-  "tier": "D1",
-  "round": 3,
-  "startedAt": "2026-09-17T16:29:15.065Z",
-  "result": "FAIL",
-  "error": "Error: docker run pg failed: docker: Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint v7d-pg-e99fbf4634 (39b637f34e3745975442b818ae40e5f7c36c3351e0f4887c123a915475f4812e): Bind for 127.0.0.1:15438 failed: port is already allocated\n\nRun 'docker run --h\n    at recreate (file:///C:/Users/22673/Desktop/JW/Back/D/harness/pgctl.mjs:50:22)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async Module.ensurePg (file:///C:/Users/22673/Desktop/JW/Back/D/harness/pgctl.mjs:54:5)\n    at async bootG04 (file:///C:/Users/22673/Desktop/JW/Back/Edge/test/e1/g04-chain.mjs:78:14)\n    at async main (file:///C:/Users/22673/Desktop/JW/Back/Edge/scripts/perf-g04.mjs:247:13)",
-  "finishedAt": "2026-09-17T16:29:15.663Z"
-}

@@ -26,6 +26,11 @@ export async function dropTestDatabase(baseConfig, dbName) {
 
 export function makeStore(config, { objectRoot } = {}) {
   const pool = new pg.Pool({ ...config, max: 8 });
+  // pg removes failed idle clients; the next query obtains a fresh connection.
+  // Do not log database error text, which may contain connection details.
+  pool.on('error', () => {
+    console.error('[connectors:pg] idle connection lost; database readiness may be degraded');
+  });
   let closed = false;
   return {
     pool,

@@ -1,12 +1,0 @@
-[36mvite v8.0.13 [32mbuilding client environment for production...[36m[39m
-[2Ktransforming...✓ 35 modules transformed.
-rendering chunks...
-computing gzip size...
-.g04-dist-check/index.html                   0.63 kB │ gzip:  0.48 kB
-.g04-dist-check/assets/index-Coao7djn.css   22.82 kB │ gzip:  5.06 kB
-.g04-dist-check/assets/index-rCpDqpeM.js   271.10 kB │ gzip: 87.29 kB
-
-[33m[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0msite-mirror/lib/v5-preview/edge/edge-logic.ts is dynamically imported by site-mirror/lib/v5-preview/edge/edge-client.ts but also statically imported by site-mirror/app/v5-preview/edge-panels.tsx, site-mirror/app/v5-preview/home-overview.tsx, dynamic import will not move module into another chunk.
-[39m
-[32m✓ built in 302ms[39m
-EXIT=0

@@ -2,6 +2,7 @@ import { useEffect, useImperativeHandle, useRef, useState, type Ref } from 'reac
 import type { WbApi } from '../../lib/workbench/use-workbench';
 import { observationAnchor, type ModelAssistant } from '../../lib/workbench/takeoff-actions';
 import type { DecisionResponse, FeedbackCommand } from '../../lib/workbench/decision-feedback';
+import { ConfidenceMeter } from './confidence-meter';
 import './decision-feedback.css';
 
 function evidenceName(text: string, index: number): string {
@@ -104,7 +105,7 @@ export function DecisionFeedbackPanel({ wb, assistant, requiredQuestion, onState
   }
   const set = requiredQuestion && data?.latest?.question !== requiredQuestion ? null : data?.latest;
   const current = !!set?.current && !staleLocally;
-  const selected = set?.feedback ? set.feedback.candidateId : set?.candidates[0]?.id;
+  const selected = set?.feedback?.candidateId;
   const locked = busy || !ready || !current || !!data?.pending;
   useImperativeHandle(actionsRef, () => ({ selectCandidate: (id) => { void feedback('select', id); } }));
   useEffect(() => { onStateChange?.(current ? set ?? null : null, !locked); }, [set, current, locked, onStateChange]);
@@ -132,14 +133,18 @@ export function DecisionFeedbackPanel({ wb, assistant, requiredQuestion, onState
       </details>
       <details className="tk-decision-caption"><summary>置信度仅供参考</summary><p>置信度为模型估计，尚未校准；各项独立评分，不要求相加为100%。引用可追溯不代表结论已核实。</p></details>
       {renderCandidates && <div className="tk-decision-list" role="group" aria-label="选择候选建议">
-        {set.candidates.map((candidate, index) => <button type="button" className="tk-decision-card" key={candidate.id}
-          aria-pressed={selected === candidate.id} disabled={locked} onClick={() => void feedback('select', candidate.id)}>
-          <span className="tk-decision-card-heading"><strong>{candidate.label}</strong>
-            <span>{candidate.confidence === null ? '置信度未提供' : `${Math.round(candidate.confidence * 100)}%`}</span></span>
-          <span>{candidate.impact}</span>
-          <small>依据：{candidate.evidenceRefIds.map(id => { const index = set.evidenceRefs.findIndex(r => r.id === id); return evidenceName(set.evidenceRefs[index]?.text ?? '', index); }).join('、')}</small>
-          <small>{set.feedback?.candidateId === candidate.id ? '你的选择 · 已记录' : index === 0 ? '建议首选' : `候选${index + 1}`}</small>
-        </button>)}
+        {set.candidates.slice(0, 3).map((candidate, index) => <div key={candidate.id}>
+          <button type="button" className="tk-decision-card" aria-pressed={selected === candidate.id} disabled={locked}
+            onClick={e => { const details = e.currentTarget.nextElementSibling as HTMLDetailsElement; if (details) details.open = true; }}
+            onDoubleClick={() => void feedback('select', candidate.id)}>
+            <span className="tk-decision-card-heading"><strong>{index + 1}. {candidate.label}</strong></span>
+            <span className="tk-confidence-logic">{candidate.impact}</span>
+            <ConfidenceMeter confidence={candidate.confidence} tied={candidate.confidence !== null && set.candidates.some(other => other.id !== candidate.id && other.confidence !== null && Math.round(other.confidence * 100) === Math.round(candidate.confidence! * 100))}/>
+            <small>{set.feedback?.candidateId === candidate.id ? '已选择' : '双击选择'}</small>
+          </button>
+          <details className="tk-decision-card-details"><summary>判断依据</summary><p>{candidate.impact}</p><ol>{candidate.evidenceRefIds.map(id => { const ref = set.evidenceRefs.find(r => r.id === id); return <li key={id}>{ref?.text ?? '依据暂不可读'}</li>; })}</ol><button disabled={locked} onClick={() => void feedback('select', candidate.id)}>确认选择</button></details>
+        </div>)}
+        {set.candidates.length > 3 && <details><summary>其他候选 · {set.candidates.length - 3}</summary>{set.candidates.slice(3).map(candidate => <button key={candidate.id} className="tk-decision-card" disabled={locked} onDoubleClick={() => void feedback('select', candidate.id)}><strong>{candidate.label}</strong><span className="tk-confidence-logic">{candidate.impact}</span><ConfidenceMeter confidence={candidate.confidence} tied={candidate.confidence !== null && set.candidates.some(other => other.id !== candidate.id && other.confidence !== null && Math.round(other.confidence * 100) === Math.round(candidate.confidence! * 100))}/><small>双击选择</small></button>)}</details>}
       </div>}
       {!set.candidates.length && <p>当前没有证据支持的有效候选，请补充材料或交专业人员核对。</p>}
       <details><summary>补充选择理由</summary><label>选择理由（可选）<textarea aria-label="候选选择理由" maxLength={500} value={reason} disabled={locked} onChange={e => setReason(e.target.value)} /></label></details>

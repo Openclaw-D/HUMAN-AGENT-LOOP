@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {parseArtifactBytesAsync,ASYNC_PARSE_VERSION} from '../src/parse/adapters-async.mjs';
-const root=new URL('../../../Materials/kashgar-demo-v1/',import.meta.url);
+const root=new URL('../../../docs/materials/kashgar-demo-v1/',import.meta.url);
 const index=JSON.parse(await fs.readFile(new URL('case-index.json',root),'utf8'));
 for(const c of index.cases)for(const file of ['D02-主体登记资料','D09-销售合同与交付凭据']){
  test('03B: original '+c.id+'/'+file+' restores text and exact source',async()=>{

@@ -11,7 +11,7 @@ test('V03 isolated PG: original PDF upload → async parser persistence → regi
   const h = await makeProcessingHarness({ port: 0 });
   try {
     const customerId = 'KS-LASER-500';
-    const bytes = await fs.readFile(new URL('../../../Materials/kashgar-demo-v1/KS-LASER-500/originals/D02-主体登记资料.pdf', import.meta.url));
+    const bytes = await fs.readFile(new URL('../../../docs/materials/kashgar-demo-v1/KS-LASER-500/originals/D02-主体登记资料.pdf', import.meta.url));
     const inv = await setupInvitation(h.api, { customerId, kinds: ['document'] });
     const uploaded = await uploadBytes(h.api, inv, { customerId, kind: 'document', bytes });
     await driveToEnd(h.api);

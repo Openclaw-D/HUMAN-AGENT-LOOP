@@ -17,7 +17,7 @@ import { MaterialsDesk } from './materials-desk';
 import { RoleFlow } from './role-flow';
 import { WorkTimeline } from './work-timeline';
 import { blockingPredecessor } from './cell-status';
-import { RoleLogo, UiIcon, type IconName } from './ui-icons';
+import { RoleLogo, UiIcon, ObjectIcon } from './ui-icons';
 import { FlowView, MaterialsView, RecordsView, TodoView, type PanelKey } from './takeoff-aux';
 import { CustomerPortal } from '../workbench/customer-portal';
 import { VerifyPanel } from '../workbench/verify-panel';
@@ -27,6 +27,7 @@ import { ResultPanel } from '../workbench/result-panel';
 import { WbError, useAction } from '../workbench/wb-parts';
 import './takeoff.css';
 import './glass.css';
+import './compact-workspace.css';
 
 type DrawerView =
   | { kind: 'cell'; cell: TakeoffCellView }
@@ -36,6 +37,8 @@ type DrawerView =
   | { kind: 'todos' }
   | { kind: 'customer' }
   | { kind: 'admission' }
+  | { kind: 'materialdesk' }
+  | { kind: 'timeline' }
   | null;
 
 const PANEL_TITLE: Record<PanelKey, string> = {
@@ -54,8 +57,9 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
   const customerId = wb.customerId;
   const [drawer, setDrawer] = useState<DrawerView>(null);
   const [zoomed, setZoomed] = useState(false);
+  const [assistantCollapsed, setAssistantCollapsed] = useState(false);
   const [endOpen, setEndOpen] = useState(false);
-  const [page, setPage] = useState<'board' | 'materials' | 'flow' | 'records'>('board');
+  const [page, setPage] = useState<'board'|'materials'|'flow'|'records'>('board');
   const [source, setSource] = useState<TakeoffSource>({ snapshot: null, packageDetail: null, channelTasks: [], currentMaterials: null, factConflicts: 0 });
   const act = useAction();
   const sourceSequence = useRef(0);
@@ -124,7 +128,6 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
   const openPanel = (k: PanelKey) => { setDrawer({ kind: 'panel', panel: k }); };
   const closeDrawer = () => { setDrawer(null); setZoomed(false); };
   const role = wb.session?.roles.find((r) => ['business', 'policy', 'credit', 'commerce', 'asset'].includes(r)) ?? 'business';
-  const navigate = (next: typeof page) => { setPage(next); closeDrawer(); };
 
   const drawerTitle = drawer === null ? ''
     : drawer.kind === 'cell' ? `${takeoffDomainName(drawer.cell.domain)} · ${{ input: '材料', analysis: '分析', human: '核验', closure: '办结' }[drawer.cell.row]}`
@@ -132,45 +135,37 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
     : drawer.kind === 'flow' ? '办理流程'
     : drawer.kind === 'records' ? '办理记录'
     : drawer.kind === 'todos' ? '待办事项'
+    : drawer.kind === 'materialdesk' ? '整理材料'
+    : drawer.kind === 'timeline' ? '办理记录'
     : drawer.kind === 'admission' ? '首次回租需求登记'
     : '客户主体信息';
   const predecessor = drawer?.kind === 'cell' ? blockingPredecessor(drawer.cell, cells) : null;
 
   return (
     <div className="tk-root tk-workspace">
-      <header className="tk-top">
-        <div className="tk-appbar">
-          <button className="tk-back-client" onClick={onBackToDirectory} aria-label="切换客户"><UiIcon name="back" size={22}/><span>客户</span></button>
-          <span className="tk-appbrand"><UiIcon name="jianwei" size={28}/>见微</span>
-          <nav className="tk-mainnav" aria-label="客户工作区">{([['board','工作台','board'],['materials','材料清单','materials'],['flow','角色流程','flow'],['records','时间轴','timeline']] as const).map(([id,label,icon]) => <button key={id} aria-current={page===id ? 'page' : undefined} onClick={() => navigate(id)}><UiIcon name={icon as IconName} size={22}/>{label}</button>)}</nav>
-          <button className="tk-role-identity" onClick={onLogout}><RoleLogo role={role} size={23}/><span>{workRoleName(wb.session?.roles)}<small>切换角色</small></span></button>
-        </div>
-        <div className="tk-summary">
-          <div className="tk-customer-heading"><span className="tk-section-kicker">首次回租 · 准入预评估</span><button className="tk-cust-name" onClick={() => setDrawer({ kind: 'customer' })} title={top.customer.displayName || '客户详情'}>{top.customer.displayName || '客户工作区'}<UiIcon name="arrow" size={20}/></button></div>
-          <div className="tk-summary-fields">
-            {[['申请金额', top.requestedAmount], ['建议额度', top.suggestedAmount], ['建议期限', top.suggestedTerm], ['参考价格', top.referencePrice]].map(([label, value]) => {
-              const field = value as { text: string; note?: string };
-              return <span className="tk-kv" key={String(label)}><span className="k">{String(label)}</span><span className="v">{field.text}</span></span>;
-            })}
-          </div>
-          <button className="tk-btn primary" onClick={() => openPanel('materials')}><UiIcon name="plus" size={19}/>补充材料</button>
-        </div>
-        {page==='board' && <div className="tk-workbar">
-          <span className="tk-context-label">协作进展</span>
-          <span className="tk-top-entries">
-            {wb.phase !== 'live' && <span className="tk-badge">{phaseText}</span>}
-            <button className="tk-btn small ghost" onClick={() => setDrawer({ kind: 'todos' })}>待办</button>
-            <details className="tk-work-actions" onClick={(e) => { if ((e.target as HTMLElement).closest('button')) e.currentTarget.open = false; }}><summary>办理</summary><div>
-              <button className="tk-btn small ghost" onClick={() => setDrawer({ kind: 'admission' })}>需求登记</button>
-              <button className="tk-plan-link" onClick={() => openPanel('proposal')}>{top.changedDomains.length ? '方案待复核' : '查看建议方案'} ↗</button>
-              <button className="tk-btn small ghost" onClick={() => setEndOpen(true)}>结束</button>
-            </div></details>
-          </span>
-        </div>}
+      <header className="tk-top tk-compact-top">
+        <button className="tk-back-client" onClick={onBackToDirectory} aria-label="切换客户"><UiIcon name="back" size={20}/></button>
+        <span className="tk-appbrand"><UiIcon name="jianwei" size={26}/></span>
+        <button className="tk-cust-name" onClick={() => setDrawer({ kind: 'customer' })} title={top.customer.displayName || '客户详情'}>{top.customer.displayName || '客户工作区'}</button>
+        <nav className="tk-mainnav" aria-label="客户工作区">{([['board','平台','board'],['materials','材料','materials'],['flow','决策','flow'],['records','流程','timeline']] as const).map(([id,label,icon])=><button key={id} aria-current={page===id?'page':undefined} title={{board:'工作台',materials:'材料清单',flow:'角色流程／决策树',records:'时间轴'}[id]} onClick={()=>{setPage(id);closeDrawer();}}>{icon==='materials'?<ObjectIcon name="materials" size={25}/>:<UiIcon name={icon} size={22}/>}<span>{label}</span></button>)}</nav>
+        <details className="tk-work-actions tk-customer-summary"><summary>申请 <span>{top.requestedAmount.text}</span></summary><div>{[['建议额度',top.suggestedAmount],['建议期限',top.suggestedTerm],['参考价格',top.referencePrice]].map(([label,value]) => <p key={String(label)}>{String(label)} · <span>{(value as {text:string}).text}</span></p>)}</div></details>
+        <button className="tk-btn small" onClick={() => openPanel('materials')}>补材料</button>
+        <details className="tk-work-actions"><summary>办理</summary><div><button onClick={() => setDrawer({kind:'materialdesk'})}>整理材料</button><button onClick={() => setDrawer({kind:'timeline'})}>办理记录</button><button onClick={() => setDrawer({kind:'todos'})}>待办</button><button onClick={() => setDrawer({kind:'admission'})}>需求登记</button><button onClick={() => openPanel('proposal')}>建议方案</button><button onClick={() => setEndOpen(true)}>结束</button><span>{phaseText}</span></div></details>
+        <button className="tk-role-identity" onClick={onLogout} title="切换角色"><RoleLogo role={role} size={23}/><span>{workRoleName(wb.session?.roles)}</span></button>
       </header>
       <WbError error={wb.error} onDismiss={() => wb.setError(null)} />
-      <div className="tk-body" hidden={page!=='board'}>
-        <TakeoffBoard key={wb.customerId} cells={cells} selected={drawer?.kind === 'cell' ? { domain: drawer.cell.domain, row: drawer.cell.row } : null} onSelect={openCell} />
+      <div className={`tk-unified-workspace${assistantCollapsed ? ' assistant-collapsed' : ''}`}>
+        <main className="tk-page-content">
+          <div className="tk-board-page" hidden={page!=='board'}><TakeoffBoard key={customerId} cells={cells} selected={drawer?.kind==='cell'?{domain:drawer.cell.domain,row:drawer.cell.row}:null} onSelect={openCell}/></div>
+          {page==='materials'&&<MaterialsDesk key={`${wb.session?.sessionId}:${customerId}`} wb={wb} customerId={customerId} onUpload={()=>openPanel('materials')}/>}
+          {page==='flow'&&<RoleFlow key={`${wb.session?.sessionId}:${customerId}`} wb={wb} cells={cells} top={top} onSelect={openCell}/>}
+          {page==='records'&&<WorkTimeline key={customerId} wb={wb} customerId={customerId}/>}
+        </main>
+        <aside className="tk-global-assistant" aria-label="常驻助手">
+          <button className="tk-edge-toggle" aria-label={assistantCollapsed ? '展开右侧助手' : '收起右侧助手'} aria-expanded={!assistantCollapsed} onClick={() => setAssistantCollapsed(v => !v)}>{assistantCollapsed ? '‹' : '›'}</button>
+          <div className={`tk-assistant-shell${page==='flow'?' tk-canvas-assistant':''}`} hidden={assistantCollapsed}>
+            <div id="tk-decision-detail-slot"/>
+            <div className="tk-shared-assistants" hidden={page==='flow'}>
         <TakeoffAssistants
           key={`${wb.session?.sessionId}:${customerId}`}
           wb={wb}
@@ -180,10 +175,10 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
           cellContext={drawer?.kind === 'cell' ? `${takeoffDomainName(drawer.cell.domain)}·${takeoffRowName(drawer.cell.row)}` : null}
           focusAssistant={drawer?.kind === 'cell' ? drawer.cell.domain === 'opportunity' ? 'business' : drawer.cell.domain : undefined}
         />
+            </div>
+          </div>
+        </aside>
       </div>
-      {page==='materials' && <MaterialsDesk key={`${wb.session?.sessionId}:${customerId}`} wb={wb} customerId={customerId} onUpload={() => openPanel('materials')}/>}
-      {page==='flow' && <RoleFlow key={wb.customerId} cells={cells} top={top} onSelect={openCell}/>}
-      {page==='records' && <WorkTimeline key={customerId} wb={wb} customerId={customerId}/>}
 
       {drawer !== null && (
         <>
@@ -207,7 +202,7 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
               {predecessor && <div className="tk-next-action"><span>前序事项还没处理好</span><button className="tk-btn" onClick={() => openCell(predecessor)}>先处理{{input:'材料',analysis:'分析',human:'核验',closure:'办结'}[predecessor.row]} <UiIcon name="arrow" size={18}/></button></div>}
               {drawer.kind === 'cell' && (
                 <TakeoffCellDetail wb={wb} cell={drawer.cell} onOpenPanel={openPanel}
-                  onOpenAssistant={closeDrawer} onViewMaterials={() => navigate('materials')} />
+                  onOpenAssistant={closeDrawer} onViewMaterials={() => setDrawer({kind:'materialdesk'})} />
               )}
               {drawer.kind === 'panel' && drawer.panel === 'materials' && <MaterialsView wb={wb} customerId={customerId} />}
               {drawer.kind === 'panel' && drawer.panel === 'verify' && <VerifyPanel wb={wb} customerId={customerId} />}
@@ -224,6 +219,8 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
                   onOpenPanel={openPanel}
                 />
               )}
+              {drawer.kind === 'materialdesk' && <MaterialsDesk key={customerId} wb={wb} customerId={customerId} onUpload={() => openPanel('materials')}/>}
+              {drawer.kind === 'timeline' && <WorkTimeline wb={wb} customerId={customerId}/>}
               {drawer.kind === 'customer' && <CustomerInfo wb={wb} />}
               {drawer.kind === 'admission' && <AdmissionRequestPanel wb={wb} onOpenProposal={() => openPanel('proposal')} />}
             </div>

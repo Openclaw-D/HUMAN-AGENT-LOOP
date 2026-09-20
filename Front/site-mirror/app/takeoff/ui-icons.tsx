@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { materialObjectName } from '../../lib/workbench/material-labels';
 
 export type IconName = 'business' | 'opportunity' | 'policy' | 'credit' | 'commerce' | 'asset' | 'jianwei' | 'board' | 'materials' | 'flow' | 'timeline' | 'search' | 'plus' | 'back' | 'arrow' | 'close' | 'expand' | 'file' | 'check' | 'upload' | 'lock' | 'wrench';
 const paths: Record<IconName, React.ReactNode> = {
@@ -23,6 +24,8 @@ const paths: Record<IconName, React.ReactNode> = {
   wrench: <path d="M28 5a9 9 0 0 1-11 12L8 27a3 3 0 0 1-4-4l10-9A9 9 0 0 1 26 3l-6 6 3 3Z"/>,
 };
 export function UiIcon({ name, size = 24, style }: { name: IconName; size?: number; style?: CSSProperties }) {
+  if (name === 'board' || name === 'flow' || name === 'timeline') return <img className="tk-object-icon" src={`/objects/${name === 'board' ? 'desk' : name === 'flow' ? 'branch' : 'timeline'}-v1.png`} width={size} height={size} style={style} alt="" aria-hidden="true" draggable={false}/>;
+  if (name === 'jianwei') return <img className="tk-object-icon tk-eye-icon" src="/objects/eye-v3.png" width={size} height={size} style={style} alt="" aria-hidden="true" draggable={false}/>;
   return <svg className="tk-ui-icon" width={size} height={size} viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={style}>{paths[name]}</svg>;
 }
 
@@ -33,4 +36,8 @@ export function RoleLogo({ role, size = 32 }: { role: string; size?: number }) {
 
 export function ObjectIcon({ name, size = 36 }: { name: string; size?: number }) {
   return <img className="tk-object-icon" src={`/objects/${name}-v1.png`} width={size} height={size} alt="" aria-hidden="true" draggable={false}/>;
+}
+
+export function MaterialObject({ kind = '', name = '', size = 40 }: { kind?: string; name?: string; size?: number }) {
+  return <ObjectIcon name={materialObjectName(kind, name)} size={size}/>;
 }

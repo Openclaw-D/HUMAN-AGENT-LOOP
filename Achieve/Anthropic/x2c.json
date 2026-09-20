@@ -1,1 +1,0 @@
-{"steps": [{"step": "x2c-annotate", "ok": true, "detail": ""}, {"step": "x2c-stale-rejected", "ok": false, "detail": "None"}, {"step": "x2c-retry-ok", "ok": false, "detail": ""}]}

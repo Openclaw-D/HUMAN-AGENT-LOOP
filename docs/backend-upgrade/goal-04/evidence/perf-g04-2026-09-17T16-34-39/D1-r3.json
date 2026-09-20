@@ -1,8 +1,0 @@
-{
-  "tier": "D1",
-  "round": 3,
-  "startedAt": "2026-09-17T16:35:29.104Z",
-  "result": "FAIL",
-  "error": "Error: docker exit: ERROR:  relation \"permission_matrix\" does not exist\nLINE 2:     INSERT INTO permission_matrix (matrix_version, role, act...\n                        ^\n\n    at file:///C:/Users/22673/Desktop/JW/Back/Edge/test/e1/task3-boot.mjs:35:30\n    at ChildProcess.exithandler (node:child_process:424:5)\n    at ChildProcess.emit (node:events:519:28)\n    at maybeClose (node:internal/child_process:1101:16)\n    at ChildProcess._handle.onexit (node:internal/child_process:304:5)",
-  "finishedAt": "2026-09-17T16:35:46.134Z"
-}

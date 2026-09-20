@@ -36,9 +36,9 @@ SHOW-R1｜目标片长恰好 60 秒｜本轮交付分镜文字，不生成付费
 | 旧总览截图 | `Back/Edge/.run/takeoff/acceptance/pages/final-board-1920x1080.png` | 文件存在，未逐张视觉检查 | 仅历史参考，不能冒充当前 UI-R1 或当前主案例 |
 | 旧确认截图 | 同目录 `final-confirmed-readback-1920.png` | 已打开检查 | 显示旧“页面确认演练”客户及旧规则标记；与发布复核的新客户不一致，排除主片，等待当前截图替代 |
 | 旧详情/确认弹窗/小屏截图 | 同目录 `final-drawer-credit-input-1920.png`、`final-enddialog-enabled-1920.png`、`final-confirmed-1366x768.png` | 文件存在，未逐张视觉检查 | 不因文件名带 final 就自动采用；要核对客户、构建、版本与合成标签 |
-| 喀什候选原件 | `Materials/kashgar-demo-v1/KS-LASER-500/originals/` | D01/D18正文已读；其余目录已列 | D01为申请500万元，D18有历史应收未清偿；同源格式不重复算证明 |
-| 喀什补件 | `Materials/kashgar-demo-v1/KS-LASER-500/supplements/S01-补件答复.md` | 正文已读 | 未解决风险，不能用作“补件后一切通过”的镜头 |
-| 喀什阅读册/台账 | `Materials/kashgar-demo-v1/KS-LASER-500/原始材料阅读册.pdf`、`经营台账.xlsx` | 文件存在，未本次逐页/逐格QA | 可候选剪辑；内容属于合成资料，接入状态NOT_RUN |
+| 喀什候选原件 | `docs/materials/kashgar-demo-v1/KS-LASER-500/originals/` | D01/D18正文已读；其余目录已列 | D01为申请500万元，D18有历史应收未清偿；同源格式不重复算证明 |
+| 喀什补件 | `docs/materials/kashgar-demo-v1/KS-LASER-500/supplements/S01-补件答复.md` | 正文已读 | 未解决风险，不能用作“补件后一切通过”的镜头 |
+| 喀什阅读册/台账 | `docs/materials/kashgar-demo-v1/KS-LASER-500/原始材料阅读册.pdf`、`经营台账.xlsx` | 文件存在，未本次逐页/逐格QA | 可候选剪辑；内容属于合成资料，接入状态NOT_RUN |
 | 当前模型回执与界面录屏 | TEC/FRONT/EVAL 后续交付 | 未取得可公开的同次运行素材 | 拿到脱敏回执与输入范围后再用；不读取原始凭据配置 |
 | 成片/音轨/当前回放 | 本轮未生成 | 不存在已交付文件 | `opening-60s.mp4`、`demo-replay.mp4`是约定文件名，不是下载项 |
 

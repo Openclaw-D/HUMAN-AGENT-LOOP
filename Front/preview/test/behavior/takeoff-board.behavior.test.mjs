@@ -206,12 +206,12 @@ test('辅助页：流程只读 SVG+缩放；记录消费服务端事件；待办
   });
   render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
 
-  fireEvent.click(screen.getByRole('button', { name: '角色流程' }));
-  assert.ok(await screen.findByRole('img', { name: /首次预评估只读流程图/ }));
-  fireEvent.click(screen.getByRole('button', { name: '放大流程图' }));
-  fireEvent.click(screen.getByRole('button', { name: '时间轴' }));
+  fireEvent.click(screen.getByRole('button', { name: '决策' }));
+  assert.ok(await screen.findByLabelText('横向决策树'));
+  fireEvent.wheel(screen.getByLabelText('项目四阶段连续画布'), { deltaY: -120, clientX: 200, clientY: 120 });
+  fireEvent.click(screen.getByRole('button', { name: '流程' }));
   await waitFor(() => assert.ok(screen.getByText('收到一份材料')), '记录页消费服务端事件类型');
-  fireEvent.click(screen.getByRole('button', { name: '工作台' }));
+  fireEvent.click(screen.getByRole('button', { name: '平台' }));
 
   fireEvent.click(screen.getByRole('button', { name: '待办' }));
   await waitFor(() => assert.ok(screen.getByText(/补充 7 月流水/)));
@@ -396,4 +396,19 @@ test('顶部摘要：已有申请金额首屏直接展示，不以加载占位�
   assert.ok(screen.getByText('8,000 万元'));
   await waitFor(() => assert.ok(screen.getByText('50 万元')));
   assert.ok(screen.getByText('8,000 万元'));
+});
+
+test('常驻助手：四页同一实例，收起展开不丢草稿',async t=>{
+ t.after(cleanup);const {wb}=makeScreen();render(React.createElement(TakeoffScreen,{wb,onBackToDirectory:()=>{},onLogout:()=>{}}));
+ const draft=screen.getByLabelText('消息草稿');fireEvent.change(draft,{target:{value:'保留这条草稿'}});
+ for(const name of ['材料','决策','流程','平台']) { fireEvent.click(screen.getByRole('button',{name,exact:true}));assert.equal(screen.getByLabelText('消息草稿'),draft);assert.equal(draft.value,'保留这条草稿');assert.ok(screen.getByRole('button',{name:'收起右侧助手'})); }
+ fireEvent.click(screen.getByRole('button',{name:'收起右侧助手'}));assert.ok(screen.getByRole('button',{name:'展开右侧助手'}));fireEvent.click(screen.getByRole('button',{name:'展开右侧助手'}));assert.equal(screen.getByLabelText('消息草稿').value,'保留这条草稿');
+});
+
+test('四页独立：仅决策页共用四阶段画布，返回平台恢复看板',async t=>{
+ t.after(cleanup);const {wb}=makeScreen();render(React.createElement(TakeoffScreen,{wb,onBackToDirectory:()=>{},onLogout:()=>{}}));
+ assert.ok(screen.getByRole('grid'));assert.equal(screen.queryByLabelText('项目四阶段连续画布'),null);
+ fireEvent.click(screen.getByRole('button',{name:'决策',exact:true}));assert.ok(screen.getByLabelText('项目四阶段连续画布'));assert.equal(document.querySelectorAll('.tk-stage-band').length,4);
+ fireEvent.click(screen.getByRole('button',{name:'材料',exact:true}));assert.ok(screen.getByLabelText('材料全景工作台'));assert.equal(screen.queryByLabelText('项目四阶段连续画布'),null);
+ fireEvent.click(screen.getByRole('button',{name:'平台',exact:true}));assert.ok(screen.getByRole('grid'));assert.ok(screen.getByRole('button',{name:'收起右侧助手'}));
 });

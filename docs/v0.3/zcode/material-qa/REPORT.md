@@ -20,7 +20,7 @@ node docs/v0.3/zcode/material-qa/material-qa.test.mjs
 
 ### 缺陷1 · 银行流水CSV表头别名缺口 → 整表降级垃圾声明，ok=true 掩盖失败
 
-- 反例：`Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/银行流水.csv`（SHA-256 `063d70a8…`，真表头 `流水号,日期,关联单号,对手方,摘要,收入元,支出元,余额元,币种,标识`）。
+- 反例：`docs/materials/kashgar-demo-v1/KS-TEXTILE-200/originals/银行流水.csv`（SHA-256 `063d70a8…`，真表头 `流水号,日期,关联单号,对手方,摘要,收入元,支出元,余额元,币种,标识`）。
 - 入口：`parseArtifactBytes` → `extractBankStatement` → `findHeaderRow`（`Back/C/src/parse/adapters.mjs:176`）。`HEADER_MAP` 的 inflow/outflow/balance 别名（`adapters.mjs:165-167`）含 `收入/收入金额/贷方` 等，**不含 `收入元/支出元/余额元`** → 表头识别失败（`adapters.mjs:198`）→ 回退 `extractKvCsvFacts`（`adapters.mjs:769`）→ 逐行逗号正则（`adapters.mjs:306`）把 484 条流水+表头变成 **485 条 declared 垃圾"声明"**（如 factKey=`KS-TEXTILE-200-B0001`，value=整行逗号串），`ok=true`、format=`keyvalue_csv`，无任何聚合与 `bank_inflow_total/bank_outflow_total` source_supported 事实。
 - 精确预期（来源=原件字节独立求和，不经被测解析器）：`format=bank_statement_csv`，rowCount=**484**，inflowTotal=**77,343,360 元**，outflowTotal=**74,065,856 元**，periodStart=**2023-01-12**，periodEnd=**2026-08-25**，合计行剔除≥1，并产出 `bank_inflow_total=77343360`。
 - 复现：用例 `DEFECT-BANK-CSV-REAL`（真件）与 `DEFECT-BANK-CSV-SYN`（2数据行+合计行的最小合成件，预期 1500000/200000/totalsExcluded=1）。对照 `CONTROL-BANK-CSV-ALIAS`：同一流水体仅表头改 `收入/支出/余额` → 今天即正确解析为 bank_statement_csv，锁定差异面=别名表。

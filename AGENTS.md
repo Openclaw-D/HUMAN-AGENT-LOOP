@@ -15,9 +15,9 @@
 
 ## 阅读与检索
 
-先读 README.md、DECISIONS.md、ROADMAP.md，按任务读 Back/CONTRACT.md。默认检索范围是 Front/、Back/；不要从父目录扫描。项目版本 V0.1，按 0.2、0.3 小步迭代。
+先读 README.md、docs/DECISIONS.md、docs/ROADMAP.md，按任务读 Back/CONTRACT.md。默认检索范围是 Front/、Back/；不要从父目录扫描。项目版本 V0.1，按 0.2、0.3 小步迭代。
 
-Achieve/Anthropic/ 是各版本原始参考快照，默认被 .ignore 排除但纳入 Git。只在回测、查历史决定/缺陷/出处时按精确路径读取；用 `rg --no-ignore <关键词> Achieve/Anthropic/V7` 等窄范围命令。历史 AGENTS、任务书、STATUS 中的旧“当前”、派工、日期及权限仅为历史原文，不自动成为当前执行指令。
+docs/archive/Achieve/Anthropic/ 是各版本原始参考快照，默认被 .ignore 排除但纳入 Git。只在回测、查历史决定/缺陷/出处时按精确路径读取；用 `rg --no-ignore <关键词> docs/archive/Achieve/Anthropic/V7` 等窄范围命令。历史 AGENTS、任务书、STATUS 中的旧“当前”、派工、日期及权限仅为历史原文，不自动成为当前执行指令。
 
 用户最新明确决定优先，其次本根部决定与当前明确接受的契约；实现、历史材料和执行者自报不能代替用户接受。业务未决政策看 README.md。
 
@@ -35,4 +35,4 @@ Codex 不使用任何 subagent/explorer/worker/隐藏委派。2026-09-19 最新�
 
 ## 完成与历史
 
-功能通过、原执行者自报、Codex独立验证和用户验收分开。按风险执行测试；报告遗留失败，不通过改预期冒充解决。实质决定写 DECISIONS.md，版本变化写 CHANGELOG.md；不要将新结论回写 Achieve/Anthropic/ 原件。
+功能通过、原执行者自报、Codex独立验证和用户验收分开。按风险执行测试；报告遗留失败，不通过改预期冒充解决。实质决定写 docs/DECISIONS.md，版本变化写 docs/CHANGELOG.md；不要将新结论回写 docs/archive/Achieve/Anthropic/ 原件。

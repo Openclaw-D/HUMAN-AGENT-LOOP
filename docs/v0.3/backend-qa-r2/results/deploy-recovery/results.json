@@ -1,0 +1,753 @@
+{
+  "package": "backend-qa-r2/deploy-recovery",
+  "updatedAt": "2026-09-20T19:15:41.532Z",
+  "summary": {
+    "PASS": 36,
+    "FAIL": 0,
+    "SKIP": 0,
+    "NA": 0
+  },
+  "timings": {
+    "pgReadyMs": 3479,
+    "aColdMs": 2084,
+    "connColdMs": 831,
+    "edgeColdMs": 1046,
+    "coldStartTotalMs": 7669,
+    "aRestartMs": 413,
+    "recoveryTotalMs": 1920
+  },
+  "results": [
+    {
+      "id": "ENV-001",
+      "name": "环境预检：Node22/Docker/镜像/端口/容器名空闲",
+      "status": "PASS",
+      "evidence": {},
+      "notes": "",
+      "at": "2026-09-20T19:14:02.448Z"
+    },
+    {
+      "id": "ENV-001",
+      "name": "环境预检：Node22/Docker/镜像/端口/容器名空闲",
+      "status": "PASS",
+      "evidence": {
+        "node": "v22.23.1",
+        "dockerOk": true,
+        "postgres16Image": "postgres:16",
+        "portsFree": {
+          "15502": true,
+          "15599": true,
+          "48414": true,
+          "48480": true,
+          "48481": true,
+          "48514": true,
+          "48516": true,
+          "48555": true
+        },
+        "containerNameFree": true
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:03.136Z"
+    },
+    {
+      "id": "ENV-002",
+      "name": "输入源码SHA256已记录（执行前）",
+      "status": "PASS",
+      "evidence": {
+        "files": 11
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:03.741Z"
+    },
+    {
+      "id": "T1-001",
+      "name": "本包专用PG就绪（依赖顺序第一步）",
+      "status": "PASS",
+      "evidence": {
+        "container": "jw-bqa-r2-deprec-pg",
+        "port": 15502,
+        "label": "backend-qa-r2/deploy-recovery",
+        "readyMs": 3479,
+        "connDbCreated": true
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:07.221Z"
+    },
+    {
+      "id": "T1-002",
+      "name": "A内核启动（生产入口 src/index.ts；空库默认迁移为文档化行为）",
+      "status": "PASS",
+      "evidence": {
+        "pid": 10868,
+        "marker": "bqa-r2-deprec-a-mua7365y",
+        "migrateApplied": "001_init.sql, 002_customer_credit.sql, 003_inspection_sessions.sql, 004_decision_loop.sql, 005_trust_gates_a1.sql, 006_a2_a3_authority.sql, 007_ledger_once.sql, 008_domain_exemptions.sql, 009_customer_invitations.sql, 010_service_identities.sql, 011_authoritative_reads.sql, 012_takeoff_preassessment.sql, 013_five_domain_vocab.sql, 014_admission_request.sql",
+        "ms": 2084,
+        "healthz": {
+          "ok": true,
+          "db": "up",
+          "model": "not_configured",
+          "principalVerifier": "configured",
+          "leaseSeconds": 90,
+          "contractVersion": "v1.3+v2.1-credit+decision-loop(task01+task02)",
+          "creditPolicy": {
+            "capCnyMinor": 1000000000,
+            "matrixVersion": null,
+            "concentrationPolicyVersion": null,
+            "coolingSeconds": null
+          },
+          "uptime": 2.0691875
+        }
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:09.310Z"
+    },
+    {
+      "id": "T1-003",
+      "name": "Connectors启动（生产入口+本包专用配置，空库默认迁移为文档化行为）",
+      "status": "PASS",
+      "evidence": {
+        "pid": 692,
+        "marker": "bqa-r2-deprec-conn-mua737rz",
+        "ms": 831,
+        "connDbMigrations": 0
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:10.364Z"
+    },
+    {
+      "id": "T1-004",
+      "name": "Edge启动（生产入口 edge-start.mjs，--run-dir 隔离实例）",
+      "status": "PASS",
+      "evidence": {
+        "exitCode": 0,
+        "pid": 28740,
+        "ready": true,
+        "ms": 1046,
+        "versionz": {
+          "schemaVersion": "jw.version-seal.v1",
+          "sealedAt": "2026-09-20T19:14:11.312Z",
+          "buildId": "31dd3bc302b2b2f6",
+          "git": {
+            "gitSha": "cd11c55e4a69aa0f93115169d51da610db1083ad",
+            "sourceDirty": true,
+            "dirtyCount": 73,
+            "dirtyPaths": [
+              "Back/Connectors/src/store/pg.mjs",
+              "Front/dist/assets/index-Ch7bAEPC.js",
+              "Front/dist/assets/index-Ku3lRJb9.css",
+              "Front/dist/assets/pdf-DParC8Rj.js",
+              "Front/dist/index.html",
+              "Front/preview/test/behavior/decision-feedback.behavior.test.mjs",
+              "Front/preview/test/behavior/takeoff-board.behavior.test.mjs",
+              "Front/preview/test/behavior/visual-workspace.behavior.test.mjs",
+              "Front/site-mirror/app/takeoff/assistant-observation.tsx",
+              "Front/site-mirror/app/takeoff/decision-feedback-panel.tsx",
+              "Front/site-mirror/app/takeoff/desktop-frame.tsx",
+              "Front/site-mirror/app/takeoff/glass.css",
+              "Front/site-mirror/app/takeoff/materials-desk.tsx",
+              "Front/site-mirror/app/takeoff/role-flow.tsx",
+              "Front/site-mirror/app/takeoff/takeoff-assistants.tsx",
+              "Front/site-mirror/app/takeoff/takeoff-detail.tsx",
+              "Front/site-mirror/app/takeoff/takeoff-screen.tsx",
+              "Front/site-mirror/app/takeoff/ui-icons.tsx",
+              "Front/site-mirror/app/takeoff/work-timeline.tsx",
+              "Front/site-mirror/app/workbench/channel-card.tsx",
+              "Front/site-mirror/app/workbench/originals-panel.tsx",
+              "Front/site-mirror/lib/workbench/material-labels.ts",
+              "docs/v0.3/ZCODE_REAL_MODULE_HANDOFF.md",
+              ".codex-remote-attachments/",
+              "Back/Connectors/src/intake/upload-context.mjs",
+              "Back/Connectors/test/upload-context.pg.test.mjs",
+              "Back/Connectors/test/upload-context.test.mjs",
+              "Back/Edge/src/upload-context.mjs",
+              "Back/Edge/test/upload-context.test.mjs",
+              "Front/dist/assets/index-BPTt_qsm.js",
+              "Front/dist/assets/index-Dg2_HJOU.css",
+              "Front/dist/assets/pdf-FsRjdVEx.js",
+              "Front/dist/objects/branch-v1.png",
+              "Front/dist/objects/desk-v1.png",
+              "Front/dist/objects/equipment-v1.png",
+              "Front/dist/objects/eye-natural-v2.png",
+              "Front/dist/objects/eye-v3.png",
+              "Front/dist/objects/license-v1.png",
+              "Front/dist/objects/statement-v1.png",
+              "Front/dist/objects/timeline-v1.png",
+              "Front/preview/public/objects/branch-v1.png",
+              "Front/preview/public/objects/desk-v1.png",
+              "Front/preview/public/objects/equipment-v1.png",
+              "Front/preview/public/objects/eye-natural-v2.png",
+              "Front/preview/public/objects/eye-v3.png",
+              "Front/preview/public/objects/license-v1.png",
+              "Front/preview/public/objects/statement-v1.png",
+              "Front/preview/public/objects/timeline-v1.png",
+              "Front/preview/test/zcode-v03-state/",
+              "Front/site-mirror/app/takeoff/compact-workspace.css"
+            ]
+          },
+          "sourceDigest": {
+            "back": {
+              "files": 471,
+              "sha256": "2d22e76a02498f758ce7d5264be3f50fb7f882ca247b50588d3a59d862c62931"
+            },
+            "frontSrc": {
+              "files": 53,
+              "sha256": "687746dcebbfda4fe22011e58db491d9021040ba5d36bf12250a017c6eb7eed5"
+            }
+          },
+          "dist": {
+            "frontend": {
+              "files": 29,
+              "sha256": "7b7f4969e12f7e2fd271361647f5bc53b0070dc782f30c3f42c71c471d3987bb"
+            }
+          },
+          "contractVersion": "v1.3",
+          "contractDigest": "f0d115f24dbcd4c192a8d49979c855271b5afcc55a0ff8415c8f55564b303813",
+          "migrationVersion": {
+            "count": 14,
+            "sha256": "73471be2f5c9e569b2f9b989841e1c6a51bcf686bb72b526b3d0db8345f78f4a",
+            "latest": "014_admission_request.sql"
+          },
+          "rulesetVersion": {
+            "files": 7,
+            "sha256": "e1f835e8b1061d9f48d2d8546f5549da4b9da4b40d9c5f4f5cdc41022abee4e8"
+          },
+          "delivery": {
+            "consumedSurface": {
+              "present": true,
+              "schemaVersion": "jw.edge.consumed-surface.v1",
+              "publishedAt": "2026-09-17",
+              "digest": "ee77f4a2b24ca36ccc1bde070dbde80abbbe05e999d7f1f7dcf4210df625f555",
+              "reads": 18,
+              "writes": 19
+            },
+            "rulePack": {
+              "present": true,
+              "rulesetId": null,
+              "version": "1.0.0",
+              "boundary": "simulation_only",
+              "rules": 8,
+              "digest": "a411727ca1b72cf3e903b298628b6ebd34fb2e0a0506a04f8dbf8db4b79a6602"
+            },
+            "fourDomainTools": {
+              "present": true,
+              "toolVersion": "fd-tools@1.1.0",
+              "digest": "fa8d3816fe8443c488539973452ef59b074ac42508e9e182936ff63cc1a06f37"
+            },
+            "lockfiles": {
+              "files": [
+                {
+                  "path": "Back/A/package-lock.json",
+                  "sha256": "d7e8f1a5271a0d11abef3b81674714f4fb3ba120cd67c98049a486cc9cf301c5"
+                },
+                {
+                  "path": "Back/B/package-lock.json",
+                  "sha256": "c040d55b66a69b0dfbc2fbf94e8562d98ef200f74d3a227b76ad789049e216ed"
+                },
+                {
+                  "path": "Front/package-lock.json",
+                  "sha256": "602c48760c0d14a8b5a8a8f03862f950b1b11ef41bede32cb52fc193fc489db1"
+                }
+              ],
+              "zeroDepLanes": [
+                "Back/C",
+                "Back/Edge",
+                "Back/D"
+              ]
+            },
+            "scene": {
+              "threeD": "absent",
+              "note": "本仓 Front 无 Unity/三维场区构建；交付形态为二维页面（任务书前提与实现不符，如实记录）"
+            },
+            "unityBuild": null
+          },
+          "runtime": {
+            "node": "v22.23.1",
+            "platform": "win32",
+            "arch": "x64"
+          },
+          "capabilities": {
+            "model": "not_configured",
+            "video": "blocked_external_access",
+            "recording": "blocked_external_access",
+            "policy": "simulation_rule_pack_v1.0.0 (boundary=simulation_only)",
+            "credit": "v2_kernel (policy bits synthetic; 生产矩阵须公司批准录入)",
+            "channel": "wired (--connectors-url 配置；实际处理以 Connectors 驱动与 A bridge 运行为准)",
+            "note": "能力位逐一独立报告，永不汇总为 all_ok；受限能力见 contract/consumed-surface-v1.json"
+          }
+        }
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:11.414Z"
+    },
+    {
+      "id": "T1-005",
+      "name": "冷启动总耗时（PG创建→Edge就绪，一次）",
+      "status": "PASS",
+      "evidence": {
+        "coldStartTotalMs": 7669,
+        "pgReadyMs": 3479,
+        "aColdMs": 2084,
+        "connColdMs": 831,
+        "edgeColdMs": 1046
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:11.415Z"
+    },
+    {
+      "id": "T5-001",
+      "name": "A建客户（业务事实写入）",
+      "status": "PASS",
+      "evidence": {
+        "status": 200,
+        "customerId": "cust-mua739f6-feab30a916dd"
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:11.448Z"
+    },
+    {
+      "id": "T5-002",
+      "name": "Edge会话交换（live：凭据经A目录核实）",
+      "status": "PASS",
+      "evidence": {
+        "status": 200,
+        "sessionTokenReceived": true
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:11.462Z"
+    },
+    {
+      "id": "T5-003",
+      "name": "Edge消息发送＋幂等回执落库",
+      "status": "PASS",
+      "evidence": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "requestId": "qa-dep-msg-001",
+          "audience": "customer",
+          "delivery": {
+            "messageId": "local-4305d59f-a072-4d2d-950b-58dde0ad94eb",
+            "state": "sent_local_sink"
+          },
+          "note": "送达未知时不标已读；客户端以服务端状态为准",
+          "replayed": true
+        }
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:11.478Z"
+    },
+    {
+      "id": "T5-004",
+      "name": "重启前持久数据快照",
+      "status": "PASS",
+      "evidence": {
+        "aDbCustomers": 1,
+        "connDbTables": 32,
+        "edgeMessages": 1,
+        "edgeReceipts": 1
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:30.303Z"
+    },
+    {
+      "id": "T2-001",
+      "name": "Edge /healthz/live = 仅进程存活",
+      "status": "PASS",
+      "evidence": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "liveness": true,
+          "uptimeSec": 20
+        }
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:30.306Z"
+    },
+    {
+      "id": "T2-002",
+      "name": "Edge /healthz/ready 全就绪：门控在body.ok，assistant-model为advisory",
+      "status": "PASS",
+      "evidence": {
+        "status": 200,
+        "ok": true,
+        "checks": [
+          {
+            "name": "kernel-a",
+            "ok": true,
+            "advisory": false
+          },
+          {
+            "name": "db",
+            "ok": true,
+            "advisory": false
+          },
+          {
+            "name": "assistant-model",
+            "ok": false,
+            "advisory": true
+          },
+          {
+            "name": "connectors",
+            "ok": true,
+            "advisory": false
+          },
+          {
+            "name": "connectors-channel",
+            "ok": true,
+            "advisory": false
+          }
+        ],
+        "httpAlways200": true
+      },
+      "notes": "实际语义：HTTP 恒 200，就绪与否看 body.ok（gating=非advisory检查）",
+      "at": "2026-09-20T19:14:30.317Z"
+    },
+    {
+      "id": "T2-003",
+      "name": "A宕机→Edge readiness如实降级（kernel-a失败，整体ok=false）",
+      "status": "PASS",
+      "evidence": {
+        "stopR": {
+          "ok": true,
+          "killCode": 0,
+          "gone": true,
+          "why": null
+        },
+        "degradedOk": false,
+        "kernelA": {
+          "name": "kernel-a",
+          "ok": false,
+          "detail": {
+            "error": "ECONNREFUSED"
+          },
+          "latencyMs": 3
+        }
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:32.551Z"
+    },
+    {
+      "id": "T2-004",
+      "name": "A重启（标准入口start-kernel.mjs+V7NEXT_A_DB_URL）→Edge readiness恢复",
+      "status": "PASS",
+      "evidence": {
+        "up": true,
+        "recoveredOk": true,
+        "ms": 413
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:32.983Z"
+    },
+    {
+      "id": "T2-005",
+      "name": "PG宕机→A healthz db=down、Edge ready db 失败（如实降级不隐瞒）",
+      "status": "PASS",
+      "evidence": {
+        "aHealth": {
+          "ok": true,
+          "db": "down",
+          "model": "not_configured",
+          "principalVerifier": "configured",
+          "leaseSeconds": 90,
+          "contractVersion": "v1.3+v2.1-credit+decision-loop(task01+task02)",
+          "creditPolicy": {
+            "capCnyMinor": 1000000000,
+            "matrixVersion": null,
+            "concentrationPolicyVersion": null,
+            "coolingSeconds": null
+          },
+          "uptime": 2.5824207
+        },
+        "edgeOk": false,
+        "dbCheck": {
+          "name": "db",
+          "ok": false,
+          "detail": "ECONNREFUSED",
+          "latencyMs": 1
+        }
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:35.228Z"
+    },
+    {
+      "id": "T2-006",
+      "name": "PG重启→A自动重连、Edge恢复、客户数据保留",
+      "status": "PASS",
+      "evidence": {
+        "pgUp": true,
+        "edgeUp": true,
+        "aDbCustomers": 1,
+        "diff": {}
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:55.281Z"
+    },
+    {
+      "id": "T3-001",
+      "name": "Edge端口被占：exit 24 拒绝启动、不抢端口",
+      "status": "PASS",
+      "evidence": {
+        "exitCode": 24,
+        "message": "[edge-start] 端口 48555 已被占用。按边界不抢占、不停未知服务。请换端口：--port <其他端口>（exit 24）"
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:55.592Z"
+    },
+    {
+      "id": "T3-002",
+      "name": "Edge双开保护：exit 23 拒绝（同run-dir已在运行）",
+      "status": "PASS",
+      "evidence": {
+        "exitCode": 23,
+        "message": "[edge-start] jw-edge 已在运行 pid=28740 port=48514，拒绝双开（exit 23）"
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:55.667Z"
+    },
+    {
+      "id": "T3-003",
+      "name": "A端口被占：非零退出（EADDRINUSE fatal），不杀占用者",
+      "status": "PASS",
+      "evidence": {
+        "exitCode": 1,
+        "stderrTail": ".setupListenHandle [as _listen2] (node:net:1941:16)\n    at listenInCluster (node:net:1998:12)\n    at node:net:2207:7\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {\n  code: 'EADDRINUSE',\n  errno: -4091,\n  syscall: 'listen',\n  address: '127.0.0.1',\n  port: 48555\n}"
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:55.935Z"
+    },
+    {
+      "id": "T3-004",
+      "name": "Connectors端口被占：拒绝退出且占用者存活",
+      "status": "PASS",
+      "evidence": {
+        "exitCode": 1,
+        "stderrTail": "9:21)\r\nEmitted 'error' event on Server instance at:\r\n    at emitErrorNT (node:net:1977:8)\r\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {\r\n  code: 'EADDRINUSE',\r\n  errno: -4091,\r\n  syscall: 'listen',\r\n  address: '127.0.0.1',\r\n  port: 48555\r\n}\r\n\r\nNode.js v22.23.1",
+        "occupierAlive": true,
+        "portStillUp": true
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:56.169Z"
+    },
+    {
+      "id": "T3-005",
+      "name": "占用者全程存活（三个入口都没有杀占用者）",
+      "status": "PASS",
+      "evidence": {
+        "occupierPid": 27420,
+        "alive": true
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:56.170Z"
+    },
+    {
+      "id": "T4-001",
+      "name": "Connectors缺运行配置：exit 2 可解释、不泄密",
+      "status": "PASS",
+      "evidence": {
+        "exitCode": 2,
+        "stderr": "[connectors] 缺少运行配置 C:\\Users\\22673\\Desktop\\JW\\docs\\v0.3\\backend-qa-r2\\results\\deploy-recovery\\run\\nonexistent-config.json。复制 config/connectors.config.example.json 到 .run/config.json 并填入本地值。\n[connectors] 真实企业微信/TRTC 未授权前保持 BLOCKED；本地链路（PG/对象存储/A 登记）可运行。",
+        "secretScan": {
+          "leaked": false,
+          "hits": {}
+        }
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:56.649Z"
+    },
+    {
+      "id": "T4-002",
+      "name": "Connectors缺signingSecret：exit 2 可解释、不泄密",
+      "status": "PASS",
+      "evidence": {
+        "exitCode": 2,
+        "stderr": "[connectors] signingSecret/serviceToken 必填（.run/config.json）",
+        "secretScan": {
+          "leaked": false,
+          "hits": {}
+        }
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:56.817Z"
+    },
+    {
+      "id": "T4-003",
+      "name": "A依赖不可达（PG 15599无监听）：非零退出可定位（ECONNREFUSED），输出不泄漏密码",
+      "status": "PASS",
+      "evidence": {
+        "exitCode": 1,
+        "outputTail": "ternal/process/task_queues:103:5)\n    at async migrate (file:///C:/Users/22673/Desktop/JW/Back/A/src/db/db.ts:10:18)\n    at async main (file:///C:/Users/22673/Desktop/JW/Back/A/src/index.ts:17:60) {\n  errno: -4078,\n  code: 'ECONNREFUSED',\n  syscall: 'connect',\n  address: '127.0.0.1',\n  port: 15599\n}",
+        "secretScan": {
+          "leaked": false,
+          "hits": {}
+        }
+      },
+      "notes": "",
+      "at": "2026-09-20T19:14:57.039Z"
+    },
+    {
+      "id": "T4-004",
+      "name": "Edge --auth-file 缺失：生产入口行为如实记录（启动拒绝或失败关闭均接受；不得泄密）",
+      "status": "PASS",
+      "evidence": {
+        "exitCode": 2,
+        "outputTail": "[edge-start] 守护进程未在 15s 内就绪。日志尾部：\n[edge] 启动失败: ENOENT: no such file or directory, open 'C:\\Users\\22673\\Desktop\\JW\\docs\\v0.3\\backend-qa-r2\\results\\deploy-recovery\\run\\nonexistent-auth.json'",
+        "secretScan": {
+          "leaked": false,
+          "hits": {}
+        }
+      },
+      "notes": "实际行为：启动期即失败（exit≠0）",
+      "at": "2026-09-20T19:15:12.296Z"
+    },
+    {
+      "id": "T4-005",
+      "name": "负面用例secret泄漏扫描汇总",
+      "status": "PASS",
+      "evidence": {
+        "scanned": [
+          "T4-001",
+          "T4-002",
+          "T4-003",
+          "T4-004"
+        ],
+        "policy": "合成密钥不得出现在任何失败输出；扫描needle见 run/synthetic-secrets.json"
+      },
+      "notes": "",
+      "at": "2026-09-20T19:15:12.296Z"
+    },
+    {
+      "id": "T7-001",
+      "name": "受控停止：edge-stop脚本exit0；A/Connectors标识复核后树杀",
+      "status": "PASS",
+      "evidence": {
+        "edgeStopCode": 0,
+        "edgePortClosed": true,
+        "aStop": {
+          "ok": true,
+          "killCode": 0,
+          "gone": true,
+          "why": null
+        },
+        "cStop": {
+          "ok": true,
+          "killCode": 0,
+          "gone": true,
+          "why": null
+        }
+      },
+      "notes": "",
+      "at": "2026-09-20T19:15:15.637Z"
+    },
+    {
+      "id": "T6-001",
+      "name": "已有库恢复（--no-migrate）：无迁移执行、无播种、表级零漂移",
+      "status": "PASS",
+      "evidence": {
+        "aNoMigrateLog": true,
+        "aSchemaMigrations": 14,
+        "cSchemaMigrations": 0,
+        "aDbDiff": {},
+        "connDbDiff": {}
+      },
+      "notes": "",
+      "at": "2026-09-20T19:15:36.149Z"
+    },
+    {
+      "id": "T6-002",
+      "name": "重启后原数据/消息/回执保留（A客户可读、Edge消息线程在、回执数不变）",
+      "status": "PASS",
+      "evidence": {
+        "customerGet": 200,
+        "edgeSqliteAfter": {
+          "messages": 1,
+          "message_receipts": 1,
+          "thread_state": 0
+        },
+        "edgeDiff": {},
+        "messagesApiStatus": 200,
+        "messagesBody": {
+          "ok": true,
+          "customerId": "cust-mua739f6-feab30a916dd",
+          "audience": "all",
+          "messages": [],
+          "cursor": "0"
+        }
+      },
+      "notes": "",
+      "at": "2026-09-20T19:15:36.171Z"
+    },
+    {
+      "id": "T6-003",
+      "name": "恢复总耗时（全停→三服务+Edge ready，一次）",
+      "status": "PASS",
+      "evidence": {
+        "recoveryTotalMs": 1920,
+        "aUp": true,
+        "cUp": true,
+        "edgeStartExit": 0,
+        "edgeReady": true
+      },
+      "notes": "",
+      "at": "2026-09-20T19:15:36.172Z"
+    },
+    {
+      "id": "T6-004",
+      "name": "默认入口对已迁移库幂等：不重复应用迁移（applied为空、簿记数不变）",
+      "status": "PASS",
+      "evidence": {
+        "up": true,
+        "migrateAppliedLine": null,
+        "schemaMigrations": 14,
+        "beforeCount": 14
+      },
+      "notes": "（无新迁移→不打印 applied 行，即幂等表现）",
+      "at": "2026-09-20T19:15:37.768Z"
+    },
+    {
+      "id": "T7-002",
+      "name": "退出后无本包遗留：三进程端口关闭、容器已删（登记资源清单内）",
+      "status": "PASS",
+      "evidence": {
+        "edgeStopCode": 0,
+        "connectorsStop": {
+          "ok": true,
+          "killCode": 0,
+          "gone": true,
+          "why": null
+        },
+        "portsClosed": {
+          "15502": true,
+          "48414": true,
+          "48480": true,
+          "48514": true,
+          "48555": true
+        },
+        "myContainers": ""
+      },
+      "notes": "",
+      "at": "2026-09-20T19:15:40.951Z"
+    },
+    {
+      "id": "T7-003",
+      "name": "共享资源零碰对比（前后 netstat/docker 快照留档）",
+      "status": "PASS",
+      "evidence": {
+        "pre": "run/pre-netstat.txt, run/pre-docker-ps.txt",
+        "post": "run/post-netstat.txt, run/post-docker-ps.txt"
+      },
+      "notes": "共享栈（takeoff 15446/48114/48194/48214、zloop 48324、其他QA包容器）全程未触碰",
+      "at": "2026-09-20T19:15:41.525Z"
+    },
+    {
+      "id": "ENV-003",
+      "name": "输入源码前后SHA256一致（执行期间零改动）",
+      "status": "PASS",
+      "evidence": {
+        "changed": [],
+        "note": ""
+      },
+      "notes": "",
+      "at": "2026-09-20T19:15:41.531Z"
+    }
+  ]
+}

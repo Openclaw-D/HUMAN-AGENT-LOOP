@@ -1,4 +1,4 @@
-// 来自已批准的 Materials/kashgar-demo-v1/case-index.json；这些是合成案例设定，不是模型结论。
+// 来自已批准的 docs/materials/kashgar-demo-v1/case-index.json；这些是合成案例设定，不是模型结论。
 // customerId 必须来自当前已授权的真实服务目录，禁止在这里预造运行身份。
 export const DEMO_CASES = [
   { name: '喀什示例塑料制品有限公司', industry: '塑料制品', scenario: '好', description: '经营较好', amount: '1,000 万元' },

@@ -1,4 +1,0 @@
-DIR_NOT_PRESENT  __missing__/A
-DIR_NOT_PRESENT  __missing__/B
-DIR_NOT_PRESENT  __missing__/C
-NOT_PRESENT  __missing__/CONTRACT.md

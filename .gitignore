@@ -27,16 +27,16 @@
 **/*.pem
 **/*.key
 .local/
-Achieve/Migration/Local-Test-State/
+docs/archive/Achieve/Migration/Local-Test-State/
 # Historical source files, including historical runtime test scripts, are intentional snapshots.
-!Achieve/Anthropic/**/
-!Achieve/Anthropic/**/*
+!docs/archive/Achieve/Anthropic/**/
+!docs/archive/Achieve/Anthropic/**/*
 # Never allow credentials or dependencies even inside historical snapshots.
-Achieve/**/node_modules/
-Achieve/**/.env
-Achieve/**/.env.local
-Achieve/**/*.pem
-Achieve/**/*.key
+docs/archive/Achieve/**/node_modules/
+docs/archive/Achieve/**/.env
+docs/archive/Achieve/**/.env.local
+docs/archive/Achieve/**/*.pem
+docs/archive/Achieve/**/*.key
 # Explicit user deliverable: ready-to-view frontend build.
 !Front/dist/
 !Front/dist/**
@@ -66,3 +66,19 @@ docs/takeoff/first-admission-v1/implementation/02/retired-backup/
 docs/takeoff/first-admission-v1/implementation/02/evidence/
 docs/takeoff/first-admission-v1/implementation/04/evidence/
 docs/takeoff/first-admission-v1/implementation/03/evidence-*-final.txt
+
+# Local-only release captures and identity maps.
+.codex-remote-attachments/
+docs/**/run/
+docs/**/logs/
+docs/**/evidence/
+docs/**/mapping.json
+docs/**/inputs-manifest.json
+docs/**/state.json
+docs/**/audit-run.log
+docs/**/run-log.jsonl
+
+# V0.3: raw logs remain local; release summaries carry validation results.
+docs/**/*.log
+docs/**/perf/results-*.json
+docs/**/RESOURCES.json

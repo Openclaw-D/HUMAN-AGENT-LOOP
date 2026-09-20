@@ -1,9 +1,0 @@
-{
-  "phase": "prepare-browser",
-  "baseUrl": "http://localhost:4311",
-  "runtimeEpoch": "DEMO-EPOCH-0009",
-  "contextVersion": "CTX-0003",
-  "policyRunStatus": "ready_for_gate",
-  "policyEvidenceReceiptId": "DEMO-EPOCH-0009-RCP-0007",
-  "policyGateStatus": "not_recorded"
-}

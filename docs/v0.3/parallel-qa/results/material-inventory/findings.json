@@ -1,0 +1,130 @@
+{
+  "findings": [
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-TEXTILE-200/customer-profile.json",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-TEXTILE-200/DEMO_EXPECTATIONS.md",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-TEXTILE-200/material-manifest.json",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-TEXTILE-200/supplements/S01-补件答复.md",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-TEXTILE-200/workbook-data.json",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-TEXTILE-200/原始材料阅读册.pdf",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-TEXTILE-200/经营台账.xlsx",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-LASER-500/customer-profile.json",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-LASER-500/DEMO_EXPECTATIONS.md",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-LASER-500/material-manifest.json",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-LASER-500/supplements/S01-补件答复.md",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-LASER-500/workbook-data.json",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-LASER-500/原始材料阅读册.pdf",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-LASER-500/经营台账.xlsx",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-INJECTION-1000/customer-profile.json",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-INJECTION-1000/DEMO_EXPECTATIONS.md",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-INJECTION-1000/material-manifest.json",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-INJECTION-1000/supplements/S01-补件答复.md",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-INJECTION-1000/workbook-data.json",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-INJECTION-1000/原始材料阅读册.pdf",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    },
+    {
+      "severity": "observation",
+      "code": "NOT_IN_MANIFEST",
+      "file": "KS-INJECTION-1000/经营台账.xlsx",
+      "detail": "存在于案例目录但未被manifest收录（不计入候选清单）"
+    }
+  ]
+}

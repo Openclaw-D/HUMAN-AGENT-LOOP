@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 const EDGE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BACK_ROOT = path.resolve(EDGE_ROOT, '..');
 const REPO_ROOT = path.resolve(BACK_ROOT, '..');
-const MATERIALS = path.join(REPO_ROOT, 'Materials', 'kashgar-demo-v1');
+const MATERIALS = path.join(REPO_ROOT, 'docs', 'materials', 'kashgar-demo-v1');
 const ZLOOP_DIR = path.join(EDGE_ROOT, '.run', 'zloop');
 const B_CONFIG = path.join(BACK_ROOT, 'B', 'config', 'b-config.json');
 const TAKEOFF_RUNTIME = path.join(EDGE_ROOT, 'config', 'takeoff-runtime.json');

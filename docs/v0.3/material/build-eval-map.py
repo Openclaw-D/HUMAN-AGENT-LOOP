@@ -3,7 +3,7 @@ from pathlib import Path
 import json,csv,hashlib,io
 
 REPO=Path(__file__).resolve().parents[3]
-BASE=REPO/'Materials/kashgar-demo-v1'
+BASE=REPO/'docs/materials/kashgar-demo-v1'
 OUT=Path(__file__).resolve().parent
 FIX=BASE/'eval-v03'
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -28,7 +28,7 @@ index=json.loads((BASE/'case-index.json').read_text(encoding='utf-8'))
 original_meta={}
 for customer in index['cases']:
  for m in json.loads((BASE/customer['id']/'material-manifest.json').read_text(encoding='utf-8'))['materials']:
-  original_meta['Materials/kashgar-demo-v1/'+m['file']]=m
+  original_meta['docs/materials/kashgar-demo-v1/'+m['file']]=m
 cases=[];scenarios=[];files={};answers=[]
 def register(p,role):
  key=rel(p)

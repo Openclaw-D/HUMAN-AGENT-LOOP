@@ -1,6 +1,0 @@
-PASS 重复提交幂等（同 requestId 不重复创建）: id=tav7w6d3
-PASS 非法圈选拒绝（400 INVALID_INPUT）: bad1=400 bad2=400
-PASS 模型/回复非法 kind 拒绝（400）: status=400
-PASS 旧版本写入被拒且状态不回退: stale=409 annotations=1
-PASS 会话归属服务端决定（伪造 projectId 不生效）: projectId=JW-2026-018
-{"action":"phase1","total":5,"failed":0}

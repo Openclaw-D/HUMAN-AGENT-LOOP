@@ -1,0 +1,739 @@
+{
+  "meta": {
+    "task": "V0.3-Z2 解析器独立验收",
+    "generatedAt": "2026-09-20T16:39:09.794Z",
+    "node": "v22.23.1",
+    "ASYNC_PARSE_VERSION": "parse-adapters@2.1:pdfjs-6.3.289-v1",
+    "pdfEntry": "parseArtifactBytesAsync (pdfjs-dist worker; 生产入口 Back/Connectors/src/processing/coordinator.mjs:844)"
+  },
+  "inputChecks": [
+    {
+      "file": "KS-TEXTILE-200/originals/银行流水.csv",
+      "actual": "063d70a821ba07b739ba66e09a92ddb70e45219d7cdde89467cbcf7d4535e581",
+      "frozen": "063d70a821ba07b739ba66e09a92ddb70e45219d7cdde89467cbcf7d4535e581",
+      "match": true
+    },
+    {
+      "file": "KS-TEXTILE-200/经营台账.xlsx",
+      "actual": "16583064d8b4589408305f70e84101f7b344c58456eb0a0b7d5c47155219be29",
+      "frozen": "16583064d8b4589408305f70e84101f7b344c58456eb0a0b7d5c47155219be29",
+      "match": true
+    },
+    {
+      "file": "KS-TEXTILE-200/originals/D02-主体登记资料.pdf",
+      "actual": "783b07fb4aeb85be2b92c7c1eff9d3754b1bdd4212ac84be9e77bdb47698a728",
+      "frozen": "783b07fb4aeb85be2b92c7c1eff9d3754b1bdd4212ac84be9e77bdb47698a728",
+      "match": true
+    },
+    {
+      "file": "KS-TEXTILE-200/originals/D02-主体登记资料.md",
+      "actual": "00d5abf88fda4ed75edc6c45673a6b1ee356b3278ff047bdece6a49b352ecce9",
+      "frozen": "00d5abf88fda4ed75edc6c45673a6b1ee356b3278ff047bdece6a49b352ecce9",
+      "match": true
+    },
+    {
+      "file": "KS-LASER-500/originals/D02-主体登记资料.pdf",
+      "actual": "8eb9eafea3e9d64cded58c8f970013970d1454e9902a350746205af71c4c2f91",
+      "frozen": "8eb9eafea3e9d64cded58c8f970013970d1454e9902a350746205af71c4c2f91",
+      "match": true
+    },
+    {
+      "file": "KS-LASER-500/originals/D02-主体登记资料.md",
+      "actual": "2720aaf52312922051efad13d842e57cc5dae88f4dbc16f82b5021643b0b1610",
+      "frozen": "2720aaf52312922051efad13d842e57cc5dae88f4dbc16f82b5021643b0b1610",
+      "match": true
+    },
+    {
+      "file": "KS-INJECTION-1000/originals/D02-主体登记资料.pdf",
+      "actual": "57c9d1cdf6688250e4728778ac1c7ec3a85ef7bd07340daab3521ecbf0f09eb5",
+      "frozen": "57c9d1cdf6688250e4728778ac1c7ec3a85ef7bd07340daab3521ecbf0f09eb5",
+      "match": true
+    },
+    {
+      "file": "KS-INJECTION-1000/originals/D02-主体登记资料.md",
+      "actual": "786f184f728f591a3ea70f864c60ef297835f93a97e0acd3a778d207004cab47",
+      "frozen": "786f184f728f591a3ea70f864c60ef297835f93a97e0acd3a778d207004cab47",
+      "match": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "HASH-INPUTS-FROZEN",
+      "status": "PASS",
+      "checks": [
+        {
+          "label": "8 项输入与 SHA256SUMS.txt 一致（不符=）",
+          "pass": true
+        },
+        {
+          "label": "冻结清单读取完整（205 条）",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "inputChecks": [
+          {
+            "file": "KS-TEXTILE-200/originals/银行流水.csv",
+            "actual": "063d70a821ba07b739ba66e09a92ddb70e45219d7cdde89467cbcf7d4535e581",
+            "frozen": "063d70a821ba07b739ba66e09a92ddb70e45219d7cdde89467cbcf7d4535e581",
+            "match": true
+          },
+          {
+            "file": "KS-TEXTILE-200/经营台账.xlsx",
+            "actual": "16583064d8b4589408305f70e84101f7b344c58456eb0a0b7d5c47155219be29",
+            "frozen": "16583064d8b4589408305f70e84101f7b344c58456eb0a0b7d5c47155219be29",
+            "match": true
+          },
+          {
+            "file": "KS-TEXTILE-200/originals/D02-主体登记资料.pdf",
+            "actual": "783b07fb4aeb85be2b92c7c1eff9d3754b1bdd4212ac84be9e77bdb47698a728",
+            "frozen": "783b07fb4aeb85be2b92c7c1eff9d3754b1bdd4212ac84be9e77bdb47698a728",
+            "match": true
+          },
+          {
+            "file": "KS-TEXTILE-200/originals/D02-主体登记资料.md",
+            "actual": "00d5abf88fda4ed75edc6c45673a6b1ee356b3278ff047bdece6a49b352ecce9",
+            "frozen": "00d5abf88fda4ed75edc6c45673a6b1ee356b3278ff047bdece6a49b352ecce9",
+            "match": true
+          },
+          {
+            "file": "KS-LASER-500/originals/D02-主体登记资料.pdf",
+            "actual": "8eb9eafea3e9d64cded58c8f970013970d1454e9902a350746205af71c4c2f91",
+            "frozen": "8eb9eafea3e9d64cded58c8f970013970d1454e9902a350746205af71c4c2f91",
+            "match": true
+          },
+          {
+            "file": "KS-LASER-500/originals/D02-主体登记资料.md",
+            "actual": "2720aaf52312922051efad13d842e57cc5dae88f4dbc16f82b5021643b0b1610",
+            "frozen": "2720aaf52312922051efad13d842e57cc5dae88f4dbc16f82b5021643b0b1610",
+            "match": true
+          },
+          {
+            "file": "KS-INJECTION-1000/originals/D02-主体登记资料.pdf",
+            "actual": "57c9d1cdf6688250e4728778ac1c7ec3a85ef7bd07340daab3521ecbf0f09eb5",
+            "frozen": "57c9d1cdf6688250e4728778ac1c7ec3a85ef7bd07340daab3521ecbf0f09eb5",
+            "match": true
+          },
+          {
+            "file": "KS-INJECTION-1000/originals/D02-主体登记资料.md",
+            "actual": "786f184f728f591a3ea70f864c60ef297835f93a97e0acd3a778d207004cab47",
+            "frozen": "786f184f728f591a3ea70f864c60ef297835f93a97e0acd3a778d207004cab47",
+            "match": true
+          }
+        ]
+      },
+      "ms": 0
+    },
+    {
+      "id": "CSV-REAL-TEXTILE",
+      "status": "PASS",
+      "checks": [
+        {
+          "label": "独立求和数据行=484（实际 484）",
+          "pass": true
+        },
+        {
+          "label": "独立求和入账=77343360（实际 77343360）",
+          "pass": true
+        },
+        {
+          "label": "独立求和出账=74065856（实际 74065856）",
+          "pass": true
+        },
+        {
+          "label": "解析 ok=true（实际 ok=true code= detail=）",
+          "pass": true
+        },
+        {
+          "label": "format=bank_statement_csv（实际 bank_statement_csv）",
+          "pass": true
+        },
+        {
+          "label": "rowCount=484（实际 484）",
+          "pass": true
+        },
+        {
+          "label": "inflowTotal=77343360（实际 77343360）",
+          "pass": true
+        },
+        {
+          "label": "outflowTotal=74065856（实际 74065856）",
+          "pass": true
+        },
+        {
+          "label": "periodStart 与独立求和一致=2023-01-12（实际 2023-01-12）",
+          "pass": true
+        },
+        {
+          "label": "periodEnd 与独立求和一致=2026-08-25（实际 2026-08-25）",
+          "pass": true
+        },
+        {
+          "label": "产出 bank_inflow_total=77343360 source_supported（实际 77343360/source_supported）",
+          "pass": true
+        },
+        {
+          "label": "产出 bank_outflow_total=74065856 source_supported（实际 74065856/source_supported）",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "aggregates": {
+          "rowCount": 484,
+          "badRowCount": 0,
+          "totalsExcluded": 0,
+          "periodStart": "2023-01-12",
+          "periodEnd": "2026-08-25",
+          "monthCount": 44,
+          "inflowTotal": 77343360,
+          "outflowTotal": 74065856
+        },
+        "format": "bank_statement_csv",
+        "parserVersion": "parse-adapters@2.1:bank-statement@1",
+        "parseId": "prs-ea7e5cb3c66d3218",
+        "independent": {
+          "rows": 484,
+          "inflow": 77343360,
+          "outflow": 74065856,
+          "periodStart": "2023-01-12",
+          "periodEnd": "2026-08-25",
+          "totalRows": []
+        },
+        "factCount": 2
+      },
+      "ms": 8
+    },
+    {
+      "id": "CSV-REAL-TOTALS-HONESTY",
+      "status": "PASS",
+      "checks": [
+        {
+          "label": "真件无合计行（独立核验 totalRows=[]）",
+          "pass": true
+        },
+        {
+          "label": "真件行数=表头1+数据484（485 行，无其他行）",
+          "pass": true
+        },
+        {
+          "label": "解析器如实报 totalsExcluded=0（实际 0）",
+          "pass": true
+        },
+        {
+          "label": "无坏行 badRowCount=0（实际 0）",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "realFileTotalRows": [],
+        "totalsExcluded": 0,
+        "note": "Z1 报告预期\"合计行剔除≥1\"与实物不符：真件没有合计行；剔除机制见 CSV-SYN-TOTALS-EXCLUDED"
+      },
+      "ms": 5
+    },
+    {
+      "id": "CSV-SYN-TOTALS-EXCLUDED",
+      "status": "PASS",
+      "checks": [
+        {
+          "label": "独立求和：合计行1被剔除、数据2行（实际 2/1）",
+          "pass": true
+        },
+        {
+          "label": "独立求和剔除合计后 1500000/200000（实际 1500000/200000）",
+          "pass": true
+        },
+        {
+          "label": "解析为 bank_statement_csv（实际 bank_statement_csv）",
+          "pass": true
+        },
+        {
+          "label": "rowCount=2（实际 2）",
+          "pass": true
+        },
+        {
+          "label": "inflowTotal=1500000（实际 1500000；与独立求和相等=合计行未重复计入）",
+          "pass": true
+        },
+        {
+          "label": "outflowTotal=200000（实际 200000；9999999 未混入）",
+          "pass": true
+        },
+        {
+          "label": "totalsExcluded=1（实际 1）",
+          "pass": true
+        },
+        {
+          "label": "留旗标 total_rows_excluded（实际 [{\"flag\":\"total_rows_excluded\",\"detail\":\"1 行合计/小计已剔除（不重复计入聚合）\"}]）",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "aggregates": {
+          "rowCount": 2,
+          "badRowCount": 0,
+          "totalsExcluded": 1,
+          "periodStart": "2026-01-05",
+          "periodEnd": "2026-01-06",
+          "monthCount": 1,
+          "inflowTotal": 1500000,
+          "outflowTotal": 200000
+        },
+        "flags": [
+          {
+            "flag": "total_rows_excluded",
+            "detail": "1 行合计/小计已剔除（不重复计入聚合）"
+          }
+        ]
+      },
+      "ms": 1
+    },
+    {
+      "id": "XLSX-REAL-LEDGER",
+      "status": "PASS",
+      "checks": [
+        {
+          "label": "独立解包成功",
+          "pass": true
+        },
+        {
+          "label": "工作表共11个（order=11, files=11）",
+          "pass": true
+        },
+        {
+          "label": "工作簿顺序首表=年度报表（实际 年度报表 → /xl/worksheets/sheet1.xml）",
+          "pass": true
+        },
+        {
+          "label": "独立读取首表文件 xl/worksheets/sheet1.xml",
+          "pass": true
+        },
+        {
+          "label": "独立核验首表含\"期间\"",
+          "pass": true
+        },
+        {
+          "label": "独立核验首表含 21834032",
+          "pass": true
+        },
+        {
+          "label": "解析 ok=true（实际 ok=true code= detail=）",
+          "pass": true
+        },
+        {
+          "label": "format=table_xlsx 为 xlsx 族",
+          "pass": true
+        },
+        {
+          "label": "提取文本含\"期间\"",
+          "pass": true
+        },
+        {
+          "label": "提取文本含 21834032",
+          "pass": true
+        },
+        {
+          "label": "提取文本与独立读取的首表逐行一致（parser 8 行 vs 独立 8 行）",
+          "pass": true
+        },
+        {
+          "label": "第2表（月度财务）独有值未泄漏到首表提取文本",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "format": "table_xlsx",
+        "parserVersion": "parse-adapters@2.1:table-xlsx@1",
+        "parseId": "prs-538dec72d7540708",
+        "sheetOrder": [
+          "年度报表",
+          "月度财务",
+          "银行流水",
+          "销售开票回款",
+          "采购进项付款",
+          "生产用电",
+          "税务台账",
+          "人员工资",
+          "设备清单",
+          "应收明细",
+          "债务计划"
+        ],
+        "firstSheetFile": "xl/worksheets/sheet1.xml",
+        "textLines": 8,
+        "secondSheetUniqueToken": "喀什示例棉纺有限公司 · 月度财务"
+      },
+      "ms": 6
+    },
+    {
+      "id": "XLSX-SYN-FORMULA-NOCACHE",
+      "status": "PASS",
+      "checks": [
+        {
+          "label": "前缀件首行提取 [\"期间\",\"21834032\"]",
+          "pass": true
+        },
+        {
+          "label": "公式缺缓存行=第2行（实际 [2]）",
+          "pass": true
+        },
+        {
+          "label": "第2行无数值被编造（空行）",
+          "pass": true
+        },
+        {
+          "label": "解析 ok=true（实际 ok=true code= detail=）",
+          "pass": true
+        },
+        {
+          "label": "异常如实留痕（{\"note\":\"XLSX 表格已结构化提取（首个工作表）；未识别出业务表头，不产生事实候选（转人工可读）\",\"problems\":[{\"line\":\"2\",\"detail\":\"公式缺缓存值：相关单元格数值未知（已标注，不推断）\"}]}）",
+          "pass": true
+        },
+        {
+          "label": "前缀件与默认命名空间件对同一数据行提取一致",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "formulaRows": [
+          2
+        ],
+        "format": "table_xlsx",
+        "note": "XLSX 表格已结构化提取（首个工作表）；未识别出业务表头，不产生事实候选（转人工可读）",
+        "problems": [
+          {
+            "line": "2",
+            "detail": "公式缺缓存值：相关单元格数值未知（已标注，不推断）"
+          }
+        ]
+      },
+      "ms": 2
+    },
+    {
+      "id": "XLSX-SYN-UNTRUSTED-NS",
+      "status": "PASS",
+      "checks": [
+        {
+          "label": "诚实失败 ok=false（实际 ok=false format=xlsx）",
+          "pass": true
+        },
+        {
+          "label": "转人工 manualEntry=true",
+          "pass": true
+        },
+        {
+          "label": "失败语义清晰（code=PARSE_FAILED detail=XLSX 结构无效：工作表内容不是可读 XML）",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "ok": false,
+        "code": "PARSE_FAILED",
+        "detail": "XLSX 结构无效：工作表内容不是可读 XML"
+      },
+      "ms": 0
+    },
+    {
+      "id": "PDF-REAL-KS-TEXTILE-200",
+      "status": "PASS",
+      "checks": [
+        {
+          "label": "解析 ok=true（实际 ok=true code= detail=）",
+          "pass": true
+        },
+        {
+          "label": "format=keyvalue_pdf（实际 keyvalue_pdf）",
+          "pass": true
+        },
+        {
+          "label": "parserVersion=parse-adapters@2.1:pdfjs-6.3.289-v1（实际 parse-adapters@2.1:pdfjs-6.3.289-v1）",
+          "pass": true
+        },
+        {
+          "label": "artifactHash=原件SHA-256（783b07fb4aeb…）",
+          "pass": true
+        },
+        {
+          "label": "md 字段 legal_name=喀什示例棉纺有限公司 出现在提取文本",
+          "pass": true
+        },
+        {
+          "label": "md 字段 uniform_social_credit_code=SYNTHETIC-KS-TEXTILE-200 出现在提取文本",
+          "pass": true
+        },
+        {
+          "label": "设立日期 2020-03-16 出现在提取文本",
+          "pass": true
+        },
+        {
+          "label": "页数≥1（实际 1）",
+          "pass": true
+        },
+        {
+          "label": "逐页文本拼回=全文（提取位置可追溯）",
+          "pass": true
+        },
+        {
+          "label": "legal_name 所在页定位成功（第 1 页）",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "ok": true,
+        "format": "keyvalue_pdf",
+        "artifactHash": "783b07fb4aeb85be2b92c7c1eff9d3754b1bdd4212ac84be9e77bdb47698a728",
+        "pages": 1,
+        "legalName": "喀什示例棉纺有限公司",
+        "legalNamePage": 1,
+        "parserVersion": "parse-adapters@2.1:pdfjs-6.3.289-v1",
+        "parseId": "prs-95628d87460a01b1",
+        "textChars": 298,
+        "kvChecked": [
+          "legal_name",
+          "uniform_social_credit_code"
+        ]
+      },
+      "ms": 273
+    },
+    {
+      "id": "PDF-REAL-KS-LASER-500",
+      "status": "PASS",
+      "checks": [
+        {
+          "label": "解析 ok=true（实际 ok=true code= detail=）",
+          "pass": true
+        },
+        {
+          "label": "format=keyvalue_pdf（实际 keyvalue_pdf）",
+          "pass": true
+        },
+        {
+          "label": "parserVersion=parse-adapters@2.1:pdfjs-6.3.289-v1（实际 parse-adapters@2.1:pdfjs-6.3.289-v1）",
+          "pass": true
+        },
+        {
+          "label": "artifactHash=原件SHA-256（8eb9eafea3e9…）",
+          "pass": true
+        },
+        {
+          "label": "md 字段 legal_name=喀什示例金属加工有限公司 出现在提取文本",
+          "pass": true
+        },
+        {
+          "label": "md 字段 uniform_social_credit_code=SYNTHETIC-KS-LASER-500 出现在提取文本",
+          "pass": true
+        },
+        {
+          "label": "设立日期 2020-03-16 出现在提取文本",
+          "pass": true
+        },
+        {
+          "label": "页数≥1（实际 1）",
+          "pass": true
+        },
+        {
+          "label": "逐页文本拼回=全文（提取位置可追溯）",
+          "pass": true
+        },
+        {
+          "label": "legal_name 所在页定位成功（第 1 页）",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "ok": true,
+        "format": "keyvalue_pdf",
+        "artifactHash": "8eb9eafea3e9d64cded58c8f970013970d1454e9902a350746205af71c4c2f91",
+        "pages": 1,
+        "legalName": "喀什示例金属加工有限公司",
+        "legalNamePage": 1,
+        "parserVersion": "parse-adapters@2.1:pdfjs-6.3.289-v1",
+        "parseId": "prs-3f09eaf2c3644939",
+        "textChars": 298,
+        "kvChecked": [
+          "legal_name",
+          "uniform_social_credit_code"
+        ]
+      },
+      "ms": 233
+    },
+    {
+      "id": "PDF-REAL-KS-INJECTION-1000",
+      "status": "PASS",
+      "checks": [
+        {
+          "label": "解析 ok=true（实际 ok=true code= detail=）",
+          "pass": true
+        },
+        {
+          "label": "format=keyvalue_pdf（实际 keyvalue_pdf）",
+          "pass": true
+        },
+        {
+          "label": "parserVersion=parse-adapters@2.1:pdfjs-6.3.289-v1（实际 parse-adapters@2.1:pdfjs-6.3.289-v1）",
+          "pass": true
+        },
+        {
+          "label": "artifactHash=原件SHA-256（57c9d1cdf668…）",
+          "pass": true
+        },
+        {
+          "label": "md 字段 legal_name=喀什示例塑料制品有限公司 出现在提取文本",
+          "pass": true
+        },
+        {
+          "label": "md 字段 uniform_social_credit_code=SYNTHETIC-KS-INJECTION-1000 出现在提取文本",
+          "pass": true
+        },
+        {
+          "label": "设立日期 2020-03-16 出现在提取文本",
+          "pass": true
+        },
+        {
+          "label": "页数≥1（实际 1）",
+          "pass": true
+        },
+        {
+          "label": "逐页文本拼回=全文（提取位置可追溯）",
+          "pass": true
+        },
+        {
+          "label": "legal_name 所在页定位成功（第 1 页）",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "ok": true,
+        "format": "keyvalue_pdf",
+        "artifactHash": "57c9d1cdf6688250e4728778ac1c7ec3a85ef7bd07340daab3521ecbf0f09eb5",
+        "pages": 1,
+        "legalName": "喀什示例塑料制品有限公司",
+        "legalNamePage": 1,
+        "parserVersion": "parse-adapters@2.1:pdfjs-6.3.289-v1",
+        "parseId": "prs-e2fe018b301611da",
+        "textChars": 307,
+        "kvChecked": [
+          "legal_name",
+          "uniform_social_credit_code"
+        ]
+      },
+      "ms": 370
+    },
+    {
+      "id": "PDF-ANOM-SCANNED",
+      "status": "PASS",
+      "checks": [
+        {
+          "label": "扫描件不产正文 ok=false（实际 ok=false）",
+          "pass": true
+        },
+        {
+          "label": "code=FORMAT_UNSUPPORTED（实际 FORMAT_UNSUPPORTED）",
+          "pass": true
+        },
+        {
+          "label": "转人工 manualEntry=true",
+          "pass": true
+        },
+        {
+          "label": "无任何伪正文",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "code": "FORMAT_UNSUPPORTED",
+        "detail": "PDF无可提取文本层；未执行OCR，请人工录入"
+      },
+      "ms": 193
+    },
+    {
+      "id": "PDF-ANOM-ENCRYPTED",
+      "status": "PASS",
+      "checks": [
+        {
+          "label": "加密件不产正文 ok=false（实际 ok=false code=PARSE_FAILED detail=PDF_ENCRYPTED: 无法可靠读取PDF，请人工核验）",
+          "pass": true
+        },
+        {
+          "label": "转人工 manualEntry=true",
+          "pass": true
+        },
+        {
+          "label": "解密内容未泄漏（无伪正文）",
+          "pass": true
+        },
+        {
+          "label": "同步路径同样诚实拒绝（ok=false code=PARSE_FAILED）",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "asyncCode": "PARSE_FAILED",
+        "asyncDetail": "PDF_ENCRYPTED: 无法可靠读取PDF，请人工核验",
+        "syncCode": "PARSE_FAILED"
+      },
+      "ms": 176
+    },
+    {
+      "id": "PDF-ANOM-CORRUPT-TRUNC",
+      "status": "PASS",
+      "checks": [
+        {
+          "label": "失败即转人工 manualEntry=true（code=PARSE_FAILED）",
+          "pass": true
+        },
+        {
+          "label": "无伪正文泄漏",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "mode": "fail-closed",
+        "code": "PARSE_FAILED",
+        "detail": "PDF_INVALID: 无法可靠读取PDF，请人工核验"
+      },
+      "ms": 165
+    },
+    {
+      "id": "PDF-ANOM-CORRUPT-MIDZERO",
+      "status": "PASS",
+      "checks": [
+        {
+          "label": "部分恢复时不得产生原件之外的正文（伪行=[]）",
+          "pass": true
+        }
+      ],
+      "detail": {
+        "mode": "partial-real-text-only",
+        "pages": 1,
+        "textChars": 298
+      },
+      "ms": 212
+    }
+  ],
+  "summary": {
+    "total": 14,
+    "pass": 14,
+    "fail": 0,
+    "integrityBroken": false,
+    "exitCode": 0,
+    "exitSemantics": "0=全部通过; 1=存在行为不符; 2=输入/源码哈希完整性破坏",
+    "sourceHashes": {
+      "Back/C/src/parse/adapters.mjs": "7f20fed2aa209c2bc7fb6718aadf8dab3c99214da90e6072ec7a75e991b3ef25",
+      "Back/C/src/parse/adapters-async.mjs": "36dfc9ee4d670c090ad3717d6de612dac6871cabcc9c2d9c59fd072df75f6931",
+      "Back/C/src/parse/pdf-worker.mjs": "a9e44b09f792e3236e8752002389e8df3c5c582eb3213d233c8fb38579f93288",
+      "Back/C/src/parse/semantic-facts.mjs": "42d758c91cfc616c6c2f826a74890e21a74866216d50dd97e7c5936ee4b02ff6",
+      "Back/C/domains/util.mjs": "08885f46ec1adc27e94236eba52c18eb65505707c48dca59b33f526b38554898"
+    },
+    "inputHashes": {
+      "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/银行流水.csv": "063d70a821ba07b739ba66e09a92ddb70e45219d7cdde89467cbcf7d4535e581",
+      "Materials/kashgar-demo-v1/KS-TEXTILE-200/经营台账.xlsx": "16583064d8b4589408305f70e84101f7b344c58456eb0a0b7d5c47155219be29",
+      "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/D02-主体登记资料.pdf": "783b07fb4aeb85be2b92c7c1eff9d3754b1bdd4212ac84be9e77bdb47698a728",
+      "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/D02-主体登记资料.md": "00d5abf88fda4ed75edc6c45673a6b1ee356b3278ff047bdece6a49b352ecce9",
+      "Materials/kashgar-demo-v1/KS-LASER-500/originals/D02-主体登记资料.pdf": "8eb9eafea3e9d64cded58c8f970013970d1454e9902a350746205af71c4c2f91",
+      "Materials/kashgar-demo-v1/KS-LASER-500/originals/D02-主体登记资料.md": "2720aaf52312922051efad13d842e57cc5dae88f4dbc16f82b5021643b0b1610",
+      "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/D02-主体登记资料.pdf": "57c9d1cdf6688250e4728778ac1c7ec3a85ef7bd07340daab3521ecbf0f09eb5",
+      "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/D02-主体登记资料.md": "786f184f728f591a3ea70f864c60ef297835f93a97e0acd3a778d207004cab47"
+    },
+    "driftFiles": []
+  }
+}

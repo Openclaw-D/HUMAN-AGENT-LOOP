@@ -1,1 +1,0 @@
-{"schema":"jw-eval-candidate@1","candidateId":"codex-conclusion-fabricated-ref","caseId":"CASE-C","variantId":null,"findings":[],"questions":[],"conclusions":[{"conclusionId":"c1","kind":"summary","statement":"合成结论引用不存在的材料。","evidenceRefs":[{"sourceId":"NONEXISTENT","version":1}]}]}

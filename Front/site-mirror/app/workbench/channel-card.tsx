@@ -12,6 +12,7 @@ import {
 } from '../../lib/workbench/wb-logic';
 import { WbError, useAction } from './wb-parts';
 import { materialKindName } from '../../lib/workbench/material-labels';
+import { MaterialObject, ObjectIcon } from '../takeoff/ui-icons';
 
 interface ChannelPreview {
   phase: 'ready';
@@ -192,8 +193,29 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
 
   return (
     <div className="wb-card dim" style={{ marginTop: 12 }}>
-      <h3 className="wb-h2">上传材料</h3>
+      <h3 className="wb-h2 tk-object-action"><ObjectIcon name="materials" size={48}/>上传材料</h3>
       <p className="wb-note">选择文件，上传后会自动整理。</p>
+      <div className="wb-row" style={{ marginTop: 10 }}>
+        <MaterialObject kind={upKind} size={56}/><div className="wb-field" style={{ width: 150 }}><label>材料种类</label>
+          <select aria-label="材料种类" className="wb-select" value={upKind} onChange={(e) => setUpKind(e.target.value)}>
+            {CHANNEL_KINDS.map((k) => <option key={k.v} value={k.v}>{k.t}</option>)}
+          </select>
+        </div>
+        <div className="wb-field" style={{ width: 130 }}><label>期间起</label>
+          <input className="wb-input" value={upPeriodFrom} onChange={(e) => setUpPeriodFrom(e.target.value)} placeholder="2025-07-01" />
+        </div>
+        <div className="wb-field" style={{ width: 130 }}><label>期间止</label>
+          <input className="wb-input" value={upPeriodTo} onChange={(e) => setUpPeriodTo(e.target.value)} placeholder="2025-09-30" />
+        </div>
+      </div>
+      <div className="wb-row">
+        <input type="file" ref={fileRef} aria-label="选择上传的材料" />
+        <button className="wb-btn" onClick={uploadToChannel} disabled={!invitationId} title={invitationId ? '' : '请先连接客户的材料上传服务'}>上传材料（≤512KB）</button>
+        {!invitationId && <span className="wb-note warn">上传服务尚未连接，请联系工作台维护人员。</span>}
+      </div>
+      <WbError error={fileMsg} onDismiss={() => setFileMsg(null)} />
+
+      <details className="tk-processing-details"><summary>查看处理进展</summary>
       <div className="wb-actions">
         <button className="wb-btn small ghost" onClick={() => void load()}>刷新处理进度</button>
         <button className="wb-btn small ghost" onClick={togglePause}>{paused ? '恢复处理调度' : '暂停处理调度'}</button>
@@ -210,7 +232,7 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
           <tbody>
             {tasks.map((t) => (
               <tr key={t.taskId}>
-                <td>{materialKindName(t.kind)}</td>
+                <td><span className="tk-object-action"><MaterialObject kind={t.kind} size={34}/>{materialKindName(t.kind)}</span></td>
                 <td><span className={`wb-dot ${t.tone}`} aria-hidden="true" /> {t.statusText}</td>
                 <td>{channelCursorSummary(t.cursor)}</td>
                 <td>{fmtWhen(t.updatedAt)}</td>
@@ -275,26 +297,7 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
         </div>
       )}
 
-      <div className="wb-row" style={{ marginTop: 10 }}>
-        <div className="wb-field" style={{ width: 150 }}><label>材料种类</label>
-          <select className="wb-select" value={upKind} onChange={(e) => setUpKind(e.target.value)}>
-            {CHANNEL_KINDS.map((k) => <option key={k.v} value={k.v}>{k.t}</option>)}
-          </select>
-        </div>
-        <div className="wb-field" style={{ width: 130 }}><label>期间起</label>
-          <input className="wb-input" value={upPeriodFrom} onChange={(e) => setUpPeriodFrom(e.target.value)} placeholder="2025-07-01" />
-        </div>
-        <div className="wb-field" style={{ width: 130 }}><label>期间止</label>
-          <input className="wb-input" value={upPeriodTo} onChange={(e) => setUpPeriodTo(e.target.value)} placeholder="2025-09-30" />
-        </div>
-      </div>
-      <div className="wb-row">
-        <input type="file" ref={fileRef} aria-label="选择上传的材料" />
-        <button className="wb-btn" onClick={uploadToChannel} disabled={!invitationId} title={invitationId ? '' : '请先连接客户的材料上传服务'}>上传材料（≤512KB）</button>
-        {!invitationId && <span className="wb-note warn">上传服务尚未连接，请联系工作台维护人员。</span>}
-      </div>
-      <WbError error={fileMsg} onDismiss={() => setFileMsg(null)} />
-
+      </details>
       <details className="wb-card" style={{ marginTop: 10, background: '#fff' }}>
         <summary>上传设置</summary>
         <div className="wb-row">

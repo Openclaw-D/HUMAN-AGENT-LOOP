@@ -73,7 +73,7 @@ function makeXlsx(rows, prefix = false) {
 
 
 test('03A: original textile bank bytes yield exact rows, totals and dates', async()=>{
- const bytes=await fs.readFile(new URL('../../../Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/银行流水.csv',import.meta.url));
+ const bytes=await fs.readFile(new URL('../../../docs/materials/kashgar-demo-v1/KS-TEXTILE-200/originals/银行流水.csv',import.meta.url));
  const r=parseArtifactBytes(bytes,{fileName:'bank.csv'});
  assert.equal(r.format,'bank_statement_csv');assert.equal(r.rows.length,484);
  assert.equal(r.aggregates.inflowTotal,77343360);assert.equal(r.aggregates.outflowTotal,74065856);
@@ -81,7 +81,7 @@ test('03A: original textile bank bytes yield exact rows, totals and dates', asyn
  assert.equal(r.aggregates.totalsExcluded,0);assert.match(r.caliberNote,/入账不直接当经营收入/);
 });
 test('03A: original prefixed workbook recovers first-sheet text and numbers',async()=>{
- const bytes=await fs.readFile(new URL('../../../Materials/kashgar-demo-v1/KS-TEXTILE-200/经营台账.xlsx',import.meta.url));
+ const bytes=await fs.readFile(new URL('../../../docs/materials/kashgar-demo-v1/KS-TEXTILE-200/经营台账.xlsx',import.meta.url));
  const r=parseArtifactBytes(bytes,{fileName:'book.xlsx'});
  assert.equal(r.ok,true);assert.match(r.text,/期间/);assert.match(r.text,/21834032/);
 });

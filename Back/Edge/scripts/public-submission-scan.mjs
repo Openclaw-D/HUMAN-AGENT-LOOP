@@ -3,7 +3,7 @@
 // 即严格遵守 .gitignore 后真正会被提交的集合。
 // 分级：HARD=密钥/私钥/JWT/数据库文件/视频音频/.env（命中即 exit 1，不得提交）；
 //       REVIEW=需人工签核（Achieve 之外的图片/办公文档/大文件/压缩包/.log）；
-//       INFO=用户已明确决定公开的历史资料（Achieve/**）与已知合成演示值。
+//       INFO=用户已明确决定公开的历史资料（docs/archive/Achieve/**）与已知合成演示值。
 // 输出 JSON 证据；退出码：0=无 HARD（REVIEW 需人工签核后才能提交）、1=有 HARD、2=执行错误。
 import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -89,7 +89,7 @@ async function main() {
       hard.push({ file: relPosix, kind: 'env_file' });
       continue;
     }
-    const inAchieve = relPosix.startsWith('Achieve/');
+    const inAchieve = relPosix.startsWith('docs/archive/Achieve/');
     if (REVIEW_EXT.has(ext)) {
       const entry = { file: relPosix, kind: `review_file${ext}`, bytes: st.size, note: inAchieve ? 'Achieve 历史资料：用户已明确决定公开（INFO）' : 'Achieve 之外：需人工确认非真实材料后方可提交' };
       (inAchieve ? info : review).push(entry);

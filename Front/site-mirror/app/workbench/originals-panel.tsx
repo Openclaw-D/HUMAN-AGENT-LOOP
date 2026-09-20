@@ -3,6 +3,7 @@
 // 统一提交链（channel-card：一次提交进通道，自动回写 A——不再有 A 直传/通道二选一）。
 import { useCallback, useEffect, useState } from 'react';
 import { materialKindName } from '../../lib/workbench/material-labels';
+import { MaterialObject } from '../takeoff/ui-icons';
 import type { WbApi } from '../../lib/workbench/use-workbench';
 import {
   channelStageText, base64ToBytes, envelopeDataUrl, errorText, fmtWhen, previewKind, summarizeArtifacts,
@@ -103,6 +104,7 @@ export function OriginalsPanel({ wb, customerId, onChanged }: { wb: WbApi; custo
 
   return (
     <div>
+      <ChannelCard wb={wb} customerId={customerId} onChanged={() => { void load(); onChanged?.(); }} />
       <h3 className="wb-h2">已收到的材料</h3>
       <WbError error={loadErr} onDismiss={() => setLoadErr(null)} />
       {rows === null && <p className="wb-note">加载中…</p>}
@@ -113,7 +115,7 @@ export function OriginalsPanel({ wb, customerId, onChanged }: { wb: WbApi; custo
           <tbody>
             {rows.map((r) => (
               <tr key={r.artifactId}>
-                <td>{materialKindName(r.kind)}</td>
+                <td><span className="tk-object-action"><MaterialObject kind={r.kind} size={34}/>{materialKindName(r.kind)}</span></td>
                 <td><WbGrade grade={r.grade} /></td>
                 <td>{r.current
                   ? <span className="wb-badge live">现行</span>
@@ -195,7 +197,7 @@ export function OriginalsPanel({ wb, customerId, onChanged }: { wb: WbApi; custo
           <ul>{conflicts.map((c) => <li key={c.factKey}>有 {c.assertionCount} 份材料内容不一致，需人工复核</li>)}</ul>
         </div>
       )}
-      <ChannelCard wb={wb} customerId={customerId} onChanged={() => { void load(); onChanged?.(); }} />
+
     </div>
   );
 }

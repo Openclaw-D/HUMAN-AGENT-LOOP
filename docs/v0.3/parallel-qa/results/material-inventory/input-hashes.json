@@ -1,0 +1,38 @@
+{
+  "schema": "v03-z1-material-inventory@1",
+  "note": "本核对实际读取的全部输入文件哈希（读取时刻实测）",
+  "inputs": {
+    "Materials/kashgar-demo-v1/case-index.json": {
+      "sha256": "10b43004dffbb3fb9b1a411018bba5a3ae7fee72db87a756118585786a5fb039",
+      "bytes": 5148
+    },
+    "Materials/kashgar-demo-v1/INTEGRATION.md": {
+      "sha256": "963edddfb974e9b55d811e0e3eccbc2621826162016b8922b347c02c3e2f16b7",
+      "bytes": 3592
+    },
+    ".local/v03-recovery/case-upload-receipts.json": {
+      "sha256": "b5780413caa1bbd8e3b8aa615f0e11308b164bb8705fdd8c8947f9c2c0e0db05",
+      "bytes": 2588
+    },
+    ".local/v03-recovery/case-runtime-map.json": {
+      "sha256": "4ea10ee8329195f6ccc6dd148b7e2fb61edf0722ab0431bd3c5b49c511769e5b",
+      "bytes": 1033
+    },
+    "Materials/kashgar-demo-v1/SHA256SUMS.txt": {
+      "sha256": "91c13053ffbbedca4592e34ae2711c95331020b96d43726fdc814b1b726ddf6c",
+      "bytes": 24011
+    },
+    "Materials/kashgar-demo-v1/KS-TEXTILE-200/material-manifest.json": {
+      "sha256": "1defe4b8864d80fe00cd21e665b4896147661ae2fc8e8deb832ddae4055418c7",
+      "bytes": 41394
+    },
+    "Materials/kashgar-demo-v1/KS-LASER-500/material-manifest.json": {
+      "sha256": "9b0f73f6d301e5c149ed62ad993d458fe2866a07cb7694e8d3479846868e51c8",
+      "bytes": 40926
+    },
+    "Materials/kashgar-demo-v1/KS-INJECTION-1000/material-manifest.json": {
+      "sha256": "b54cec192435b83061f93ab60ff042d824d453561437337d0abbbf5876f2c629",
+      "bytes": 42096
+    }
+  }
+}

@@ -1,4 +1,0 @@
-[edge-stop] jw-edge pid=22456 已停止；未删除任何数据（exit 0）
-[delivery-down] ✓ A 内核已停止 pid=6176（pid+heartbeat+端口标识+命令行 marker 四证相符）
-[delivery-down] 数据库容器保持运行（--with-db 可停库；不删卷）
-[delivery-down] 完成

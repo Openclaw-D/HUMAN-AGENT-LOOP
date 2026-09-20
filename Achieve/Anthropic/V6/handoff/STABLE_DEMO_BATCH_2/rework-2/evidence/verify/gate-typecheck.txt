@@ -1,5 +1,0 @@
-
-> sites-project@4.0.0-dev.0 typecheck
-> tsc --noEmit
-
-tsc exit=0

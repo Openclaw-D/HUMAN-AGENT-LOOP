@@ -1,5 +1,0 @@
---- p1 (killed) ---
-
---- p2 (recover) ---
-RECOVERED modelStepState=pending recoveryNote= adapterCallsAfterRecover=0
-AFTER_CONTINUE modelStepState=unknown terminal={"kind":"unknown","reasonZh":"存在发送后结果不可知的模型调用,禁止自动重试,需人工核实","at":"2026-09-14T23:55:29.912Z"} adapterCallsTotal=0

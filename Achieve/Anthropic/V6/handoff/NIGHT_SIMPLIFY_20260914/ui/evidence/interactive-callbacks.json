@@ -1,5 +1,0 @@
-{
-  "afterSubmitPauseEscalate": "[cb] onSubmitRecord(实控人口述：三台设备运行正常，一台本…, {\"deviceCount\":\"\",\"quote\":\"\"})[cb] onPauseRound[cb] onEscalateHuman",
-  "chatValueAfterSend": "",
-  "finalLog": "[cb] onSubmitRecord(实控人口述：三台设备运行正常，一台本…, {\"deviceCount\":\"\",\"quote\":\"\"})[cb] onPauseRound[cb] onEscalateHuman[cb] onSimulateToggle(true)[cb] onSendInternalMessage(已收到，等设备清单上传后复核。…)"
-}

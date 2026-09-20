@@ -1,6 +1,6 @@
 # V0.3 材料交付与 EVAL 入口
 
-2026-09-20。独占写入 Materials/kashgar-demo-v1/** 与 docs/v0.3/material/**；未改产品代码、共享文件，未 commit/push。当前 V0.3 全生命周期目标以 ../00_AUTHORITY.md 为准；旧材料 README 的首次准入说明仅表示原包的覆盖范围，不再作为总体产品上限。
+2026-09-20。独占写入 docs/materials/kashgar-demo-v1/** 与 docs/v0.3/material/**；未改产品代码、共享文件，未 commit/push。当前 V0.3 全生命周期目标以 ../00_AUTHORITY.md 为准；旧材料 README 的首次准入说明仅表示原包的覆盖范围，不再作为总体产品上限。
 
 ## 已交付
 

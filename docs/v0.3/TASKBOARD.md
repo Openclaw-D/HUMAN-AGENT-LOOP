@@ -5,7 +5,7 @@
 | 可见任务 | 状态 | 独占写入 | 交付与依赖 |
 |---|---|---|---|
 | V0.3-CTRL | 运行中 | docs/v0.3 根文件、根部入口、DECISIONS/CHANGELOG | 评分、范围、公共契约、证据裁决、十小时执行顺序 |
-| V0.3-MATIRAIL | 已接续运行 | Materials/kashgar-demo-v1/**、docs/v0.3/material/** | 三客户合成原材料、hash、标准答案/变体、解析兼容性说明；不改业务代码 |
+| V0.3-MATIRAIL | 已接续运行 | docs/materials/kashgar-demo-v1/**、docs/v0.3/material/** | 三客户合成原材料、hash、标准答案/变体、解析兼容性说明；不改业务代码 |
 | V0.3-SHOW | 已接续运行 | docs/v0.3/show/** | 15分钟展示上限：12分钟固定+3分钟预留，另备5分钟问答；短片/系统/PPT、评分证据位置与降级方案 |
 | V0.3-TEC | 已创建运行 | docs/v0.3/tec/** | 按钮→接口→数据→恢复架构核对，全周期缺口，算力/人力区间，ZCode任务包 |
 | V0.3-EVAL | 已创建运行 | docs/v0.3/eval/**、.local/v03-eval/** | 现有离线测试独立复核、三臂对照设计、基线表、风险门、原始结果；不改产品源码 |

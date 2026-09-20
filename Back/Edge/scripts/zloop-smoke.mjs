@@ -9,7 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
-const MATERIALS = path.join(REPO_ROOT, 'Materials', 'kashgar-demo-v1');
+const MATERIALS = path.join(REPO_ROOT, 'docs', 'materials', 'kashgar-demo-v1');
 const OUT_DIR = path.join(REPO_ROOT, 'docs', 'v0.3', 'zcode-real-loop', 'evidence');
 const A = 'http://127.0.0.1:48304';
 const CONN = 'http://127.0.0.1:48284';

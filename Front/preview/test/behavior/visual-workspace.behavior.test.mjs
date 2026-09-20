@@ -35,7 +35,7 @@ test('状态图标：未开始锁/处理中扳手/完成对勾；同专业前序
   assert.equal(done.completed,true);
 });
 
-test('1080画布：比例不变的窗口变化仍重新居中',async(t)=>{
+test('工作区：窗口变化填满高度，不留居中空白',async(t)=>{
   const original={width:window.innerWidth,height:window.innerHeight};
   t.after(()=>{cleanup();window.innerWidth=original.width;window.innerHeight=original.height;});
   window.innerWidth=1920;window.innerHeight=1080;
@@ -43,9 +43,9 @@ test('1080画布：比例不变的窗口变化仍重新居中',async(t)=>{
   const canvas=view.container.querySelector('[data-design-size]');
   assert.equal(canvas.style.left,'0px');
   window.innerWidth=2200;fireEvent(window,new window.Event('resize'));
-  assert.equal(canvas.style.transform,'scale(1)');assert.equal(canvas.style.left,'140px');
+  assert.equal(canvas.style.transform,'scale(1)');assert.equal(canvas.style.left,'0px');assert.equal(canvas.style.width,'2200px');
   window.innerWidth=960;window.innerHeight=540;fireEvent(window,new window.Event('resize'));
-  assert.equal(canvas.style.transform,'scale(0.5)');assert.equal(canvas.style.left,'0px');
+  assert.equal(canvas.style.transform,'scale(0.75)');assert.equal(canvas.style.height,'720px');assert.equal(canvas.style.left,'0px');
 });
 
 test('材料：按服务端清单搜索/筛选、空结果清楚、上传入口可达',async(t)=>{
@@ -103,12 +103,15 @@ test('材料原件：连接上传文件、客户隔离和关闭释放文件地�
   assert.equal(f.calls.length,before,'不请求其他客户的原件');
 });
 
-test('角色流程：五专业并行，20个节点可回真实事项；缩放还原',async(t)=>{
-  t.after(cleanup);const calls=[];const cells=deriveTakeoffCells({snapshot:null,packageDetail:null,channelTasks:[],currentMaterials:null,factConflicts:0});
-  render(React.createElement(RoleFlow,{cells,top:{changedDomains:[],gateResult:null},onSelect:c=>calls.push(c)}));
-  const credit=screen.getByRole('button',{name:/信审 · 收集材料/});fireEvent.click(credit);assert.equal(calls[0].domain,'credit');assert.equal(calls[0].row,'input');
-  assert.equal(screen.getAllByRole('button',{name:/ · (收集材料|辅助分析|人工核验|专业收口) · /}).length,20);
-  fireEvent.click(screen.getByRole('button',{name:'放大流程图'}));assert.ok(screen.getByText('110%'));fireEvent.click(screen.getByRole('button',{name:'还原视图'}));assert.ok(screen.getByText('100%'));
+test('统一决策画布：四阶段五专业同时存在，展开不切画布，节点打开真实事项',async t=>{
+ t.after(cleanup);const calls=[];const cells=deriveTakeoffCells({snapshot:null,packageDetail:null,channelTasks:[],currentMaterials:null,factConflicts:0});
+ const view=render(React.createElement(RoleFlow,{cells,top:{changedDomains:[],gateResult:null},onSelect:c=>calls.push(c)}));
+ const canvas=screen.getByLabelText('项目四阶段连续画布');assert.equal(view.container.querySelectorAll('.tk-stage-band').length,4);assert.equal(view.container.querySelectorAll('.tk-professional-branch').length,5);
+ fireEvent.click(screen.getByRole('button',{name:'信审 · 材料'}));assert.equal(calls[0].domain,'credit');assert.equal(calls[0].row,'input');
+ fireEvent.click(screen.getByRole('button',{name:'收起信审候选分支'}));assert.ok(screen.getByRole('button',{name:'展开信审候选分支'}));assert.equal(screen.getByLabelText('项目四阶段连续画布'),canvas);
+ view.rerender(React.createElement(RoleFlow,{cells,top:{changedDomains:[],gateResult:null},onSelect:c=>calls.push(c),stage:'closure',navigation:1}));assert.equal(screen.getByLabelText('项目四阶段连续画布'),canvas);assert.ok(canvas.scrollLeft>0);
+ assert.equal(view.container.querySelectorAll('.tk-branch-choice').length,0,'没有返回候选时不伪造A/B/C');
+ const world=view.container.querySelector('.tk-tree-world');assert.match(world.style.transform,/0\.7/);fireEvent.wheel(canvas,{deltaY:-120,clientX:220,clientY:160});assert.match(world.style.transform,/0\.8/);fireEvent.wheel(canvas,{deltaY:120,clientX:220,clientY:160});assert.match(world.style.transform,/0\.7/);assert.equal(screen.queryByRole('button',{name:'放大流程图'}),null);
 });
 
 test('时间轴：服务端分页/去重、筛选、未知时间、未取得数据不假造',async(t)=>{
@@ -136,4 +139,12 @@ test('角色入口：图标与角色配对、多身份显式选择，服务不�
   render(React.createElement(RoleEntry,{wb}));fireEvent.click(screen.getByRole('button',{name:/业务 了解客户/}));assert.equal(calls.length,0);fireEvent.click(screen.getByRole('button',{name:'业务乙'}));await screen.findByText(/办理服务或角色配置尚未就绪/);assert.deepEqual(calls,['b2']);
   assert.ok(screen.getByRole('button',{name:/政策 核对准入/}).disabled);
   assert.deepEqual([...document.querySelectorAll('.tk-role-card .tk-role-logo img')].map((img)=>img.getAttribute('src')), ['business','policy','credit','commerce','asset'].map((role)=>`/objects/${role}-v1.png`));
+});
+
+test('材料：叠放成组，分离与撤销，不触发业务分析',async t=>{
+ t.after(cleanup);const f=fixture();render(desk(f));const card=await screen.findByLabelText('材料卡片：六月流水.txt');dimensions();
+ fireEvent.pointerDown(card,{button:0,clientX:100,clientY:100,pointerId:1});fireEvent.pointerMove(card,{clientX:370,clientY:100,pointerId:1});fireEvent.pointerUp(card,{pointerId:1});
+ assert.ok(screen.getByLabelText('材料组合'));fireEvent.click(screen.getByRole('button',{name:'分离材料'}));assert.equal(screen.queryByLabelText('材料组合'),null);
+ fireEvent.click(screen.getByRole('button',{name:'撤销',exact:true}));assert.ok(screen.getByLabelText('材料组合'));assert.ok(f.calls.every(([kind])=>kind==='read'));
+ fireEvent.click(screen.getByRole('button',{name:'收起材料清单'}));assert.ok(screen.getByRole('button',{name:'展开材料清单'}));
 });

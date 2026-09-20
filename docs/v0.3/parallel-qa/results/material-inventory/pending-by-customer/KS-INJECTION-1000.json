@@ -1,0 +1,987 @@
+{
+  "schema": "v03-z1-material-inventory@1",
+  "caseId": "KS-INJECTION-1000",
+  "customerKey": "KS-INJECTION-1000",
+  "legalEntityRef": "SYNTHETIC-KS-INJECTION-1000",
+  "sourceMode": "synthetic",
+  "customerName": "喀什示例塑料制品有限公司",
+  "runtimeCustomerId": "cust-mu9xdz0y-6ee4e6be5cb9",
+  "runtimeCustomerIdProvenance": ".local/v03-recovery/case-runtime-map.json；manifest.runtimeCustomerId=null，运行身份须由授权流程获取",
+  "caseLevel": {
+    "unit": "CNY-yuan",
+    "asOf": "2026-08-31"
+  },
+  "noRatingClause": "本清单为接入候选事实清单，不含任何预判评级或审批结论",
+  "receiptDisclaimer": "回执比对结果为历史记录核对，不构成当前服务授权、邀请有效性或数据库状态的证明",
+  "candidateGroups": [
+    {
+      "sourceGroup": "KS-INJECTION-1000-D01",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D01",
+      "kind": "document",
+      "filename": "D01-融资需求登记.pdf",
+      "file": "KS-INJECTION-1000/originals/D01-融资需求登记.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "5380387b43741198a205bb354d51542640b10ff2aab25156d549b84c0084bafa",
+      "actualSha256": "5380387b43741198a205bb354d51542640b10ff2aab25156d549b84c0084bafa",
+      "bytes": 260056,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "recorded_upload",
+      "receiptEvidenceId": "ev_a9a58f3f353c45f5a5bb",
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D01-融资需求登记.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D02",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D02",
+      "kind": "legal_document",
+      "filename": "D02-主体登记资料.pdf",
+      "file": "KS-INJECTION-1000/originals/D02-主体登记资料.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "57c9d1cdf6688250e4728778ac1c7ec3a85ef7bd07340daab3521ecbf0f09eb5",
+      "actualSha256": "57c9d1cdf6688250e4728778ac1c7ec3a85ef7bd07340daab3521ecbf0f09eb5",
+      "bytes": 259985,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "recorded_upload",
+      "receiptEvidenceId": "ev_260b51b7ee104232b02e",
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D02-主体登记资料.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D03",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D03",
+      "kind": "legal_document",
+      "filename": "D03-章程与股权结构.pdf",
+      "file": "KS-INJECTION-1000/originals/D03-章程与股权结构.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "a106b79a954446c6efc364d4a7bc5f71b48b9a3b3d167c15a4a33703a0f32b30",
+      "actualSha256": "a106b79a954446c6efc364d4a7bc5f71b48b9a3b3d167c15a4a33703a0f32b30",
+      "bytes": 260013,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D03-章程与股权结构.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D04",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D04",
+      "kind": "legal_document",
+      "filename": "D04-身份与经办授权.pdf",
+      "file": "KS-INJECTION-1000/originals/D04-身份与经办授权.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "65fa842c20c80bb52c75cfae59ea93bc8f1bfdeecadbafa1591ace05d0c2233a",
+      "actualSha256": "65fa842c20c80bb52c75cfae59ea93bc8f1bfdeecadbafa1591ace05d0c2233a",
+      "bytes": 259970,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D04-身份与经办授权.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D05",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D05",
+      "kind": "document",
+      "filename": "D05-企业介绍与经营组织.pdf",
+      "file": "KS-INJECTION-1000/originals/D05-企业介绍与经营组织.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "0e2cf3733721a92be824461d3150da668805afb4d92debd3a4e1a188a4161ea7",
+      "actualSha256": "0e2cf3733721a92be824461d3150da668805afb4d92debd3a4e1a188a4161ea7",
+      "bytes": 259968,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D05-企业介绍与经营组织.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D06",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D06",
+      "kind": "financial_statement",
+      "filename": "D06-财务报表说明.pdf",
+      "file": "KS-INJECTION-1000/originals/D06-财务报表说明.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "018a4d5ebc8866e74d46d4be66c176a1d7819a5e8bfe36eacd51435ff0aaf838",
+      "actualSha256": "018a4d5ebc8866e74d46d4be66c176a1d7819a5e8bfe36eacd51435ff0aaf838",
+      "bytes": 260688,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D06-财务报表说明.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D07",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D07",
+      "kind": "statement",
+      "filename": "D07-账户与流水声明.pdf",
+      "file": "KS-INJECTION-1000/originals/D07-账户与流水声明.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "18e0e82ee502a44d357c674c4f902d74e68dfac9b8a39f46473c38200c4b6c08",
+      "actualSha256": "18e0e82ee502a44d357c674c4f902d74e68dfac9b8a39f46473c38200c4b6c08",
+      "bytes": 260075,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D07-账户与流水声明.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D08",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D08",
+      "kind": "tax_filing",
+      "filename": "D08-税务与发票说明.pdf",
+      "file": "KS-INJECTION-1000/originals/D08-税务与发票说明.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "10de5995ad5818bf8218843d53408b60d91c93d6535cd1fbfba478a052b882da",
+      "actualSha256": "10de5995ad5818bf8218843d53408b60d91c93d6535cd1fbfba478a052b882da",
+      "bytes": 260087,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D08-税务与发票说明.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D09",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D09",
+      "kind": "order_contract",
+      "filename": "D09-销售合同与交付凭据.pdf",
+      "file": "KS-INJECTION-1000/originals/D09-销售合同与交付凭据.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "2d0b005cd06069eba04685dc622af0f20743c11bb1b03a38d4c7606885e3265a",
+      "actualSha256": "2d0b005cd06069eba04685dc622af0f20743c11bb1b03a38d4c7606885e3265a",
+      "bytes": 260137,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D09-销售合同与交付凭据.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D10",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D10",
+      "kind": "order_contract",
+      "filename": "D10-原料采购与入库凭据.pdf",
+      "file": "KS-INJECTION-1000/originals/D10-原料采购与入库凭据.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "1cd656b3caf6266f737ae7eaa2cd67cb31cc52492b1d80183b503259ff696883",
+      "actualSha256": "1cd656b3caf6266f737ae7eaa2cd67cb31cc52492b1d80183b503259ff696883",
+      "bytes": 260037,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D10-原料采购与入库凭据.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D11",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D11",
+      "kind": "accounting_ledger",
+      "filename": "D11-生产与库存说明.pdf",
+      "file": "KS-INJECTION-1000/originals/D11-生产与库存说明.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "0bea0cb2dcf03deddc1c7ccf4cf57346f5b87613aa3945ba96307e6e5e26df79",
+      "actualSha256": "0bea0cb2dcf03deddc1c7ccf4cf57346f5b87613aa3945ba96307e6e5e26df79",
+      "bytes": 260177,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "recorded_upload",
+      "receiptEvidenceId": "ev_587daf2eed054dd88b0f",
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D11-生产与库存说明.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D12",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D12",
+      "kind": "order_contract",
+      "filename": "D12-场地租赁与费用.pdf",
+      "file": "KS-INJECTION-1000/originals/D12-场地租赁与费用.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "d1eb5d0d6dc6110602d5903017591c32cf73eb3852f916643a57d684b093a1e0",
+      "actualSha256": "d1eb5d0d6dc6110602d5903017591c32cf73eb3852f916643a57d684b093a1e0",
+      "bytes": 260003,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D12-场地租赁与费用.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D13",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D13",
+      "kind": "accounting_ledger",
+      "filename": "D13-人员与工资记录.pdf",
+      "file": "KS-INJECTION-1000/originals/D13-人员与工资记录.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "c23ecca4bae45eec3328d5f0de60182759c9ab72862912479070a6e19bec3b76",
+      "actualSha256": "c23ecca4bae45eec3328d5f0de60182759c9ab72862912479070a6e19bec3b76",
+      "bytes": 259955,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D13-人员与工资记录.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D14",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D14",
+      "kind": "equipment_contract",
+      "filename": "D14-设备买卖合同.pdf",
+      "file": "KS-INJECTION-1000/originals/D14-设备买卖合同.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "a21f2e4cb9bd381e901d2968d59fa403e7e2710b822581b4ad8ab14a2c848116",
+      "actualSha256": "a21f2e4cb9bd381e901d2968d59fa403e7e2710b822581b4ad8ab14a2c848116",
+      "bytes": 260253,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D14-设备买卖合同.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D15",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D15",
+      "kind": "ownership_document",
+      "filename": "D15-设备发票付款验收对应单.pdf",
+      "file": "KS-INJECTION-1000/originals/D15-设备发票付款验收对应单.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "65eec9acce2735255e0d33a53d0a8620d78d8fa19a373b2b7ab3dcc278b2b3d0",
+      "actualSha256": "65eec9acce2735255e0d33a53d0a8620d78d8fa19a373b2b7ab3dcc278b2b3d0",
+      "bytes": 260123,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D15-设备发票付款验收对应单.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D16",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D16",
+      "kind": "ownership_document",
+      "filename": "D16-设备现状与权利负担.pdf",
+      "file": "KS-INJECTION-1000/originals/D16-设备现状与权利负担.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "012eb3d18a8e4824ad8a8464e461c9974a5112dd66539788b2f6297b150011bf",
+      "actualSha256": "012eb3d18a8e4824ad8a8464e461c9974a5112dd66539788b2f6297b150011bf",
+      "bytes": 260008,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D16-设备现状与权利负担.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D17",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D17",
+      "kind": "document",
+      "filename": "D17-征信与债务信息单.pdf",
+      "file": "KS-INJECTION-1000/originals/D17-征信与债务信息单.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "65afce161c8559c48208b9abb2ecc9447d4564fbfd0aedb252937e8fe3eba27a",
+      "actualSha256": "65afce161c8559c48208b9abb2ecc9447d4564fbfd0aedb252937e8fe3eba27a",
+      "bytes": 260097,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D17-征信与债务信息单.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D18",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D18",
+      "kind": "accounting_ledger",
+      "filename": "D18-应收与关联往来说明.pdf",
+      "file": "KS-INJECTION-1000/originals/D18-应收与关联往来说明.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "91356326191d075a01ea42de8b665957acd4e82d0ccb309045c10d288039a250",
+      "actualSha256": "91356326191d075a01ea42de8b665957acd4e82d0ccb309045c10d288039a250",
+      "bytes": 260176,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D18-应收与关联往来说明.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D19",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D19",
+      "kind": "site_evidence",
+      "filename": "D19-现场访谈与资质核查.pdf",
+      "file": "KS-INJECTION-1000/originals/D19-现场访谈与资质核查.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "c0fa867c78a24b4f83054b3d4619876e03ce822350caaf0b72ef3d2b930f1c54",
+      "actualSha256": "c0fa867c78a24b4f83054b3d4619876e03ce822350caaf0b72ef3d2b930f1c54",
+      "bytes": 260165,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D19-现场访谈与资质核查.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D20",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D20",
+      "kind": "document",
+      "filename": "D20-担保与事项声明.pdf",
+      "file": "KS-INJECTION-1000/originals/D20-担保与事项声明.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "086c7aeb96c84bc02783172df094378be88d398cbf0352a07f59489c3ff23323",
+      "actualSha256": "086c7aeb96c84bc02783172df094378be88d398cbf0352a07f59489c3ff23323",
+      "bytes": 259950,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D20-担保与事项声明.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-D21",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-D21",
+      "kind": "document",
+      "filename": "D21-未来订单与资金预算.pdf",
+      "file": "KS-INJECTION-1000/originals/D21-未来订单与资金预算.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "69f6328153c17ffd3f6c40d0bc8685017a62c46bc7fc6c1fba06c529ecb6ff7c",
+      "actualSha256": "69f6328153c17ffd3f6c40d0bc8685017a62c46bc7fc6c1fba06c529ecb6ff7c",
+      "bytes": 260373,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/D21-未来订单与资金预算.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-人员工资",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-人员工资",
+      "kind": "accounting_ledger",
+      "filename": "人员工资.csv",
+      "file": "KS-INJECTION-1000/originals/人员工资.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "636206bcaf3b4955942f7a24c57c1410ee8f8d604beebfbece375516e03d82ea",
+      "actualSha256": "636206bcaf3b4955942f7a24c57c1410ee8f8d604beebfbece375516e03d82ea",
+      "bytes": 4649,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-债务计划",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-债务计划",
+      "kind": "financial_statement",
+      "filename": "债务计划.csv",
+      "file": "KS-INJECTION-1000/originals/债务计划.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "689ed6e20048694bb5b42ac511f8a20e7e3dea3ee80a8ab9c21b06aa8e6481d6",
+      "actualSha256": "689ed6e20048694bb5b42ac511f8a20e7e3dea3ee80a8ab9c21b06aa8e6481d6",
+      "bytes": 253,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-应收明细",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-应收明细",
+      "kind": "accounting_ledger",
+      "filename": "应收明细.csv",
+      "file": "KS-INJECTION-1000/originals/应收明细.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "8147cc8b6ad75af15979b33d74e34dcdd23754ff34dfa23b3401428683d64e0f",
+      "actualSha256": "8147cc8b6ad75af15979b33d74e34dcdd23754ff34dfa23b3401428683d64e0f",
+      "bytes": 2943,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-设备清单",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-接口设备",
+      "kind": "equipment_list",
+      "filename": "接口设备.csv",
+      "file": "KS-INJECTION-1000/originals/接口设备.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "5c571e7dd93034448804e34ace7142154024e413388feb94d4bead7cc5672b1b",
+      "actualSha256": "5c571e7dd93034448804e34ace7142154024e413388feb94d4bead7cc5672b1b",
+      "bytes": 1168,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/设备清单.csv",
+          "contentType": "text/csv",
+          "duplicateRepresentation": false,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-年度报表",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-接口财务2025",
+      "kind": "financial_statement",
+      "filename": "接口财务2025.csv",
+      "file": "KS-INJECTION-1000/originals/接口财务2025.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "9acc758d0b787e38a65eb6a55ec33be2e07420b5cda618765172f3008848cc57",
+      "actualSha256": "9acc758d0b787e38a65eb6a55ec33be2e07420b5cda618765172f3008848cc57",
+      "bytes": 140,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-INJECTION-1000/originals/年度报表.csv",
+          "contentType": "text/csv",
+          "duplicateRepresentation": false,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-现金流量表",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-现金流量表",
+      "kind": "financial_statement",
+      "filename": "现金流量表.csv",
+      "file": "KS-INJECTION-1000/originals/现金流量表.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "12964aa3b46a586b1b0b18439bd2760aeff665f96426f7939f6f4c97dd103845",
+      "actualSha256": "12964aa3b46a586b1b0b18439bd2760aeff665f96426f7939f6f4c97dd103845",
+      "bytes": 322,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-生产用电",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-生产用电",
+      "kind": "accounting_ledger",
+      "filename": "生产用电.csv",
+      "file": "KS-INJECTION-1000/originals/生产用电.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "761f14eb83ca295e24e7a77e7b3c6c07f358e4bb1814ffc4ebe7fb71a8127834",
+      "actualSha256": "761f14eb83ca295e24e7a77e7b3c6c07f358e4bb1814ffc4ebe7fb71a8127834",
+      "bytes": 7031,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-税务台账",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-税务台账",
+      "kind": "tax_filing",
+      "filename": "税务台账.csv",
+      "file": "KS-INJECTION-1000/originals/税务台账.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "d9c1cabfc6d032006c9c37dc1e05ed56b80549bd2e90a85778327fa13194761f",
+      "actualSha256": "d9c1cabfc6d032006c9c37dc1e05ed56b80549bd2e90a85778327fa13194761f",
+      "bytes": 5199,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-采购进项付款",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-采购进项付款",
+      "kind": "sales_purchase",
+      "filename": "采购进项付款.csv",
+      "file": "KS-INJECTION-1000/originals/采购进项付款.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "3d3f23bff98229ec375bee58c2185f825c428e0b30c5fd06089c1b75fcb5f6d9",
+      "actualSha256": "3d3f23bff98229ec375bee58c2185f825c428e0b30c5fd06089c1b75fcb5f6d9",
+      "bytes": 15658,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-银行流水",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-银行流水",
+      "kind": "statement",
+      "filename": "银行流水.csv",
+      "file": "KS-INJECTION-1000/originals/银行流水.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "456d8de836cf713c6adad46376e6639bde432e4cc7ad09aa976dcc25111ad239",
+      "actualSha256": "456d8de836cf713c6adad46376e6639bde432e4cc7ad09aa976dcc25111ad239",
+      "bytes": 61353,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-INJECTION-1000-销售开票回款",
+      "evidenceSlots": 1,
+      "materialId": "KS-INJECTION-1000-销售开票回款",
+      "kind": "sales_purchase",
+      "filename": "销售开票回款.csv",
+      "file": "KS-INJECTION-1000/originals/销售开票回款.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "3a064f049cd82a857ade502990ab371b632e60d905500854dfcdb08512de3de7",
+      "actualSha256": "3a064f049cd82a857ade502990ab371b632e60d905500854dfcdb08512de3de7",
+      "bytes": 26643,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    }
+  ],
+  "summary": {
+    "uploadByDefaultEntries": 32,
+    "dedupedEvidenceGroups": 32,
+    "duplicateRepresentationsNotCounted": 23,
+    "recordedUploads": 3,
+    "pendingNotRecorded": 29,
+    "pendingMismatch": 0
+  }
+}

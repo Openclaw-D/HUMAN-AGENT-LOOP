@@ -50,32 +50,35 @@ test('StrictMode mount replay still finishes reading suggestions without startin
   assert.equal(f.state.analyses.length,0);
 });
 
-test('default recommendation causes no write; click persists, readback restores selection, undo is explicit', async t => {
+test('default recommendation causes no write; single click inspects; double click persists, readback restores selection, undo is explicit', async t => {
   const f = await fixture(t); const view = render(f.component());
   const first = await screen.findByRole('button', { name: /先统一期间.*80%/ });
-  assert.equal(first.getAttribute('aria-pressed'), 'true'); assert.equal(f.state.saves.length, 0);
-  assert.ok(screen.getByText('置信度未提供')); assert.ok(screen.getByText(/尚未校准/));
+  assert.equal(first.getAttribute('aria-pressed'), 'false'); assert.equal(f.state.saves.length, 0);
+  assert.ok(screen.getAllByRole('meter', { name: /证据支持把握/ }).some(m => m.getAttribute('aria-valuenow') === '80' && m.querySelector('.tk-confidence-fill')?.style.width === '80%'));
+  assert.ok(screen.getAllByRole('meter', { name: /证据支持把握/ }).some(m => m.getAttribute('aria-valuetext') === '待评估')); assert.ok(screen.getByText(/尚未校准/));
   fireEvent.change(screen.getByLabelText('候选选择理由'), { target: { value: '先核对交易' } });
   fireEvent.click(screen.getByRole('button', { name: /先核对重复交易.*60%/ }));
+  assert.equal(f.state.saves.length, 0);
+  fireEvent.doubleClick(screen.getByRole('button', { name: /先核对重复交易.*60%/ }));
   await screen.findByText('已从服务端读回反馈。');
   assert.equal(f.state.saves.length, 1); assert.equal(f.state.saves[0].candidateId, 'b');
   assert.equal(f.state.saves[0].reason, '先核对交易');
   view.unmount(); render(f.component());
-  await screen.findByText('你的选择 · 已记录');
+  await screen.findByText('已选择');
   assert.equal(screen.getByRole('button', { name: /先核对重复交易.*60%/ }).getAttribute('aria-pressed'), 'true');
   fireEvent.click(screen.getByRole('button', { name: '撤销我的选择' }));
-  await waitFor(() => assert.ok(screen.queryByText('你的选择 · 已记录') === null));
+  await waitFor(() => assert.ok(screen.queryByText('已选择') === null));
   assert.equal(f.state.saves[1].action, 'undo'); assert.equal(f.state.analyses.length, 0);
 });
 
 test('lost feedback response locks writes until readback; no automatic retry or fake learning', async t => {
   const f = await fixture(t); f.state.drop = true; render(f.component());
-  fireEvent.click(await screen.findByRole('button', { name: /先核对重复交易.*60%/ }));
+  fireEvent.doubleClick(await screen.findByRole('button', { name: /先核对重复交易.*60%/ }));
   await screen.findByText(/本次结果尚未确认/);
   assert.ok(screen.getByRole('button', { name: /先统一期间.*80%/ }).disabled);
   assert.equal(f.state.saves.length, 1);
   fireEvent.click(screen.getByRole('button', { name: '刷新建议' }));
-  await screen.findByText('你的选择 · 已记录'); assert.equal(f.state.saves.length, 1);
+  await screen.findByText('已选择'); assert.equal(f.state.saves.length, 1);
 });
 
 test('changed evidence hides old candidates; mismatched customer response is rejected', async t => {
@@ -86,7 +89,7 @@ test('changed evidence hides old candidates; mismatched customer response is rej
   assert.ok(screen.queryByRole('button', { name: /先统一期间.*80%/ }) === null);
   assert.ok(screen.getByText(/旧候选不可选择/)); assert.equal(f.state.saves.length, 0);
   view.unmount(); f.state.malformed = true; render(f.component());
-  await screen.findByText(/返回内容未通过核对/); assert.ok(screen.queryByText('你的选择 · 已记录') === null);
+  await screen.findByText(/返回内容未通过核对/); assert.ok(screen.queryByText('已选择') === null);
 });
 
 

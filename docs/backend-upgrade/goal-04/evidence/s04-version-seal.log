@@ -1,9 +1,0 @@
-[version-seal] buildId=e3b8ab5a10ceda9b
-  gitSha=1ec0ee4e79a793d1c95363022cb7d06ea04a6a5a dirty=true(23)
-  contract=v1.3 migrations=7 dist=3 files
-  写入: docs\customer-next\acceptance\evidence\s1-20260917-161733\version-seal.json
-EXIT=0
-[version-seal] buildId=595345958b82deff
-  gitSha=1ec0ee4e79a793d1c95363022cb7d06ea04a6a5a dirty=true(64)
-  contract=v1.3 migrations=8 dist=3 files
-  写入: docs\customer-next\acceptance\evidence\s1-20260917-175459\version-seal.json

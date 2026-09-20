@@ -12,7 +12,7 @@ type ObservationState = {
 const observations = new WeakMap<WbClient, Map<string, ObservationState>>();
 const names: Record<ModelAssistant, string> = { business: '业务', policy: '政策', credit: '信审', commerce: '商务', asset: '资产', jianwei: '见微' };
 
-export function AssistantObservationPanel({ wb, assistant }: { wb: WbApi; assistant: ModelAssistant }) {
+export function AssistantObservationPanel({ wb, assistant, chat = false }: { wb: WbApi; assistant: ModelAssistant; chat?: boolean }) {
   const client = wb.client;
   const customerId = wb.customerId ?? '';
   const key = `${wb.session?.sessionId}:${customerId}`;
@@ -20,6 +20,8 @@ export function AssistantObservationPanel({ wb, assistant }: { wb: WbApi; assist
   if (client && registry) observations.set(client, registry);
   const [state, setState] = useState<ObservationState | null>(() => registry?.get(key) ?? null);
   const [question, setQuestion] = useState('');
+  const [history, setHistory] = useState<ObservationState[]>(() => registry?.get(key) ? [registry.get(key)!] : []);
+  const messagesRef = useRef<HTMLDivElement>(null);
   const [validation, setValidation] = useState('');
   const mounted = useRef(true);
   const currentAnchor = observationAnchor(wb.snapshot);
@@ -29,8 +31,15 @@ export function AssistantObservationPanel({ wb, assistant }: { wb: WbApi; assist
 
   function publish(next: ObservationState) {
     registry?.set(key, next);
-    if (mounted.current) setState(next);
+    if (mounted.current) {
+      setState(next);
+      setHistory(previous => [...previous.filter(item => item.at !== next.at), next]);
+    }
   }
+  useEffect(() => {
+    const el = messagesRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [history]);
 
   async function observe(e: React.FormEvent) {
     e.preventDefault();
@@ -40,6 +49,7 @@ export function AssistantObservationPanel({ wb, assistant }: { wb: WbApi; assist
     setValidation('');
     const started: ObservationState = { anchor: currentAnchor, assistant, question: text, at: new Date().toISOString(), busy: true, unknown: false, note: '正在等待完整结果（非流式），通常需 10–60 秒。离开页面不会取消服务端调用。', result: null };
     publish(started);
+    if (chat) setQuestion('');
     try {
       const result = await client.observeAssistant(customerId, assistant, text);
       const unknown = result.model.status === 'unknown' || result.model.sent === null;
@@ -89,6 +99,34 @@ export function AssistantObservationPanel({ wb, assistant }: { wb: WbApi; assist
   const changed = Boolean(state && state.anchor !== currentAnchor);
   const result = state?.result;
   const showOutput = result && !changed && !state?.note && !state?.unknown && ['succeeded', 'simulated'].includes(result.model.status);
+  if (chat) return <div className="tk-clean-chat">
+    <div className="tk-chat-messages" ref={messagesRef} role="log" aria-label="助手对话" aria-live="polite">
+      {history.length === 0 && <p className="tk-chat-empty">有什么想了解的？</p>}
+      {history.map(item => {
+        const available = item.result && item.anchor === currentAnchor && !item.note && !item.unknown && item.result.model.status === 'succeeded';
+        return <div className="tk-chat-turn" key={item.at}>
+          <div className="tk-chat-bubble mine">{item.question}</div>
+          <div className="tk-chat-speaker">{names[item.assistant]}</div>
+          <div className="tk-chat-bubble">
+            {item.busy ? '正在思考…' : available ? <>
+              {item.result!.observations.map((value, index) => <p key={index}>{value.text}</p>)}
+              {item.result!.questions.map((value, index) => <p key={`q-${index}`}>{value.text}</p>)}
+              {verifiedObservationEvidence(item.result!).length > 0 && <details className="tk-chat-sources"><summary>查看依据</summary>
+                {verifiedObservationEvidence(item.result!).map(ref => <p key={ref.id}>{ref.text}</p>)}
+              </details>}
+            </> : item.anchor !== currentAnchor ? '材料已更新，请重新提问。' : item.result?.model.status === 'simulated' ? '真实模型尚未接通，请联系负责人。' : item.note || '暂未取得可用回复。'}
+          </div>
+        </div>;
+      })}
+    </div>
+    <form className="tk-chat-composer" onSubmit={e => void observe(e)}>
+      <textarea aria-label="聊天消息" placeholder={`发消息给${names[assistant]}…`} maxLength={2000} value={question}
+        disabled={state?.busy || state?.unknown} onChange={e => setQuestion(e.target.value)}
+        onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing && e.keyCode !== 229) { e.preventDefault(); e.currentTarget.form?.requestSubmit(); } }}/>
+      <button type="submit" aria-label="发送消息" title="发送" disabled={!question.trim() || !client || !wb.snapshot || state?.busy || state?.unknown}>↑</button>
+      {validation && <p role="alert">{validation}</p>}
+    </form>
+  </div>;
   return <><DecisionFeedbackPanel key={`${key}:${assistant}`} wb={wb} assistant={assistant} /><details className="tk-model-panel">
     <summary>模型辅助观察</summary>
     <p className="tk-asst-note">基于获准材料片段的辅助观察；引用可追溯不代表结论已核实，不产生审批或业务决定。</p>

@@ -1,6 +1,0 @@
-[preclean] removed leftover v7d-pg-c7dd736b83
-[D3-r1] PASS boot=13189ms
-[D3-r2] PASS boot=13122ms
-[D3-r3] PASS boot=13430ms
-EVIDENCE_DIR=C:\Users\22673\Desktop\JW\docs\backend-upgrade\goal-04\evidence\perf-g04-2026-09-17T18-13-54
-EXIT=0

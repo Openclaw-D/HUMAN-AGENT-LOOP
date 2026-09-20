@@ -1,7 +1,0 @@
-PASS 种子基线: scenario=approval v7
-PASS 确认重放语义（原载荷重放幂等命中）: first=200 replay=200 replayed=true v8→v8
-PASS 旧版本 VERSION_CONFLICT（409 + serverVersion）: status=409 code=VERSION_CONFLICT serverVersion=8
-PASS 同 requestId 换载荷 REQUEST_MISMATCH（409）: status=409 code=REQUEST_MISMATCH
-PASS 损坏文件失败关闭（STORE_CORRUPT，不静默重置）: status=500 code=STORE_CORRUPT fileKept=true
-PASS 损坏恢复后 GET 正常: v8
-{"action":"phase1","total":6,"failed":0,"results":[{"name":"种子基线","pass":true,"detail":"scenario=approval v7"},{"name":"确认重放语义（原载荷重放幂等命中）","pass":true,"detail":"first=200 replay=200 replayed=true v8→v8"},{"name":"旧版本 VERSION_CONFLICT（409 + serverVersion）","pass":true,"detail":"status=409 code=VERSION_CONFLICT serverVersion=8"},{"name":"同 requestId 换载荷 REQUEST_MISMATCH（409）","pass":true,"detail":"status=409 code=REQUEST_MISMATCH"},{"name":"损坏文件失败关闭（STORE_CORRUPT，不静默重置）","pass":true,"detail":"status=500 code=STORE_CORRUPT fileKept=true"},{"name":"损坏恢复后 GET 正常","pass":true,"detail":"v8"}]}

@@ -1,0 +1,987 @@
+{
+  "schema": "v03-z1-material-inventory@1",
+  "caseId": "KS-TEXTILE-200",
+  "customerKey": "KS-TEXTILE-200",
+  "legalEntityRef": "SYNTHETIC-KS-TEXTILE-200",
+  "sourceMode": "synthetic",
+  "customerName": "喀什示例棉纺有限公司",
+  "runtimeCustomerId": "cust-mu9xdz03-4b768485d579",
+  "runtimeCustomerIdProvenance": ".local/v03-recovery/case-runtime-map.json；manifest.runtimeCustomerId=null，运行身份须由授权流程获取",
+  "caseLevel": {
+    "unit": "CNY-yuan",
+    "asOf": "2026-08-31"
+  },
+  "noRatingClause": "本清单为接入候选事实清单，不含任何预判评级或审批结论",
+  "receiptDisclaimer": "回执比对结果为历史记录核对，不构成当前服务授权、邀请有效性或数据库状态的证明",
+  "candidateGroups": [
+    {
+      "sourceGroup": "KS-TEXTILE-200-D01",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D01",
+      "kind": "document",
+      "filename": "D01-融资需求登记.pdf",
+      "file": "KS-TEXTILE-200/originals/D01-融资需求登记.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "b087cb66326ddbed5e69122ef4cc19a90d06bdb2231035a8c8ac2bae1e0ebe30",
+      "actualSha256": "b087cb66326ddbed5e69122ef4cc19a90d06bdb2231035a8c8ac2bae1e0ebe30",
+      "bytes": 262786,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "recorded_upload",
+      "receiptEvidenceId": "ev_3b633c197d1e447e889f",
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D01-融资需求登记.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D02",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D02",
+      "kind": "legal_document",
+      "filename": "D02-主体登记资料.pdf",
+      "file": "KS-TEXTILE-200/originals/D02-主体登记资料.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "783b07fb4aeb85be2b92c7c1eff9d3754b1bdd4212ac84be9e77bdb47698a728",
+      "actualSha256": "783b07fb4aeb85be2b92c7c1eff9d3754b1bdd4212ac84be9e77bdb47698a728",
+      "bytes": 262674,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "recorded_upload",
+      "receiptEvidenceId": "ev_d9901ea345684e409239",
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D02-主体登记资料.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D03",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D03",
+      "kind": "legal_document",
+      "filename": "D03-章程与股权结构.pdf",
+      "file": "KS-TEXTILE-200/originals/D03-章程与股权结构.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "eccee2bccf5132b5d8fa4147f9366dede1332f62055c06c66f51c540c7d4b372",
+      "actualSha256": "eccee2bccf5132b5d8fa4147f9366dede1332f62055c06c66f51c540c7d4b372",
+      "bytes": 262704,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D03-章程与股权结构.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D04",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D04",
+      "kind": "legal_document",
+      "filename": "D04-身份与经办授权.pdf",
+      "file": "KS-TEXTILE-200/originals/D04-身份与经办授权.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "29a2ddbde9eb0c50e2647eb0e6228c4064a85851a69678a986dea8c9be4eb623",
+      "actualSha256": "29a2ddbde9eb0c50e2647eb0e6228c4064a85851a69678a986dea8c9be4eb623",
+      "bytes": 262677,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D04-身份与经办授权.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D05",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D05",
+      "kind": "document",
+      "filename": "D05-企业介绍与经营组织.pdf",
+      "file": "KS-TEXTILE-200/originals/D05-企业介绍与经营组织.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "ef782d0dbfcf22342b88f78605b4e1b5a0233d62c10dc7294ee6172141088b15",
+      "actualSha256": "ef782d0dbfcf22342b88f78605b4e1b5a0233d62c10dc7294ee6172141088b15",
+      "bytes": 262631,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D05-企业介绍与经营组织.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D06",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D06",
+      "kind": "financial_statement",
+      "filename": "D06-财务报表说明.pdf",
+      "file": "KS-TEXTILE-200/originals/D06-财务报表说明.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "1b3fbf9c47b664c3a070d66659d6b4290c296e655bed2fdd6d3b8ac5e847b46c",
+      "actualSha256": "1b3fbf9c47b664c3a070d66659d6b4290c296e655bed2fdd6d3b8ac5e847b46c",
+      "bytes": 263363,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D06-财务报表说明.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D07",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D07",
+      "kind": "statement",
+      "filename": "D07-账户与流水声明.pdf",
+      "file": "KS-TEXTILE-200/originals/D07-账户与流水声明.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "a73d4544eedac8dabbf697081f398e20e156cd2fa17cd87eaf6994bce54690ab",
+      "actualSha256": "a73d4544eedac8dabbf697081f398e20e156cd2fa17cd87eaf6994bce54690ab",
+      "bytes": 262767,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D07-账户与流水声明.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D08",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D08",
+      "kind": "tax_filing",
+      "filename": "D08-税务与发票说明.pdf",
+      "file": "KS-TEXTILE-200/originals/D08-税务与发票说明.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "0bfc1d6a9fd2cdf95a0f6e52c8908723e66c7fcfecb9b0a3946d0a8163aed8b7",
+      "actualSha256": "0bfc1d6a9fd2cdf95a0f6e52c8908723e66c7fcfecb9b0a3946d0a8163aed8b7",
+      "bytes": 262792,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D08-税务与发票说明.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D09",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D09",
+      "kind": "order_contract",
+      "filename": "D09-销售合同与交付凭据.pdf",
+      "file": "KS-TEXTILE-200/originals/D09-销售合同与交付凭据.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "d84523a60ea073af4214c47576f877243b70cdc31d9f650ce515e0c854366a6f",
+      "actualSha256": "d84523a60ea073af4214c47576f877243b70cdc31d9f650ce515e0c854366a6f",
+      "bytes": 262806,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D09-销售合同与交付凭据.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D10",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D10",
+      "kind": "order_contract",
+      "filename": "D10-原料采购与入库凭据.pdf",
+      "file": "KS-TEXTILE-200/originals/D10-原料采购与入库凭据.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "a6b78d49fae480751a1fcabbed2d6fd82eefaea5cd1497ec33ec0db25f08c843",
+      "actualSha256": "a6b78d49fae480751a1fcabbed2d6fd82eefaea5cd1497ec33ec0db25f08c843",
+      "bytes": 262729,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D10-原料采购与入库凭据.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D11",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D11",
+      "kind": "accounting_ledger",
+      "filename": "D11-生产与库存说明.pdf",
+      "file": "KS-TEXTILE-200/originals/D11-生产与库存说明.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "8516450d2255d27b3b710df51c7d0fe469b74e969389134db8bb5a25e9e64e57",
+      "actualSha256": "8516450d2255d27b3b710df51c7d0fe469b74e969389134db8bb5a25e9e64e57",
+      "bytes": 262856,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "recorded_upload",
+      "receiptEvidenceId": "ev_5a4a5ac8f9e149a7950a",
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D11-生产与库存说明.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D12",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D12",
+      "kind": "order_contract",
+      "filename": "D12-场地租赁与费用.pdf",
+      "file": "KS-TEXTILE-200/originals/D12-场地租赁与费用.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "6311d0509d46611bc60ff53d40cd2e03e94973144448971437b0b25f478d3a20",
+      "actualSha256": "6311d0509d46611bc60ff53d40cd2e03e94973144448971437b0b25f478d3a20",
+      "bytes": 262681,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D12-场地租赁与费用.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D13",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D13",
+      "kind": "accounting_ledger",
+      "filename": "D13-人员与工资记录.pdf",
+      "file": "KS-TEXTILE-200/originals/D13-人员与工资记录.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "e7f13cba1b4e8e9e819af358dabcceef141c9f14b87bb0679482af654328ea6a",
+      "actualSha256": "e7f13cba1b4e8e9e819af358dabcceef141c9f14b87bb0679482af654328ea6a",
+      "bytes": 262642,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D13-人员与工资记录.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D14",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D14",
+      "kind": "equipment_contract",
+      "filename": "D14-设备买卖合同.pdf",
+      "file": "KS-TEXTILE-200/originals/D14-设备买卖合同.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "abd71e54471ea29fd640dfe1c483886b372fd505b91aecd0f22c861c297b9135",
+      "actualSha256": "abd71e54471ea29fd640dfe1c483886b372fd505b91aecd0f22c861c297b9135",
+      "bytes": 262972,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D14-设备买卖合同.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D15",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D15",
+      "kind": "ownership_document",
+      "filename": "D15-设备发票付款验收对应单.pdf",
+      "file": "KS-TEXTILE-200/originals/D15-设备发票付款验收对应单.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "aac70738ea31aa7c760aab0d2a91040fc5b9216abdb0dcb0a49705bea18fdf48",
+      "actualSha256": "aac70738ea31aa7c760aab0d2a91040fc5b9216abdb0dcb0a49705bea18fdf48",
+      "bytes": 262813,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D15-设备发票付款验收对应单.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D16",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D16",
+      "kind": "ownership_document",
+      "filename": "D16-设备现状与权利负担.pdf",
+      "file": "KS-TEXTILE-200/originals/D16-设备现状与权利负担.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "070a7b5154132c5f28e018d5ef0ac041cd8c4f4f51771f98bfc83c23c4590ee7",
+      "actualSha256": "070a7b5154132c5f28e018d5ef0ac041cd8c4f4f51771f98bfc83c23c4590ee7",
+      "bytes": 262703,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D16-设备现状与权利负担.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D17",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D17",
+      "kind": "document",
+      "filename": "D17-征信与债务信息单.pdf",
+      "file": "KS-TEXTILE-200/originals/D17-征信与债务信息单.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "7e3331bed91d87b7aa66510f01bb3c2f523a8d1f57e86e14e8df0083a6c08bdb",
+      "actualSha256": "7e3331bed91d87b7aa66510f01bb3c2f523a8d1f57e86e14e8df0083a6c08bdb",
+      "bytes": 262792,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D17-征信与债务信息单.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D18",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D18",
+      "kind": "accounting_ledger",
+      "filename": "D18-应收与关联往来说明.pdf",
+      "file": "KS-TEXTILE-200/originals/D18-应收与关联往来说明.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "a4a39cd380e49fccf077385e90926905ddda690afcf37b1d394ea01dfff54d9c",
+      "actualSha256": "a4a39cd380e49fccf077385e90926905ddda690afcf37b1d394ea01dfff54d9c",
+      "bytes": 262866,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D18-应收与关联往来说明.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D19",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D19",
+      "kind": "site_evidence",
+      "filename": "D19-现场访谈与资质核查.pdf",
+      "file": "KS-TEXTILE-200/originals/D19-现场访谈与资质核查.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "86062f844a03ca7501ccffdb69c878ba7031d5e7b43ad7e19b26fe8313ae42cd",
+      "actualSha256": "86062f844a03ca7501ccffdb69c878ba7031d5e7b43ad7e19b26fe8313ae42cd",
+      "bytes": 262857,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D19-现场访谈与资质核查.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D20",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D20",
+      "kind": "document",
+      "filename": "D20-担保与事项声明.pdf",
+      "file": "KS-TEXTILE-200/originals/D20-担保与事项声明.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "08054626be8717c2262ac514cbc0ee7d310b9f7a9d25558777178edc244895ed",
+      "actualSha256": "08054626be8717c2262ac514cbc0ee7d310b9f7a9d25558777178edc244895ed",
+      "bytes": 262639,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D20-担保与事项声明.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-D21",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-D21",
+      "kind": "document",
+      "filename": "D21-未来订单与资金预算.pdf",
+      "file": "KS-TEXTILE-200/originals/D21-未来订单与资金预算.pdf",
+      "contentType": "application/pdf",
+      "declaredSha256": "6a6380268e2adabb43a516fc98cde7c70765c81d29ef80602b9274de85e2e3d5",
+      "actualSha256": "6a6380268e2adabb43a516fc98cde7c70765c81d29ef80602b9274de85e2e3d5",
+      "bytes": 263068,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/D21-未来订单与资金预算.md",
+          "contentType": "text/markdown",
+          "duplicateRepresentation": true,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-人员工资",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-人员工资",
+      "kind": "accounting_ledger",
+      "filename": "人员工资.csv",
+      "file": "KS-TEXTILE-200/originals/人员工资.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "7256ff67d48589a86a71883b8c6a96b2dc5317c481708d6079fa5efd6a6c02d3",
+      "actualSha256": "7256ff67d48589a86a71883b8c6a96b2dc5317c481708d6079fa5efd6a6c02d3",
+      "bytes": 4517,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-债务计划",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-债务计划",
+      "kind": "financial_statement",
+      "filename": "债务计划.csv",
+      "file": "KS-TEXTILE-200/originals/债务计划.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "f6077f8ea39d8c80dfefaa61ff1a53a1cb92811bbe7d117d134fad31ff45c96b",
+      "actualSha256": "f6077f8ea39d8c80dfefaa61ff1a53a1cb92811bbe7d117d134fad31ff45c96b",
+      "bytes": 250,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-应收明细",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-应收明细",
+      "kind": "accounting_ledger",
+      "filename": "应收明细.csv",
+      "file": "KS-TEXTILE-200/originals/应收明细.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "e6188e917f312c34f674c09a9a9c7018cbd021bb32dcda19553da41569b4420d",
+      "actualSha256": "e6188e917f312c34f674c09a9a9c7018cbd021bb32dcda19553da41569b4420d",
+      "bytes": 15006,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-设备清单",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-接口设备",
+      "kind": "equipment_list",
+      "filename": "接口设备.csv",
+      "file": "KS-TEXTILE-200/originals/接口设备.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "6862ec19d98c34dc51ea409431b4fa762f2b178190399886db45fd44677ab12e",
+      "actualSha256": "6862ec19d98c34dc51ea409431b4fa762f2b178190399886db45fd44677ab12e",
+      "bytes": 355,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/设备清单.csv",
+          "contentType": "text/csv",
+          "duplicateRepresentation": false,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-年度报表",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-接口财务2025",
+      "kind": "financial_statement",
+      "filename": "接口财务2025.csv",
+      "file": "KS-TEXTILE-200/originals/接口财务2025.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "261c19507cca4915288fd80165c4d78ba085fb1f676d2b5013b91b9af265ad04",
+      "actualSha256": "261c19507cca4915288fd80165c4d78ba085fb1f676d2b5013b91b9af265ad04",
+      "bytes": 142,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [
+        {
+          "file": "KS-TEXTILE-200/originals/年度报表.csv",
+          "contentType": "text/csv",
+          "duplicateRepresentation": false,
+          "uploadByDefault": false
+        }
+      ],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-现金流量表",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-现金流量表",
+      "kind": "financial_statement",
+      "filename": "现金流量表.csv",
+      "file": "KS-TEXTILE-200/originals/现金流量表.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "0a72cf111ed7cbf650297d709f28e17ad6c8aa4c3bc55ab9ba19143840ae93a4",
+      "actualSha256": "0a72cf111ed7cbf650297d709f28e17ad6c8aa4c3bc55ab9ba19143840ae93a4",
+      "bytes": 306,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-生产用电",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-生产用电",
+      "kind": "accounting_ledger",
+      "filename": "生产用电.csv",
+      "file": "KS-TEXTILE-200/originals/生产用电.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "dc6c3419d0d5d0a88767a8a8e3fe89c6a42762276eddfedd7fb9e1bd18630a10",
+      "actualSha256": "dc6c3419d0d5d0a88767a8a8e3fe89c6a42762276eddfedd7fb9e1bd18630a10",
+      "bytes": 5900,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-税务台账",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-税务台账",
+      "kind": "tax_filing",
+      "filename": "税务台账.csv",
+      "file": "KS-TEXTILE-200/originals/税务台账.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "86579ff8630f530c86b8dee39fa699d81040480a8451834d5a7e0e95585e910d",
+      "actualSha256": "86579ff8630f530c86b8dee39fa699d81040480a8451834d5a7e0e95585e910d",
+      "bytes": 5037,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-采购进项付款",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-采购进项付款",
+      "kind": "sales_purchase",
+      "filename": "采购进项付款.csv",
+      "file": "KS-TEXTILE-200/originals/采购进项付款.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "609b32b441b0c45c8effbec422be86ebdeb5b20d3f5ecccb123c9aea4ad37d0c",
+      "actualSha256": "609b32b441b0c45c8effbec422be86ebdeb5b20d3f5ecccb123c9aea4ad37d0c",
+      "bytes": 14600,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-银行流水",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-银行流水",
+      "kind": "statement",
+      "filename": "银行流水.csv",
+      "file": "KS-TEXTILE-200/originals/银行流水.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "063d70a821ba07b739ba66e09a92ddb70e45219d7cdde89467cbcf7d4535e581",
+      "actualSha256": "063d70a821ba07b739ba66e09a92ddb70e45219d7cdde89467cbcf7d4535e581",
+      "bytes": 57431,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    },
+    {
+      "sourceGroup": "KS-TEXTILE-200-销售开票回款",
+      "evidenceSlots": 1,
+      "materialId": "KS-TEXTILE-200-销售开票回款",
+      "kind": "sales_purchase",
+      "filename": "销售开票回款.csv",
+      "file": "KS-TEXTILE-200/originals/销售开票回款.csv",
+      "contentType": "text/csv",
+      "declaredSha256": "c707c88010484e4b451da89d7c97c53e7836b87c586ed0d3a863097e0a4807ec",
+      "actualSha256": "c707c88010484e4b451da89d7c97c53e7836b87c586ed0d3a863097e0a4807ec",
+      "bytes": 23054,
+      "sourceMode": "synthetic",
+      "caliberRaw": "模拟资料；金额元，接口投影列_wan为万元；期间以文件内容为准",
+      "unit": null,
+      "period": null,
+      "missingFields": {
+        "unit": "manifest未提供结构化unit字段（caliber原文见caliberRaw；案例级unit见caseLevel.unit）",
+        "period": "manifest未提供结构化期间字段（caliber注明“期间以文件内容为准”，本核对不解析文件内容）"
+      },
+      "receiptStatus": "not_recorded",
+      "receiptEvidenceId": null,
+      "receiptDisclaimer": "回执为.local恢复期历史记录，不构成当前服务授权、邀请有效性或数据库状态的证明",
+      "sameSourceRepresentationsNotCountedAsNew": [],
+      "groupContentTypeCount": 1
+    }
+  ],
+  "summary": {
+    "uploadByDefaultEntries": 32,
+    "dedupedEvidenceGroups": 32,
+    "duplicateRepresentationsNotCounted": 23,
+    "recordedUploads": 3,
+    "pendingNotRecorded": 29,
+    "pendingMismatch": 0
+  }
+}

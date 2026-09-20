@@ -1,0 +1,224 @@
+{
+  "package": "backend-qa-r2/02_model_api",
+  "node": "v22.23.1",
+  "platform": "win32",
+  "recordedAt": "2026-09-20T18:53:30.947Z",
+  "cases": [
+    {
+      "at": "2026-09-20T18:53:28.991Z",
+      "case": "QA02-01",
+      "item": "合法请求出站一次",
+      "httpStatus": 200,
+      "outbound": 1,
+      "requestIds": [
+        "amq:qa-cust-1:v2-aade366b9b0ab229b79977937d660e7592e4e85c288017e1dce16efb0443f2de::obs:credit:47a2d22f165e::a1"
+      ],
+      "current": true,
+      "verdict": "pass"
+    },
+    {
+      "at": "2026-09-20T18:53:29.057Z",
+      "case": "QA02-02",
+      "item": "相同输入重放不再出站",
+      "httpStatus": 200,
+      "outbound": 1,
+      "requestIds": [
+        "amq:qa-cust-1:v2-5f01832ad37f8251de6e5fecd2f9982d92292dcc7315727293912c5c0c563f16::obs:credit:47a2d22f165e::a1"
+      ],
+      "current": true,
+      "verdict": "pass"
+    },
+    {
+      "at": "2026-09-20T18:53:29.266Z",
+      "case": "QA02-03",
+      "item": "重复点击并发仅一次出站",
+      "httpStatus": 200,
+      "outbound": 1,
+      "requestIds": [
+        "amq:qa-cust-1:v2-a186439a71e19cbb1f59855ffbc6993ebef4751e798d081d40be321fae8eea29::obs:credit:47a2d22f165e::a1"
+      ],
+      "current": true,
+      "verdict": "pass"
+    },
+    {
+      "at": "2026-09-20T18:53:29.465Z",
+      "case": "QA02-04",
+      "item": "需求/候选/配置变化独立身份；密钥轮换零出站",
+      "httpStatus": 200,
+      "outbound": 6,
+      "requestIds": [
+        "amq:qa-cust-1:v2-dd7d703e39d5a6c05487781a88dfc95b80050cc81a6a59f7de0cab236a47aec2::obs:credit:47a2d22f165e::a1",
+        "amq:qa-cust-1:v2-1d12ad503140afe2c498f9760d49f48522b62ab476971536f368139b650b2544::obs:credit:47a2d22f165e::a1",
+        "amq:qa-cust-1:v2-0bb893b1716a58be7c94b19e5fe17a2df3a3c48eb6a9bfe14722715de7a1b8f3::obs:credit:47a2d22f165e::a1",
+        "amq:qa-cust-1:v2-6ba61873ce669036db1a2202b19bda3db2632a6010fd258c3f0d4c976dd44935::obs:credit:47a2d22f165e::a1",
+        "amq:qa-cust-1:v2-c30a8f54de863ec3333393b0c1a2c049a6345da3ba8e98451bc8d4b752865c2c::obs:credit:1b3c4198139d::a1"
+      ],
+      "current": true,
+      "verdict": "pass"
+    },
+    {
+      "at": "2026-09-20T18:53:29.603Z",
+      "case": "QA02-05",
+      "item": "客户/租户隔离",
+      "httpStatus": 200,
+      "outbound": 3,
+      "requestIds": [
+        "amq:qa-cust-1:v2-a83c6a8cbe7fd1ed0f41d9b596a93f8611a886782474aebf7f2e1d4af5d0a49b::obs:credit:47a2d22f165e::a1",
+        "amq:qa-cust-2:v2-99675f644fa73b898f54edfc28bee2e38a8efbe3df45f668bd5acacdf91b0372::obs:credit:47a2d22f165e::a1",
+        "amq:qa-cust-1:v2-a20b284857a8f00b930dee0cf0e273584a59e1d2a8ebd81a5c66a7d706d9a431::obs:credit:47a2d22f165e::a1"
+      ],
+      "current": true,
+      "verdict": "pass"
+    },
+    {
+      "at": "2026-09-20T18:53:29.680Z",
+      "case": "QA02-06",
+      "item": "响应期间上下文变化失效",
+      "httpStatus": 200,
+      "outbound": 2,
+      "requestIds": [
+        "amq:qa-cust-1:v2-011738a3787586a7f8beab00c785490ce87cf5a5472a86b304db1ae94f485495::obs:credit:47a2d22f165e::a1",
+        "amq:qa-cust-1:v2-8126c9b1f2f5a9d3243e01d9f1f1158ea7dff9c427d28c09286f76e60c381cd6::obs:credit:47a2d22f165e::a1"
+      ],
+      "current": [
+        false,
+        true
+      ],
+      "verdict": "pass"
+    },
+    {
+      "at": "2026-09-20T18:53:30.166Z",
+      "case": "QA02-07",
+      "item": "超时未知不重发",
+      "httpStatus": 200,
+      "outbound": 1,
+      "requestIds": [
+        "amq:qa-cust-1:v2-9cd4db3bad9efebd1c92822b705c557b695171ba4a59f2d293f13f55fba4bb9d::obs:credit:47a2d22f165e::a1"
+      ],
+      "current": false,
+      "verdict": "pass"
+    },
+    {
+      "at": "2026-09-20T18:53:30.293Z",
+      "case": "QA02-08",
+      "item": "断流/中断未知不重发",
+      "httpStatus": 200,
+      "outbound": 2,
+      "requestIds": [
+        "amq:qa-cust-1:v2-9ea523e452503fda92b3eab32210a005af14c16c8bcd3888a7364380abd98984::obs:credit:47a2d22f165e::a1",
+        "amq:qa-cust-1:v2-ed6f0c4f58697a240e93020b5bda277036557cc25b06f685ec39dd08925cbbc0::obs:credit:802fed53e2b3::a1"
+      ],
+      "current": false,
+      "verdict": "pass"
+    },
+    {
+      "at": "2026-09-20T18:53:30.367Z",
+      "case": "QA02-09",
+      "item": "格式错误/5xx fail-closed",
+      "httpStatus": 200,
+      "outbound": 2,
+      "requestIds": [
+        "amq:qa-cust-1:v2-7ad459f6b0691bfe67199d8ef4ea6237ea956ed3cf3424506dd8ade1938ec25d::obs:credit:47a2d22f165e::a1",
+        "amq:qa-cust-1:v2-f1dce1857d7e2fd9baf3c7aeb5eb0f848465e032128faf88475ada10aad11485::obs:credit:a50b7c79c047::a1"
+      ],
+      "current": false,
+      "verdict": "pass"
+    },
+    {
+      "at": "2026-09-20T18:53:30.431Z",
+      "case": "QA02-10",
+      "item": "损坏/旧回执fail closed",
+      "httpStatus": 200,
+      "outbound": 1,
+      "requestIds": [
+        "amq:qa-cust-1:v2-e5952313d5556017fc360d08367fe8eaa95e3ee923c52e5f5785b1386154b6d5::obs:credit:47a2d22f165e::a1"
+      ],
+      "current": false,
+      "detail": {
+        "corrupt": "RECEIPT_OR_TRANSPORT_UNCERTAIN",
+        "bad-shape": "RECEIPT_CORRUPT",
+        "identity": "RECEIPT_IDENTITY_MISMATCH",
+        "null": "RECEIPT_OR_TRANSPORT_UNCERTAIN",
+        "intent-only": "RECOVERED_INTENT_WITHOUT_RECEIPT"
+      },
+      "verdict": "pass"
+    },
+    {
+      "at": "2026-09-20T18:53:30.620Z",
+      "case": "QA02-11",
+      "item": "profile切换在途绑定旧配置",
+      "httpStatus": [
+        403,
+        422,
+        200,
+        200,
+        200,
+        200
+      ],
+      "outbound": 2,
+      "requestIds": [
+        "amq:qa-cust-1:v2-1e5ae97081d6c984f24558bc1ea4a85bfc45c8b6354b818d3543f772632a1872::obs:credit:47a2d22f165e::a1",
+        "amq:qa-cust-1:v2-197f1bccf9850c4a44c69d6bbdb13bcaabd5a6cda1c9d51d74431afb6f11b9cf::obs:credit:47a2d22f165e::a1"
+      ],
+      "current": true,
+      "verdict": "pass"
+    },
+    {
+      "at": "2026-09-20T18:53:30.681Z",
+      "case": "QA02-12",
+      "item": "未知跨profile阻断",
+      "httpStatus": 200,
+      "outbound": 1,
+      "requestIds": [
+        "amq:qa-cust-1:v2-8e4ea7304b90e3793f48bf4b50246713d3aa20b76636e516dd5d0b802c0d11d5::obs:credit:47a2d22f165e::a1"
+      ],
+      "current": false,
+      "verdict": "pass"
+    },
+    {
+      "at": "2026-09-20T18:53:30.721Z",
+      "case": "QA02-13",
+      "item": "获准证据与上下文限制",
+      "httpStatus": 200,
+      "outbound": 1,
+      "requestIds": [
+        "amq:qa-cust-1:v2-d6cc1779eb0540d1e53ee52463f74a3f35d1c6091244d67c0cb974db51fab6df::obs:credit:47a2d22f165e::a1"
+      ],
+      "current": true,
+      "note": "超限注入零出站",
+      "verdict": "pass"
+    },
+    {
+      "at": "2026-09-20T18:53:30.813Z",
+      "case": "QA02-14",
+      "item": "凭据不出现在业务响应与日志",
+      "httpStatus": 200,
+      "outbound": 2,
+      "requestIds": [],
+      "current": true,
+      "scanned": 14,
+      "verdict": "pass"
+    },
+    {
+      "at": "2026-09-20T18:53:30.941Z",
+      "case": "QA02-15",
+      "item": "候选API协议与调用控制",
+      "httpStatus": [
+        200,
+        200,
+        200,
+        400,
+        400
+      ],
+      "outbound": 1,
+      "requestIds": [
+        "amq:qa-cust-1:v2-e95eee34433475106a109597b406dde6d93d2ab494b8408c16329d8da3eb29c7::obs:credit:234815501eb5::a1"
+      ],
+      "current": [
+        true,
+        false
+      ],
+      "verdict": "pass"
+    }
+  ]
+}

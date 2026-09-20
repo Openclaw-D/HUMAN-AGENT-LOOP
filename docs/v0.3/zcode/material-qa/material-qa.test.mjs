@@ -14,7 +14,7 @@ import { parseArtifactBytes } from '../../../../Back/C/src/parse/adapters.mjs';
 import { projectSemanticFacts } from '../../../../Back/C/src/parse/semantic-facts.mjs';
 
 const ROOT = 'C:/Users/22673/Desktop/JW';
-const CASE_DIR = 'Materials/kashgar-demo-v1/KS-TEXTILE-200';
+const CASE_DIR = 'docs/materials/kashgar-demo-v1/KS-TEXTILE-200';
 const CUST_NAME = '喀什示例棉纺有限公司'; // GOLD_ANSWERS KS-TEXTILE-200::legal_name（同源 D02 md 第7行）
 
 // 冻结哈希（来源：docs/v0.3/zcode/material-qa/logs/hashes-pre.txt，与 docs/v0.3/material/PARSER_PROBE.json sources/逐文件 sha256 一致）

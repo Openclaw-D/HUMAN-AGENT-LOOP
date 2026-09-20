@@ -2,9 +2,11 @@
 
 接续优先级增量：先单独完成 `docs/v0.3/ZCODE_PATH_FORECAST_SLICE.md` 的明确taskKind切片，再回本包；两个包不同时实施，不新增并发任务。当前尚未自动派发。
 
+P0补件恢复缺口（仅新增待办，未授权新接口发布）：现有channelStatus仅返回tasks/questions/pause/coordinatorVersion/rulesetVersion，没有可恢复上传授权的invitationId或有效绑定列表；intake当前仅issue/accept/verify/revoke/checkUploadScope，无授权绑定查询。设计最小只读upload-context契约后再实施：服务端从会话核对租户、客户、上传权限及本身份可使用绑定的明确依据；返回可用性、原因、获准kind/object范围、有效期及必要的不透明引用，不返回邀请token/providerUserId等秘密。不能从任务或工件的uploaderRef反推权限，不能把同客户所有邀请暴露给当前人，不能猜最近一条、自动延长有效期或自动创建/验证绑定。若当前principal与接受人尚无可信映射，明确返回需要连接/核验，而非推断授权。上传POST再次检查撤销/过期/范围，避免读后撤权竞态。覆盖关抽屉、刷新、换身份/客户、多绑定、撤销、过期及零写读取；FRONT在该读面完成前保持禁用，不用localStorage当授权。
+
 在 C:/Users/22673/Desktop/JW 串行完成「三例完整原件→五专业真实AI辅助结果→受控人选→人工确认前的可办理状态」。这是同一份接续包，不开并行任务。按当前AGENTS，中大型后端实施由ZCode负责；CTRL负责契约及真实模型最终独立验收，FRONT独占前端。
 
-输入：docs/v0.3/REAL_API_CHECKPOINT.md；docs/takeoff/first-admission-v1/00_START_HERE.md及01/03/04契约；Materials/kashgar-demo-v1/case-index.json、各material-manifest.json、INTEGRATION.md；.local/v03-recovery/case-runtime-map.json与case-upload-receipts.json。保留已存在的三客户和评估，不重建、不删旧记录。
+输入：docs/v0.3/REAL_API_CHECKPOINT.md；docs/takeoff/first-admission-v1/00_START_HERE.md及01/03/04契约；docs/materials/kashgar-demo-v1/case-index.json、各material-manifest.json、INTEGRATION.md；.local/v03-recovery/case-runtime-map.json与case-upload-receipts.json。保留已存在的三客户和评估，不重建、不删旧记录。
 
 最新UI权威增量：docs/v0.3/UI_STATE_PATH_AUTHORITY.md。大号浅银铜色实体锁=未开始/前置未满足，机油蓝金属扳手=处理中（仅实际running旋转），亮绿闪亮勾=真实完成，大红叉=明确失败/不通过；覆盖旧黄扳手及三色点。后端保留细分状态、阻断原因、当前性和完成凭据供前端映射，不用图标改变业务状态。动态路径需要节点与边的实际事件来源、发生时间/版本及当前可执行性依据；未发生分支与已走路径严格区分，不能由LLM虚构事件。展示范围已确认是当前客户已走路径＋眼前可选分支、后续逐步展开，不扩成全生命周期或固定五步流水线。先交现有事件/权限/前置条件到路径投影的最小契约，复用既有接口；缺乏依据的节点保持未知或不可执行。
 

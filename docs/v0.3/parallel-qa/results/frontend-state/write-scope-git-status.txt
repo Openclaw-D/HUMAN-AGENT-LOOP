@@ -1,0 +1,29 @@
+?? Front/preview/test/zcode-v03-state/
+?? docs/v0.3/parallel-qa/results/frontend-state/
+ D Front/dist/assets/index-Ch7bAEPC.js
+ D Front/dist/assets/index-Ku3lRJb9.css
+ D Front/dist/assets/pdf-DParC8Rj.js
+ M Front/dist/index.html
+ M Front/site-mirror/app/takeoff/glass.css
+ M Front/site-mirror/app/takeoff/materials-desk.tsx
+ M Front/site-mirror/app/takeoff/role-flow.tsx
+ M Front/site-mirror/app/takeoff/takeoff-assistants.tsx
+ M Front/site-mirror/app/takeoff/takeoff-detail.tsx
+ M Front/site-mirror/app/takeoff/takeoff-screen.tsx
+ M Front/site-mirror/app/takeoff/ui-icons.tsx
+ M Front/site-mirror/app/takeoff/work-timeline.tsx
+ M Front/site-mirror/app/workbench/channel-card.tsx
+ M Front/site-mirror/app/workbench/originals-panel.tsx
+ M Front/site-mirror/lib/workbench/material-labels.ts
+?? Front/dist/assets/index-BeXxuKsZ.js
+?? Front/dist/assets/index-CmqIcVsU.css
+?? Front/dist/assets/pdf-BbEUZx9r.js
+?? Front/dist/objects/branch-v1.png
+?? Front/dist/objects/desk-v1.png
+?? Front/dist/objects/equipment-v1.png
+?? Front/dist/objects/eye-natural-v2.png
+?? Front/dist/objects/eye-v3.png
+?? Front/dist/objects/license-v1.png
+?? Front/dist/objects/statement-v1.png
+?? Front/dist/objects/timeline-v1.png
+?? Front/site-mirror/app/takeoff/decision-tree.css

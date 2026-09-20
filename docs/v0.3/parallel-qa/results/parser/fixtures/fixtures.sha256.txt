@@ -1,0 +1,4 @@
+f9fe0738d791dd1f8c11de788d16f2050a331ec554bc7e43a98503109f0498f1  scanned-no-text.pdf
+b2190cae6c22c702be8f9f2873764d4797cad61955857872c2bacd469ab1ac1e  encrypted-userpw.pdf
+fc9008b812f4cafdadcb09d58bb101b1d147271919c982eb5e6a2c28e87ac992  corrupt-truncated-D02.pdf
+c1e1aa29b5fb8eb91692ca2e5cc5c8359291701f481deee7b3d65ee742dba5cf  corrupt-midzero-D02.pdf

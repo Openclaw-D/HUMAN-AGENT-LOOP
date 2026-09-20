@@ -106,7 +106,10 @@
 .tk-board { flex:1; height:auto; min-height:0; grid-template-columns:115px repeat(5,minmax(0,1fr)); grid-template-rows:100px repeat(4,minmax(0,1fr)); background:transparent; gap:0; }
 .tk-board .tk-hcell { border:0; background:transparent; font-size:17px; font-weight:600; gap:12px; }
 .tk-board .tk-hcell:not(.rowh) { flex-direction:row; border-bottom:1px solid #e1e7e8; }
-.tk-board .tk-hcell .tk-role-logo { width:45px; height:45px; border-radius:14px; }
+.tk-board .tk-hcell:not(.rowh) .tk-role-logo {
+  width:45px; height:45px; border-radius:0;
+  background:transparent; border:0; box-shadow:none;
+}
 .tk-board .rowh { flex-direction:column; justify-content:center; padding:0; color:#6c7b85; font-size:14px; gap:10px; border-bottom:1px solid #e7eced; }
 .tk-work-actions { position:relative; font-size:14px; }
 .tk-work-actions > summary { cursor:pointer; padding:10px 18px; border-radius:12px; background:#ffffff80; }
@@ -318,3 +321,15 @@
   .tk-status-scene.is-unlock > .tk-status-object,.tk-status-scene.is-unlock > .tk-status-bolt { opacity:1; }
   .tk-unlock-closed,.tk-unlock-open,.tk-unlock-key,.tk-check-shine,.tk-status-depart { display:none!important; }
 }
+
+/* Shared tactile entry points; text remains for document names and consequential actions. */
+.tk-asst-tabs { align-items:center; padding:8px; gap:3px; min-height:64px; }
+.tk-asst-tab { display:flex; align-items:center; justify-content:center; min-width:0; min-height:48px; padding:4px 0; border-radius:14px; border-bottom:0; overflow:visible; }
+.tk-asst-tab .tk-role-logo { width:40px; height:40px; background:transparent; border:0; box-shadow:none; }
+.tk-asst-tab[aria-selected=true] { background:#fff; box-shadow:0 2px 8px #31465812,inset 0 0 0 1px #cfdce3; }
+.tk-asst-tab:focus-visible { outline:2px solid #547f99; outline-offset:2px; }
+.tk-asst-tab:hover { background:#ffffffa8; }
+.tk-object-action { display:inline-flex; align-items:center; gap:8px; vertical-align:middle; }
+.tk-paper-head { margin-bottom:8px; }
+.tk-processing-details { margin-top:18px; border-top:1px solid #e1e7eb; padding-top:14px; }
+.tk-processing-details > summary { cursor:pointer; color:#596c79; margin-bottom:12px; }
