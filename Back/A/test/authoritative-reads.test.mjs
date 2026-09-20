@@ -41,6 +41,26 @@ await k.pool.query(
    ON CONFLICT DO NOTHING`, [POLICY_VERSION]);
 
 let seq = 0;
+test('Connector原件信封不误报事实冲突；真正同键断言仍冲突', async () => {
+  const customerId = await mkCustomer('legacy connector envelopes');
+  for (let i = 0; i < 2; i++) {
+    const r = await biz(k)('POST', `/api/v2/customers/${customerId}/artifacts`, {
+      requestId: rid('envelope'), tenantId: T1, kind: 'material.document', factKey: 'material:document',
+      content: { connectorRef: { tenantId: T1, customerId, evidenceId: `legacy-${i}` }, sha256: String(i) }, grade: 'unverified',
+    });
+    assert.equal(r.status, 200, JSON.stringify(r.json));
+  }
+  let listing = await biz(k)('GET', `/api/v2/customers/${customerId}/artifacts`);
+  assert.equal(listing.json.factConflicts.length, 0);
+  for (let i = 0; i < 2; i++) {
+    const r = await biz(k)('POST', `/api/v2/customers/${customerId}/artifacts`, {
+      requestId: rid('real-fact'), tenantId: T1, kind: 'document', factKey: 'revenue', content: { amount: i + 1 }, grade: 'unverified',
+    });
+    assert.equal(r.status, 200, JSON.stringify(r.json));
+  }
+  listing = await biz(k)('GET', `/api/v2/customers/${customerId}/artifacts`);
+  assert.deepEqual(listing.json.factConflicts.map(f => f.factKey), ['revenue']);
+});
 async function mkCustomer(name, extra = {}) {
   seq += 1;
   const r = await root(k)('POST', '/api/v2/customers', {

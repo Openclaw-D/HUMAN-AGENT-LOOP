@@ -1,0 +1,2692 @@
+{
+  "schemaVersion": "v03-material-gold@1",
+  "asOf": "2026-08-31",
+  "synthetic": true,
+  "authority": "none",
+  "humanReviewStatus": "PENDING_BUSINESS_REVIEW",
+  "meaning": "供人工核验的合成源材料标准答案，不代表已经过真实业务人员复核",
+  "numericToleranceYuan": 0.01,
+  "currencyConversion": {
+    "yuanPerWan": 10000,
+    "minorPerYuan": 100
+  },
+  "answers": [
+    {
+      "id": "KS-TEXTILE-200::requested_amount",
+      "customerKey": "KS-TEXTILE-200",
+      "key": "requested_amount",
+      "value": 2000000,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/D01-融资需求登记.md",
+          "sha256": "397cbfd4590e63f4c7920fbca1089976d734e99864ad7846a711687c823ccf1f",
+          "line": 7,
+          "quote": "申请人：喀什示例棉纺有限公司；申请金额 200.00 万元；业务为新客户首次售后回租预评估。"
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "申请金额不是已批准额度，不是可支持金额"
+      ]
+    },
+    {
+      "id": "KS-TEXTILE-200::legal_name",
+      "customerKey": "KS-TEXTILE-200",
+      "key": "legal_name",
+      "value": "喀什示例棉纺有限公司",
+      "unit": null,
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/D02-主体登记资料.md",
+          "sha256": "00d5abf88fda4ed75edc6c45673a6b1ee356b3278ff047bdece6a49b352ecce9",
+          "line": 7,
+          "quote": "legal_name=喀什示例棉纺有限公司"
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "policy"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-TEXTILE-200::established_date",
+      "customerKey": "KS-TEXTILE-200",
+      "key": "established_date",
+      "value": "2020-03-16",
+      "unit": "ISO-date",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/D02-主体登记资料.md",
+          "sha256": "00d5abf88fda4ed75edc6c45673a6b1ee356b3278ff047bdece6a49b352ecce9",
+          "line": 13,
+          "quote": "设立日期：2020-03-16；经营范围：本案例对应产品制造销售；登记状态设定为存续。"
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "policy"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-TEXTILE-200::revenue_2025",
+      "customerKey": "KS-TEXTILE-200",
+      "key": "revenue_2025",
+      "value": 18480308,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/年度报表.csv",
+          "sha256": "bdc962a55f17243f488a348f8036fa93be36b32467a10fb0d1f44055c57f5f6d",
+          "line": 4,
+          "quote": "2025,18480308,948039,6432396,1682536,800000,5840000,5800000,8954932,14754932,1459214",
+          "columns": [
+            "期间",
+            "收入元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-TEXTILE-200::revenue_2026_ytd",
+      "customerKey": "KS-TEXTILE-200",
+      "key": "revenue_2026_ytd",
+      "value": 11086988,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/年度报表.csv",
+          "sha256": "bdc962a55f17243f488a348f8036fa93be36b32467a10fb0d1f44055c57f5f6d",
+          "line": 5,
+          "quote": "2026-01至08,11086988,309376,4077504,4438761,1188043,5360000,5800000,9264308,15064308,-2354892",
+          "columns": [
+            "期间",
+            "收入元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "credit"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "2026八个月收入不得作为全年收入或直接与2025全年计算同比"
+      ]
+    },
+    {
+      "id": "KS-TEXTILE-200::cash_asof",
+      "customerKey": "KS-TEXTILE-200",
+      "key": "cash_asof",
+      "value": 4077504,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/年度报表.csv",
+          "sha256": "bdc962a55f17243f488a348f8036fa93be36b32467a10fb0d1f44055c57f5f6d",
+          "line": 5,
+          "quote": "2026-01至08,11086988,309376,4077504,4438761,1188043,5360000,5800000,9264308,15064308,-2354892",
+          "columns": [
+            "期间",
+            "现金元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-TEXTILE-200::receivables_asof",
+      "customerKey": "KS-TEXTILE-200",
+      "key": "receivables_asof",
+      "value": 4438761,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/年度报表.csv",
+          "sha256": "bdc962a55f17243f488a348f8036fa93be36b32467a10fb0d1f44055c57f5f6d",
+          "line": 5,
+          "quote": "2026-01至08,11086988,309376,4077504,4438761,1188043,5360000,5800000,9264308,15064308,-2354892",
+          "columns": [
+            "期间",
+            "应收元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-TEXTILE-200::assets_asof",
+      "customerKey": "KS-TEXTILE-200",
+      "key": "assets_asof",
+      "value": 15064308,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/年度报表.csv",
+          "sha256": "bdc962a55f17243f488a348f8036fa93be36b32467a10fb0d1f44055c57f5f6d",
+          "line": 5,
+          "quote": "2026-01至08,11086988,309376,4077504,4438761,1188043,5360000,5800000,9264308,15064308,-2354892",
+          "columns": [
+            "期间",
+            "资产元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-TEXTILE-200::liabilities_asof",
+      "customerKey": "KS-TEXTILE-200",
+      "key": "liabilities_asof",
+      "value": 5800000,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/年度报表.csv",
+          "sha256": "bdc962a55f17243f488a348f8036fa93be36b32467a10fb0d1f44055c57f5f6d",
+          "line": 5,
+          "quote": "2026-01至08,11086988,309376,4077504,4438761,1188043,5360000,5800000,9264308,15064308,-2354892",
+          "columns": [
+            "期间",
+            "负债元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-TEXTILE-200::net_profit_2026_ytd",
+      "customerKey": "KS-TEXTILE-200",
+      "key": "net_profit_2026_ytd",
+      "value": 309376,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/年度报表.csv",
+          "sha256": "bdc962a55f17243f488a348f8036fa93be36b32467a10fb0d1f44055c57f5f6d",
+          "line": 5,
+          "quote": "2026-01至08,11086988,309376,4077504,4438761,1188043,5360000,5800000,9264308,15064308,-2354892",
+          "columns": [
+            "期间",
+            "净利润元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-TEXTILE-200::operating_cash_2026_ytd",
+      "customerKey": "KS-TEXTILE-200",
+      "key": "operating_cash_2026_ytd",
+      "value": -2354892,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/年度报表.csv",
+          "sha256": "bdc962a55f17243f488a348f8036fa93be36b32467a10fb0d1f44055c57f5f6d",
+          "line": 5,
+          "quote": "2026-01至08,11086988,309376,4077504,4438761,1188043,5360000,5800000,9264308,15064308,-2354892",
+          "columns": [
+            "期间",
+            "经营净现金元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-TEXTILE-200::debt_maturity",
+      "customerKey": "KS-TEXTILE-200",
+      "key": "debt_maturity",
+      "value": "2026-10-31",
+      "unit": "ISO-date",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/债务计划.csv",
+          "sha256": "f6077f8ea39d8c80dfefaa61ff1a53a1cb92811bbe7d117d134fad31ff45c96b",
+          "line": 2,
+          "quote": "KS-TEXTILE-200-LOAN,模拟融资机构,4800000,0.08,2026-10-31,到期还本、每月付息,设备范围待核实,截至基准日无已发生逾期（合成）",
+          "columns": [
+            "到期日",
+            "期末本金元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "未来到期不能描述为基准日已经逾期；不代表JW新融资合同已签署"
+      ]
+    },
+    {
+      "id": "KS-TEXTILE-200::equipment_count",
+      "customerKey": "KS-TEXTILE-200",
+      "key": "equipment_count",
+      "value": 4,
+      "unit": "count",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/设备清单.csv",
+          "sha256": "3e2b7fafb3d6555c96121e77edbadec95bb89282b384c68428baec0904d095fe",
+          "line": 2,
+          "quote": "SYN-KS-TEXTILE-200-EQ-01,卓朗（用户称谓；官方中文为卓郎）,SIM-棉纱纺织-01,2022-12-01,2000000,660000,1340000,self-owned,待人工核验,KS-TEXTILE-200-EQ-CONTRACT,SYN-KS-TEXTILE-200-EQ-01-INV,SYN-KS-TEXTILE-200-EQ-01-PAY,SYN-KS-TEXTILE-200-EQ-01-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/设备清单.csv",
+          "sha256": "3e2b7fafb3d6555c96121e77edbadec95bb89282b384c68428baec0904d095fe",
+          "line": 3,
+          "quote": "SYN-KS-TEXTILE-200-EQ-02,卓朗（用户称谓；官方中文为卓郎）,SIM-棉纱纺织-02,2022-12-01,2000000,660000,1340000,self-owned,待人工核验,KS-TEXTILE-200-EQ-CONTRACT,SYN-KS-TEXTILE-200-EQ-02-INV,SYN-KS-TEXTILE-200-EQ-02-PAY,SYN-KS-TEXTILE-200-EQ-02-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/设备清单.csv",
+          "sha256": "3e2b7fafb3d6555c96121e77edbadec95bb89282b384c68428baec0904d095fe",
+          "line": 4,
+          "quote": "SYN-KS-TEXTILE-200-EQ-03,卓朗（用户称谓；官方中文为卓郎）,SIM-棉纱纺织-03,2022-12-01,2000000,660000,1340000,self-owned,待人工核验,KS-TEXTILE-200-EQ-CONTRACT,SYN-KS-TEXTILE-200-EQ-03-INV,SYN-KS-TEXTILE-200-EQ-03-PAY,SYN-KS-TEXTILE-200-EQ-03-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/设备清单.csv",
+          "sha256": "3e2b7fafb3d6555c96121e77edbadec95bb89282b384c68428baec0904d095fe",
+          "line": 5,
+          "quote": "SYN-KS-TEXTILE-200-EQ-04,卓朗（用户称谓；官方中文为卓郎）,SIM-棉纱纺织-04,2022-12-01,2000000,660000,1340000,self-owned,待人工核验,KS-TEXTILE-200-EQ-CONTRACT,SYN-KS-TEXTILE-200-EQ-04-INV,SYN-KS-TEXTILE-200-EQ-04-PAY,SYN-KS-TEXTILE-200-EQ-04-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "asset",
+        "commerce"
+      ],
+      "method": "逐行计数，序列号唯一",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-TEXTILE-200::equipment_net_book_value",
+      "customerKey": "KS-TEXTILE-200",
+      "key": "equipment_net_book_value",
+      "value": 5360000,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/设备清单.csv",
+          "sha256": "3e2b7fafb3d6555c96121e77edbadec95bb89282b384c68428baec0904d095fe",
+          "line": 2,
+          "quote": "SYN-KS-TEXTILE-200-EQ-01,卓朗（用户称谓；官方中文为卓郎）,SIM-棉纱纺织-01,2022-12-01,2000000,660000,1340000,self-owned,待人工核验,KS-TEXTILE-200-EQ-CONTRACT,SYN-KS-TEXTILE-200-EQ-01-INV,SYN-KS-TEXTILE-200-EQ-01-PAY,SYN-KS-TEXTILE-200-EQ-01-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/设备清单.csv",
+          "sha256": "3e2b7fafb3d6555c96121e77edbadec95bb89282b384c68428baec0904d095fe",
+          "line": 3,
+          "quote": "SYN-KS-TEXTILE-200-EQ-02,卓朗（用户称谓；官方中文为卓郎）,SIM-棉纱纺织-02,2022-12-01,2000000,660000,1340000,self-owned,待人工核验,KS-TEXTILE-200-EQ-CONTRACT,SYN-KS-TEXTILE-200-EQ-02-INV,SYN-KS-TEXTILE-200-EQ-02-PAY,SYN-KS-TEXTILE-200-EQ-02-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/设备清单.csv",
+          "sha256": "3e2b7fafb3d6555c96121e77edbadec95bb89282b384c68428baec0904d095fe",
+          "line": 4,
+          "quote": "SYN-KS-TEXTILE-200-EQ-03,卓朗（用户称谓；官方中文为卓郎）,SIM-棉纱纺织-03,2022-12-01,2000000,660000,1340000,self-owned,待人工核验,KS-TEXTILE-200-EQ-CONTRACT,SYN-KS-TEXTILE-200-EQ-03-INV,SYN-KS-TEXTILE-200-EQ-03-PAY,SYN-KS-TEXTILE-200-EQ-03-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/设备清单.csv",
+          "sha256": "3e2b7fafb3d6555c96121e77edbadec95bb89282b384c68428baec0904d095fe",
+          "line": 5,
+          "quote": "SYN-KS-TEXTILE-200-EQ-04,卓朗（用户称谓；官方中文为卓郎）,SIM-棉纱纺织-04,2022-12-01,2000000,660000,1340000,self-owned,待人工核验,KS-TEXTILE-200-EQ-CONTRACT,SYN-KS-TEXTILE-200-EQ-04-INV,SYN-KS-TEXTILE-200-EQ-04-PAY,SYN-KS-TEXTILE-200-EQ-04-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "asset",
+        "commerce"
+      ],
+      "method": "逐行净值求和",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "账面净值不等于评估价值、无权利负担价值或可融资金额"
+      ]
+    },
+    {
+      "id": "KS-TEXTILE-200::sample_sale",
+      "customerKey": "KS-TEXTILE-200",
+      "key": "sample_sale",
+      "value": {
+        "orderId": "KS-TEXTILE-200-S-202608-1",
+        "deliveryDate": "2026-08-10",
+        "grossYuan": 1111868,
+        "receivedYuan": 867257,
+        "unpaidYuan": 244611
+      },
+      "unit": "mixed",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/销售开票回款.csv",
+          "sha256": "c707c88010484e4b451da89d7c97c53e7836b87c586ed0d3a863097e0a4807ec",
+          "line": 131,
+          "quote": "KS-TEXTILE-200-S-202608-1,2026-08-05,模拟下游1,棉纱,983954,127914,1111868,867257,244611,2026-08-10,KS-TEXTILE-200-S-202608-1-INV,KS-TEXTILE-200-S-202608-1-DEL,SYNTHETIC"
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "credit"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "商品销售回款不等于JW融资租金；销售交付不等于融资合同履约"
+      ]
+    },
+    {
+      "id": "KS-LASER-500::requested_amount",
+      "customerKey": "KS-LASER-500",
+      "key": "requested_amount",
+      "value": 5000000,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/D01-融资需求登记.md",
+          "sha256": "2184e243269325bea435a0581e2c4208e49c875e6a22bfe2aaa19721019bc887",
+          "line": 7,
+          "quote": "申请人：喀什示例金属加工有限公司；申请金额 500.00 万元；业务为新客户首次售后回租预评估。"
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "申请金额不是已批准额度，不是可支持金额"
+      ]
+    },
+    {
+      "id": "KS-LASER-500::legal_name",
+      "customerKey": "KS-LASER-500",
+      "key": "legal_name",
+      "value": "喀什示例金属加工有限公司",
+      "unit": null,
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/D02-主体登记资料.md",
+          "sha256": "2720aaf52312922051efad13d842e57cc5dae88f4dbc16f82b5021643b0b1610",
+          "line": 7,
+          "quote": "legal_name=喀什示例金属加工有限公司"
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "policy"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-LASER-500::established_date",
+      "customerKey": "KS-LASER-500",
+      "key": "established_date",
+      "value": "2020-03-16",
+      "unit": "ISO-date",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/D02-主体登记资料.md",
+          "sha256": "2720aaf52312922051efad13d842e57cc5dae88f4dbc16f82b5021643b0b1610",
+          "line": 13,
+          "quote": "设立日期：2020-03-16；经营范围：本案例对应产品制造销售；登记状态设定为存续。"
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "policy"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-LASER-500::revenue_2025",
+      "customerKey": "KS-LASER-500",
+      "key": "revenue_2025",
+      "value": 30758820,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/年度报表.csv",
+          "sha256": "1ced1950b3828133984e6b9f4ce183faec279683007e8e0e12f2cc53389d0a2c",
+          "line": 4,
+          "quote": "2025,30758820,4409934,2000000,1496929,1200000,10760000,4900000,10556929,15456929,5316148",
+          "columns": [
+            "期间",
+            "收入元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-LASER-500::revenue_2026_ytd",
+      "customerKey": "KS-LASER-500",
+      "key": "revenue_2026_ytd",
+      "value": 21060640,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/年度报表.csv",
+          "sha256": "1ced1950b3828133984e6b9f4ce183faec279683007e8e0e12f2cc53389d0a2c",
+          "line": 5,
+          "quote": "2026-01至08,21060640,3167867,4697941,2686855,1200000,10040000,4900000,13724796,18624796,2697941",
+          "columns": [
+            "期间",
+            "收入元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "credit"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "2026八个月收入不得作为全年收入或直接与2025全年计算同比"
+      ]
+    },
+    {
+      "id": "KS-LASER-500::cash_asof",
+      "customerKey": "KS-LASER-500",
+      "key": "cash_asof",
+      "value": 4697941,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/年度报表.csv",
+          "sha256": "1ced1950b3828133984e6b9f4ce183faec279683007e8e0e12f2cc53389d0a2c",
+          "line": 5,
+          "quote": "2026-01至08,21060640,3167867,4697941,2686855,1200000,10040000,4900000,13724796,18624796,2697941",
+          "columns": [
+            "期间",
+            "现金元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-LASER-500::receivables_asof",
+      "customerKey": "KS-LASER-500",
+      "key": "receivables_asof",
+      "value": 2686855,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/年度报表.csv",
+          "sha256": "1ced1950b3828133984e6b9f4ce183faec279683007e8e0e12f2cc53389d0a2c",
+          "line": 5,
+          "quote": "2026-01至08,21060640,3167867,4697941,2686855,1200000,10040000,4900000,13724796,18624796,2697941",
+          "columns": [
+            "期间",
+            "应收元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-LASER-500::assets_asof",
+      "customerKey": "KS-LASER-500",
+      "key": "assets_asof",
+      "value": 18624796,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/年度报表.csv",
+          "sha256": "1ced1950b3828133984e6b9f4ce183faec279683007e8e0e12f2cc53389d0a2c",
+          "line": 5,
+          "quote": "2026-01至08,21060640,3167867,4697941,2686855,1200000,10040000,4900000,13724796,18624796,2697941",
+          "columns": [
+            "期间",
+            "资产元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-LASER-500::liabilities_asof",
+      "customerKey": "KS-LASER-500",
+      "key": "liabilities_asof",
+      "value": 4900000,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/年度报表.csv",
+          "sha256": "1ced1950b3828133984e6b9f4ce183faec279683007e8e0e12f2cc53389d0a2c",
+          "line": 5,
+          "quote": "2026-01至08,21060640,3167867,4697941,2686855,1200000,10040000,4900000,13724796,18624796,2697941",
+          "columns": [
+            "期间",
+            "负债元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-LASER-500::net_profit_2026_ytd",
+      "customerKey": "KS-LASER-500",
+      "key": "net_profit_2026_ytd",
+      "value": 3167867,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/年度报表.csv",
+          "sha256": "1ced1950b3828133984e6b9f4ce183faec279683007e8e0e12f2cc53389d0a2c",
+          "line": 5,
+          "quote": "2026-01至08,21060640,3167867,4697941,2686855,1200000,10040000,4900000,13724796,18624796,2697941",
+          "columns": [
+            "期间",
+            "净利润元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-LASER-500::operating_cash_2026_ytd",
+      "customerKey": "KS-LASER-500",
+      "key": "operating_cash_2026_ytd",
+      "value": 2697941,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/年度报表.csv",
+          "sha256": "1ced1950b3828133984e6b9f4ce183faec279683007e8e0e12f2cc53389d0a2c",
+          "line": 5,
+          "quote": "2026-01至08,21060640,3167867,4697941,2686855,1200000,10040000,4900000,13724796,18624796,2697941",
+          "columns": [
+            "期间",
+            "经营净现金元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-LASER-500::debt_maturity",
+      "customerKey": "KS-LASER-500",
+      "key": "debt_maturity",
+      "value": "2028-12-31",
+      "unit": "ISO-date",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/债务计划.csv",
+          "sha256": "61381861e09739784f87e8d61501c42ede116709da1a69383ab37d9f4612ccf3",
+          "line": 2,
+          "quote": "KS-LASER-500-LOAN,模拟融资机构,4000000,0.06,2028-12-31,到期还本、每月付息,非本次设备担保,截至基准日无已发生逾期（合成）",
+          "columns": [
+            "到期日",
+            "期末本金元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "未来到期不能描述为基准日已经逾期；不代表JW新融资合同已签署"
+      ]
+    },
+    {
+      "id": "KS-LASER-500::equipment_count",
+      "customerKey": "KS-LASER-500",
+      "key": "equipment_count",
+      "value": 7,
+      "unit": "count",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+          "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+          "line": 2,
+          "quote": "SYN-KS-LASER-500-EQ-01,邦德激光,SIM-激光金属加工-01,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-01-INV,SYN-KS-LASER-500-EQ-01-PAY,SYN-KS-LASER-500-EQ-01-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+          "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+          "line": 3,
+          "quote": "SYN-KS-LASER-500-EQ-02,邦德激光,SIM-激光金属加工-02,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-02-INV,SYN-KS-LASER-500-EQ-02-PAY,SYN-KS-LASER-500-EQ-02-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+          "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+          "line": 4,
+          "quote": "SYN-KS-LASER-500-EQ-03,邦德激光,SIM-激光金属加工-03,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-03-INV,SYN-KS-LASER-500-EQ-03-PAY,SYN-KS-LASER-500-EQ-03-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+          "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+          "line": 5,
+          "quote": "SYN-KS-LASER-500-EQ-04,邦德激光,SIM-激光金属加工-04,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-04-INV,SYN-KS-LASER-500-EQ-04-PAY,SYN-KS-LASER-500-EQ-04-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+          "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+          "line": 6,
+          "quote": "SYN-KS-LASER-500-EQ-05,邦德激光,SIM-激光金属加工-05,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-05-INV,SYN-KS-LASER-500-EQ-05-PAY,SYN-KS-LASER-500-EQ-05-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+          "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+          "line": 7,
+          "quote": "SYN-KS-LASER-500-EQ-06,邦德激光,SIM-激光金属加工-06,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-06-INV,SYN-KS-LASER-500-EQ-06-PAY,SYN-KS-LASER-500-EQ-06-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+          "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+          "line": 8,
+          "quote": "SYN-KS-LASER-500-EQ-07,邦德激光,SIM-激光金属加工-07,2022-12-01,2000000,565710,1434290,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-07-INV,SYN-KS-LASER-500-EQ-07-PAY,SYN-KS-LASER-500-EQ-07-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "asset",
+        "commerce"
+      ],
+      "method": "逐行计数，序列号唯一",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-LASER-500::equipment_net_book_value",
+      "customerKey": "KS-LASER-500",
+      "key": "equipment_net_book_value",
+      "value": 10040000,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+          "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+          "line": 2,
+          "quote": "SYN-KS-LASER-500-EQ-01,邦德激光,SIM-激光金属加工-01,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-01-INV,SYN-KS-LASER-500-EQ-01-PAY,SYN-KS-LASER-500-EQ-01-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+          "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+          "line": 3,
+          "quote": "SYN-KS-LASER-500-EQ-02,邦德激光,SIM-激光金属加工-02,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-02-INV,SYN-KS-LASER-500-EQ-02-PAY,SYN-KS-LASER-500-EQ-02-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+          "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+          "line": 4,
+          "quote": "SYN-KS-LASER-500-EQ-03,邦德激光,SIM-激光金属加工-03,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-03-INV,SYN-KS-LASER-500-EQ-03-PAY,SYN-KS-LASER-500-EQ-03-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+          "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+          "line": 5,
+          "quote": "SYN-KS-LASER-500-EQ-04,邦德激光,SIM-激光金属加工-04,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-04-INV,SYN-KS-LASER-500-EQ-04-PAY,SYN-KS-LASER-500-EQ-04-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+          "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+          "line": 6,
+          "quote": "SYN-KS-LASER-500-EQ-05,邦德激光,SIM-激光金属加工-05,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-05-INV,SYN-KS-LASER-500-EQ-05-PAY,SYN-KS-LASER-500-EQ-05-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+          "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+          "line": 7,
+          "quote": "SYN-KS-LASER-500-EQ-06,邦德激光,SIM-激光金属加工-06,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-06-INV,SYN-KS-LASER-500-EQ-06-PAY,SYN-KS-LASER-500-EQ-06-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+          "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+          "line": 8,
+          "quote": "SYN-KS-LASER-500-EQ-07,邦德激光,SIM-激光金属加工-07,2022-12-01,2000000,565710,1434290,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-07-INV,SYN-KS-LASER-500-EQ-07-PAY,SYN-KS-LASER-500-EQ-07-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "asset",
+        "commerce"
+      ],
+      "method": "逐行净值求和",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "账面净值不等于评估价值、无权利负担价值或可融资金额"
+      ]
+    },
+    {
+      "id": "KS-LASER-500::sample_sale",
+      "customerKey": "KS-LASER-500",
+      "key": "sample_sale",
+      "value": {
+        "orderId": "KS-LASER-500-S-202608-1",
+        "deliveryDate": "2026-08-10",
+        "grossYuan": 1299708,
+        "receivedYuan": 1234723,
+        "unpaidYuan": 64985
+      },
+      "unit": "mixed",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/销售开票回款.csv",
+          "sha256": "b4c61cbc3318dceac1f4d5d91aaf25a6b1b6b07e5ddb80aca6d8fec8283fb0dc",
+          "line": 131,
+          "quote": "KS-LASER-500-S-202608-1,2026-08-05,模拟下游1,标准金属加工件,1150184,149524,1299708,1234723,64985,2026-08-10,KS-LASER-500-S-202608-1-INV,KS-LASER-500-S-202608-1-DEL,SYNTHETIC"
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "credit"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "商品销售回款不等于JW融资租金；销售交付不等于融资合同履约"
+      ]
+    },
+    {
+      "id": "KS-INJECTION-1000::requested_amount",
+      "customerKey": "KS-INJECTION-1000",
+      "key": "requested_amount",
+      "value": 10000000,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/D01-融资需求登记.md",
+          "sha256": "8e25bcc429e4abc3a53cef4cecf2427b77346f887a07904602b7a9767734431a",
+          "line": 7,
+          "quote": "申请人：喀什示例塑料制品有限公司；申请金额 1,000.00 万元；业务为新客户首次售后回租预评估。"
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "申请金额不是已批准额度，不是可支持金额"
+      ]
+    },
+    {
+      "id": "KS-INJECTION-1000::legal_name",
+      "customerKey": "KS-INJECTION-1000",
+      "key": "legal_name",
+      "value": "喀什示例塑料制品有限公司",
+      "unit": null,
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/D02-主体登记资料.md",
+          "sha256": "786f184f728f591a3ea70f864c60ef297835f93a97e0acd3a778d207004cab47",
+          "line": 7,
+          "quote": "legal_name=喀什示例塑料制品有限公司"
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "policy"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-INJECTION-1000::established_date",
+      "customerKey": "KS-INJECTION-1000",
+      "key": "established_date",
+      "value": "2020-03-16",
+      "unit": "ISO-date",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/D02-主体登记资料.md",
+          "sha256": "786f184f728f591a3ea70f864c60ef297835f93a97e0acd3a778d207004cab47",
+          "line": 13,
+          "quote": "设立日期：2020-03-16；经营范围：本案例对应产品制造销售；登记状态设定为存续。"
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "policy"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-INJECTION-1000::revenue_2025",
+      "customerKey": "KS-INJECTION-1000",
+      "key": "revenue_2025",
+      "value": 59423412,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/年度报表.csv",
+          "sha256": "123ce621acb25e3411bbf393a959e19cff3113cb14726cf4b80a1606d6dcd470",
+          "line": 4,
+          "quote": "2025,59423412,13633160,4000000,1400000,1800000,19520000,7400000,19320000,26720000,15793160",
+          "columns": [
+            "期间",
+            "收入元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-INJECTION-1000::revenue_2026_ytd",
+      "customerKey": "KS-INJECTION-1000",
+      "key": "revenue_2026_ytd",
+      "value": 41850132,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/年度报表.csv",
+          "sha256": "123ce621acb25e3411bbf393a959e19cff3113cb14726cf4b80a1606d6dcd470",
+          "line": 5,
+          "quote": "2026-01至08,41850132,10078483,15045576,1872907,1800000,18080000,7400000,29398483,36798483,11045576",
+          "columns": [
+            "期间",
+            "收入元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "credit"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "2026八个月收入不得作为全年收入或直接与2025全年计算同比"
+      ]
+    },
+    {
+      "id": "KS-INJECTION-1000::cash_asof",
+      "customerKey": "KS-INJECTION-1000",
+      "key": "cash_asof",
+      "value": 15045576,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/年度报表.csv",
+          "sha256": "123ce621acb25e3411bbf393a959e19cff3113cb14726cf4b80a1606d6dcd470",
+          "line": 5,
+          "quote": "2026-01至08,41850132,10078483,15045576,1872907,1800000,18080000,7400000,29398483,36798483,11045576",
+          "columns": [
+            "期间",
+            "现金元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-INJECTION-1000::receivables_asof",
+      "customerKey": "KS-INJECTION-1000",
+      "key": "receivables_asof",
+      "value": 1872907,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/年度报表.csv",
+          "sha256": "123ce621acb25e3411bbf393a959e19cff3113cb14726cf4b80a1606d6dcd470",
+          "line": 5,
+          "quote": "2026-01至08,41850132,10078483,15045576,1872907,1800000,18080000,7400000,29398483,36798483,11045576",
+          "columns": [
+            "期间",
+            "应收元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-INJECTION-1000::assets_asof",
+      "customerKey": "KS-INJECTION-1000",
+      "key": "assets_asof",
+      "value": 36798483,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/年度报表.csv",
+          "sha256": "123ce621acb25e3411bbf393a959e19cff3113cb14726cf4b80a1606d6dcd470",
+          "line": 5,
+          "quote": "2026-01至08,41850132,10078483,15045576,1872907,1800000,18080000,7400000,29398483,36798483,11045576",
+          "columns": [
+            "期间",
+            "资产元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-INJECTION-1000::liabilities_asof",
+      "customerKey": "KS-INJECTION-1000",
+      "key": "liabilities_asof",
+      "value": 7400000,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/年度报表.csv",
+          "sha256": "123ce621acb25e3411bbf393a959e19cff3113cb14726cf4b80a1606d6dcd470",
+          "line": 5,
+          "quote": "2026-01至08,41850132,10078483,15045576,1872907,1800000,18080000,7400000,29398483,36798483,11045576",
+          "columns": [
+            "期间",
+            "负债元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-INJECTION-1000::net_profit_2026_ytd",
+      "customerKey": "KS-INJECTION-1000",
+      "key": "net_profit_2026_ytd",
+      "value": 10078483,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/年度报表.csv",
+          "sha256": "123ce621acb25e3411bbf393a959e19cff3113cb14726cf4b80a1606d6dcd470",
+          "line": 5,
+          "quote": "2026-01至08,41850132,10078483,15045576,1872907,1800000,18080000,7400000,29398483,36798483,11045576",
+          "columns": [
+            "期间",
+            "净利润元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-INJECTION-1000::operating_cash_2026_ytd",
+      "customerKey": "KS-INJECTION-1000",
+      "key": "operating_cash_2026_ytd",
+      "value": 11045576,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/年度报表.csv",
+          "sha256": "123ce621acb25e3411bbf393a959e19cff3113cb14726cf4b80a1606d6dcd470",
+          "line": 5,
+          "quote": "2026-01至08,41850132,10078483,15045576,1872907,1800000,18080000,7400000,29398483,36798483,11045576",
+          "columns": [
+            "期间",
+            "经营净现金元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-INJECTION-1000::debt_maturity",
+      "customerKey": "KS-INJECTION-1000",
+      "key": "debt_maturity",
+      "value": "2028-12-31",
+      "unit": "ISO-date",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/债务计划.csv",
+          "sha256": "689ed6e20048694bb5b42ac511f8a20e7e3dea3ee80a8ab9c21b06aa8e6481d6",
+          "line": 2,
+          "quote": "KS-INJECTION-1000-LOAN,模拟融资机构,6000000,0.05,2028-12-31,到期还本、每月付息,非本次设备担保,截至基准日无已发生逾期（合成）",
+          "columns": [
+            "到期日",
+            "期末本金元"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "credit",
+        "commerce"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "未来到期不能描述为基准日已经逾期；不代表JW新融资合同已签署"
+      ]
+    },
+    {
+      "id": "KS-INJECTION-1000::equipment_count",
+      "customerKey": "KS-INJECTION-1000",
+      "key": "equipment_count",
+      "value": 13,
+      "unit": "count",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 2,
+          "quote": "SYN-KS-INJECTION-1000-EQ-01,华美达,SIM-注塑制品生产-01,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-01-INV,SYN-KS-INJECTION-1000-EQ-01-PAY,SYN-KS-INJECTION-1000-EQ-01-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 3,
+          "quote": "SYN-KS-INJECTION-1000-EQ-02,华美达,SIM-注塑制品生产-02,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-02-INV,SYN-KS-INJECTION-1000-EQ-02-PAY,SYN-KS-INJECTION-1000-EQ-02-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 4,
+          "quote": "SYN-KS-INJECTION-1000-EQ-03,华美达,SIM-注塑制品生产-03,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-03-INV,SYN-KS-INJECTION-1000-EQ-03-PAY,SYN-KS-INJECTION-1000-EQ-03-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 5,
+          "quote": "SYN-KS-INJECTION-1000-EQ-04,华美达,SIM-注塑制品生产-04,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-04-INV,SYN-KS-INJECTION-1000-EQ-04-PAY,SYN-KS-INJECTION-1000-EQ-04-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 6,
+          "quote": "SYN-KS-INJECTION-1000-EQ-05,华美达,SIM-注塑制品生产-05,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-05-INV,SYN-KS-INJECTION-1000-EQ-05-PAY,SYN-KS-INJECTION-1000-EQ-05-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 7,
+          "quote": "SYN-KS-INJECTION-1000-EQ-06,华美达,SIM-注塑制品生产-06,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-06-INV,SYN-KS-INJECTION-1000-EQ-06-PAY,SYN-KS-INJECTION-1000-EQ-06-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 8,
+          "quote": "SYN-KS-INJECTION-1000-EQ-07,华美达,SIM-注塑制品生产-07,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-07-INV,SYN-KS-INJECTION-1000-EQ-07-PAY,SYN-KS-INJECTION-1000-EQ-07-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 9,
+          "quote": "SYN-KS-INJECTION-1000-EQ-08,华美达,SIM-注塑制品生产-08,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-08-INV,SYN-KS-INJECTION-1000-EQ-08-PAY,SYN-KS-INJECTION-1000-EQ-08-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 10,
+          "quote": "SYN-KS-INJECTION-1000-EQ-09,华美达,SIM-注塑制品生产-09,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-09-INV,SYN-KS-INJECTION-1000-EQ-09-PAY,SYN-KS-INJECTION-1000-EQ-09-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 11,
+          "quote": "SYN-KS-INJECTION-1000-EQ-10,华美达,SIM-注塑制品生产-10,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-10-INV,SYN-KS-INJECTION-1000-EQ-10-PAY,SYN-KS-INJECTION-1000-EQ-10-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 12,
+          "quote": "SYN-KS-INJECTION-1000-EQ-11,华美达,SIM-注塑制品生产-11,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-11-INV,SYN-KS-INJECTION-1000-EQ-11-PAY,SYN-KS-INJECTION-1000-EQ-11-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 13,
+          "quote": "SYN-KS-INJECTION-1000-EQ-12,华美达,SIM-注塑制品生产-12,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-12-INV,SYN-KS-INJECTION-1000-EQ-12-PAY,SYN-KS-INJECTION-1000-EQ-12-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 14,
+          "quote": "SYN-KS-INJECTION-1000-EQ-13,华美达,SIM-注塑制品生产-13,2022-12-01,2000000,609228,1390772,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-13-INV,SYN-KS-INJECTION-1000-EQ-13-PAY,SYN-KS-INJECTION-1000-EQ-13-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "asset",
+        "commerce"
+      ],
+      "method": "逐行计数，序列号唯一",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "不得据此自动批准授信或标记人工核验通过"
+      ]
+    },
+    {
+      "id": "KS-INJECTION-1000::equipment_net_book_value",
+      "customerKey": "KS-INJECTION-1000",
+      "key": "equipment_net_book_value",
+      "value": 18080000,
+      "unit": "CNY-yuan",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 2,
+          "quote": "SYN-KS-INJECTION-1000-EQ-01,华美达,SIM-注塑制品生产-01,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-01-INV,SYN-KS-INJECTION-1000-EQ-01-PAY,SYN-KS-INJECTION-1000-EQ-01-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 3,
+          "quote": "SYN-KS-INJECTION-1000-EQ-02,华美达,SIM-注塑制品生产-02,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-02-INV,SYN-KS-INJECTION-1000-EQ-02-PAY,SYN-KS-INJECTION-1000-EQ-02-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 4,
+          "quote": "SYN-KS-INJECTION-1000-EQ-03,华美达,SIM-注塑制品生产-03,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-03-INV,SYN-KS-INJECTION-1000-EQ-03-PAY,SYN-KS-INJECTION-1000-EQ-03-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 5,
+          "quote": "SYN-KS-INJECTION-1000-EQ-04,华美达,SIM-注塑制品生产-04,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-04-INV,SYN-KS-INJECTION-1000-EQ-04-PAY,SYN-KS-INJECTION-1000-EQ-04-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 6,
+          "quote": "SYN-KS-INJECTION-1000-EQ-05,华美达,SIM-注塑制品生产-05,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-05-INV,SYN-KS-INJECTION-1000-EQ-05-PAY,SYN-KS-INJECTION-1000-EQ-05-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 7,
+          "quote": "SYN-KS-INJECTION-1000-EQ-06,华美达,SIM-注塑制品生产-06,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-06-INV,SYN-KS-INJECTION-1000-EQ-06-PAY,SYN-KS-INJECTION-1000-EQ-06-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 8,
+          "quote": "SYN-KS-INJECTION-1000-EQ-07,华美达,SIM-注塑制品生产-07,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-07-INV,SYN-KS-INJECTION-1000-EQ-07-PAY,SYN-KS-INJECTION-1000-EQ-07-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 9,
+          "quote": "SYN-KS-INJECTION-1000-EQ-08,华美达,SIM-注塑制品生产-08,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-08-INV,SYN-KS-INJECTION-1000-EQ-08-PAY,SYN-KS-INJECTION-1000-EQ-08-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 10,
+          "quote": "SYN-KS-INJECTION-1000-EQ-09,华美达,SIM-注塑制品生产-09,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-09-INV,SYN-KS-INJECTION-1000-EQ-09-PAY,SYN-KS-INJECTION-1000-EQ-09-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 11,
+          "quote": "SYN-KS-INJECTION-1000-EQ-10,华美达,SIM-注塑制品生产-10,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-10-INV,SYN-KS-INJECTION-1000-EQ-10-PAY,SYN-KS-INJECTION-1000-EQ-10-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 12,
+          "quote": "SYN-KS-INJECTION-1000-EQ-11,华美达,SIM-注塑制品生产-11,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-11-INV,SYN-KS-INJECTION-1000-EQ-11-PAY,SYN-KS-INJECTION-1000-EQ-11-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 13,
+          "quote": "SYN-KS-INJECTION-1000-EQ-12,华美达,SIM-注塑制品生产-12,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-12-INV,SYN-KS-INJECTION-1000-EQ-12-PAY,SYN-KS-INJECTION-1000-EQ-12-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        },
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+          "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+          "line": 14,
+          "quote": "SYN-KS-INJECTION-1000-EQ-13,华美达,SIM-注塑制品生产-13,2022-12-01,2000000,609228,1390772,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-13-INV,SYN-KS-INJECTION-1000-EQ-13-PAY,SYN-KS-INJECTION-1000-EQ-13-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+          "columns": [
+            "序列号",
+            "模拟型号",
+            "原值元",
+            "净值元",
+            "权属声明",
+            "核验状态"
+          ]
+        }
+      ],
+      "affectedDomains": [
+        "asset",
+        "commerce"
+      ],
+      "method": "逐行净值求和",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "账面净值不等于评估价值、无权利负担价值或可融资金额"
+      ]
+    },
+    {
+      "id": "KS-INJECTION-1000::sample_sale",
+      "customerKey": "KS-INJECTION-1000",
+      "key": "sample_sale",
+      "value": {
+        "orderId": "KS-INJECTION-1000-S-202608-1",
+        "deliveryDate": "2026-08-10",
+        "grossYuan": 2195339,
+        "receivedYuan": 2173386,
+        "unpaidYuan": 21953
+      },
+      "unit": "mixed",
+      "sourceRefs": [
+        {
+          "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/销售开票回款.csv",
+          "sha256": "3a064f049cd82a857ade502990ab371b632e60d905500854dfcdb08512de3de7",
+          "line": 131,
+          "quote": "KS-INJECTION-1000-S-202608-1,2026-08-05,模拟下游1,工业塑料周转配件,1942778,252561,2195339,2173386,21953,2026-08-10,KS-INJECTION-1000-S-202608-1-INV,KS-INJECTION-1000-S-202608-1-DEL,SYNTHETIC"
+        }
+      ],
+      "affectedDomains": [
+        "business",
+        "credit"
+      ],
+      "method": "原文直接读取",
+      "verificationLevel": "synthetic_source_answer_not_verified_real_world",
+      "forbiddenConclusions": [
+        "商品销售回款不等于JW融资租金；销售交付不等于融资合同履约"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "customerKey": "KS-TEXTILE-200",
+      "role": "风险阻断对照",
+      "requestedAmountYuan": 2000000,
+      "equipment": [
+        {
+          "equipmentId": "SYN-KS-TEXTILE-200-EQ-01",
+          "model": "SIM-棉纱纺织-01",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1340000,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/设备清单.csv",
+            "sha256": "3e2b7fafb3d6555c96121e77edbadec95bb89282b384c68428baec0904d095fe",
+            "line": 2,
+            "quote": "SYN-KS-TEXTILE-200-EQ-01,卓朗（用户称谓；官方中文为卓郎）,SIM-棉纱纺织-01,2022-12-01,2000000,660000,1340000,self-owned,待人工核验,KS-TEXTILE-200-EQ-CONTRACT,SYN-KS-TEXTILE-200-EQ-01-INV,SYN-KS-TEXTILE-200-EQ-01-PAY,SYN-KS-TEXTILE-200-EQ-01-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-TEXTILE-200-EQ-02",
+          "model": "SIM-棉纱纺织-02",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1340000,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/设备清单.csv",
+            "sha256": "3e2b7fafb3d6555c96121e77edbadec95bb89282b384c68428baec0904d095fe",
+            "line": 3,
+            "quote": "SYN-KS-TEXTILE-200-EQ-02,卓朗（用户称谓；官方中文为卓郎）,SIM-棉纱纺织-02,2022-12-01,2000000,660000,1340000,self-owned,待人工核验,KS-TEXTILE-200-EQ-CONTRACT,SYN-KS-TEXTILE-200-EQ-02-INV,SYN-KS-TEXTILE-200-EQ-02-PAY,SYN-KS-TEXTILE-200-EQ-02-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-TEXTILE-200-EQ-03",
+          "model": "SIM-棉纱纺织-03",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1340000,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/设备清单.csv",
+            "sha256": "3e2b7fafb3d6555c96121e77edbadec95bb89282b384c68428baec0904d095fe",
+            "line": 4,
+            "quote": "SYN-KS-TEXTILE-200-EQ-03,卓朗（用户称谓；官方中文为卓郎）,SIM-棉纱纺织-03,2022-12-01,2000000,660000,1340000,self-owned,待人工核验,KS-TEXTILE-200-EQ-CONTRACT,SYN-KS-TEXTILE-200-EQ-03-INV,SYN-KS-TEXTILE-200-EQ-03-PAY,SYN-KS-TEXTILE-200-EQ-03-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-TEXTILE-200-EQ-04",
+          "model": "SIM-棉纱纺织-04",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1340000,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/设备清单.csv",
+            "sha256": "3e2b7fafb3d6555c96121e77edbadec95bb89282b384c68428baec0904d095fe",
+            "line": 5,
+            "quote": "SYN-KS-TEXTILE-200-EQ-04,卓朗（用户称谓；官方中文为卓郎）,SIM-棉纱纺织-04,2022-12-01,2000000,660000,1340000,self-owned,待人工核验,KS-TEXTILE-200-EQ-CONTRACT,SYN-KS-TEXTILE-200-EQ-04-INV,SYN-KS-TEXTILE-200-EQ-04-PAY,SYN-KS-TEXTILE-200-EQ-04-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        }
+      ],
+      "keyRisks": [
+        {
+          "risk": "历史应收持续未清、未计提减值，需核验可收回性",
+          "sourceRefs": [
+            {
+              "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/D18-应收与关联往来说明.md",
+              "sha256": "0bb29e59df993ef29963420cfffdfe3268df5227cf36aacb0213cd5281fd4f93",
+              "line": 7,
+              "quote": "期末应收余额443.88 万元；期初历史应收100.00 万元仍未清偿，其余尾款逐单见应收明细.csv。"
+            }
+          ],
+          "domains": [
+            "credit"
+          ]
+        },
+        {
+          "risk": "设备权属或担保负担未外部核验",
+          "sourceRefs": [
+            {
+              "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/D16-设备现状与权利负担.md",
+              "sha256": "ac555808a8c76e86ebbeacf21a1b4ea2036c0a5e516204cfbfb59e280ab5a9d6",
+              "line": 9,
+              "quote": "较差案例：现有融资担保描述不明确，可能覆盖拟回租设备，需要逐台取得范围说明。"
+            }
+          ],
+          "domains": [
+            "asset",
+            "policy"
+          ]
+        },
+        {
+          "risk": "缺真实现场影像及适用资质核验",
+          "sourceRefs": [
+            {
+              "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/D19-现场访谈与资质核查.md",
+              "sha256": "4fff832ebc794e7359ea37b2c8ebb88a877e55a00d0ee8e27fef605b8e5a6a99",
+              "line": 9,
+              "quote": "现场照片尚无真实来源；本包附现场采集清单和示意图，不能标记现场核验通过。"
+            }
+          ],
+          "domains": [
+            "asset",
+            "policy",
+            "business"
+          ]
+        },
+        {
+          "risk": "2026年1-8月经营现金流为负且2026-10-31有480万元本金到期；基准日并未已逾期",
+          "sourceRefs": [
+            {
+              "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/年度报表.csv",
+              "sha256": "bdc962a55f17243f488a348f8036fa93be36b32467a10fb0d1f44055c57f5f6d",
+              "line": 5,
+              "quote": "2026-01至08,11086988,309376,4077504,4438761,1188043,5360000,5800000,9264308,15064308,-2354892"
+            },
+            {
+              "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/债务计划.csv",
+              "sha256": "f6077f8ea39d8c80dfefaa61ff1a53a1cb92811bbe7d117d134fad31ff45c96b",
+              "line": 2,
+              "quote": "KS-TEXTILE-200-LOAN,模拟融资机构,4800000,0.08,2026-10-31,到期还本、每月付息,设备范围待核实,截至基准日无已发生逾期（合成）"
+            }
+          ],
+          "domains": [
+            "credit",
+            "commerce"
+          ]
+        }
+      ],
+      "answerIds": [
+        "KS-TEXTILE-200::requested_amount",
+        "KS-TEXTILE-200::legal_name",
+        "KS-TEXTILE-200::established_date",
+        "KS-TEXTILE-200::revenue_2025",
+        "KS-TEXTILE-200::revenue_2026_ytd",
+        "KS-TEXTILE-200::cash_asof",
+        "KS-TEXTILE-200::receivables_asof",
+        "KS-TEXTILE-200::assets_asof",
+        "KS-TEXTILE-200::liabilities_asof",
+        "KS-TEXTILE-200::net_profit_2026_ytd",
+        "KS-TEXTILE-200::operating_cash_2026_ytd",
+        "KS-TEXTILE-200::debt_maturity",
+        "KS-TEXTILE-200::equipment_count",
+        "KS-TEXTILE-200::equipment_net_book_value",
+        "KS-TEXTILE-200::sample_sale"
+      ]
+    },
+    {
+      "customerKey": "KS-LASER-500",
+      "role": "主演示",
+      "requestedAmountYuan": 5000000,
+      "equipment": [
+        {
+          "equipmentId": "SYN-KS-LASER-500-EQ-01",
+          "model": "SIM-激光金属加工-01",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1434285,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+            "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+            "line": 2,
+            "quote": "SYN-KS-LASER-500-EQ-01,邦德激光,SIM-激光金属加工-01,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-01-INV,SYN-KS-LASER-500-EQ-01-PAY,SYN-KS-LASER-500-EQ-01-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-LASER-500-EQ-02",
+          "model": "SIM-激光金属加工-02",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1434285,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+            "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+            "line": 3,
+            "quote": "SYN-KS-LASER-500-EQ-02,邦德激光,SIM-激光金属加工-02,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-02-INV,SYN-KS-LASER-500-EQ-02-PAY,SYN-KS-LASER-500-EQ-02-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-LASER-500-EQ-03",
+          "model": "SIM-激光金属加工-03",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1434285,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+            "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+            "line": 4,
+            "quote": "SYN-KS-LASER-500-EQ-03,邦德激光,SIM-激光金属加工-03,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-03-INV,SYN-KS-LASER-500-EQ-03-PAY,SYN-KS-LASER-500-EQ-03-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-LASER-500-EQ-04",
+          "model": "SIM-激光金属加工-04",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1434285,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+            "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+            "line": 5,
+            "quote": "SYN-KS-LASER-500-EQ-04,邦德激光,SIM-激光金属加工-04,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-04-INV,SYN-KS-LASER-500-EQ-04-PAY,SYN-KS-LASER-500-EQ-04-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-LASER-500-EQ-05",
+          "model": "SIM-激光金属加工-05",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1434285,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+            "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+            "line": 6,
+            "quote": "SYN-KS-LASER-500-EQ-05,邦德激光,SIM-激光金属加工-05,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-05-INV,SYN-KS-LASER-500-EQ-05-PAY,SYN-KS-LASER-500-EQ-05-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-LASER-500-EQ-06",
+          "model": "SIM-激光金属加工-06",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1434285,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+            "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+            "line": 7,
+            "quote": "SYN-KS-LASER-500-EQ-06,邦德激光,SIM-激光金属加工-06,2022-12-01,2000000,565715,1434285,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-06-INV,SYN-KS-LASER-500-EQ-06-PAY,SYN-KS-LASER-500-EQ-06-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-LASER-500-EQ-07",
+          "model": "SIM-激光金属加工-07",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1434290,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/设备清单.csv",
+            "sha256": "440467bd6da9900cf93d7094abeb9bc05165316c1ee8ebf4e0f048da7abbf30b",
+            "line": 8,
+            "quote": "SYN-KS-LASER-500-EQ-07,邦德激光,SIM-激光金属加工-07,2022-12-01,2000000,565710,1434290,self-owned,待人工核验,KS-LASER-500-EQ-CONTRACT,SYN-KS-LASER-500-EQ-07-INV,SYN-KS-LASER-500-EQ-07-PAY,SYN-KS-LASER-500-EQ-07-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        }
+      ],
+      "keyRisks": [
+        {
+          "risk": "历史应收持续未清、未计提减值，需核验可收回性",
+          "sourceRefs": [
+            {
+              "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/D18-应收与关联往来说明.md",
+              "sha256": "2b32a79aabbc9a66d903c7d46a280f91fdb6fb151b7bb61aaaeae9ec58a04a15",
+              "line": 7,
+              "quote": "期末应收余额268.69 万元；期初历史应收100.00 万元仍未清偿，其余尾款逐单见应收明细.csv。"
+            }
+          ],
+          "domains": [
+            "credit"
+          ]
+        },
+        {
+          "risk": "设备权属或担保负担未外部核验",
+          "sourceRefs": [
+            {
+              "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/D16-设备现状与权利负担.md",
+              "sha256": "6fe925e3880fe7cbb83392d615561ee9fd94f1ea21355a9eae42769437887d87",
+              "line": 9,
+              "quote": "本案例声明拟回租设备未抵押；仍须真实登记检索与债权人核实，未预置为已核验。"
+            }
+          ],
+          "domains": [
+            "asset",
+            "policy"
+          ]
+        },
+        {
+          "risk": "缺真实现场影像及适用资质核验",
+          "sourceRefs": [
+            {
+              "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/D19-现场访谈与资质核查.md",
+              "sha256": "7598f4bf57773b6a94b18916717bfdd254c0e140e4a65643c184b53253352e23",
+              "line": 9,
+              "quote": "现场照片尚无真实来源；本包附现场采集清单和示意图，不能标记现场核验通过。"
+            }
+          ],
+          "domains": [
+            "asset",
+            "policy",
+            "business"
+          ]
+        },
+        {
+          "risk": "历史分红与融资必要性须说明，盈利或现金充裕不自动支持全部申请",
+          "sourceRefs": [
+            {
+              "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/D06-财务报表说明.md",
+              "sha256": "76ca26a809a8ad382a09789ae63958129c6cc82a7c3a483d231a5412c2d84af7",
+              "line": 11,
+              "quote": "正常和较好案例2023-2025年末进行利润分配，银行摘要标记筹资，经营净现金与现金净变动分别列示；较差案例不分红。分红来源与后续融资必要性须评估。"
+            },
+            {
+              "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/D21-未来订单与资金预算.md",
+              "sha256": "9d3c70ca5a83a75b17db98091df97b3c2b6bcc2321d624ee83c03a20fbfb3c65",
+              "line": 13,
+              "quote": "正常和较好案例存在历史分红，需解释为何不由股东留存利润支持周转。较差案例还需区分到期还债与经营用途，不能用虚构用途掩盖偿债缺口。"
+            }
+          ],
+          "domains": [
+            "credit",
+            "commerce",
+            "business"
+          ]
+        }
+      ],
+      "answerIds": [
+        "KS-LASER-500::requested_amount",
+        "KS-LASER-500::legal_name",
+        "KS-LASER-500::established_date",
+        "KS-LASER-500::revenue_2025",
+        "KS-LASER-500::revenue_2026_ytd",
+        "KS-LASER-500::cash_asof",
+        "KS-LASER-500::receivables_asof",
+        "KS-LASER-500::assets_asof",
+        "KS-LASER-500::liabilities_asof",
+        "KS-LASER-500::net_profit_2026_ytd",
+        "KS-LASER-500::operating_cash_2026_ytd",
+        "KS-LASER-500::debt_maturity",
+        "KS-LASER-500::equipment_count",
+        "KS-LASER-500::equipment_net_book_value",
+        "KS-LASER-500::sample_sale"
+      ]
+    },
+    {
+      "customerKey": "KS-INJECTION-1000",
+      "role": "较好经营但不越权对照",
+      "requestedAmountYuan": 10000000,
+      "equipment": [
+        {
+          "equipmentId": "SYN-KS-INJECTION-1000-EQ-01",
+          "model": "SIM-注塑制品生产-01",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1390769,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+            "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+            "line": 2,
+            "quote": "SYN-KS-INJECTION-1000-EQ-01,华美达,SIM-注塑制品生产-01,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-01-INV,SYN-KS-INJECTION-1000-EQ-01-PAY,SYN-KS-INJECTION-1000-EQ-01-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-INJECTION-1000-EQ-02",
+          "model": "SIM-注塑制品生产-02",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1390769,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+            "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+            "line": 3,
+            "quote": "SYN-KS-INJECTION-1000-EQ-02,华美达,SIM-注塑制品生产-02,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-02-INV,SYN-KS-INJECTION-1000-EQ-02-PAY,SYN-KS-INJECTION-1000-EQ-02-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-INJECTION-1000-EQ-03",
+          "model": "SIM-注塑制品生产-03",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1390769,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+            "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+            "line": 4,
+            "quote": "SYN-KS-INJECTION-1000-EQ-03,华美达,SIM-注塑制品生产-03,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-03-INV,SYN-KS-INJECTION-1000-EQ-03-PAY,SYN-KS-INJECTION-1000-EQ-03-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-INJECTION-1000-EQ-04",
+          "model": "SIM-注塑制品生产-04",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1390769,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+            "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+            "line": 5,
+            "quote": "SYN-KS-INJECTION-1000-EQ-04,华美达,SIM-注塑制品生产-04,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-04-INV,SYN-KS-INJECTION-1000-EQ-04-PAY,SYN-KS-INJECTION-1000-EQ-04-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-INJECTION-1000-EQ-05",
+          "model": "SIM-注塑制品生产-05",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1390769,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+            "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+            "line": 6,
+            "quote": "SYN-KS-INJECTION-1000-EQ-05,华美达,SIM-注塑制品生产-05,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-05-INV,SYN-KS-INJECTION-1000-EQ-05-PAY,SYN-KS-INJECTION-1000-EQ-05-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-INJECTION-1000-EQ-06",
+          "model": "SIM-注塑制品生产-06",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1390769,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+            "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+            "line": 7,
+            "quote": "SYN-KS-INJECTION-1000-EQ-06,华美达,SIM-注塑制品生产-06,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-06-INV,SYN-KS-INJECTION-1000-EQ-06-PAY,SYN-KS-INJECTION-1000-EQ-06-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-INJECTION-1000-EQ-07",
+          "model": "SIM-注塑制品生产-07",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1390769,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+            "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+            "line": 8,
+            "quote": "SYN-KS-INJECTION-1000-EQ-07,华美达,SIM-注塑制品生产-07,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-07-INV,SYN-KS-INJECTION-1000-EQ-07-PAY,SYN-KS-INJECTION-1000-EQ-07-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-INJECTION-1000-EQ-08",
+          "model": "SIM-注塑制品生产-08",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1390769,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+            "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+            "line": 9,
+            "quote": "SYN-KS-INJECTION-1000-EQ-08,华美达,SIM-注塑制品生产-08,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-08-INV,SYN-KS-INJECTION-1000-EQ-08-PAY,SYN-KS-INJECTION-1000-EQ-08-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-INJECTION-1000-EQ-09",
+          "model": "SIM-注塑制品生产-09",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1390769,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+            "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+            "line": 10,
+            "quote": "SYN-KS-INJECTION-1000-EQ-09,华美达,SIM-注塑制品生产-09,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-09-INV,SYN-KS-INJECTION-1000-EQ-09-PAY,SYN-KS-INJECTION-1000-EQ-09-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-INJECTION-1000-EQ-10",
+          "model": "SIM-注塑制品生产-10",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1390769,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+            "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+            "line": 11,
+            "quote": "SYN-KS-INJECTION-1000-EQ-10,华美达,SIM-注塑制品生产-10,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-10-INV,SYN-KS-INJECTION-1000-EQ-10-PAY,SYN-KS-INJECTION-1000-EQ-10-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-INJECTION-1000-EQ-11",
+          "model": "SIM-注塑制品生产-11",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1390769,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+            "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+            "line": 12,
+            "quote": "SYN-KS-INJECTION-1000-EQ-11,华美达,SIM-注塑制品生产-11,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-11-INV,SYN-KS-INJECTION-1000-EQ-11-PAY,SYN-KS-INJECTION-1000-EQ-11-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-INJECTION-1000-EQ-12",
+          "model": "SIM-注塑制品生产-12",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1390769,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+            "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+            "line": 13,
+            "quote": "SYN-KS-INJECTION-1000-EQ-12,华美达,SIM-注塑制品生产-12,2022-12-01,2000000,609231,1390769,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-12-INV,SYN-KS-INJECTION-1000-EQ-12-PAY,SYN-KS-INJECTION-1000-EQ-12-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        },
+        {
+          "equipmentId": "SYN-KS-INJECTION-1000-EQ-13",
+          "model": "SIM-注塑制品生产-13",
+          "originalValueYuan": 2000000,
+          "netBookValueYuan": 1390772,
+          "acquiredDate": "2022-12-01",
+          "ownershipDeclaration": "self-owned",
+          "verification": "待人工核验",
+          "sourceRef": {
+            "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/设备清单.csv",
+            "sha256": "8a0419202e88edc155195fa086d62b23e5591a7347df3940b05d8fb89c82878b",
+            "line": 14,
+            "quote": "SYN-KS-INJECTION-1000-EQ-13,华美达,SIM-注塑制品生产-13,2022-12-01,2000000,609228,1390772,self-owned,待人工核验,KS-INJECTION-1000-EQ-CONTRACT,SYN-KS-INJECTION-1000-EQ-13-INV,SYN-KS-INJECTION-1000-EQ-13-PAY,SYN-KS-INJECTION-1000-EQ-13-ACCEPT,喀什模拟厂区A栋,SYNTHETIC",
+            "columns": [
+              "序列号",
+              "模拟型号",
+              "原值元",
+              "净值元",
+              "权属声明",
+              "核验状态"
+            ]
+          }
+        }
+      ],
+      "keyRisks": [
+        {
+          "risk": "历史应收持续未清、未计提减值，需核验可收回性",
+          "sourceRefs": [
+            {
+              "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/D18-应收与关联往来说明.md",
+              "sha256": "ac579dd2768625d757a2d9775cbd970218a04d11f4545433639e2111388cec09",
+              "line": 7,
+              "quote": "期末应收余额187.29 万元；期初历史应收140.00 万元仍未清偿，其余尾款逐单见应收明细.csv。"
+            }
+          ],
+          "domains": [
+            "credit"
+          ]
+        },
+        {
+          "risk": "设备权属或担保负担未外部核验",
+          "sourceRefs": [
+            {
+              "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/D16-设备现状与权利负担.md",
+              "sha256": "1c67622bb46395c8e179fcc1b0dac90a8f5d10b37a6b2f52faab8277cb16a25d",
+              "line": 9,
+              "quote": "本案例声明拟回租设备未抵押；仍须真实登记检索与债权人核实，未预置为已核验。"
+            }
+          ],
+          "domains": [
+            "asset",
+            "policy"
+          ]
+        },
+        {
+          "risk": "缺真实现场影像及适用资质核验",
+          "sourceRefs": [
+            {
+              "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/D19-现场访谈与资质核查.md",
+              "sha256": "8085c246368cbfd8ee89745496c1a940f657c3435ef4df7d736f51ed84a0a6f3",
+              "line": 9,
+              "quote": "现场照片尚无真实来源；本包附现场采集清单和示意图，不能标记现场核验通过。"
+            }
+          ],
+          "domains": [
+            "asset",
+            "policy",
+            "business"
+          ]
+        },
+        {
+          "risk": "历史分红与融资必要性须说明，盈利或现金充裕不自动支持全部申请",
+          "sourceRefs": [
+            {
+              "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/D06-财务报表说明.md",
+              "sha256": "62d3276b4a6206d016b127d3e6f4ec88137039615100aaf5f45111632535ce25",
+              "line": 11,
+              "quote": "正常和较好案例2023-2025年末进行利润分配，银行摘要标记筹资，经营净现金与现金净变动分别列示；较差案例不分红。分红来源与后续融资必要性须评估。"
+            },
+            {
+              "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/D21-未来订单与资金预算.md",
+              "sha256": "88c03225f38cabc788912ae4a21a45a930ab0035017c2f49277a78ebc00f68de",
+              "line": 13,
+              "quote": "正常和较好案例存在历史分红，需解释为何不由股东留存利润支持周转。较差案例还需区分到期还债与经营用途，不能用虚构用途掩盖偿债缺口。"
+            }
+          ],
+          "domains": [
+            "credit",
+            "commerce",
+            "business"
+          ]
+        }
+      ],
+      "answerIds": [
+        "KS-INJECTION-1000::requested_amount",
+        "KS-INJECTION-1000::legal_name",
+        "KS-INJECTION-1000::established_date",
+        "KS-INJECTION-1000::revenue_2025",
+        "KS-INJECTION-1000::revenue_2026_ytd",
+        "KS-INJECTION-1000::cash_asof",
+        "KS-INJECTION-1000::receivables_asof",
+        "KS-INJECTION-1000::assets_asof",
+        "KS-INJECTION-1000::liabilities_asof",
+        "KS-INJECTION-1000::net_profit_2026_ytd",
+        "KS-INJECTION-1000::operating_cash_2026_ytd",
+        "KS-INJECTION-1000::debt_maturity",
+        "KS-INJECTION-1000::equipment_count",
+        "KS-INJECTION-1000::equipment_net_book_value",
+        "KS-INJECTION-1000::sample_sale"
+      ]
+    }
+  ]
+}

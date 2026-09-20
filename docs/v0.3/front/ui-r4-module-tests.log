@@ -1,0 +1,268 @@
+TAP version 13
+# Subtest: T01 范围：二十格+六助手结构齐备；默认路径无退休展示与正式额度/融资入口
+ok 1 - T01 范围：二十格+六助手结构齐备；默认路径无退休展示与正式额度/融资入口
+  ---
+  duration_ms: 193.5261
+  type: 'test'
+  ...
+# Subtest: 方案面板无正式额度/融资操作按钮（停用说明可见；冻结依据包办理保留）
+ok 2 - 方案面板无正式额度/融资操作按钮（停用说明可见；冻结依据包办理保留）
+  ---
+  duration_ms: 333.8189
+  type: 'test'
+  ...
+# Subtest: 顶部摘要：待补/待评估/待估如实；有候选=同版金额+倾向标记（≠批准）
+ok 3 - 顶部摘要：待补/待评估/待估如实；有候选=同版金额+倾向标记（≠批准）
+  ---
+  duration_ms: 44.3734
+  type: 'test'
+  ...
+# Subtest: T13 视觉语义：current=完成绿（aria ≠批准）；changed=冻结+卡点；同轮测试 T03 部分并行
+ok 4 - T13 视觉语义：current=完成绿（aria ≠批准）；changed=冻结+卡点；同轮测试 T03 部分并行
+  ---
+  duration_ms: 80.0179
+  type: 'test'
+  ...
+# Subtest: 点格→真实事项分层详情；允许动作打开复用面板；关闭后看板仍在
+ok 5 - 点格→真实事项分层详情；允许动作打开复用面板；关闭后看板仍在
+  ---
+  duration_ms: 276.4937
+  type: 'test'
+  ...
+# Subtest: 辅助页：流程只读 SVG+缩放；记录消费服务端事件；待办可回原格子
+ok 6 - 辅助页：流程只读 SVG+缩放；记录消费服务端事件；待办可回原格子
+  ---
+  duration_ms: 395.8262
+  type: 'test'
+  ...
+# Subtest: 长按助手只插入@，打开团队消息并聚焦；不会同时切换助手
+ok 7 - 长按助手只插入@，打开团队消息并聚焦；不会同时切换助手
+  ---
+  duration_ms: 540.0737
+  type: 'test'
+  ...
+# Subtest: 六助手：草稿跨切换保留；@插入；Enter 发送内部线程；Shift+Enter 换行不发送；输入法候选不误发
+ok 8 - 六助手：草稿跨切换保留；@插入；Enter 发送内部线程；Shift+Enter 换行不发送；输入法候选不误发
+  ---
+  duration_ms: 142.4443
+  type: 'test'
+  ...
+# Subtest: 结束对话框：状态门如实——candidate_ready 下正/附条件禁用（须先提交复核）；撤回可用
+ok 9 - 结束对话框：状态门如实——candidate_ready 下正/附条件禁用（须先提交复核）；撤回可用
+  ---
+  duration_ms: 108.3886
+  type: 'test'
+  ...
+# Subtest: 结束对话框：awaiting_human_review 下三类可发起；not_support 提交绑定版本走 confirm-preassessment
+ok 10 - 结束对话框：awaiting_human_review 下三类可发起；not_support 提交绑定版本走 confirm-preassessment
+  ---
+  duration_ms: 216.1019
+  type: 'test'
+  ...
+# Subtest: 结束对话框：附条件支持必须给条件（缺失本地拦截）；补齐后提交带 conditions 数组
+ok 11 - 结束对话框：附条件支持必须给条件（缺失本地拦截）；补齐后提交带 conditions 数组
+  ---
+  duration_ms: 282.6376
+  type: 'test'
+  ...
+# Subtest: 结束对话框：已确认结论读回=终态（三类+撤回全禁用，显示需复核卡）
+ok 12 - 结束对话框：已确认结论读回=终态（三类+撤回全禁用，显示需复核卡）
+  ---
+  duration_ms: 117.0235
+  type: 'test'
+  ...
+# Subtest: admission 投影合并：到件数/失败卡点入格；requestedAmount/期限/价格同版上顶栏
+ok 13 - admission 投影合并：到件数/失败卡点入格；requestedAmount/期限/价格同版上顶栏
+  ---
+  duration_ms: 85.3332
+  type: 'test'
+  ...
+# Subtest: 助手工具栏上传入口打开材料面板（客户联系人门户分支保留在屏内）
+ok 14 - 助手工具栏上传入口打开材料面板（客户联系人门户分支保留在屏内）
+  ---
+  duration_ms: 70.5563
+  type: 'test'
+  ...
+# Subtest: 顶部摘要：已有申请金额首屏直接展示，不以加载占位冒充缺失
+ok 15 - 顶部摘要：已有申请金额首屏直接展示，不以加载占位冒充缺失
+  ---
+  duration_ms: 34.7572
+  type: 'test'
+  ...
+# Subtest: 结构固定：五列四行 20 格；空快照全部为 null 档位白圆（未知≠0、不硬补进度）
+ok 16 - 结构固定：五列四行 20 格；空快照全部为 null 档位白圆（未知≠0、不硬补进度）
+  ---
+  duration_ms: 2.658
+  type: 'test'
+  ...
+# Subtest: 域收口：currency=current → 完成 100% 绿（绿=工作完成≠批准）；changed → 冻结+复核不绿
+ok 17 - 域收口：currency=current → 完成 100% 绿（绿=工作完成≠批准）；changed → 冻结+复核不绿
+  ---
+  duration_ms: 0.6287
+  type: 'test'
+  ...
+# Subtest: 部分并行（T03）：单格事实局部呈现，不因整行/整列锁死；资产不等待商务
+not ok 18 - 部分并行（T03）：单格事实局部呈现，不因整行/整列锁死；资产不等待商务
+  ---
+  duration_ms: 1.9174
+  type: 'test'
+  location: 'C:\\Users\\22673\\Desktop\\JW\\Front\\preview\\test\\takeoff-projection.test.mjs:62:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /缺失/. Input:
+    
+    '本专业结论尚未登记'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: '本专业结论尚未登记'
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/Users/22673/Desktop/JW/Front/preview/test/takeoff-projection.test.mjs:75:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: 输入行：处理链运行=浅黄运行环；待补件/阻断如实入事项；材料读取失败=未知不是 0
+not ok 19 - 输入行：处理链运行=浅黄运行环；待补件/阻断如实入事项；材料读取失败=未知不是 0
+  ---
+  duration_ms: 0.2881
+  type: 'test'
+  location: 'C:\\Users\\22673\\Desktop\\JW\\Front\\preview\\test\\takeoff-projection.test.mjs:78:1'
+  failureType: 'testCodeFailure'
+  error: '材料数未知如实标注'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: '材料暂时无法读取；处理链被阻断等待恢复 1 项；待补件/转人工 1 项'
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/Users/22673/Desktop/JW/Front/preview/test/takeoff-projection.test.mjs:87:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: 事实冲突：输入行红项+卡点!（同键多断言不按最后上传覆盖）
+not ok 20 - 事实冲突：输入行红项+卡点!（同键多断言不按最后上传覆盖）
+  ---
+  duration_ms: 0.2803
+  type: 'test'
+  location: 'C:\\Users\\22673\\Desktop\\JW\\Front\\preview\\test\\takeoff-projection.test.mjs:93:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /事实冲突 2 处/. Input:
+    
+    '有 2 处材料内容需要核对'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: '有 2 处材料内容需要核对'
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/Users/22673/Desktop/JW/Front/preview/test/takeoff-projection.test.mjs:98:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: 人工行：followups 按域落格 + 卡点；采用记录=人工完成信号（authority=none 恒定）
+not ok 21 - 人工行：followups 按域落格 + 卡点；采用记录=人工完成信号（authority=none 恒定）
+  ---
+  duration_ms: 0.3706
+  type: 'test'
+  location: 'C:\\Users\\22673\\Desktop\\JW\\Front\\preview\\test\\takeoff-projection.test.mjs:102:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /转会后待办 1 项（ownerRole=credit）/. Input:
+    
+    '尚无该域人工核验记录；待办 1 项；开放补证问题 2 个（按角色应答）'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: '尚无该域人工核验记录；待办 1 项；开放补证问题 2 个（按角色应答）'
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/Users/22673/Desktop/JW/Front/preview/test/takeoff-projection.test.mjs:111:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: 商机列：客户档案=真实输入项；需求登记=§13.5 读回或如实待录入（不用融资申请冒充）
+not ok 22 - 商机列：客户档案=真实输入项；需求登记=§13.5 读回或如实待录入（不用融资申请冒充）
+  ---
+  duration_ms: 0.4029
+  type: 'test'
+  location: 'C:\\Users\\22673\\Desktop\\JW\\Front\\preview\\test\\takeoff-projection.test.mjs:118:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /客户主体档案 cus_1/. Input:
+    
+    '客户已建档；首次回租需求登记（金额/用途/设备范围）'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: '客户已建档；首次回租需求登记（金额/用途/设备范围）'
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/Users/22673/Desktop/JW/Front/preview/test/takeoff-projection.test.mjs:121:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: 顶部摘要：候选金额来自同一方案；未配置=待评估/待补/待估，不是 0，不编造价格
+ok 23 - 顶部摘要：候选金额来自同一方案；未配置=待评估/待补/待估，不是 0，不编造价格
+  ---
+  duration_ms: 15.899
+  type: 'test'
+  ...
+# Subtest: 参考价格：货币单位不重复，设备与期间分母保留
+ok 24 - 参考价格：货币单位不重复，设备与期间分母保留
+  ---
+  duration_ms: 0.7888
+  type: 'test'
+  ...
+# Subtest: 顶部摘要：changed 域 → 冻结影响标记 + 待复核；Gate 拒绝不改写为通过
+ok 25 - 顶部摘要：changed 域 → 冻结影响标记 + 待复核；Gate 拒绝不改写为通过
+  ---
+  duration_ms: 1.1786
+  type: 'test'
+  ...
+# Subtest: 待办：openItems/followups/处理链/冲突/changed 域各自成行，可回原格子或指定入口
+ok 26 - 待办：openItems/followups/处理链/冲突/changed 域各自成行，可回原格子或指定入口
+  ---
+  duration_ms: 0.4847
+  type: 'test'
+  ...
+# Subtest: 展示小工具：金额分→万元串；未知倾向原样保守展示
+ok 27 - 展示小工具：金额分→万元串；未知倾向原样保守展示
+  ---
+  duration_ms: 0.2059
+  type: 'test'
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 22
+# fail 5
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5028.4765

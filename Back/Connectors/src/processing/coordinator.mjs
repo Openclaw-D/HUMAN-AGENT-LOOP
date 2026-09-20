@@ -22,7 +22,8 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { parseArtifactBytes, parseCacheKey, PARSE_ADAPTERS_VERSION, detectFormat } from '../../../C/src/parse/adapters.mjs';
+import { parseCacheKey, detectFormat } from '../../../C/src/parse/adapters.mjs';
+import { parseArtifactBytesAsync, ASYNC_PARSE_VERSION } from '../../../C/src/parse/adapters-async.mjs';
 import { projectSemanticFacts, SEMANTIC_FACTS_VERSION } from '../../../C/src/parse/semantic-facts.mjs';
 import { perceptionStage, assessStage, finalizeStage, effectiveRulePack } from '../../../C/domains/pipeline.mjs';
 import { DOMAINS as ALL_DOMAINS } from '../../../C/domains/schema.mjs';
@@ -687,7 +688,8 @@ export function makeProcessingCoordinator(store, evidence, {
       exec: () => aBridge.registerArtifactOp({
         aCustomerId: link.a_customer_id,
         kind: `material.${art.kind}`,
-        factKey: `material:${art.kind}`,
+        // An original-file envelope is evidence, not a competing business assertion.
+        factKey: null,
         grade: 'unverified',
         // 受控元数据（无媒体字节、无授信决策字段）；content=A 契约内的业务输入事实
         content: {
@@ -822,7 +824,7 @@ export function makeProcessingCoordinator(store, evidence, {
       }
       metadataDupFlag = { flag: 'duplicate_bytes_new_metadata', detail: `同字节但声明元数据与既有件均不同：按新锚点处理，差异交事实层显式并存` };
     }
-    const parserVersion = `${PARSE_ADAPTERS_VERSION}+${SEMANTIC_FACTS_VERSION}`;
+    const parserVersion = `${ASYNC_PARSE_VERSION}+${SEMANTIC_FACTS_VERSION}`;
     const parseKey = parseCacheKey({
       tenantId: task.tenant_id, customerId: task.customer_id, sha256: art.sha256 ?? task.evidence_id,
       parserVersion, meta: metaSigOf(art),
@@ -839,7 +841,7 @@ export function makeProcessingCoordinator(store, evidence, {
       fileName: art.object_ref ?? '', contentType: '', periodFrom: art.period_from, periodTo: art.period_to,
       currency: art.currency, unit: art.unit, caliber: art.caliber,
     };
-    const r = parseArtifactBytes(bytes, meta);
+    const r = await parseArtifactBytesAsync(bytes, meta);
     if (metadataDupFlag && r.ok) {
       r.qualityFlags = [...(r.qualityFlags ?? []), metadataDupFlag];
     }

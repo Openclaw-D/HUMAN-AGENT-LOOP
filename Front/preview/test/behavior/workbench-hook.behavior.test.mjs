@@ -82,3 +82,21 @@ test('撤权（客户不可读）：workspace 404 → 终态清客户并如实�
   assert.match(String(result.current.error), /已不可读/, '如实报错（可能已撤权或被删除）');
   assert.notEqual(result.current.phase, 'live', '不以本地状态伪装仍在线');
 });
+
+test('会话失效后重新选角色：先清旧客户与快照，不把前一身份内容带入新会话', async (t) => {
+  const fake = installFakeFetch({ workspaceByCustomer: { old: { customer: { displayName: '旧身份客户' } } } });
+  t.after(() => { cleanup(); fake.restore(); });
+  const { result } = renderHook(() => useWorkbench(BASE));
+  await act(async () => { await result.current.loginWithIdentity('biz-1'); });
+  await act(async () => { await result.current.openCustomer('old'); });
+  fake.workspaceStatus.old = 401;
+  await act(async () => { await result.current.refresh(); });
+  assert.equal(result.current.session, null);
+  assert.equal(result.current.customerId, null);
+  assert.equal(result.current.snapshot, null);
+  assert.equal(result.current.snapshotVersion, 0);
+  await act(async () => { await result.current.loginWithIdentity('biz-1'); });
+  assert.ok(result.current.session);
+  assert.equal(result.current.customerId, null, '重新进入必须通过新会话的授权目录');
+  assert.equal(result.current.snapshot, null);
+});

@@ -1,0 +1,13 @@
+{
+  "intendedForGit": true,
+  "scope": "Materials/kashgar-demo-v1/**",
+  "notIncluded": [
+    ".local QA previews/dependencies",
+    "other in-progress Back/Front changes",
+    "historical original pack"
+  ],
+  "status": "NOT_STAGED_NOT_COMMITTED_NOT_PUSHED",
+  "fileCount": 206,
+  "totalBytesExcludingSeal": 19126821,
+  "policy": "Only synthetic demo files; runtime customer IDs/invitation tokens/credentials are not part of this package."
+}

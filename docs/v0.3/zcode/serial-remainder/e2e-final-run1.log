@@ -1,0 +1,33 @@
+[env] A 内核 http://127.0.0.1:53880（独占容器 v7d-pg-11996365b9:64214，库 jw_serial_e2e_a）；模型替身 :64215
+[env] Connectors :49739（独占库 cnext_test_mu9wlb0l_dzj3）
+[PASS] 步骤0·live核实器放行真实凭据（A探针200→会话建立）
+[PASS] 真实A登记·客户建档（POST /api/v2/customers，business 人类凭据）
+[PASS] 真实上传入口·补证前两件原件（invitation→upload→处理链）
+[PASS] 真实A登记·材料经A桥登记（a_links.status=registered 且 a_ref 来自A；零手工插表）
+[PASS] A侧工件清单可见（GET artifacts）
+[assistant-model] amq:cust-mu9wld18-cfad57e96402:v2-11e91c98950632952ad6158cbb03d309d148b11986da4e4cc677d2d1f0fcb023::obs:credit:ff436bc3b1d9::a1 → simulated(sent=true)
+[PASS] 补证前观察·200/current/sent/六节点图
+[PASS] 补证前观察·有效引用保留+伪造引用降级为待核验
+[PASS] 补证前观察·出站仅获准证据（含D01金额；客户端注入事实不出站）
+[PASS] 合法重放·只发送一次（hits 不增）且 current=true
+[assistant-model] amq:cust-mu9wld18-cfad57e96402:v2-16e570a04c7e5b74cdfd590145a02bddc34218a10c7bc00610cd37d9dacd99ae::obs:credit:48c6e7667d1c::a1 → simulated(sent=true)
+[PASS] 补证后观察·新上下文触发新发送（非重放）
+[PASS] 补证后观察·请求身份随证据变化（旧requestId失效）
+[PASS] 补证后观察·brief 含新补合同内容
+[PASS] 缺件阻断·无任何登记工件→422 EVIDENCE_UNAVAILABLE（未发送）
+[assistant-model] amq:cust-mu9wlfgu-be62652d5c64:v2-9fe3121cc8b73cdf7961a885b679aadbff04905f797313f8b24a6ad19b035648::obs:credit:30237caabd77::a1 → simulated(sent=true)
+[PASS] 补件后观察·200 且出站含纺织主体原文
+[assistant-model] amq:cust-mu9wlgcn-1c85520511c4:v2-eeb93563bc40c96ca3096230727ad8003400cc91ea2f9ea04964e30cce752665::obs:credit:5ddd0f6e347e::a1 → simulated(sent=true)
+[PASS] 冲突值出站·被更正方原文在包（149.0769 可见）
+[assistant-model] amq:cust-mu9wlgcn-1c85520511c4:v2-8027e043733971ff3ed401b7ba3de1d48e44ff1df9fe0eba0228b2e04d540409::obs:credit:891ace83e753::a1 → simulated(sent=true)
+[PASS] 更正生效·被取代件不再出站（149.0769 消失）且更正声明与新增件同包
+[PASS] 更正生效·更正轮为新请求（当前性推进）
+[assistant-model] amq:cust-mu9wlgcn-1c85520511c4:v2-bfc0cd737cf1e581b1fcee61620894663798f9f5e8e3502b8d0041096cab8496::obs:credit:f6cab90d1aa3::a1 → simulated(sent=true)
+[PASS] 撤权拒绝·返回后授权复核失败→403（观察不泄露）
+[PASS] 撤权后·后续请求入口即403（不再触发模型调用）
+[assistant-model] amq:cust-mu9wld18-cfad57e96402:v2-b89c04951e1d2727e23fd663a8f08c4738b77356b453be8e5f92931a4dec158c::obs:credit:10f91beac39e::a1 → unknown(sent=null)
+[PASS] 发送后未知·悬置超时→status=unknown sent=null
+[PASS] 未知不重发·恢复后重放仍 unknown（hits 不增，不换ID重发）
+[PASS] 证据面·未知工件返回空集（不猜测）
+
+结果：22/22 通过 → C:\Users\22673\Desktop\JW\docs\v0.3\zcode\serial-remainder\e2e-result.json

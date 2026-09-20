@@ -1,0 +1,630 @@
+{
+  "offlineOnly": true,
+  "heldoutRead": false,
+  "parserVersion": "parse-adapters@2",
+  "semanticVersion": "semantic-facts@1",
+  "sources": [
+    {
+      "file": "Back/C/src/parse/adapters.mjs",
+      "sha256": "1d99d8edc8917d8da4b6ff9297508d9119f84fac76d7f763a916b10e663893c0"
+    },
+    {
+      "file": "Back/C/src/parse/semantic-facts.mjs",
+      "sha256": "42d758c91cfc616c6c2f826a74890e21a74866216d50dd97e7c5936ee4b02ff6"
+    }
+  ],
+  "results": [
+    {
+      "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/接口财务2025.csv",
+      "sha256": "261c19507cca4915288fd80165c4d78ba085fb1f676d2b5013b91b9af265ad04",
+      "kind": "financial_statement",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_csv",
+      "manualEntry": false,
+      "textLength": 140,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 2,
+      "semanticFacts": [
+        {
+          "factKey": "total_assets_declared",
+          "value": 1475.4932,
+          "verificationLevel": "declared",
+          "unit": "wan",
+          "caliber": "时点值；period:2025",
+          "sourceRefs": [
+            2
+          ]
+        },
+        {
+          "factKey": "total_liabilities_declared",
+          "value": 580,
+          "verificationLevel": "declared",
+          "unit": "wan",
+          "caliber": "时点值；period:2025",
+          "sourceRefs": [
+            2
+          ]
+        },
+        {
+          "factKey": "net_fixed_assets_declared",
+          "value": 584,
+          "verificationLevel": "declared",
+          "unit": "wan",
+          "caliber": "时点值；period:2025",
+          "sourceRefs": [
+            2
+          ]
+        },
+        {
+          "factKey": "revenue_annual_declared",
+          "value": 1848.0308,
+          "verificationLevel": "declared",
+          "unit": "wan",
+          "caliber": "年度值；period:2025",
+          "sourceRefs": [
+            2
+          ],
+          "note": "年度收入取自 2025 行；非年度行不冒充年收入"
+        }
+      ],
+      "qualityFlags": [],
+      "note": "key,value 声明表：全部为 declared 级（上传者申报），非原件机器提取"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/接口设备.csv",
+      "sha256": "6862ec19d98c34dc51ea409431b4fa762f2b178190399886db45fd44677ab12e",
+      "kind": "equipment_list",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_csv",
+      "manualEntry": false,
+      "textLength": 321,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 5,
+      "semanticFacts": [
+        {
+          "factKey": "equipment_net_book_value_total",
+          "value": 536,
+          "verificationLevel": "declared",
+          "unit": "wan",
+          "caliber": "sum_of:4_rows",
+          "sourceRefs": [
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "factKey": "equipment_ownership_declared",
+          "value": true,
+          "verificationLevel": "declared",
+          "unit": null,
+          "caliber": "ownership_declaration_4_rows",
+          "note": "权属声明（≠verified；verified 只能由人工核验产生）"
+        }
+      ],
+      "qualityFlags": [],
+      "note": "key,value 声明表：全部为 declared 级（上传者申报），非原件机器提取"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/银行流水.csv",
+      "sha256": "063d70a821ba07b739ba66e09a92ddb70e45219d7cdde89467cbcf7d4535e581",
+      "kind": "statement",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_csv",
+      "manualEntry": false,
+      "textLength": 48927,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 485,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "key,value 声明表：全部为 declared 级（上传者申报），非原件机器提取"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/D02-主体登记资料.pdf",
+      "sha256": "783b07fb4aeb85be2b92c7c1eff9d3754b1bdd4212ac84be9e77bdb47698a728",
+      "kind": "legal_document",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_pdf",
+      "manualEntry": false,
+      "textLength": 111,
+      "exactCustomerNameRecovered": false,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 0,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "可提取文本 PDF：key=value 声明为 declared 级（上传者申报）；表格结构未重构，全文留存观测"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/D09-销售合同与交付凭据.pdf",
+      "sha256": "d84523a60ea073af4214c47576f877243b70cdc31d9f650ce515e0c854366a6f",
+      "kind": "order_contract",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_pdf",
+      "manualEntry": false,
+      "textLength": 111,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 0,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "可提取文本 PDF：key=value 声明为 declared 级（上传者申报）；表格结构未重构，全文留存观测"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/D02-主体登记资料.md",
+      "sha256": "00d5abf88fda4ed75edc6c45673a6b1ee356b3278ff047bdece6a49b352ecce9",
+      "kind": "legal_document",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_text",
+      "manualEntry": false,
+      "textLength": 310,
+      "exactCustomerNameRecovered": true,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 5,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "文本声明：declared 级（上传者申报）"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/originals/工艺示意.svg",
+      "sha256": "ffec09fa24c1e44e12cfeabab93b7c79ea57132a02d7b50a8b0aa9e35886c4c7",
+      "kind": "site_evidence",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_text",
+      "manualEntry": false,
+      "textLength": 921,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 1,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "文本声明：declared 级（上传者申报）"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-TEXTILE-200/经营台账.xlsx",
+      "sha256": "16583064d8b4589408305f70e84101f7b344c58456eb0a0b7d5c47155219be29",
+      "kind": "financial_statement",
+      "ok": false,
+      "code": "PARSE_FAILED",
+      "format": "xlsx",
+      "manualEntry": true,
+      "textLength": 0,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 0,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "XLSX 结构无效：工作表内容不是可读 XML"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/接口财务2025.csv",
+      "sha256": "199ccd21e04cc1dce379c8dc07f1ac2febf457d8e022c2d0afee889b6c724495",
+      "kind": "financial_statement",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_csv",
+      "manualEntry": false,
+      "textLength": 140,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 2,
+      "semanticFacts": [
+        {
+          "factKey": "total_assets_declared",
+          "value": 1545.6929,
+          "verificationLevel": "declared",
+          "unit": "wan",
+          "caliber": "时点值；period:2025",
+          "sourceRefs": [
+            2
+          ]
+        },
+        {
+          "factKey": "total_liabilities_declared",
+          "value": 490,
+          "verificationLevel": "declared",
+          "unit": "wan",
+          "caliber": "时点值；period:2025",
+          "sourceRefs": [
+            2
+          ]
+        },
+        {
+          "factKey": "net_fixed_assets_declared",
+          "value": 1076,
+          "verificationLevel": "declared",
+          "unit": "wan",
+          "caliber": "时点值；period:2025",
+          "sourceRefs": [
+            2
+          ]
+        },
+        {
+          "factKey": "revenue_annual_declared",
+          "value": 3075.882,
+          "verificationLevel": "declared",
+          "unit": "wan",
+          "caliber": "年度值；period:2025",
+          "sourceRefs": [
+            2
+          ],
+          "note": "年度收入取自 2025 行；非年度行不冒充年收入"
+        }
+      ],
+      "qualityFlags": [],
+      "note": "key,value 声明表：全部为 declared 级（上传者申报），非原件机器提取"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/接口设备.csv",
+      "sha256": "1d65d55cabc2431bdf85c9f37a9fd8179eb8eb40686c04c6b6a774466e70efbf",
+      "kind": "equipment_list",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_csv",
+      "manualEntry": false,
+      "textLength": 536,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 8,
+      "semanticFacts": [
+        {
+          "factKey": "equipment_net_book_value_total",
+          "value": 1004,
+          "verificationLevel": "declared",
+          "unit": "wan",
+          "caliber": "sum_of:7_rows",
+          "sourceRefs": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "factKey": "equipment_ownership_declared",
+          "value": true,
+          "verificationLevel": "declared",
+          "unit": null,
+          "caliber": "ownership_declaration_7_rows",
+          "note": "权属声明（≠verified；verified 只能由人工核验产生）"
+        }
+      ],
+      "qualityFlags": [],
+      "note": "key,value 声明表：全部为 declared 级（上传者申报），非原件机器提取"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/银行流水.csv",
+      "sha256": "eff86e428e5675fd6d1809712c59fd737c9bb6cbfa1198f9a6b6d8229d5e187b",
+      "kind": "statement",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_csv",
+      "manualEntry": false,
+      "textLength": 47464,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 488,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "key,value 声明表：全部为 declared 级（上传者申报），非原件机器提取"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/D02-主体登记资料.pdf",
+      "sha256": "8eb9eafea3e9d64cded58c8f970013970d1454e9902a350746205af71c4c2f91",
+      "kind": "legal_document",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_pdf",
+      "manualEntry": false,
+      "textLength": 255,
+      "exactCustomerNameRecovered": false,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 2,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "可提取文本 PDF：key=value 声明为 declared 级（上传者申报）；表格结构未重构，全文留存观测"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/D09-销售合同与交付凭据.pdf",
+      "sha256": "8548cc8d5033c8e646e4da6a12b720ca8106d87db54ccbbdf6f6843be1b37136",
+      "kind": "order_contract",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_pdf",
+      "manualEntry": false,
+      "textLength": 255,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 2,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "可提取文本 PDF：key=value 声明为 declared 级（上传者申报）；表格结构未重构，全文留存观测"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/D02-主体登记资料.md",
+      "sha256": "2720aaf52312922051efad13d842e57cc5dae88f4dbc16f82b5021643b0b1610",
+      "kind": "legal_document",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_text",
+      "manualEntry": false,
+      "textLength": 310,
+      "exactCustomerNameRecovered": true,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 5,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "文本声明：declared 级（上传者申报）"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-LASER-500/originals/工艺示意.svg",
+      "sha256": "b11ea803dff8ae81bc144b589c76c7fc039479b36f9b58722f3cc1f82a305ec3",
+      "kind": "site_evidence",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_text",
+      "manualEntry": false,
+      "textLength": 924,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 1,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "文本声明：declared 级（上传者申报）"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-LASER-500/经营台账.xlsx",
+      "sha256": "5ce21688f779fc947137c763c5fa063aee41fb220dbedd48957c882183693d13",
+      "kind": "financial_statement",
+      "ok": false,
+      "code": "PARSE_FAILED",
+      "format": "xlsx",
+      "manualEntry": true,
+      "textLength": 0,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 0,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "XLSX 结构无效：工作表内容不是可读 XML"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/接口财务2025.csv",
+      "sha256": "9acc758d0b787e38a65eb6a55ec33be2e07420b5cda618765172f3008848cc57",
+      "kind": "financial_statement",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_csv",
+      "manualEntry": false,
+      "textLength": 138,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 2,
+      "semanticFacts": [
+        {
+          "factKey": "total_assets_declared",
+          "value": 2672,
+          "verificationLevel": "declared",
+          "unit": "wan",
+          "caliber": "时点值；period:2025",
+          "sourceRefs": [
+            2
+          ]
+        },
+        {
+          "factKey": "total_liabilities_declared",
+          "value": 740,
+          "verificationLevel": "declared",
+          "unit": "wan",
+          "caliber": "时点值；period:2025",
+          "sourceRefs": [
+            2
+          ]
+        },
+        {
+          "factKey": "net_fixed_assets_declared",
+          "value": 1952,
+          "verificationLevel": "declared",
+          "unit": "wan",
+          "caliber": "时点值；period:2025",
+          "sourceRefs": [
+            2
+          ]
+        },
+        {
+          "factKey": "revenue_annual_declared",
+          "value": 5942.3412,
+          "verificationLevel": "declared",
+          "unit": "wan",
+          "caliber": "年度值；period:2025",
+          "sourceRefs": [
+            2
+          ],
+          "note": "年度收入取自 2025 行；非年度行不冒充年收入"
+        }
+      ],
+      "qualityFlags": [],
+      "note": "key,value 声明表：全部为 declared 级（上传者申报），非原件机器提取"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/接口设备.csv",
+      "sha256": "5c571e7dd93034448804e34ace7142154024e413388feb94d4bead7cc5672b1b",
+      "kind": "equipment_list",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_csv",
+      "manualEntry": false,
+      "textLength": 1010,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 14,
+      "semanticFacts": [
+        {
+          "factKey": "equipment_net_book_value_total",
+          "value": 1808,
+          "verificationLevel": "declared",
+          "unit": "wan",
+          "caliber": "sum_of:13_rows",
+          "sourceRefs": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ]
+        },
+        {
+          "factKey": "equipment_ownership_declared",
+          "value": true,
+          "verificationLevel": "declared",
+          "unit": null,
+          "caliber": "ownership_declaration_13_rows",
+          "note": "权属声明（≠verified；verified 只能由人工核验产生）"
+        }
+      ],
+      "qualityFlags": [],
+      "note": "key,value 声明表：全部为 declared 级（上传者申报），非原件机器提取"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/银行流水.csv",
+      "sha256": "456d8de836cf713c6adad46376e6639bde432e4cc7ad09aa976dcc25111ad239",
+      "kind": "statement",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_csv",
+      "manualEntry": false,
+      "textLength": 52777,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 488,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "key,value 声明表：全部为 declared 级（上传者申报），非原件机器提取"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/D02-主体登记资料.pdf",
+      "sha256": "57c9d1cdf6688250e4728778ac1c7ec3a85ef7bd07340daab3521ecbf0f09eb5",
+      "kind": "legal_document",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_pdf",
+      "manualEntry": false,
+      "textLength": 619,
+      "exactCustomerNameRecovered": false,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 2,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "可提取文本 PDF：key=value 声明为 declared 级（上传者申报）；表格结构未重构，全文留存观测"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/D09-销售合同与交付凭据.pdf",
+      "sha256": "2d0b005cd06069eba04685dc622af0f20743c11bb1b03a38d4c7606885e3265a",
+      "kind": "order_contract",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_pdf",
+      "manualEntry": false,
+      "textLength": 619,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 2,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "可提取文本 PDF：key=value 声明为 declared 级（上传者申报）；表格结构未重构，全文留存观测"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/D02-主体登记资料.md",
+      "sha256": "786f184f728f591a3ea70f864c60ef297835f93a97e0acd3a778d207004cab47",
+      "kind": "legal_document",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_text",
+      "manualEntry": false,
+      "textLength": 320,
+      "exactCustomerNameRecovered": true,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 5,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "文本声明：declared 级（上传者申报）"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/originals/工艺示意.svg",
+      "sha256": "ecad729ccb167e477c2789fb99e642c2afc4aeab2ea57bd4d5441326bec18ef8",
+      "kind": "site_evidence",
+      "ok": true,
+      "code": null,
+      "format": "keyvalue_text",
+      "manualEntry": false,
+      "textLength": 932,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 1,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "文本声明：declared 级（上传者申报）"
+    },
+    {
+      "file": "Materials/kashgar-demo-v1/KS-INJECTION-1000/经营台账.xlsx",
+      "sha256": "c83ce5969c4f95363b8cbf947c299860297a0d1b6e1b929e3e7e90aec621dbdb",
+      "kind": "financial_statement",
+      "ok": false,
+      "code": "PARSE_FAILED",
+      "format": "xlsx",
+      "manualEntry": true,
+      "textLength": 0,
+      "exactCustomerNameRecovered": null,
+      "rowCount": null,
+      "aggregates": null,
+      "rawFactCount": 0,
+      "semanticFacts": [],
+      "qualityFlags": [],
+      "note": "XLSX 结构无效：工作表内容不是可读 XML"
+    }
+  ]
+}

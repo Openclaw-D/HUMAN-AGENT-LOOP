@@ -10,10 +10,38 @@
 // 7) 结束对话框：三类确认走 A confirm-preassessment（状态门/版本绑定如实；服务端硬门重查）；行政撤回走既有 decide（二次确认+幂等），不调用 facility.approve。
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { render, screen, fireEvent, waitFor, cleanup } from './harness.mjs';
+import { render, screen, fireEvent, waitFor, cleanup, within } from './harness.mjs';
 
 const React = (await import('react')).default;
 const { TakeoffScreen } = await import('../../../site-mirror/app/takeoff/takeoff-screen.tsx');
+
+test('状态动效不推进业务，快速失败打断解锁，重进不重播', async (t) => {
+  t.after(() => cleanup());
+  const { StatusObject } = await import('../../../site-mirror/app/takeoff/status-object.tsx');
+  const { act } = await import('./harness.mjs');
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const view = render(React.createElement(StatusObject, { kind: 'lock' }));
+  const scene = () => view.container.querySelector('.tk-status-scene');
+  assert.equal(scene().dataset.transition, undefined);
+  view.rerender(React.createElement(StatusObject, { kind: 'wrench' }));
+  assert.equal(scene().dataset.transition, 'unlock');
+  assert.ok(view.container.querySelector('.tk-unlock-key'));
+  act(() => t.mock.timers.tick(3000));
+  assert.equal(scene().dataset.state, 'wrench', '视觉计时器不能制造已完成');
+  assert.equal(scene().dataset.transition, undefined);
+  view.rerender(React.createElement(StatusObject, { kind: 'check' }));
+  assert.equal(scene().dataset.transition, 'finish');
+  view.rerender(React.createElement(StatusObject, { kind: 'lock' }));
+  view.rerender(React.createElement(StatusObject, { kind: 'wrench' }));
+  view.rerender(React.createElement(StatusObject, { kind: 'cross' }));
+  assert.equal(scene().dataset.transition, 'fail');
+  assert.equal(view.container.querySelector('.tk-unlock-key'), null);
+  act(() => t.mock.timers.tick(3000));
+  assert.equal(scene().dataset.state, 'cross', '旧解锁计时器不能覆盖失败');
+  view.unmount();
+  const fresh = render(React.createElement(StatusObject, { kind: 'check' }));
+  assert.equal(fresh.container.querySelector('.tk-status-scene').dataset.transition, undefined);
+});
 
 function makeScreen({ tasks = [], currency = [], candidate = null, openItems = [], followups = [], messages = [], events = [], admission = null, assessmentStatus = 'candidate_ready', confirmedAt = null } = {}) {
   const calls = { action: [], send: [], refresh: 0, confirm: [] };
@@ -77,10 +105,10 @@ test('T01 范围：二十格+六助手结构齐备；默认路径无退休展示
   render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
 
   assert.ok(screen.getByRole('grid', { name: /二十格看板/ }));
-  for (const col of ['商机', '政策', '信审', '商务', '资产']) {
+  for (const col of ['业务', '政策', '信审', '商务', '资产']) {
     assert.ok(screen.getByRole('columnheader', { name: new RegExp(col) }), `列头 ${col}`);
   }
-  for (const row of ['输入', '智能', '人工', '完成']) {
+  for (const row of ['材料', '分析', '核验', '办结']) {
     assert.ok(screen.getByRole('rowheader', { name: new RegExp(row) }), `行头 ${row}`);
   }
   for (const tab of ['业务', '政策', '信审', '商务', '资产', '见微']) {
@@ -101,25 +129,27 @@ test('方案面板无正式额度/融资操作按钮（停用说明可见；冻�
   render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
   await waitFor(() => assert.ok(screen.getByRole('grid', { name: /二十格看板/ })));
   fireEvent.click(screen.getByRole('button', { name: /信审，完成，/ }));
-  fireEvent.click(await screen.findByRole('button', { name: '打开方案·决定' }));
-  await waitFor(() => assert.ok(screen.getByText(/TAKEOFF-FA-1.0.0 本轮只办理首次回租准入预评估/)), '停用说明可见');
+  fireEvent.click(await screen.findByRole('button', { name: '查看建议方案' }));
+  await waitFor(() => assert.ok(screen.getByText('本次办理')), '业务办理摘要可见');
   for (const banned of ['正式批准', '激活', '暂停', '提交额度提案（候选）', '创建用信申请', '预占额度', '承诺用信', '出账（模拟）']) {
     assert.equal(screen.queryByRole('button', { name: banned }), null, `不得存在按钮：${banned}`);
   }
-  assert.ok(screen.getByText('冻结依据包'), '受控办理（冻结依据包）保留');
+  assert.ok(screen.getByText('保存本次材料依据'), '受控办理（冻结依据包）保留');
   cleanup();
 });
 
 test('顶部摘要：待补/待评估/待估如实；有候选=同版金额+倾向标记（≠批准）', async (t) => {
   t.after(() => cleanup());
   const { wb } = makeScreen({ currency: CURRENCY_PARTIAL, candidate: { tendency: 'do', supportableAmountMinor: 50_000_000, currency: 'CNY' } });
+  // 此用例验证缺失需求；旧 fixture 实际含 8000 万元，只是首次空渲染掩盖了矛盾。
+  wb.snapshot.assessments[0].requestedAmountMinor = null;
   render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
   assert.ok(screen.getByText('待补'), '申请金额=待补（首次回租需求登记未录入，未知≠0）');
   await waitFor(() => assert.ok(screen.getByText('50 万元')), '建议额度=候选可支持金额');
   assert.ok(screen.getByText('待评估'), '建议期限待评估（候选未登记期限字段，不是0）');
   assert.ok(screen.getByText('口径未配置'), '参考价格不编造');
-  assert.ok(screen.getByText('待估'), '预计完成=待估（不给假倒计时）');
-  assert.ok(screen.getByTitle(/候选倾向：可做（支持）（authority=none）/), '方案标记倾向');
+  assert.equal(screen.queryByText('预计'), null, 'UI-R2 不展示无法估计的完成时间，不给假倒计时');
+  assert.equal(screen.queryByTitle(/authority=none/),null,'前台不展示技术标记');
   cleanup();
 });
 
@@ -127,13 +157,16 @@ test('T13 视觉语义：current=完成绿（aria ≠批准）；changed=冻结+
   t.after(() => cleanup());
   const { wb } = makeScreen({ currency: CURRENCY_PARTIAL });
   render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
-  const done = await screen.findByRole('button', { name: /信审，完成，已完成（绿=工作完成，≠批准）/ });
+  const done = await screen.findByRole('button', { name: /信审，完成，已完成/ });
   assert.ok(done, '信审完成格=绿（工作完成语义）');
-  const frozen = screen.getByRole('button', { name: /资产，完成，.*已冻结（依据变化，可补件可提问）/ });
+  const frozen = screen.getByRole('button', { name: /资产，完成，.*(待复核|前序事项)/ });
   assert.ok(frozen, '资产完成格=白霜冻结（可读状态，不只靠颜色）');
-  const policyClosure = screen.getByRole('button', { name: /政策，完成，进度未知（分母未知，未硬补）/ });
+  const policyClosure = screen.getByRole('button', { name: /政策，完成，尚未开始/ });
   assert.ok(policyClosure, '无判定域=未知档位（不硬补进度）');
   assert.equal(frozen.getAttribute('aria-selected'), 'false', '圆不是手工切换器');
+  const grid = screen.getByRole('grid');
+  assert.equal(grid.querySelectorAll('button .tk-status-icon img').length,20);
+  assert.equal(grid.querySelectorAll('.tk-ring,.tk-flag,.tk-cell-caption,.tk-frozen').length,0,'每格仅中央一个状态图标，无圆环角标和重复文案');
   cleanup();
 });
 
@@ -142,16 +175,16 @@ test('点格→真实事项分层详情；允许动作打开复用面板；关�
   const { wb } = makeScreen({ currency: CURRENCY_PARTIAL });
   render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
   fireEvent.click(screen.getByRole('button', { name: /信审，输入，/ }));
-  const drawer = await screen.findByRole('dialog', { name: /信审 · 输入 格事项/ });
-  assert.ok(screen.getByText('当前问题'));
-  assert.ok(screen.getByText('依据位置'));
-  assert.ok(screen.getByText('需要谁做什么'));
+  const drawer = await screen.findByRole('dialog', { name: /信审 · 材料/ });
+  assert.equal(document.activeElement, drawer, '打开抽屉后焦点进入详情');
+  assert.ok(screen.getByText('待处理'));
   assert.ok(screen.getByText('下一步'));
-  assert.ok(screen.getByText('办理进展'));
-  assert.match(drawer.textContent, /evidence_artifacts/, '依据引用服务端字段');
+  assert.ok(screen.getByText('已取得的结果'));
+  assert.ok(within(drawer).getByRole('button', { name: '查看材料原件' }), '依据可以直接打开原件');
+  assert.ok(!drawer.textContent.includes('evidence_artifacts'), '不展示内部表名');
 
-  fireEvent.click(screen.getByRole('button', { name: '打开材料·上传' }));
-  await waitFor(() => assert.ok(screen.getByText(/材料清单（服务端权威/)), '材料面板=复用 OriginalsPanel');
+  fireEvent.click(within(drawer).getByRole('button', { name: '补充材料' }));
+  await waitFor(() => assert.ok(screen.getByText(/已收到的材料/)), '材料面板=复用 OriginalsPanel');
   fireEvent.click(screen.getByRole('button', { name: '关闭' }));
   assert.ok(screen.getByRole('grid', { name: /二十格看板/ }), '关闭后看板仍在');
   // 放大/还原
@@ -159,6 +192,8 @@ test('点格→真实事项分层详情；允许动作打开复用面板；关�
   fireEvent.click(await screen.findByRole('button', { name: '放大' }));
   assert.ok(screen.getByRole('button', { name: '还原' }));
   fireEvent.click(screen.getByRole('button', { name: '还原' }));
+  fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
+  assert.equal(screen.queryByRole('dialog'), null, 'Escape 关闭抽屉');
   cleanup();
 });
 
@@ -171,20 +206,28 @@ test('辅助页：流程只读 SVG+缩放；记录消费服务端事件；待办
   });
   render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
 
-  fireEvent.click(screen.getByRole('button', { name: '流程' }));
+  fireEvent.click(screen.getByRole('button', { name: '角色流程' }));
   assert.ok(await screen.findByRole('img', { name: /首次预评估只读流程图/ }));
   fireEvent.click(screen.getByRole('button', { name: '放大流程图' }));
-  fireEvent.click(screen.getByRole('button', { name: '关闭' }));
-
-  fireEvent.click(screen.getByRole('button', { name: '记录' }));
-  await waitFor(() => assert.ok(screen.getByText('材料登记')), '记录页消费服务端事件类型');
-  fireEvent.click(screen.getByRole('button', { name: '关闭' }));
+  fireEvent.click(screen.getByRole('button', { name: '时间轴' }));
+  await waitFor(() => assert.ok(screen.getByText('收到一份材料')), '记录页消费服务端事件类型');
+  fireEvent.click(screen.getByRole('button', { name: '工作台' }));
 
   fireEvent.click(screen.getByRole('button', { name: '待办' }));
   await waitFor(() => assert.ok(screen.getByText(/补充 7 月流水/)));
   fireEvent.click(screen.getByRole('button', { name: /回原格子（信审·人工）/ }));
-  assert.ok(await screen.findByRole('dialog', { name: /信审 · 人工 格事项/ }), '待办回原格子');
+  assert.ok(await screen.findByRole('dialog', { name: /信审 · 核验/ }), '待办回原格子');
   cleanup();
+});
+
+test('长按助手只插入@，打开团队消息并聚焦；不会同时切换助手',async t=>{
+  t.after(cleanup);const {wb}=makeScreen();render(React.createElement(TakeoffScreen,{wb,onBackToDirectory:()=>{},onLogout:()=>{}}));
+  const credit=screen.getByRole('tab',{name:'信审'});
+  fireEvent.pointerDown(credit);
+  await waitFor(()=>assert.match(screen.getByLabelText('消息草稿').value,/@信审/));
+  fireEvent.pointerUp(credit);fireEvent.click(credit);
+  assert.equal(screen.getByRole('tab',{name:'业务'}).getAttribute('aria-selected'),'true');
+  assert.equal(screen.getByLabelText('消息草稿').closest('details').open,true);
 });
 
 test('六助手：草稿跨切换保留；@插入；Enter 发送内部线程；Shift+Enter 换行不发送；输入法候选不误发', async (t) => {
@@ -212,10 +255,7 @@ test('六助手：草稿跨切换保留；@插入；Enter 发送内部线程；S
   assert.equal(calls.send[0].audience, 'internal', '默认内部线程');
 
   // 未接入工具明确禁用
-  fireEvent.click(screen.getByRole('button', { name: '⋯ 更多' }));
-  const disabled = screen.getByRole('menuitem', { name: /MCP（未接入）/ });
-  assert.equal(disabled.disabled, true, 'MCP 未接入=禁用');
-  assert.ok(screen.getByRole('menuitem', { name: /compact（未接入）/ }));
+  assert.equal(screen.queryByRole('button', { name: '⋯ 更多' }), null, 'UI-R2 隐藏未接入工具菜单，不保留死入口');
   cleanup();
 });
 
@@ -225,14 +265,14 @@ test('结束对话框：状态门如实——candidate_ready 下正/附条件禁
   render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
   fireEvent.click(screen.getByRole('button', { name: '结束' }));
   const dlg = await screen.findByRole('dialog', { name: /结束本次预评估/ });
-  assert.match(dlg.textContent, /确认≠正式授信批准≠额度激活≠可提款/);
+  assert.match(dlg.textContent, /不批准正式额度/);
   const all = screen.getAllByRole('button', { name: '发起确认' });
   assert.equal(all.length, 3);
   assert.equal(all[0].disabled, true, '支持：须先提交人工审阅');
-  assert.match(all[0].title, /人工审阅/);
+  assert.match(all[0].title, /提交复核/);
   assert.equal(all[1].disabled, true, '附条件：同状态门');
   assert.equal(all[2].disabled, false, '不支持：candidate_ready 可记录负面结论');
-  assert.match(dlg.textContent, /scope=preassessment_only/);
+  assert.match(dlg.textContent, /本次仅确认预评估结论/);
   assert.equal(screen.getByRole('button', { name: '撤回本轮' }).disabled, false);
   cleanup();
 });
@@ -249,7 +289,7 @@ test('结束对话框：awaiting_human_review 下三类可发起；not_support �
   fireEvent.change(screen.getByLabelText('确认理由'), { target: { value: '两处事实冲突未解决且有 Gate 依据：记录负面预评估结论' } });
   fireEvent.click(screen.getByRole('button', { name: '进入二次确认' }));
   const confirmDlg = await screen.findByRole('dialog', { name: /预评估结论——不支持/ });
-  assert.match(confirmDlg.textContent, /不创建\/激活\/预占任何额度/);
+  assert.match(confirmDlg.textContent, /不批准正式额度/);
   fireEvent.click(screen.getByRole('button', { name: '确认预评估结论' }));
   await waitFor(() => assert.equal(calls.confirm.length, 1));
   assert.equal(calls.confirm[0].id, 'asm_1');
@@ -329,11 +369,11 @@ test('admission 投影合并：到件数/失败卡点入格；requestedAmount/�
   render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
   await waitFor(() => assert.ok(screen.getByText('8,000 万元')), '申请金额=admission 权威需求金额');
   assert.ok(screen.getByText('36 个月'), '建议期限=候选同版字段');
-  assert.ok(screen.getByText(/780 万元 \/ 元\/年/), '参考价格=数值+单位');
-  assert.ok(screen.getByTitle(/候选 r2 · 输入 v3/), '方案标记带候选修订与输入版本');
-  await screen.findByRole('button', { name: /资产，输入，.*运行中/ });
+  assert.ok(screen.getByText(/780 万元 \/ 年/), '参考价格保留期间，货币单位不重复');
+  assert.equal(screen.queryByTitle(/候选 r2 · 输入 v3/),null,'版本绑定保留在后台，前台不堆修订编号');
+  await screen.findByRole('button', { name: /资产，输入，待补齐条件/ });
   fireEvent.click(screen.getByRole('button', { name: /资产，输入，/ }));
-  const drawer = await screen.findByRole('dialog', { name: /资产 · 输入 格事项/ });
+  const drawer = await screen.findByRole('dialog', { name: /资产 · 材料/ });
   assert.match(drawer.textContent, /按域可推导到件 3 件/);
   assert.match(drawer.textContent, /处理失败/, 'PROCESSING_FAILED 入卡点');
   cleanup();
@@ -345,6 +385,15 @@ test('助手工具栏上传入口打开材料面板（客户联系人门户分�
   render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
   await waitFor(() => assert.ok(screen.getByRole('grid', { name: /二十格看板/ })));
   fireEvent.click(screen.getByRole('button', { name: '上传' }));
-  await waitFor(() => assert.ok(screen.getByText(/材料清单（服务端权威/)), '工具栏上传→材料面板');
+  await waitFor(() => assert.ok(screen.getByText(/已收到的材料/)), '工具栏上传→材料面板');
   cleanup();
+});
+
+test('顶部摘要：已有申请金额首屏直接展示，不以加载占位冒充缺失', async (t) => {
+  t.after(() => cleanup());
+  const { wb } = makeScreen({ candidate: { tendency: 'do', supportableAmountMinor: 50_000_000, currency: 'CNY' } });
+  render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
+  assert.ok(screen.getByText('8,000 万元'));
+  await waitFor(() => assert.ok(screen.getByText('50 万元')));
+  assert.ok(screen.getByText('8,000 万元'));
 });

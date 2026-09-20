@@ -179,12 +179,12 @@ function extractAt(payload: unknown): string | null {
 export function MaterialsView({ wb, customerId }: { wb: WbApi; customerId: string }) {
   const [showInvitations, setShowInvitations] = useState(false);
   return (
-    <div aria-label="材料（A 权威清单同源投影）">
+    <div aria-label="客户材料">
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
         <button className="tk-btn small" aria-pressed={showInvitations} onClick={() => setShowInvitations((v) => !v)}>
-          {showInvitations ? '← 返回材料清单' : '受限邀请（客户人员授权）'}
+          {showInvitations ? '← 返回材料清单' : '邀请客户'}
         </button>
-        <span className="tk-asst-note">上传只有一个入口（下方统一提交链）；清单/预览/处理状态为 A 档案同源投影。</span>
+        
       </div>
       {showInvitations
         ? <InvitationsPanel wb={wb} customerId={customerId} />

@@ -16,6 +16,10 @@ import { pathToFileURL, fileURLToPath } from 'node:url';
 import http from 'node:http';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { readJsonBody } from './proxy.mjs';
+import { ASSISTANT_IDS } from './assistant-model.mjs';
+import { workspaceContext, contextHash } from './assistant-receipts.mjs';
+import { createDecisionHandler } from './assistant-decisions.mjs';
+import { createDecisionFeedbackStore } from './decision-feedback-store.mjs';
 
 const SSE_HEARTBEAT_MS = 15000;
 
@@ -59,12 +63,17 @@ export function createEdgeServer({
   identityDirectory = null, // goal-03c：受控身份目录 {list:[{principalId,roles,label,demo}], byPrincipal:Map}（不含凭据明文于响应）
   staticHandler = null,
   frontHandler = null, // goal-03 C3：同源受控前端（--serve-front <dir>；仅非 API 路径，SPA 回退 index.html）
+  assistantModel = null, // TAKEOFF：助手真实模型最小接线（authority=none；未配置时相应路由 503 失败关闭）
+  assistantEvidence = null,
+  decisionRepository = null,
   // CSRF 防护（D17）：额外允许的 Origin（如未来 staging 域名）；默认仅同源（Host 头比对）+ 无头非浏览器客户端
   allowedOrigins = [],
 }) {
   // auth 可传 verify 函数或 {verify} 对象；缺省一律失败关闭。
   const verify = typeof auth === 'function' ? auth : (auth?.verify ?? denyAll);
   const sessionOf = (req) => sessionStore?.resolve(req.headers['x-jw-session']);
+  const handleDecisions = createDecisionHandler({ sessionOf, verify, store, model: assistantModel,
+    evidence: assistantEvidence, repository: decisionRepository, sendJson, readJsonBody });
   const extraOrigins = new Set(allowedOrigins.map((o) => String(o).replace(/\/$/, '')));
 
   // CSRF 守卫（任务03 C2/X08 修复 + T6 裁决收紧）：只作用于写方法（POST）。判定顺序——
@@ -254,7 +263,14 @@ export function createEdgeServer({
       return sendJson(res, 400, { ok: false, error: 'INVALID_CREDENTIAL' });
     }
     const result = await sessionStore.exchange(verifyCredential, credential);
-    if (!result.ok) return sendJson(res, 403, { ok: false, error: result.reason || 'PRINCIPAL_UNTRUSTED' });
+    if (!result.ok) {
+      // A 不可达（凭据未经核实）与凭据被拒必须可辨：前端对前者提示"服务不可用/稍后重试"，
+      // 对后者才提示凭据错误；两者混同曾导致宕机被误诊为凭据问题。
+      if (result.reason === 'CREDENTIAL_VERIFICATION_UNAVAILABLE') {
+        return sendJson(res, 503, { ok: false, error: result.reason, note: 'A 内核不可达，凭据未能核实（非凭据错误）；请稍后重试或联系运维' });
+      }
+      return sendJson(res, 403, { ok: false, error: result.reason || 'PRINCIPAL_UNTRUSTED' });
+    }
     // 只返回不透明会话；凭据原文不再出现于任何响应。
     return sendJson(res, 200, { ok: true, session: result.session });
   };
@@ -355,6 +371,110 @@ export function createEdgeServer({
     return sendJson(res, result.status, result.body);
   };
 
+  // TAKEOFF（2026-09-20）：助手真实模型辅助观察（authority=none，只读不写业务）。
+  // 鉴权链与消息面同源：会话 → workspace:read 授权 → store.getWorkspace（A 逐请求裁决，
+  // 同源上下文读取）→ assistant-model（回执幂等 + B transport 预算/出站门）。未配置 503 失败关闭。
+  const handleAssistantObserve = async (req, res, customerId) => {
+    const session = requireSession(req, res);
+    if (!session) return;
+    if (!assistantModel) {
+      return sendJson(res, 503, {
+        ok: false, error: 'MODEL_NOT_CONFIGURED', status: 'not_configured', sent: false,
+        note: '模型服务未配置（--model-config）：调用未发送（如实状态，不静默 mock）',
+      });
+    }
+    const verdict = await verify({ req, customerId, action: 'workspace:read', session });
+    if (!verdict.ok) return sendJson(res, 403, { ok: false, error: verdict.reason || 'FORBIDDEN' });
+    let snapshot = null;
+    try {
+      snapshot = await store.getWorkspace(customerId, { credential: session.credential, principalId: session.principalId });
+    } catch (e) {
+      return sendUpstreamError(res, e);
+    }
+    if (!snapshot) return sendJson(res, 404, { ok: false, error: 'NOT_FOUND' });
+    const read = await readJsonBody(req);
+    if (read.err) return sendJson(res, 400, { ok: false, error: read.err });
+    const body = read.body ?? {};
+    if (!ASSISTANT_IDS.includes(body.assistant)) {
+      return sendJson(res, 400, { ok: false, error: 'INVALID_ASSISTANT', note: `assistant 必须是 ${ASSISTANT_IDS.join('|')}` });
+    }
+    if (typeof body.question !== 'string' || body.question.trim().length < 1 || body.question.length > 2000) {
+      return sendJson(res, 400, { ok: false, error: 'INVALID_QUESTION', note: 'question 须为 1..2000 字符' });
+    }
+    // kernel 与 fixture 的 workspace 均为 {snapshot:{...}} 包装；admission/customer 在 snapshot 层。
+    const snap = snapshot?.snapshot ?? snapshot;
+    const admission = snap?.admission ?? null;
+    const context = workspaceContext(snapshot, body.assistant);
+    const tenantId = session.tenantId ?? admission?.scope?.tenantId ?? null;
+    const attachEvidence = async (target, workspace) => {
+      if (assistantModel.requiresEvidence) {
+        if (!assistantEvidence) throw new Error('EVIDENCE_NOT_CONFIGURED');
+        target.evidencePack = await assistantEvidence({ snapshot: workspace, tenantId, customerId, revision: target.contextVersion });
+        target.evidenceRefs = target.evidencePack.snippets.map(s => ({ id: s.id, version: s.parserVersion, hash: s.hash }));
+      }
+      return target;
+    };
+    try { await attachEvidence(context, snapshot); }
+    catch { return sendJson(res, 422, { ok: false, error: 'EVIDENCE_UNAVAILABLE', sent: false, note: '获准原件、登记映射或现行解析不可用，模型未发送' }); }
+    const result = await assistantModel.observe({
+      customerId, tenantId,
+      assistant: body.assistant, question: body.question, context,
+      checkCurrent: async () => {
+        try {
+          const allowed = await verify({ req, customerId, action: 'workspace:read', session });
+          if (!allowed.ok) return false;
+          const latest = await store.getWorkspace(customerId, { credential: session.credential, principalId: session.principalId });
+          return latest && contextHash(await attachEvidence(workspaceContext(latest, body.assistant), latest)) === contextHash(context);
+        } catch { return false; }
+      },
+    });
+    // Reauthorize even on cache hits: revocation during model wait must not disclose output.
+    const currentSession = requireSession(req, res);
+    if (!currentSession) return;
+    const currentVerdict = await verify({ req, customerId, action: 'workspace:read', session: currentSession });
+    if (!currentVerdict.ok) return sendJson(res, 403, { ok: false, error: currentVerdict.reason || 'FORBIDDEN' });
+    let current = false;
+    try {
+      const fresh = await store.getWorkspace(customerId, { credential: currentSession.credential, principalId: currentSession.principalId });
+      if (!fresh) return sendJson(res, 404, { ok: false, error: 'NOT_FOUND' });
+      const freshAdmission = (fresh?.snapshot ?? fresh)?.admission;
+      current = result.current === true && result.contextHash === contextHash(await attachEvidence(workspaceContext(fresh, body.assistant), fresh)) &&
+        (currentSession.tenantId ?? freshAdmission?.scope?.tenantId ?? null) === (session.tenantId ?? admission?.scope?.tenantId ?? null);
+    } catch (e) {
+      if (e?.noCredential || [401, 403, 404].includes(e?.upstream?.status)) return sendUpstreamError(res, e);
+      current = false; // Receipt/usage already persisted; do not claim the model was never sent.
+    }
+    auditSink?.append({
+      actorPrincipalId: session.principalId,
+      action: 'assistant.model.observe',
+      targetType: 'customer', targetId: customerId, customerId,
+      summary: `助手模型辅助观察 ${result.status}（sent=${result.sent}，authority=none${result.replayed ? '，回执重放' : ''}）`,
+      detail: { requestId: result.requestId ?? null, assistant: body.assistant ?? null, contextVersion: result.contextVersion ?? null, errorCode: result.error?.code ?? null },
+    });
+    return sendJson(res, 200, {
+      ok: true,
+      authority: 'none',
+      scope: 'preassessment_only',
+      customerId,
+      assistant: body.assistant ?? null,
+      model: {
+        status: result.status, sent: result.sent, requestId: result.requestId ?? null,
+        replayed: result.replayed === true, contextVersion: result.contextVersion ?? null,
+        receiptVersion: result.receiptVersion ?? null, contextHash: result.contextHash ?? null,
+        configHash: result.configHash ?? null, current,
+        analysisRunId: result.analysisRunId ?? null, graphTrace: result.graphTrace ?? [],
+        profile: result.profile ?? null,
+        citationChecks: result.citationChecks ?? [],
+        source: result.source ?? null, usage: result.usage ?? null,
+        error: result.error ?? null,
+      },
+      observations: current ? result.observations ?? [] : [],
+      questions: current ? result.questions ?? [] : [],
+      evidenceRefs: current ? result.evidenceRefs ?? [] : [],
+      note: '模型输出仅为辅助观察与待核验问题：不构成审批/额度/价格/批准结论，不改变 Gate、评估或确认状态',
+    });
+  };
+
   // 页内消息线程读（goal-03e，DEF-G04N-05）：GET /api/jw/v2/customers/:id/messages
   // 会话必需 + messages:read + 目标客户对本会话凭据可读（与发送同源校验，fail-closed）。
   // 受众边界由服务端强制：customer-only 会话只见 audience=customer（显式请求 internal → 403，
@@ -392,7 +512,7 @@ export function createEdgeServer({
 
   return http.createServer(async (req, res) => {
     const urlObj = new URL(req.url, 'http://localhost');
-    const pathname = urlObj.pathname;
+      const pathname = urlObj.pathname;
     try {
       const cors = corsHeaders(req);
       if (cors) {
@@ -413,7 +533,25 @@ export function createEdgeServer({
         return sendJson(res, 405, { ok: false, error: 'METHOD_NOT_ALLOWED', allow: 'GET' });
       }
 
-      if (req.method === 'GET') {
+      if (pathname === '/api/jw/v2/admin/model-profile/activate' && req.method === 'POST') {
+        const session = requireSession(req, res);
+        if (!session) return;
+        const identity = verifyCredential ? await verifyCredential({ credential: session.credential }) : null;
+        if (!identity?.ok || !identity.roles?.includes('admin')) return sendJson(res, 403, { ok: false, error: 'ADMIN_REQUIRED' });
+        const verdict = await verify({ req, customerId: null, action: 'model-profile:activate', session });
+        if (!verdict.ok) return sendJson(res, 403, { ok: false, error: 'FORBIDDEN' });
+        if (!assistantModel?.activate) return sendJson(res, 503, { ok: false, error: 'PROFILE_REGISTRY_NOT_CONFIGURED' });
+        const read = await readJsonBody(req);
+        if (read.err) return sendJson(res, 400, { ok: false, error: read.err });
+        try {
+          const state = await assistantModel.activate(read.body, session.principalId);
+          auditSink?.append({ actorPrincipalId: session.principalId, action: 'model-profile.activate', targetType: 'model-profile', targetId: state.active.id, detail: state });
+          return sendJson(res, 200, { ok: true, ...state });
+        } catch { return sendJson(res, 422, { ok: false, error: 'PROFILE_ACTIVATION_REJECTED' }); }
+      }
+
+        if (req.method === 'GET') {
+          if (await handleDecisions(req, res, urlObj)) return;
         if (pathname === '/versionz') return sendJson(res, 200, seal);
         if (pathname === '/healthz/live') return sendJson(res, 200, { ok: true, liveness: true, uptimeSec: Math.round(process.uptime()) });
         if (pathname === '/healthz/ready') return sendJson(res, 200, await runReadiness());
@@ -514,10 +652,16 @@ export function createEdgeServer({
           return sendJson(res, 403, { ok: false, error: 'CSRF_ORIGIN_REJECTED', detail: csrfFail });
         }
         if (pathname === '/api/jw/v2/session') return await handleSessionExchange(req, res);
+        if (await handleDecisions(req, res, urlObj)) return;
         if (pathname === '/api/jw/v2/invitations/redeem') return await handleInvitationRedeem(req, res);
         if (customerId && pathname.endsWith('/messages')) {
           if (!messages) return sendJson(res, 501, { ok: false, error: 'NOT_CONFIGURED' });
           return await handleMessages(req, res, customerId);
+        }
+        // TAKEOFF：助手模型辅助观察（Edge 本地链，不走 A/Connectors 代理）。
+        if (/^\/api\/jw\/v2\/actions\/customers\/[^/]+\/assistant\/observe$/.test(pathname)) {
+          const m = pathname.match(/^\/api\/jw\/v2\/actions\/customers\/([^/]+)\/assistant\/observe$/);
+          return await handleAssistantObserve(req, res, decodeURIComponent(m[1]));
         }
         if (pathname.startsWith('/api/jw/v2/actions/')) {
           // goal-03d 分流：处理通道写面（邀请/绑定/录入/更正/问答/暂停）走 Connectors 服务令牌代理。
@@ -583,6 +727,33 @@ export async function startEdgeServer({
   return { server, port: actualPort, close: () => new Promise((r) => server.close(r)) };
 }
 
+// live 凭据核实器（受控目录 × A 探针）。三态分类（2026-09-20 步骤0整改）：
+//   目录无此凭据 → PRINCIPAL_UNTRUSTED（403）
+//   A 探针明确拒绝(401/403) → PRINCIPAL_UNTRUSTED（403）
+//   A 不可达/超时/5xx → CREDENTIAL_VERIFICATION_UNAVAILABLE（由会话交换映射 503）：
+//   凭据未经核实 ≠ 凭据错误；基础设施故障必须可辨，避免宕机被误诊为凭据问题。
+export function createLiveCredentialVerifier({ kernelBase, directory = null, redeemedDirectory = { byHash: new Map() } }) {
+  const probeKernelCredential = async (credential) => {
+    try {
+      const r = await fetch(`${kernelBase}/api/v2/receipts/${encodeURIComponent('__jw-edge-probe__')}`, {
+        headers: { 'x-principal-credential': credential }, signal: AbortSignal.timeout(4000),
+      });
+      if (r.status === 200) return 'ok';
+      return (r.status === 401 || r.status === 403) ? 'rejected' : 'unreachable';
+    } catch { return 'unreachable'; }
+  };
+  return async ({ credential }) => {
+    const { createHash } = await import('node:crypto');
+    const h = createHash('sha256').update(credential).digest('hex');
+    const entry = directory?.byHash.get(h) ?? redeemedDirectory.byHash.get(h);
+    if (!entry) return { ok: false, reason: 'PRINCIPAL_UNTRUSTED' };
+    const probe = await probeKernelCredential(credential);
+    if (probe === 'unreachable') return { ok: false, reason: 'CREDENTIAL_VERIFICATION_UNAVAILABLE', note: 'A 内核探针不可达：凭据未经核实（非凭据错误），请检查 A 内核服务后重试' };
+    if (probe !== 'ok') return { ok: false, reason: 'PRINCIPAL_UNTRUSTED', note: 'A 目录探针未通过' };
+    return { ok: true, principalId: entry.principalId, roles: entry.roles, tenantId: entry.tenantId ?? null };
+  };
+}
+
 // 直接运行：node src/server.mjs [--port 48200] [--live] [--kernel-port 48180] [--db-port 15442]
 //           [--auth-file path] [--fixture-auth] [--serve-front <dir>] [--marker xxx --heartbeat path]
 // --live：真实内核投影（kernel-store）+ 会话必需 + 身份目录（--auth-file）+ 凭据服务端映射。
@@ -623,9 +794,47 @@ export async function main(argv) {
       note: 'fixture 语义自检形态（未启用 --live）',
     };
   const seal = await collectVersionSeal({ repoRoot, capabilities });
+  // TAKEOFF（2026-09-20）：助手真实模型最小接线。--model-config 指向 Git 排除的配置文件
+  //（形状同 Back/B/config/b-config.json 的 transport/budget 段，单密钥源，不复制密钥）；
+  // 未配置 → 入口 503 not_configured（确定未发送）；配置了但文件非法 → 启动失败关闭。
+  // 回执/成本账本落 --model-receipts-dir（缺省 --messages-file 同目录下 model-receipts/）。
+  let assistantModel = null;
+  let decisionRepository = null;
+  const modelConfigPath = typeof args['model-config'] === 'string' && args['model-config'].length > 0 ? String(args['model-config']) : null;
+  const modelRegistryPath = typeof args['model-profiles'] === 'string' ? args['model-profiles'] : null;
+  if (modelConfigPath || modelRegistryPath) {
+    const { createAssistantModel } = await import('./assistant-model.mjs');
+    const modelReceiptsDir = typeof args['model-receipts-dir'] === 'string' && args['model-receipts-dir'].length > 0
+      ? String(args['model-receipts-dir'])
+      : (typeof args['messages-file'] === 'string' && args['messages-file'].length > 0
+        ? path.join(path.dirname(String(args['messages-file'])), 'model-receipts')
+        : null);
+    const modelOptions = {
+      requireEvidence: true,
+      // TEC-CTX-1：总出站正文≤12000字符。默认6000会把证据策略上限压到2800字符，
+      // 多材料装包时仅第一份材料入包（其余整份披露式省略）。
+      maxContextChars: 12000,
+      configPath: modelConfigPath,
+      receiptsDir: modelReceiptsDir,
+      costLedgerPath: modelReceiptsDir ? path.join(path.dirname(modelReceiptsDir), 'model-cost-ledger.jsonl') : null,
+      log: (m) => console.error(m),
+    };
+    if (modelReceiptsDir) decisionRepository = createDecisionFeedbackStore(modelReceiptsDir);
+    if (modelRegistryPath) {
+      const { createAssistantProfiles } = await import('./assistant-profiles.mjs');
+      assistantModel = await createAssistantProfiles({ registryPath: modelRegistryPath,
+        stateDir: modelReceiptsDir ? path.join(modelReceiptsDir, 'profiles') : null, modelOptions });
+    } else assistantModel = await createAssistantModel(modelOptions);
+    const st = assistantModel.status();
+    capabilities.model = `${st.mode}（${st.endpointOrigin ?? st.baseUrl ?? ''} · ${st.model ?? ''} · authority=none；预算=${st.budget ? `${st.budget.maxTotalCost}${st.budget.currency ?? ''}` : '未配置'}）`;
+  }
   const probes = [
     httpProbe({ name: 'kernel-a', url: `http://127.0.0.1:${kernelPort}/healthz`, pass: aKernelReadyPass }),
     tcpProbe({ name: 'db', port: Number(args['db-port'] || 15442) }),
+    async () => ({
+      name: 'assistant-model', advisory: true, ok: assistantModel?.configured === true,
+      detail: assistantModel ? assistantModel.status() : { configured: false, note: '--model-config 未配置：助手模型入口 503 not_configured（调用未发送）' },
+    }),
   ];
 
   const kernelBase = `http://127.0.0.1:${kernelPort}`;
@@ -661,23 +870,8 @@ export async function main(argv) {
     return { byHash, byPrincipal, list };
   };
   const directory = live && args['auth-file'] ? await loadDirectory(String(args['auth-file'])) : null;
-  const probeKernelCredential = async (credential) => {
-    try {
-      const r = await fetch(`${kernelBase}/api/v2/receipts/${encodeURIComponent('__jw-edge-probe__')}`, {
-        headers: { 'x-principal-credential': credential }, signal: AbortSignal.timeout(4000),
-      });
-      return r.status === 200;
-    } catch { return false; }
-  };
   const liveVerifier = (live && (directory || redeemedDirectory))
-    ? async ({ credential }) => {
-      const { createHash } = await import('node:crypto');
-      const h = createHash('sha256').update(credential).digest('hex');
-      const entry = directory?.byHash.get(h) ?? redeemedDirectory.byHash.get(h);
-      if (!entry) return { ok: false, reason: 'PRINCIPAL_UNTRUSTED' };
-      if (!(await probeKernelCredential(credential))) return { ok: false, reason: 'PRINCIPAL_UNTRUSTED', note: 'A 目录探针未通过' };
-      return { ok: true, principalId: entry.principalId, roles: entry.roles, tenantId: entry.tenantId ?? null };
-    }
+    ? createLiveCredentialVerifier({ kernelBase, directory, redeemedDirectory })
     : null;
 
   // 合成演示身份（仅 --fixture-auth 时启用）：仿 A 内核 tok-* 公开合成凭据模式，禁止用于真实身份。
@@ -767,6 +961,7 @@ export async function main(argv) {
   //   - 任务详情归属：页面只持 taskId——服务端先取回任务归属（customer_id）再校验，不可读 → 404
   //     （不泄露存在性）；仅持有他人 taskId/evidenceId、改 query/body 的 customerId 都拿不到数据。
   let connectorsProxy = null;
+  let assistantEvidence = null;
   let connectorsReadProxy = null;
   const connectorsUrl = typeof args['connectors-url'] === 'string' ? args['connectors-url'] : null;
   if (live && connectorsUrl) {
@@ -776,6 +971,10 @@ export async function main(argv) {
       token = readFileSync(String(args['connectors-token-file']), 'utf8').trim();
     }
     const { createChannelAuthorizers } = await import('./channel-authz.mjs');
+    if (assistantModel) {
+      const { createAssistantEvidenceProvider } = await import('./assistant-evidence-provider.mjs');
+      assistantEvidence = createAssistantEvidenceProvider({ baseUrl: connectorsUrl, token: token ?? '', policy: () => assistantModel.evidencePolicy() });
+    }
     const { writeAuthorize: connectorsWriteAuthorize, readAuthorize: connectorsReadAuthorize } = createChannelAuthorizers({ store, log: (m) => console.error(m) });
     connectorsProxy = createUpstreamProxy({
       baseUrl: connectorsUrl,
@@ -842,7 +1041,7 @@ export async function main(argv) {
   const started = await startEdgeServer({
     port, seal, probes, store,
     auth: scopeAuth,
-    sessionStore, verifyCredential, proxy, readProxy, connectorsProxy, connectorsReadProxy, identityDirectory, messages, messageStore, auditSink, staticHandler, frontHandler,
+    sessionStore, verifyCredential, proxy, readProxy, connectorsProxy, connectorsReadProxy, identityDirectory, messages, messageStore, auditSink, staticHandler, frontHandler, assistantModel, assistantEvidence, decisionRepository,
     // CSRF 额外允许源：--allowed-origin 可重复，或 JW_EDGE_ALLOWED_ORIGINS 逗号分隔（staging 域名用）
     allowedOrigins: [
       ...argv.flatMap((a, i) => (a === '--allowed-origin' && argv[i + 1] && !argv[i + 1].startsWith('--') ? [argv[i + 1]] : [])),

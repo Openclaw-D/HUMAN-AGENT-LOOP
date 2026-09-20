@@ -19,6 +19,7 @@ const fileCfg = JSON.parse(readFileSync(cfgPath, 'utf8'));
 const env = process.env;
 
 const config = {
+  skipMigration: process.argv.includes('--no-migrate'),
   pg: {
     host: env.PGHOST ?? fileCfg.pg?.host ?? '127.0.0.1',
     port: Number(env.PGPORT ?? fileCfg.pg?.port ?? 15443),

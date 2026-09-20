@@ -11,6 +11,7 @@ import {
   type ChannelOpRow, type ChannelTaskRow, type PreviewKind,
 } from '../../lib/workbench/wb-logic';
 import { WbError, useAction } from './wb-parts';
+import { materialKindName } from '../../lib/workbench/material-labels';
 
 interface ChannelPreview {
   phase: 'ready';
@@ -67,7 +68,6 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
   if (!client) return null;
   const tasks: ChannelTaskRow[] = status ? channelTaskRows((status.tasks ?? []) as Array<Record<string, unknown>>) : [];
   const paused = (status?.pause as { paused?: boolean } | null)?.paused === true;
-  const rulesetVersion = status ? String((status as { rulesetVersion?: string }).rulesetVersion ?? '') : '';
 
   const openTask = async (taskId: string) => {
     try {
@@ -81,7 +81,7 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
 
   const issueInvite = () => {
     const requestId = wbActionRequestId('wb-chinv', customerId, 'invite', String(Date.now()));
-    act.open(buildConfirmPlan('channel.invite', `客户 ${customerId}`, [
+    act.open(buildConfirmPlan('channel.invite', '当前客户', [
       '通道角色：实控人（customer_owner）', '用途：建立本客户与常驻处理链的一次性上传绑定（通道内授权面，与 A 档案权限分立）。'], requestId),
       async () => {
         const r = await client.channelAction<{ invitationId?: string; token?: string }>('intake/invitations', {
@@ -96,7 +96,7 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
   const acceptInvite = () => {
     if (!tokenInput.trim()) { setFileMsg('请粘贴通道令牌'); return; }
     const requestId = wbActionRequestId('wb-chacc', customerId, 'accept', String(Date.now()));
-    act.open(buildConfirmPlan('channel.accept', `客户 ${customerId}`, ['以通道令牌建立上传绑定（一次有效）；绑定后本页所有材料提交都走这条链。'], requestId),
+    act.open(buildConfirmPlan('channel.accept', '当前客户', ['以通道令牌建立上传绑定（一次有效）；绑定后本页所有材料提交都走这条链。'], requestId),
       async () => {
         // providerUserId 标识外部联系人本人（客户侧），不以操作者身份冒充；令牌本身即客户主张的凭据。
         // 每次接受=一次新的联系人会话（绑定幂等键含会话序），避免"既有绑定使后续邀请永远无法 accepted"。
@@ -122,7 +122,7 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
       if (bytes.length > MAX_ORIGINAL_BYTES) { setFileMsg(`上传当前受限 ${Math.floor(MAX_ORIGINAL_BYTES / 1024)}KB（Edge 信封转发上限）`); return; }
       setFileMsg(null);
       const requestId = wbActionRequestId('wb-up', customerId, `up:${f.name}`, String(Date.now()));
-      act.open(buildConfirmPlan('channel.upload', `客户 ${customerId}`, [
+      act.open(buildConfirmPlan('channel.upload', '当前客户', [
         `文件：${f.name}（${bytes.length} 字节）`,
         `种类：${CHANNEL_KINDS.find((k) => k.v === upKind)?.t ?? upKind}`,
         upPeriodFrom ? `期间：${upPeriodFrom} ~ ${upPeriodTo || '?'}` : '期间：未填',
@@ -142,7 +142,7 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
 
   const togglePause = () => {
     const requestId = wbActionRequestId('wb-chpause', customerId, 'pause', String(Date.now()));
-    act.open(buildConfirmPlan('channel.pause', `客户 ${customerId}`, [paused ? '恢复处理调度（按服务代际推进）。' : '暂停后零新外发；在途任务按代际收束。'], requestId),
+    act.open(buildConfirmPlan('channel.pause', '当前客户', [paused ? '恢复处理调度（按服务代际推进）。' : '暂停后零新外发；在途任务按代际收束。'], requestId),
       async () => {
         await client.channelAction('processing/pause', { requestId, tenantId: 't1', customerId, paused: !paused });
         await load();
@@ -192,12 +192,11 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
 
   return (
     <div className="wb-card dim" style={{ marginTop: 12 }}>
-      <h3 className="wb-h2">材料提交与处理链（统一通道 · 一次提交自动回写 A）</h3>
-      <p className="wb-note">方案R：本页只提交通道面一次。处理链推进与 A 档案登记由后台服务自动完成——上方 A 材料清单（登记回写结果）与本表（处理进度）是同一条链的两面，不互相冒充、不需要重复操作。</p>
+      <h3 className="wb-h2">上传材料</h3>
+      <p className="wb-note">选择文件，上传后会自动整理。</p>
       <div className="wb-actions">
         <button className="wb-btn small ghost" onClick={() => void load()}>刷新处理进度</button>
         <button className="wb-btn small ghost" onClick={togglePause}>{paused ? '恢复处理调度' : '暂停处理调度'}</button>
-        {rulesetVersion && <span className="wb-sub">规则包：{rulesetVersion}</span>}
         {paused && <span className="wb-badge off">已暂停（零新外发）</span>}
         {invitationId
           ? <span className="wb-badge live">通道已绑定（上传就绪）</span>
@@ -207,17 +206,13 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
       {status && tasks.length === 0 && <p className="wb-note">该客户暂无处理任务。首次上传前先在下方「通道连接」完成一次绑定。</p>}
       {tasks.length > 0 && (
         <table className="wb-table">
-          <thead><tr><th>任务</th><th>种类</th><th>状态</th><th>当前段</th><th>A 回写</th><th>尝试</th><th>失败码</th><th>更新时间</th><th>回执</th></tr></thead>
+          <thead><tr><th>材料</th><th>进展</th><th>已完成工作</th><th>更新时间</th><th>查看</th></tr></thead>
           <tbody>
             {tasks.map((t) => (
               <tr key={t.taskId}>
-                <td title={t.taskId}>{t.taskId.slice(0, 18)}…</td>
-                <td>{t.kind}</td>
+                <td>{materialKindName(t.kind)}</td>
                 <td><span className={`wb-dot ${t.tone}`} aria-hidden="true" /> {t.statusText}</td>
                 <td>{channelCursorSummary(t.cursor)}</td>
-                <td><span className={`wb-dot ${t.bridgeTone}`} aria-hidden="true" /> {t.bridgeText}</td>
-                <td>{t.attempts}</td>
-                <td>{t.failureCode ?? '—'}</td>
                 <td>{fmtWhen(t.updatedAt)}</td>
                 <td><button className="wb-btn small ghost" onClick={() => void openTask(t.taskId)}>查看回执</button></td>
               </tr>
@@ -227,15 +222,15 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
       )}
       {detail && (
         <div className="wb-card" style={{ marginTop: 8 }}>
-          <div className="wb-row"><strong>任务回执 {detail.taskId.slice(0, 18)}…</strong>
+          <div className="wb-row"><strong>材料处理进展</strong>
             <button className="wb-btn small ghost" onClick={() => setDetail(null)}>收起</button>
-            <button className="wb-btn small ghost" onClick={() => void openPreview((tasks.find((t) => t.taskId === detail.taskId) ?? { evidenceId: '' }).evidenceId)}>原件预览（签名 URL）</button>
+            <button className="wb-btn small ghost" onClick={() => void openPreview((tasks.find((t) => t.taskId === detail.taskId) ?? { evidenceId: '' }).evidenceId)}>查看原件</button>
           </div>
           <WbError error={previewMsg} onDismiss={() => setPreviewMsg(null)} />
           {preview && preview.phase === 'ready' && (
             <div className="wb-card dim" aria-label="通道原件预览">
               <div className="wb-row wb-sub">
-                <span>通道原件预览（签名 URL · Edge 受控代理）</span>
+                <span>原件预览</span>
                 <span>{preview.mime}</span>
                 <span>{preview.size} 字节</span>
                 <button className="wb-btn small ghost" onClick={() => setPreview(null)}>收起预览</button>
@@ -253,7 +248,7 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
               )}
             </div>
           )}
-          <h3 className="wb-h2">阶段留痕（传输完成≠解析完成）</h3>
+          <h3 className="wb-h2">处理记录</h3>
           {detail.stages.length === 0 && <p className="wb-note">尚无阶段记录。</p>}
           {detail.stages.length > 0 && (
             <ul className="wb-note" style={{ paddingLeft: 18 }}>
@@ -262,18 +257,16 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
               ))}
             </ul>
           )}
-          <h3 className="wb-h2">A 侧登记留痕（同一原件可追溯：运行/Gate 回执/差异复核项）</h3>
-          {detail.ops.length === 0 && <p className="wb-note">无 A 侧登记（未链接 A 客户或尚未推进到登记段——原因见阶段留痕）。</p>}
+          <h3 className="wb-h2">办理记录</h3>
+          {detail.ops.length === 0 && <p className="wb-note">尚无后续办理记录。</p>}
           {detail.ops.length > 0 && (
             <table className="wb-table">
-              <thead><tr><th>类型</th><th>引用（a_ref）</th><th>状态</th><th>对账编号</th></tr></thead>
+              <thead><tr><th>事项</th><th>状态</th></tr></thead>
               <tbody>
                 {detail.ops.map((o, i) => (
                   <tr key={i}>
                     <td>{o.entityTypeText}</td>
-                    <td title={o.aRef ?? ''}>{o.aRef ? o.aRef.slice(0, 26) : '—'}</td>
                     <td>{o.statusText}</td>
-                    <td title={o.requestId}>{o.requestId.slice(0, 24)}…</td>
                   </tr>
                 ))}
               </tbody>
@@ -296,14 +289,14 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
         </div>
       </div>
       <div className="wb-row">
-        <input type="file" ref={fileRef} aria-label="选择送入处理链的原件" />
-        <button className="wb-btn" onClick={uploadToChannel} disabled={!invitationId} title={invitationId ? '' : '先完成通道绑定（下方）再上传'}>上传进处理链（≤512KB）</button>
-        {!invitationId && <span className="wb-note warn">尚未绑定：为诚实阻断，不降级到档案直传。</span>}
+        <input type="file" ref={fileRef} aria-label="选择上传的材料" />
+        <button className="wb-btn" onClick={uploadToChannel} disabled={!invitationId} title={invitationId ? '' : '请先连接客户的材料上传服务'}>上传材料（≤512KB）</button>
+        {!invitationId && <span className="wb-note warn">上传服务尚未连接，请联系工作台维护人员。</span>}
       </div>
       <WbError error={fileMsg} onDismiss={() => setFileMsg(null)} />
 
-      <div className="wb-card" style={{ marginTop: 10, background: '#fff' }}>
-        <h3 className="wb-h2">通道连接（首次一次性设置）</h3>
+      <details className="wb-card" style={{ marginTop: 10, background: '#fff' }}>
+        <summary>上传设置</summary>
         <div className="wb-row">
           <button className="wb-btn small ghost" onClick={issueInvite}>发起通道邀请</button>
           {inviteToken && (
@@ -320,7 +313,7 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
           <button className="wb-btn small ghost" onClick={acceptInvite}>接受绑定</button>
           {invitationId && <span className="wb-sub">已建立绑定，本页上传已就绪。</span>}
         </div>
-      </div>
+      </details>
       {act.node}
     </div>
   );

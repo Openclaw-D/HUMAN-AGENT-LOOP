@@ -72,7 +72,7 @@ test('部分并行（T03）：单格事实局部呈现，不因整行/整列锁�
   assert.equal(cells.find((c) => c.domain === 'policy' && c.row === 'closure').completed, true);
   assert.equal(cells.find((c) => c.domain === 'asset' && c.row === 'closure').completed, true, '资产可与信审并行收口（撤销商务先行）');
   assert.equal(cells.find((c) => c.domain === 'commerce' && c.row === 'closure').completed, false);
-  assert.match(cells.find((c) => c.domain === 'commerce' && c.row === 'closure').items.map((i) => i.label).join(), /缺失/);
+  assert.match(cells.find((c) => c.domain === 'commerce' && c.row === 'closure').items.map((i) => i.label).join(), /结论尚未登记/);
 });
 
 test('输入行：处理链运行=浅黄运行环；待补件/阻断如实入事项；材料读取失败=未知不是 0', () => {
@@ -84,7 +84,7 @@ test('输入行：处理链运行=浅黄运行环；待补件/阻断如实入事
   assert.ok(input.every((c) => c.running === true), '处理链在途=输入行运行环（按服务端，不按计时）');
   const policyInput = input.find((c) => c.domain === 'policy');
   const labels = policyInput.items.map((i) => i.label).join('；');
-  assert.match(labels, /未知（清单读取失败/, '材料数未知如实标注');
+  assert.match(labels, /材料暂时无法读取/, '材料数未知如实标注');
   assert.match(labels, /待补件\/转人工 1 项/);
   assert.match(labels, /被阻断等待恢复 1 项/);
   assert.equal(policyInput.needsReview, false, 'blocked≠卡点!（等待恢复态不染警示）');
@@ -95,7 +95,7 @@ test('事实冲突：输入行红项+卡点!（同键多断言不按最后上传
   const cell = cells.find((c) => c.domain === 'credit' && c.row === 'input');
   assert.equal(cell.needsReview, true);
   const conflict = cell.items.find((i) => i.tone === 'red');
-  assert.match(conflict.label, /事实冲突 2 处/);
+  assert.match(conflict.label, /有 2 处材料内容需要核对/);
   assert.match(conflict.detail, /最后上传者覆盖/);
 });
 
@@ -108,17 +108,18 @@ test('人工行：followups 按域落格 + 卡点；采用记录=人工完成信
   }));
   const creditHuman = cells.find((c) => c.domain === 'credit' && c.row === 'human');
   assert.equal(creditHuman.needsReview, true);
-  assert.match(creditHuman.items.map((i) => i.label).join('；'), /转会后待办 1 项（ownerRole=credit）/);
+  assert.match(creditHuman.items.map((i) => i.label).join('；'), /待办 1 项/);
   assert.match(creditHuman.items.map((i) => i.label).join('；'), /开放补证问题 2 个/);
   const policyHuman = cells.find((c) => c.domain === 'policy' && c.row === 'human');
-  assert.match(policyHuman.items.map((i) => i.label).join('；'), /人工已采用该域意见/);
+  assert.match(policyHuman.items.map((i) => i.label).join('；'), /已采用本专业意见/);
   assert.equal(policyHuman.needsReview, false);
 });
 
 test('商机列：客户档案=真实输入项；需求登记=§13.5 读回或如实待录入（不用融资申请冒充）', () => {
   const cells = deriveTakeoffCells(src({ snapshot: { customer: { customerId: 'cus_1', displayName: '合成制造', status: 'active' } } }));
   const input = cells.find((c) => c.domain === 'opportunity' && c.row === 'input');
-  assert.match(input.items.map((i) => i.label).join('；'), /客户主体档案 cus_1/);
+  assert.match(input.items.map((i) => i.label).join('；'), /客户已建档/);
+  assert.ok(!input.items.some((i) => i.label.includes('cus_1')), '业务页面不展示客户内部编号');
   assert.match(input.items.map((i) => i.label).join('；'), /首次回租需求登记/);
   // 未登记：detail 必须是「未录入」语义（未知≠0），不得冒用融资申请
   const reqItem = input.items.find((i) => i.key === 'req');
@@ -131,7 +132,7 @@ test('商机列：客户档案=真实输入项；需求登记=§13.5 读回或�
   assert.match(reqReg.label, /5 万元/, '金额按投影既有格式化（分→元/万元）');
   assert.ok(reqReg.label.includes('非融资申请') || reqReg.detail.includes('绝不写 financing_requests'), '登记态仍明示评估级需求≠融资申请');
   const analysis = cells.find((c) => c.domain === 'opportunity' && c.row === 'analysis');
-  assert.match(analysis.items[0].label, /未接入/);
+  assert.match(analysis.items[0].label, /尚未取得业务分析结果/);
   assert.equal(analysis.allowedActions.length, 0);
   const closure = cells.find((c) => c.domain === 'opportunity' && c.row === 'closure');
   assert.equal(closure.completed, false);
@@ -149,6 +150,13 @@ test('顶部摘要：候选金额来自同一方案；未配置=待评估/待补
   assert.ok(top.planMarks.some((m) => m.includes('≠ 正式批准')));
   const empty = deriveTakeoffTop(src());
   assert.equal(empty.suggestedAmount.text, '待评估', '无候选=待评估，绝不显示 0');
+});
+
+test('参考价格：货币单位不重复，设备与期间分母保留', () => {
+  for (const [priceUnit, suffix] of [['元/年','年'],['CNY/月','月'],['元/台/年','台/年'],['cny_per_annum','年'],['每期','每期']]) {
+    const top = deriveTakeoffTop(src({ snapshot: { assessments: [{ candidate: { referencePriceMinor: 96_000_000, priceUnit } }] } }));
+    assert.equal(top.referencePrice.text, `96 万元 / ${suffix}`);
+  }
 });
 
 test('顶部摘要：changed 域 → 冻结影响标记 + 待复核；Gate 拒绝不改写为通过', () => {

@@ -85,7 +85,7 @@ test('一次性绑定：通道令牌经 intake/accept 换取上传绑定（reque
   fireEvent.change(screen.getByLabelText('通道令牌'), { target: { value: 'tok-portal-1' } });
   fireEvent.click(screen.getByText('关联通道', { selector: 'button' }));
   const dialog = await waitFor(() => screen.getByRole('dialog'));
-  assert.ok(dialog.textContent.includes('对账编号'), '绑定确认框展示对账编号');
+  assert.ok(!dialog.textContent.includes('对账编号'), '绑定确认框不展示技术编号');
   fireEvent.click(screen.getByText('确认绑定'));
 
   await waitFor(() => assert.equal(calls.accept.length, 1));
@@ -114,18 +114,18 @@ test('上传重试不换号：502 结果未知后确认框保留，再次确认�
   // 确认框出现：一次提交语义 + 对账编号
   const dialog = await waitFor(() => screen.getByRole('dialog'));
   assert.ok(dialog.textContent.includes('常驻处理链'), '文案说明一次提交进处理链');
-  assert.ok(dialog.textContent.includes('对账编号'), '确认框展示对账编号');
+  assert.ok(!dialog.textContent.includes('对账编号'), '确认框不展示技术编号');
 
   fireEvent.click(screen.getByText('确认提交'));
   await waitFor(() => assert.equal(calls.upload.length, 1));
   const firstId = calls.upload[0].requestId;
   assert.ok(firstId, '第一次提交带 requestId');
 
-  await waitFor(() => assert.ok(screen.getByText(/后台结果未知/)), '结果未知给业务语言提示');
+  await waitFor(() => assert.ok(screen.getByText(/提交结果还未确认/)), '结果未知给业务语言提示');
   assert.ok(screen.getByRole('dialog'), '确认框保留（不静默关闭）');
-  assert.ok(screen.getByText('用同一编号重试'), '重试按钮明确同一编号语义');
+  assert.ok(screen.getByText('重试本次提交'), '重试按钮明确同一编号语义');
 
-  fireEvent.click(screen.getByText('用同一编号重试'));
+  fireEvent.click(screen.getByText('重试本次提交'));
   await waitFor(() => assert.equal(calls.upload.length, 2));
   assert.equal(calls.upload[1].requestId, firstId, '重试沿用同一 requestId（不换号盲重）');
   await waitFor(() => assert.equal(screen.queryByRole('dialog'), null), '成功后确认框关闭');

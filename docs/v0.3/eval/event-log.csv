@@ -1,0 +1,2 @@
+﻿"run_id","event_seq","at_utc","monotonic_ms","event_type","actor_id","request_id","detail_or_output_ref"
+"NOT_MEASURED","NOT_MEASURED","NOT_MEASURED","NOT_MEASURED","START/ACTIVE_START/ACTIVE_STOP/MODEL_SENT/MODEL_RETURN/REWORK/FINISH","NOT_MEASURED","NOT_MEASURED","Use one row per observed event; no fabricated timestamps"

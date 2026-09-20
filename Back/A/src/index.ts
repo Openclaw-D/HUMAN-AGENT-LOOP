@@ -14,7 +14,7 @@ async function main(): Promise<void> {
   pool.on('error', (error) => {
     console.error('[pool] idle client error（DB 可能重启；连接将自动重建）:', error.message);
   });
-  const ran = await migrate(pool);
+  const ran = process.argv.includes('--no-migrate') ? [] : await migrate(pool);
   if (ran.length > 0) console.log(`[migrate] applied: ${ran.join(', ')}`);
   const verifier = config.principals.length > 0 ? tokenDirectoryVerifier(config.principals) : null;
   // 测试钩子（仅测试用）：验证器异常注入——验证 authenticate 的失败关闭路径不外泄凭据（旧 D-10 教训）

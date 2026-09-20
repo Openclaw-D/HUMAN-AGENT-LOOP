@@ -304,23 +304,23 @@ export function deriveTakeoffCells(src: TakeoffSource): TakeoffCellView[] {
     const inputItems: TakeoffCellItem[] = [];
     if (d.id === 'opportunity') {
       inputItems.push(snap.customer?.customerId
-        ? { key: 'cust', label: `客户主体档案 ${snap.customer.customerId}（状态 ${snap.customer.status ?? '未知'}）`, tone: 'green' }
+        ? { key: 'cust', label: '客户已建档', tone: 'green' }
         : { key: 'cust', label: '客户主体档案未打开', tone: 'gray' });
       const reqAmount = snap.admission?.request?.requestedAmount ?? latest?.requestedAmountMinor ?? null;
       inputItems.push(reqAmount != null
-        ? { key: 'req', label: `首次回租需求已登记：金额 ${fmtMinor(reqAmount)}（客户表述，非融资申请）`, tone: 'green', detail: 'A §13.5 评估级需求读回；修正走 admission-request 命令（整块替换、revision+1、绝不写 financing_requests）' }
+        ? { key: 'req', label: `首次回租需求已登记：金额 ${fmtMinor(reqAmount)}（客户表述，非融资申请）`, tone: 'green', detail: '以客户提供的申请金额、用途和设备范围为准，可在需求登记中补充。' }
         : { key: 'req', label: '首次回租需求登记（金额/用途/设备范围）', tone: 'gray', detail: '首次回租需求登记未录入：如实待补，不用融资申请冒充需求（未知≠0）' });
     } else {
       inputItems.push({
         key: 'mat',
-        label: src.currentMaterials == null ? '现行材料件数未知（清单读取失败，不以 0 冒充）' : `现行材料 ${src.currentMaterials} 件（A evidence_artifacts）`,
+        label: src.currentMaterials == null ? '材料暂时无法读取' : `客户现行记录 ${src.currentMaterials} 份`,
         tone: src.currentMaterials == null ? 'gray' : src.currentMaterials > 0 ? 'green' : 'gray',
-        detail: '材料未分域登记：材料→域归集待01/03字段接入；点击打开材料面板核对原件',
+        detail: '查看材料原件，核对是否满足本专业要求。',
       });
       if (src.currentMaterials === 0) inputItems.push({ key: 'mat0', label: '尚无材料：上传第一份原件后处理链自动登记', tone: 'gray' });
     }
     if (src.factConflicts > 0) {
-      inputItems.push({ key: 'conf', label: `事实冲突 ${src.factConflicts} 处（同键多个现行断言）`, tone: 'red', detail: '互相矛盾的材料不按"最后上传者覆盖"处理：需人工复核' });
+      inputItems.push({ key: 'conf', label: `有 ${src.factConflicts} 处材料内容需要核对`, tone: 'red', detail: '互相矛盾的材料不按"最后上传者覆盖"处理：需人工复核' });
     }
     if (chan.blocked > 0) inputItems.push({ key: 'blk', label: `处理链被阻断等待恢复 ${chan.blocked} 项`, tone: 'yellow', detail: '自动续跑，勿重复提交（材料页可见逐任务回执）' });
     if (chan.followup > 0) inputItems.push({ key: 'fup', label: `待补件/转人工 ${chan.followup} 项`, tone: 'yellow' });
@@ -342,10 +342,10 @@ export function deriveTakeoffCells(src: TakeoffSource): TakeoffCellView[] {
     // ---- 智能行 ----
     const analysisItems: TakeoffCellItem[] = [];
     if (!isBackend) {
-      analysisItems.push({ key: 'na', label: '商机域智能分析未接入', tone: 'gray', detail: '待01/03字段（需求结构化分析）：如实标注，不伪装运行' });
+      analysisItems.push({ key: 'na', label: '尚未取得业务分析结果', tone: 'gray', detail: '业务分析结果尚未登记。' });
     } else {
       if (f!.resultCount > 0) {
-        analysisItems.push({ key: 'dr', label: `已有域意见登记 ${f!.resultCount} 条（引用真实分析运行）`, tone: 'blue', detail: 'authority=none；意见版本与运行引用见方案面板' });
+        analysisItems.push({ key: 'dr', label: `已有专业意见 ${f!.resultCount} 条`, tone: 'blue', detail: '意见供参考，确认后才能用于办理。' });
       } else {
         analysisItems.push({ key: 'dr0', label: chan.running > 0 ? '处理链分析进行中（尚无登记产出）' : '该域暂无分析产出登记', tone: chan.running > 0 ? 'blue' : 'gray', detail: '分析由处理链按事件触发；无报错不等于通过，未运行不是绿灯' });
       }
@@ -369,12 +369,12 @@ export function deriveTakeoffCells(src: TakeoffSource): TakeoffCellView[] {
     // ---- 人工行 ----
     const humanItems: TakeoffCellItem[] = [];
     if (!isBackend) {
-      humanItems.push({ key: 'nh', label: '商机人工核验事项待01字段', tone: 'gray', detail: '输入/智能/人工按实际事项局部推进，不锁整行' });
+      humanItems.push({ key: 'nh', label: '尚未取得业务核验记录', tone: 'gray', detail: '输入/智能/人工按实际事项局部推进，不锁整行' });
     } else {
-      if (f!.adopted) humanItems.push({ key: 'ad', label: '人工已采用该域意见（adoption.adopted=true）', tone: 'green', detail: '采用人/理由由服务端记录；authority=none 由服务端强制' });
+      if (f!.adopted) humanItems.push({ key: 'ad', label: '已采用本专业意见', tone: 'green', detail: '采用人和理由已保存在办理记录中。' });
       else if (f!.resultCount > 0) humanItems.push({ key: 'ad0', label: '该域意见尚无人工采用记录', tone: 'gray' });
       else humanItems.push({ key: 'ad1', label: '尚无该域人工核验记录', tone: 'gray' });
-      if (f!.followups > 0) humanItems.push({ key: 'fu', label: `转会后待办 ${f!.followups} 项（ownerRole=${d.id}）`, tone: 'yellow', detail: '谁处理/完成证据见待办页；点击回原格子' });
+      if (f!.followups > 0) humanItems.push({ key: 'fu', label: `待办 ${f!.followups} 项`, tone: 'yellow', detail: '谁处理/完成证据见待办页；点击回原格子' });
       if (changedSet.has(d.id)) humanItems.push({ key: 'rv', label: '需人工复核：依据版本已变化', tone: 'yellow' });
     }
     const openQ = snap.session?.openQuestions ?? 0;
@@ -401,30 +401,30 @@ export function deriveTakeoffCells(src: TakeoffSource): TakeoffCellView[] {
     let frozen = false;
     let needsReview = false;
     if (!isBackend) {
-      closureItems.push({ key: 'nc', label: '商机域收口待01字段（首次回租需求确认）', tone: 'gray' });
+      closureItems.push({ key: 'nc', label: '业务办理尚未完成', tone: 'gray' });
     } else if (f!.currency === 'current') {
       completed = true;
       bucket = 100;
-      closureItems.push({ key: 'cur', label: '本轮收口：该域结论当前', tone: 'green', detail: '绿=该格工作完成，≠支持融资；负面结论同样可完成' });
+      closureItems.push({ key: 'cur', label: '本专业办理已完成', tone: 'green', detail: '绿=该格工作完成，≠支持融资；负面结论同样可完成' });
     } else if (f!.currency === 'changed') {
       frozen = true;
       needsReview = true;
       closureItems.push({ key: 'chg', label: '冻结（依据已变化）：禁止相关正面确认', tone: 'yellow', detail: `解冻所需动作：按当前有效证据更新该域结论${f!.currencyReasons.length > 0 ? `（原因：${f!.currencyReasons.join('、')}）` : ''}；仍可看证据、补件、提问` });
     } else if (f!.currency === 'missing') {
-      closureItems.push({ key: 'miss', label: '包内该域结论缺失', tone: 'gray', detail: '未闭合二态：登记域结果或有效豁免后才能闭合' });
+      closureItems.push({ key: 'miss', label: '本专业结论尚未登记', tone: 'gray', detail: '未闭合二态：登记域结果或有效豁免后才能闭合' });
     } else {
-      closureItems.push({ key: 'unc', label: '未闭合（尚无依据包或该域无判定）', tone: 'gray', detail: '完成行=本域本轮收口汇总；没有独立任务时保持未闭合，不造审批步骤' });
+      closureItems.push({ key: 'unc', label: '本专业尚未完成', tone: 'gray', detail: '完成行=本域本轮收口汇总；没有独立任务时保持未闭合，不造审批步骤' });
     }
-    if (isBackend && f!.currency == null && hasBasis) closureItems.push({ key: 'nb', label: '依据包内无该域当前性判定', tone: 'gray' });
+    if (isBackend && f!.currency == null && hasBasis) closureItems.push({ key: 'nb', label: '本专业结论尚待核对', tone: 'gray' });
     if (gate && gate.result === 'rejected' && d.id === 'commerce') {
-      closureItems.push({ key: 'gate', label: 'Gate 拒绝（终态·规则包判定）', tone: 'red', detail: '拒绝不显示绿灯；依据见 Gate 回执' });
+      closureItems.push({ key: 'gate', label: '准入规则未通过', tone: 'red', detail: '拒绝不显示绿灯；依据见 Gate 回执' });
     }
     if ((d.id === 'credit' || d.id === 'commerce') && latest?.candidate) {
-      closureItems.push({ key: 'cand', label: `候选倾向：${tendencyLabel(latest.candidate.tendency)}（authority=none）`, tone: latest.candidate.tendency === 'do_not' ? 'red' : 'blue', detail: latest.candidate.supportableAmountMinor != null ? `候选支撑金额 ${fmtMinor(latest.candidate.supportableAmountMinor, latest.candidate.currency)}` : '候选金额未知（未知≠0）' });
+      closureItems.push({ key: 'cand', label: `建议：${tendencyLabel(latest.candidate.tendency)}`, tone: latest.candidate.tendency === 'do_not' ? 'red' : 'blue', detail: latest.candidate.supportableAmountMinor != null ? `候选支撑金额 ${fmtMinor(latest.candidate.supportableAmountMinor, latest.candidate.currency)}` : '候选金额未知（未知≠0）' });
     }
     if ((snap.assessments ?? []).some((a) => a.stale === true) && d.id === 'credit') {
       needsReview = true;
-      closureItems.push({ key: 'stale', label: '评估依据已过时（stale=true）', tone: 'yellow' });
+      closureItems.push({ key: 'stale', label: '材料已变化，需要重新核对', tone: 'yellow' });
     }
     cells.push({
       domain: d.id, row: 'closure',
@@ -543,7 +543,7 @@ export function deriveTakeoffTop(src: TakeoffSource): TakeoffTopSummary {
   const term = cand?.suggestedTermMonths ?? latest?.candidate?.suggestedTermMonths ?? null;
   const price = cand?.referencePriceMinor ?? latest?.candidate?.referencePriceMinor ?? null;
   const rawPriceUnit = cand?.priceUnit ?? latest?.candidate?.priceUnit ?? null;
-  const priceUnit = rawPriceUnit === 'cny_per_annum' ? '年' : rawPriceUnit;
+  const priceUnit = rawPriceUnit === 'cny_per_annum' ? '年' : rawPriceUnit?.replace(/^(?:元|人民币元|CNY)\s*[/／]\s*/i, '');
   const priceBasis = cand?.priceBasis ?? latest?.candidate?.priceBasis ?? null;
   return {
     customer: {
@@ -555,7 +555,7 @@ export function deriveTakeoffTop(src: TakeoffSource): TakeoffTopSummary {
       ? { text: fmtMinor(requested), note: '客户本次首次回租需求金额（A 权威登记）' }
       : { text: '待补', note: '首次回租需求登记未录入：客户本次需求不冒用融资申请/授信额度' },
     suggestedAmount: (cand?.suggestedAmount ?? latest?.candidate?.supportableAmountMinor) != null
-      ? { text: fmtMinor((cand?.suggestedAmount ?? latest?.candidate?.supportableAmountMinor) as number, latest?.candidate?.currency), note: `当前候选方案可支持值（authority=none，${latest?.assessmentId ?? ''}）` }
+      ? { text: fmtMinor((cand?.suggestedAmount ?? latest?.candidate?.supportableAmountMinor) as number, latest?.candidate?.currency), note: '建议值，等待有权人员确认' }
       : { text: '待评估', note: '尚无候选金额判断：待评估≠0' },
     suggestedTerm: term != null
       ? { text: `${term} 个月`, note: '候选方案建议融资期限（§13.2 同版；期限≠授信有效期）' }

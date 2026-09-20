@@ -1,0 +1,142 @@
+{
+  "path_forecast_post": {
+    "request": {
+      "assistant": "credit",
+      "operationId": "forecast_0001",
+      "expectedRevision": 0,
+      "question": "若补齐材料可能进入哪些状态？",
+      "taskKind": "path_forecast"
+    },
+    "response": {
+      "status": 200,
+      "ok": true,
+      "authority": "none",
+      "latest": {
+        "taskKind": "path_forecast",
+        "valid": true,
+        "current": true,
+        "candidates": [
+          {
+            "id": "branch_2",
+            "label": "可能按现行材料有条件推进",
+            "impact": "条件成立后进入复核队列",
+            "confidence": 0.85,
+            "evidenceRefIds": [
+              "548fdf536928bbeceb0788db250e1eefba730751e06ec37d235e67d66a41950a"
+            ],
+            "confidenceKind": "model_estimate_uncalibrated",
+            "forecast": {
+              "targetState": "有条件推进",
+              "conditions": [
+                "阻断项清零",
+                "有权人员确认"
+              ],
+              "horizon": "本轮预评估"
+            }
+          },
+          {
+            "id": "branch_1",
+            "label": "可能进入补证后复核状态",
+            "impact": "条件成立后阻断是否消除",
+            "confidence": 0.6,
+            "evidenceRefIds": [
+              "548fdf536928bbeceb0788db250e1eefba730751e06ec37d235e67d66a41950a"
+            ],
+            "confidenceKind": "model_estimate_uncalibrated",
+            "forecast": {
+              "targetState": "待补证后复核",
+              "conditions": [
+                "补齐列明资料并由有权人员核验"
+              ],
+              "horizon": "下一次办理步骤"
+            }
+          }
+        ],
+        "confidenceKind_sample": "model_estimate_uncalibrated"
+      }
+    }
+  },
+  "feedback_post": {
+    "request": {
+      "decisionSetId": "012201843b6f46931b483a4107c6f4c28f1fabf910b78187fd2efbd87226f651",
+      "action": "select",
+      "candidateId": "branch_2"
+    },
+    "response": {
+      "status": 200,
+      "latest_feedback": {
+        "action": "select",
+        "candidateId": "branch_2",
+        "label": "可能按现行材料有条件推进",
+        "reason": "先看条件推进条件",
+        "eventId": "feedback:feedback_0001",
+        "at": "2026-09-20T15:41:52.430Z"
+      }
+    }
+  },
+  "next_action_default_post": {
+    "request": {
+      "assistant": "credit",
+      "operationId": "action_0001",
+      "expectedRevision": 2,
+      "question": "下一步核对什么？"
+    },
+    "response": {
+      "status": 200,
+      "latest": {
+        "taskKind": "next_action",
+        "valid": true,
+        "current": true,
+        "candidates": [
+          {
+            "id": "duplicate",
+            "label": "先核对重复交易",
+            "impact": "核对同笔收入是否重复计入",
+            "confidence": 0.85,
+            "evidenceRefIds": [
+              "548fdf536928bbeceb0788db250e1eefba730751e06ec37d235e67d66a41950a"
+            ],
+            "confidenceKind": "model_estimate_uncalibrated"
+          },
+          {
+            "id": "period",
+            "label": "先统一收入期间",
+            "impact": "核对流水与开票起止日期",
+            "confidence": 0.65,
+            "evidenceRefIds": [
+              "548fdf536928bbeceb0788db250e1eefba730751e06ec37d235e67d66a41950a"
+            ],
+            "confidenceKind": "model_estimate_uncalibrated"
+          }
+        ]
+      }
+    }
+  },
+  "unknown_kind_post": {
+    "request": {
+      "taskKind": "path"
+    },
+    "response": {
+      "status": 400,
+      "error": "INVALID_TASK_KIND"
+    }
+  },
+  "same_operationId_cross_kind": {
+    "request": {
+      "operationId": "action_0001",
+      "taskKind": "path_forecast"
+    },
+    "response": {
+      "status": 409,
+      "error": "IDEMPOTENCY_CONFLICT"
+    }
+  },
+  "get_projection": {
+    "response": {
+      "status": 200,
+      "pending": null,
+      "latest_taskKind": "next_action",
+      "latest_current": true
+    }
+  }
+}

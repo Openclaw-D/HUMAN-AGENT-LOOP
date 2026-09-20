@@ -15,6 +15,7 @@ import {
   type AssistantBriefSource,
 } from '../../lib/workbench/takeoff-assistant-brief';
 import { WbError } from '../workbench/wb-parts';
+import { AssistantObservationPanel } from './assistant-observation';
 
 const ASSISTANTS = [
   { id: 'business', name: '业务' },
@@ -27,18 +28,6 @@ const ASSISTANTS = [
 
 type AssistantId = (typeof ASSISTANTS)[number]['id'];
 
-const NOT_WIRED: Array<{ key: string; label: string; why: string }> = [
-  { key: 'voice', label: '语音', why: '语音输入未接入' },
-  { key: 'emoji', label: '表情', why: '表情未接入' },
-  { key: 'font', label: '字体', why: '字体设置未接入' },
-  { key: 'history', label: '聊天记录', why: '独立聊天记录检索未接入（线程已在上方完整显示）' },
-  { key: 'skill', label: 'Skill', why: 'Skill 扩展未接入' },
-  { key: 'mcp', label: 'MCP', why: 'MCP 未接入（不经 MCP 绕过本轮授权）' },
-  { key: 'compact', label: 'compact', why: '会话摘要压缩未接入（接入后也只压缩模型摘要，不删原件/决定/审计）' },
-  { key: 'todo', label: 'ToDo', why: '待办管理未接入（办理待办见顶栏「待办」入口）' },
-  { key: 'goals', label: 'Goals', why: 'Goals 未接入' },
-];
-
 /** 简报数据源：与主屏同一投影快照（不复制第二套业务状态）。 */
 function briefSourceOf(source: TakeoffSource): AssistantBriefSource {
   const snap = source.snapshot;
@@ -50,7 +39,7 @@ function briefSourceOf(source: TakeoffSource): AssistantBriefSource {
   };
 }
 
-export function TakeoffAssistants({ wb, customerId, source, onOpenMaterials, cellContext }: {
+export function TakeoffAssistants({ wb, customerId, source, onOpenMaterials, cellContext, focusAssistant }: {
   wb: WbApi;
   customerId: string;
   /** 投影源（与主屏同源；简报只读，不复制第二套业务状态）。 */
@@ -58,15 +47,19 @@ export function TakeoffAssistants({ wb, customerId, source, onOpenMaterials, cel
   onOpenMaterials: () => void;
   /** 当前所选格子上下文（随点选变化；助手共享该引用，不各存一份）。 */
   cellContext: string | null;
+  focusAssistant?: string;
 }) {
-  const [assistant, setAssistant] = useState<AssistantId>('business');
+  const [assistant, setAssistant] = useState<AssistantId>(() => ASSISTANTS.find((item) => wb.session?.roles.includes(item.id))?.id ?? 'business');
+  useEffect(() => {
+    const selected = ASSISTANTS.find((item) => item.id === focusAssistant);
+    if (selected) setAssistant(selected.id);
+  }, [focusAssistant]);
   const [audience, setAudience] = useState<'customer' | 'internal'>('internal');
   const [draft, setDraft] = useState('');
   const [pending, setPending] = useState<PendingSend[]>([]);
   const [remote, setRemote] = useState<RemoteThreadMsg[]>([]);
   const [pollNote, setPollNote] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [imeNote, setImeNote] = useState(false);
   const [briefs, setBriefs] = useState<Array<{ key: string; kind: AssistantBriefKind; text: string; at: string }>>([]);
   const [briefBusy, setBriefBusy] = useState(false);
@@ -74,6 +67,9 @@ export function TakeoffAssistants({ wb, customerId, source, onOpenMaterials, cel
   const client = wb.client;
   const cursorRef = useRef<string | null>(null);
   const pressTimer = useRef<number | null>(null);
+  const mentionedByPress = useRef(false);
+  const chatElement = useRef<HTMLDetailsElement>(null);
+  const draftElement = useRef<HTMLTextAreaElement>(null);
   const threadRef = useRef<HTMLDivElement | null>(null);
 
   // 服务端线程为权威：游标增量续拉；轮询 + 发送后即拉（与既有工作本同纪律）。
@@ -124,6 +120,9 @@ export function TakeoffAssistants({ wb, customerId, source, onOpenMaterials, cel
 
   const insertMention = (name: string) => {
     setDraft((d) => (d.endsWith('@') || d === '' ? `${d}@${name} ` : `${d} @${name} `));
+    setAudience('internal');
+    if (chatElement.current) chatElement.current.open = true;
+    requestAnimationFrame(() => draftElement.current?.focus());
   };
 
   // ---- 受控简报（D-02 收尾）：读服务端收口面→确定性组答（替身）→本地展示 ----
@@ -139,7 +138,7 @@ export function TakeoffAssistants({ wb, customerId, source, onOpenMaterials, cel
     const kind = assistant as AssistantBriefKind;
     setBriefBusy(true);
     try {
-      const j = await client.read(`/api/jw/v2/connectors/analysis/finalization?tid=${encodeURIComponent('t1')}&cid=${encodeURIComponent(customerId)}`);
+      const j = await client.read(`/api/jw/v2/connectors/analysis/finalization?tid=${encodeURIComponent(wb.session?.tenantId ?? 't1')}&cid=${encodeURIComponent(customerId)}`);
       const fin = ((j as { finalization?: unknown })?.finalization ?? null) as AssistantBriefSource['finalization'];
       const prior = lastFinRef.current.customerId === customerId ? (lastFinRef.current.finByKind[kind] ?? null) : null;
       const brief = composeAssistantBrief(kind, { ...briefSourceOf(source), finalization: fin }, prior);
@@ -156,7 +155,7 @@ export function TakeoffAssistants({ wb, customerId, source, onOpenMaterials, cel
     } finally {
       setBriefBusy(false);
     }
-  }, [client, customerId, source, assistant, briefBusy, pushBrief]);
+  }, [client, customerId, source, assistant, briefBusy, pushBrief, wb.session?.tenantId]);
 
   useEffect(() => {
     setBriefs([]);
@@ -164,11 +163,13 @@ export function TakeoffAssistants({ wb, customerId, source, onOpenMaterials, cel
   }, [customerId]);
 
   const startPress = (name: string) => {
-    pressTimer.current = window.setTimeout(() => { insertMention(name); pressTimer.current = null; }, 500);
+    mentionedByPress.current = false;
+    pressTimer.current = window.setTimeout(() => { mentionedByPress.current = true; insertMention(name); pressTimer.current = null; }, 500);
   };
   const cancelPress = () => {
     if (pressTimer.current !== null) { window.clearTimeout(pressTimer.current); pressTimer.current = null; }
   };
+  useEffect(() => () => { if (pressTimer.current !== null) window.clearTimeout(pressTimer.current); }, []);
 
   const myPrincipalId = wb.session?.principalId ?? '';
   const cols = mergeThread(pending, remote, myPrincipalId);
@@ -201,20 +202,22 @@ export function TakeoffAssistants({ wb, customerId, source, onOpenMaterials, cel
             role="tab"
             aria-selected={assistant === a.id}
             className="tk-asst-tab"
-            onClick={() => setAssistant(a.id)}
+            onClick={() => { if (mentionedByPress.current) { mentionedByPress.current = false; return; } setAssistant(a.id); }}
             onPointerDown={() => startPress(a.name)}
             onPointerUp={cancelPress}
             onPointerLeave={cancelPress}
-            title={`${a.name}助手：单击切换；长按或用 @ 按钮在草稿中提及`}
+            onPointerCancel={cancelPress}
+            title={`查看${a.name}助手建议；长按@${a.name}`}
           >{a.name}</button>
         ))}
       </div>
       <div className="tk-asst-body">
-        <div className="tk-asst-note tk-assistant-context"><strong>{ASSISTANTS.find((a) => a.id === assistant)?.name}助手</strong><span>规则简报 · 未连接模型</span>{cellContext && <small>{cellContext}</small>}</div>
+        <div className="tk-asst-note tk-assistant-context"><strong>正在查看 · {ASSISTANTS.find((a) => a.id === assistant)?.name}助手</strong>{cellContext && <small>{cellContext}</small>}</div>
+        <div className="tk-assistant-advice"><AssistantObservationPanel wb={wb} assistant={assistant} /></div>
+        <details ref={chatElement} className="tk-team-chat"><summary>{audience === 'customer' ? '与客户沟通' : '团队消息'}</summary>
         <div className="tk-audience">
           <button className="tk-btn small" aria-pressed={audience === 'internal'} onClick={() => setAudience('internal')}>内部协作</button>
           <button className="tk-btn small" aria-pressed={audience === 'customer'} onClick={() => setAudience('customer')}>对客户</button>
-          <span className="tk-asst-note">仅发送至所选会话</span>
         </div>
         <div className="tk-thread" ref={threadRef} aria-label={audience === 'customer' ? '对客户消息' : '内部消息'} aria-live="polite">
           {briefs.length > 0 && (
@@ -231,30 +234,18 @@ export function TakeoffAssistants({ wb, customerId, source, onOpenMaterials, cel
           {rows.map((m) => (
             <div key={m.key} className={`tk-msg${m.mine ? ' mine' : ''}`}>
               <div>{m.text}</div>
-              <div className="tk-meta">{m.mine ? '我' : m.senderLabel} · {new Date(m.at).toLocaleTimeString('zh-CN', { hour12: false })} · {m.state}</div>
+              <div className="tk-meta">{m.mine ? '我' : (wb.identities?.find((identity) => identity.principalId === m.senderLabel)?.label || '协作成员')} · {new Date(m.at).toLocaleTimeString('zh-CN', { hour12: false })} · {m.state}</div>
             </div>
           ))}
         </div>
         {pollNote && <span className="tk-asst-note">{pollNote}</span>}
-        <div className="tk-toolbar" aria-label="工具栏（未接入能力明确禁用）">
+        <div className="tk-toolbar" aria-label="协作工具">
           <button className="tk-tool" disabled={briefBusy || !client} onClick={() => void requestBrief()} title="受控简报：读取当前客户收口/评估读面后确定性组答（替身，非真实模型；同一收口自动去重；只读不写）">{briefBusy ? '读取中…' : '客户简报'}</button>
           <button className="tk-tool" onClick={onOpenMaterials} title="上传原件（统一提交链，一次上传）">上传</button>
           <button className="tk-tool" onClick={() => insertMention(ASSISTANTS.find((a) => a.id === assistant)?.name ?? '')} title="在草稿中@当前助手（长按助手标签同效；@不是唯一入口）">@</button>
-          <span style={{ flex: 1 }} />
-          <span className="tk-menu">
-            <button className="tk-tool" aria-expanded={menuOpen} onClick={() => setMenuOpen((v) => !v)}>⋯ 更多</button>
-            {menuOpen && (
-              <div className="tk-menu-pop" role="menu" aria-label="更多工具（未接入项禁用）">
-                {NOT_WIRED.map((t) => (
-                  <button key={t.key} role="menuitem" className="tk-tool" disabled title={t.why} onClick={() => { /* 未接入：明确禁用，不做假成功 */ }}>
-                    {t.label}（未接入）
-                  </button>
-                ))}
-              </div>
-            )}
-          </span>
         </div>
         <textarea
+          ref={draftElement}
           className="tk-draft"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
@@ -268,6 +259,7 @@ export function TakeoffAssistants({ wb, customerId, source, onOpenMaterials, cel
           <button className="tk-btn primary" disabled={!draft.trim()} onClick={() => void send()}>发送</button>
         </div>
         <WbError error={err} onDismiss={() => setErr(null)} />
+        </details>
       </div>
     </div>
   );

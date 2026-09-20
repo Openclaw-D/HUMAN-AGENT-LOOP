@@ -1,0 +1,20 @@
+{
+  "version": "V0.3-RACE-1",
+  "date": "2026-09-20",
+  "authoritySource": "User confirmed in V0.3-CTRL",
+  "officialDocumentVerified": false,
+  "primaryTrack": "AI",
+  "criteria": [
+    {"id": "S1", "name": "创新突破", "weight": 20},
+    {"id": "S2", "name": "AI场景融合度", "weight": 20},
+    {"id": "S3", "name": "提效数据显著性", "weight": 20},
+    {"id": "S4", "name": "方案完整与速度", "weight": 30},
+    {"id": "S5", "name": "方案呈现", "weight": 10}
+  ],
+  "presentation": {"maximumMinutes": 15, "fixedMinutes": 12, "reserveMinutes": 3, "qaMinutes": 5},
+  "changeControl": "No implicit change by implementation or follow-up tasks; explicit user revision requires a new version and an impact record.",
+  "evidenceStates": ["NOT_IMPLEMENTED", "NOT_RUN", "SELF_REPORTED", "INDEPENDENTLY_VERIFIED", "USER_ACCEPTED"],
+  "missingMetricValue": null,
+  "materialSource": "SYNTHETIC",
+  "modelAuthority": "none"
+}

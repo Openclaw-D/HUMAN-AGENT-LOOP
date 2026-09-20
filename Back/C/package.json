@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "description": "V7 backend-next Lane C: loopback mock model API (real socket) + commercial leasing goal templates/rules/deterministic tools + 8 synthetic cases (2 multi-turn) + 1 non-leasing counterexample template. Zero runtime dependencies (node stdlib only). SIMULATION only - no real model capability claimed.",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "scripts": {
     "start": "node scripts/start-mock.mjs",
     "test": "node test/run-all.mjs",
@@ -15,5 +17,8 @@
     "eval4d:all": "node src/evaluation/run-four-domain-evaluation.mjs --all",
     "ab": "node src/evaluation/ab-experiment.mjs",
     "e2e": "node src/run-e2e.mjs"
+  },
+  "dependencies": {
+    "pdfjs-dist": "6.3.289"
   }
 }

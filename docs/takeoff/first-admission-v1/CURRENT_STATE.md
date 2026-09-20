@@ -30,3 +30,7 @@
 # 2026-09-20 Codex 发布修复增量
 
 用户已授权 Codex 直接修复并提交推送。最新独立结果以 [CODEX_RELEASE_REVIEW.md](CODEX_RELEASE_REVIEW.md) 为准：正面确认必须具备同规则、同材料快照的 CLEAR Gate；脚本与页面不再使用旧规则标记；账本验收读取当前运行库配置。下文为各路交付记录，旧 PASS 计数不得替代本次独立复核。
+
+# 2026-09-20 智谱真实 API 最小接入增量（后端模型路）
+
+六助手真实模型辅助观察已接入并经真实调用验证：入口 `POST /api/jw/v2/actions/customers/:id/assistant/observe`（Edge 会话+客户裁决+预算门+回执），model=glm-5.2，authority=none，三表零变化机器断言通过；离线 15 项+B 105+Edge 94 全绿；证据与前端接线契约见 [ZHIPU_API_ACCEPTANCE.md](ZHIPU_API_ACCEPTANCE.md)。页面助手仍为确定性简报（页面接入 NOT_RUN，前端归 Codex）；A 队列→B worker 生产形态未接。上文"真实模型/收费 API：NOT_RUN（未授权，0 调用）"自本日起被本节替代。

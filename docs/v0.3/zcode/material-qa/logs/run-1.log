@@ -1,0 +1,106 @@
+[ENV] 解析器源码与7项输入 sha256 与冻结基线一致（adapters.mjs=1d99d8edc891…）
+
+[CASE] DEFECT-BANK-CSV-REAL · DEFECT → REPRODUCED（缺陷复现：精确预期未达）
+[期望] 银行流水.csv（sha256 063d70a821ba…）应解析为 bank_statement_csv：rowCount=484，inflowTotal=77343360，outflowTotal=74065856，periodStart=2023-01-12，periodEnd=2026-08-25，并产出 bank_inflow_total source_supported 事实。预期值来源=原件字节独立求和（不经被测解析器）。
+[实际] {"ok":true,"format":"keyvalue_csv","factCount":485,"sampleFacts":[{"factKey":"流水号","value":"日期,关联单号,对手方,摘要,收入元,支出元,余额元,币种,标识","verificationLevel":"declared","unit":"yuan","caliber":null,"sourceRefs":[1]},{"factKey":"KS-TEXTILE-200-B0001","value":"2023-01-12,KS-TEXTILE-200-S-202301-1,模拟下游1,销售回款,1047110,0,1847110,CNY,SYNTHETIC","verificationLevel":"declared","unit":"yuan","caliber":null,"sourceRefs":[2]}],"aggregates":null,"qualityFlags":[]}
+[断言失败原文] format 应为 bank_statement_csv，实际 keyvalue_csv
++ actual - expected
+
++ 'keyvalue_csv'
+- 'bank_statement_csv'
+
+
+[CASE] DEFECT-BANK-CSV-SYN · DEFECT → REPRODUCED（缺陷复现：精确预期未达）
+[期望] 最小合成流水（表头含 收入元/支出元/余额元，2数据行+合计行）应解析为 bank_statement_csv：rowCount=2，inflowTotal=1500000，outflowTotal=200000，totalsExcluded=1。
+[实际] {"ok":true,"format":"keyvalue_csv","factCount":4,"sampleFacts":[{"factKey":"流水号","value":"日期,对手方,摘要,收入元,支出元,余额元","verificationLevel":"declared","unit":"yuan","caliber":null,"sourceRefs":[1]},{"factKey":"B001","value":"2026-01-05,下游甲,销售回款,1000000,0,1000000","verificationLevel":"declared","unit":"yuan","caliber":null,"sourceRefs":[2]}]}
+[断言失败原文] format 应为 bank_statement_csv，实际 keyvalue_csv
++ actual - expected
+
++ 'keyvalue_csv'
+- 'bank_statement_csv'
+
+
+[CASE] CONTROL-BANK-CSV-ALIAS · CONTROL → PASS
+[期望] 同一流水体仅表头改为 收入/支出/余额（现别名表覆盖）→ 今天即应 bank_statement_csv 且聚合正确（证明缺陷仅在别名差异）。
+[实际] {"ok":true,"format":"bank_statement_csv","aggregates":{"rowCount":2,"badRowCount":0,"totalsExcluded":1,"periodStart":"2026-01-05","periodEnd":"2026-02-10","monthCount":2,"inflowTotal":1500000,"outflowTotal":200000}}
+
+[CASE] DEFECT-PDF-REAL · DEFECT → REPRODUCED（缺陷复现：精确预期未达）
+[期望] D02 主体PDF（sha256 783b07fb4aeb…）提取文本应含客户名「喀什示例棉纺有限公司」。预期来源=GOLD_ANSWERS KS-TEXTILE-200::legal_name（同源 D02-主体登记资料.md 第7行 legal_name=…；PDF 内容流解压后确有 legal_name= 行）。
+[实际] {"ok":true,"format":"keyvalue_pdf","textLen":111,"nameInText":false,"nameInSameOriginMd":true}
+[断言失败原文] 提取文本应含「喀什示例棉纺有限公司」，实际 text 长度 111
+
+[CASE] DEFECT-PDF-SYN · DEFECT → REPRODUCED（缺陷复现：精确预期未达）
+[期望] 最小合成 PDF（唯一内容流，/Filter [ /ASCII85Decode /FlateDecode ]，文本 legal_name=测试客户甲公司）提取文本应含「测试客户甲公司」。
+[实际] {"ok":false,"code":"FORMAT_UNSUPPORTED","detail":"PDF 无可提取文本层（扫描/图片型）：不做 OCR（无获准提供方），原件可预览，请走人工录入/校正入口","textLen":0,"nameInText":false}
+[断言失败原文] 文本应含标记，实际 ok=false code=FORMAT_UNSUPPORTED textLen=0
+
+[CASE] CONTROL-PDF-PLAINFLATE · CONTROL → PASS
+[期望] 同一内容的纯 /Filter /FlateDecode PDF → 今天即应提取出「测试客户甲公司」（证明缺陷仅在 ASCII85 过滤链不被处理）。
+[实际] {"ok":true,"format":"keyvalue_pdf","text":"legal_name=测试客户甲公司"}
+
+[CASE] DEFECT-XLSX-REAL · DEFECT → REPRODUCED（缺陷复现：精确预期未达）
+[期望] 经营台账.xlsx（sha256 16583064d8b4…，11个工作表，首个=年度报表）应 ok=true 且提取文本含首表 2023 年收入 21834032。预期来源=workbook-data.json tables[1](年度报表).rows[0]=["2023",21834032,…]。
+[实际] {"ok":false,"code":"PARSE_FAILED","detail":"XLSX 结构无效：工作表内容不是可读 XML","manualEntry":true,"goldFirstSheetRow0":["2023",21834032]}
+[断言失败原文] ok 应为 true，实际 ok=false code=PARSE_FAILED detail=XLSX 结构无效：工作表内容不是可读 XML
+
+false !== true
+
+
+[CASE] DEFECT-XLSX-SYN · DEFECT → REPRODUCED（缺陷复现：精确预期未达）
+[期望] 最小合成 XLSX（<x:row>/<x:sheetData> 命名空间前缀，数据 2023→55667788）应 ok=true 且提取文本含 55667788（不被误判 XLSX_INVALID）。
+[实际] {"ok":false,"code":"PARSE_FAILED","detail":"XLSX 结构无效：工作表内容不是可读 XML","manualEntry":true}
+[断言失败原文] ok 应为 true，实际 code=PARSE_FAILED detail=XLSX 结构无效：工作表内容不是可读 XML
+
+false !== true
+
+
+[CASE] CONTROL-XLSX-PLAIN · CONTROL → PASS
+[期望] 同一单元格数据、无命名空间前缀的最小 XLSX → 今天即应 ok=true 且文本含 55667788（证明缺陷仅在前缀兼容）。
+[实际] {"ok":true,"format":"table_xlsx","textHead":"\t\n\t55667788"}
+
+[CASE] CONTROL-KV-CSV-GOLD · CONTROL → PASS
+[期望] 接口财务2025.csv（keyvalue_csv 正常路径）语义投影 revenue_annual_declared=1848.0308 万元、total_assets_declared=1475.4932 万元。预期来源=GOLD_ANSWERS revenue_2025=18480308 元（CNY-yuan）及年度报表 2025 行资产 14754932 元（万元换算一致）。
+[实际] {"format":"keyvalue_csv","semanticFacts":[{"factKey":"total_assets_declared","value":1475.4932,"unit":"wan"},{"factKey":"total_liabilities_declared","value":580,"unit":"wan"},{"factKey":"net_fixed_assets_declared","value":584,"unit":"wan"},{"factKey":"revenue_annual_declared","value":1848.0308,"unit":"wan"}]}
+
+[CASE] HONEST-EMPTY-BUFFER · HONEST → PASS
+[期望] 空字节 → PARSE_FAILED（空字节/非 Buffer），manualEntry=true。
+[实际] {"ok":false,"code":"PARSE_FAILED","detail":"空字节/非 Buffer：不可读，不编数","manualEntry":true}
+
+[CASE] HONEST-NONUTF8-CSV · HONEST → PASS
+[期望] 含非法 UTF-8 字节（0xFF 0xFE）的 .csv → PARSE_FAILED（UTF-8 解码失败），不编数。
+[实际] {"ok":false,"code":"PARSE_FAILED","detail":"UTF-8 解码失败（二进制或非 UTF-8 编码）：转人工","manualEntry":true}
+
+[CASE] HONEST-CSV-NEITHER · HONEST → PASS
+[期望] 既非流水表头也无可解析 key,value 的 CSV → PARSE_FAILED（诚实失败，不硬造事实）。
+[实际] {"ok":false,"code":"PARSE_FAILED","detail":"CSV 既非银行流水表头也无可解析的 key,value 行","problems":[{"line":1,"detail":"无法按 key=value 解析"},{"line":2,"detail":"无法按 key=value 解析"}],"manualEntry":true}
+
+[CASE] HONEST-PNG-UNSUPPORTED · HONEST → PASS
+[期望] PNG 图片 → FORMAT_UNSUPPORTED（不做识别，转人工录入），属「不支持」而非缺陷。
+[实际] {"ok":false,"code":"FORMAT_UNSUPPORTED","format":"png","detail":"图片 png 不做自动识别（无获准提供方）：原件已安全接收可预览，请走人工录入/校正入口","manualEntry":true,"previewSafe":true,"previewFormat":"png"}
+
+[CASE] HONEST-SCAN-PDF-UNSUPPORTED · HONEST → PASS
+[期望] 无可提取文本层的 PDF（无内容流）→ FORMAT_UNSUPPORTED「无可提取文本层」，不做 OCR，转人工。
+[实际] {"ok":false,"code":"FORMAT_UNSUPPORTED","format":"pdf","detail":"PDF 无可提取文本层（扫描/图片型）：不做 OCR（无获准提供方），原件可预览，请走人工录入/校正入口","manualEntry":true,"previewSafe":true,"previewFormat":"pdf"}
+
+[CASE] HONEST-ENCRYPTED-PDF · HONEST → PASS
+[期望] 含 /Encrypt 的加密 PDF → PARSE_FAILED「PDF 已加密」，manualEntry=true。
+[实际] {"ok":false,"code":"PARSE_FAILED","format":"pdf","detail":"PDF 已加密：不可解析，不编数","manualEntry":true,"previewSafe":true,"previewFormat":"pdf"}
+
+===== 汇总：共 16 用例｜缺陷复现 6/6（3类×真件+最小合成）｜对照+诚实通过 10/10 =====
+  [DEFECT] DEFECT-BANK-CSV-REAL → REPRODUCED（缺陷复现：精确预期未达）
+  [DEFECT] DEFECT-BANK-CSV-SYN → REPRODUCED（缺陷复现：精确预期未达）
+  [CONTROL] CONTROL-BANK-CSV-ALIAS → PASS
+  [DEFECT] DEFECT-PDF-REAL → REPRODUCED（缺陷复现：精确预期未达）
+  [DEFECT] DEFECT-PDF-SYN → REPRODUCED（缺陷复现：精确预期未达）
+  [CONTROL] CONTROL-PDF-PLAINFLATE → PASS
+  [DEFECT] DEFECT-XLSX-REAL → REPRODUCED（缺陷复现：精确预期未达）
+  [DEFECT] DEFECT-XLSX-SYN → REPRODUCED（缺陷复现：精确预期未达）
+  [CONTROL] CONTROL-XLSX-PLAIN → PASS
+  [CONTROL] CONTROL-KV-CSV-GOLD → PASS
+  [HONEST] HONEST-EMPTY-BUFFER → PASS
+  [HONEST] HONEST-NONUTF8-CSV → PASS
+  [HONEST] HONEST-CSV-NEITHER → PASS
+  [HONEST] HONEST-PNG-UNSUPPORTED → PASS
+  [HONEST] HONEST-SCAN-PDF-UNSUPPORTED → PASS
+  [HONEST] HONEST-ENCRYPTED-PDF → PASS
+=> 退出码 0：三个已知解析缺陷全部仍复现；对照组与缺件/不可读/不支持路径与冻结基线一致。

@@ -30,19 +30,12 @@ export function ConfirmDialog({ plan, busy, failed, onCancel, onConfirm }: {
       <div className="box">
         <h3>{plan.title}</h3>
         <ul>{plan.lines.map((l, i) => <li key={i}>{l}</li>)}</ul>
-        {plan.requestId && (
-          <p className="wb-note" aria-label="对账编号">
-            对账编号：<code style={{ userSelect: 'all', wordBreak: 'break-all' }}>{plan.requestId}</code>
-            {failed
-              ? '（上次未确认成功：重试仍用同一编号，由服务端幂等吸收；结果未知请到「结果」页查询回执，不要换号重发。）'
-              : '（提交后可在「结果」页用该编号查询正式回执。）'}
-          </p>
-        )}
+        {failed && <p className="wb-note">上次提交尚未确认成功。重试会继续核对原提交，不会另建一笔。</p>}
         <div className="wb-actions">
-          <button className="wb-btn" disabled={busy} onClick={onConfirm}>{busy ? '提交中…' : failed ? '用同一编号重试' : plan.confirmLabel}</button>
+          <button className="wb-btn" disabled={busy} onClick={onConfirm}>{busy ? '提交中…' : failed ? '重试本次提交' : plan.confirmLabel}</button>
           <button className="wb-btn ghost" disabled={busy} onClick={onCancel}>取消</button>
         </div>
-        <p className="wb-note">正式提交进入后台记录；重复点击由幂等编号吸收，不会重复落单。</p>
+        <p className="wb-note">提交结果会自动保存，重复点击不会重复办理。</p>
       </div>
     </div>
   );
@@ -74,7 +67,7 @@ export function useAction() {
       const status = (e as { status?: number }).status;
       const unknown = status === 502 || code === 'UPSTREAM_UNKNOWN';
       setErr(unknown
-        ? '后台结果未知：请勿换号重发。请用上方对账编号查询适用回执——A 档案动作在「结果」页对账查询；处理通道动作在「材料·原件」页的任务回执（对账编号列）核对。稍后也可用同一编号重试（服务端幂等吸收，不会重复落单）。'
+        ? '提交结果还未确认。请查看办理记录，或稍后重试本次提交；系统会继续核对原提交，不会另建一笔。'
         : errorText(code, (e as Error).message));
       setFailed(true);
     } finally {

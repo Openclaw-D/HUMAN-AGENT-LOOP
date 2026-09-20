@@ -32,7 +32,8 @@ export function resolveProcessingConfig(config = {}) {
 }
 export async function compose(config) {
   const store = makeStore(config.pg, { objectRoot: config.objectRoot });
-  await migrate(store);
+  if (config.skipMigration !== true) await migrate(store);
+  else await store.query('SELECT 1');
   const objectStore = makeFsObjectStore({ root: config.objectRoot, store, signingSecret: config.signingSecret });
   const consent = makeConsentService(store);
   const bindings = makeBindingService(store);

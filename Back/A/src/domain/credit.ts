@@ -614,6 +614,9 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
         `SELECT f.fact_key, COUNT(DISTINCT f.assertion_id)::int AS n
          FROM fact_assertions f JOIN evidence_artifacts a ON a.artifact_id = f.artifact_id
          WHERE f.customer_id=$1 AND a.superseded_by IS NULL AND a.duplicate_of IS NULL
+           AND NOT (a.kind LIKE 'material.%' AND f.fact_key = 'material:' || substring(a.kind from 10)
+             AND a.content ? 'connectorRef'
+             AND (a.content - ARRAY['connectorRef','sha256','sourceProvider','uploadSource','completeness','objectRefCount','derivedFromLocalId','depth']) = '{}'::jsonb)
          GROUP BY f.fact_key HAVING COUNT(DISTINCT f.assertion_id) > 1`, [customerId],
       );
       return {

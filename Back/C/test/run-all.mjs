@@ -18,6 +18,8 @@ const files = [
   'intake-normalize.test.mjs',
   'parse-adapters.test.mjs',
   'parse-adapters-v2.test.mjs',
+  'parse-material-v03.test.mjs',
+  'pdf-async.test.mjs',
   'eval-discipline.test.mjs',
   'takeoff-five-domain.test.mjs',
 ].map((f) => path.join(here, f));

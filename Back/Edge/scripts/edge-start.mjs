@@ -92,7 +92,7 @@ async function main() {
     extraArgs.push('--live');
     const authFile = arg('auth-file', null);
     if (authFile) extraArgs.push('--auth-file', authFile);
-    for (const name of ['connectors-url', 'connectors-token-file', 'connectors-tenant', 'messages-file']) {
+    for (const name of ['connectors-url', 'connectors-token-file', 'connectors-tenant', 'messages-file', 'model-config', 'model-profiles', 'model-receipts-dir']) {
       const v = arg(name, null);
       if (v) extraArgs.push(`--${name}`, v);
     }

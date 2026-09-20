@@ -379,6 +379,8 @@ export function createKernelStore({
 
     const snapshot = {
       customer: cust ?? null,
+      artifacts: artifactList,
+      artifactsReadable: freshness.artifactList?.ok === true,
       facilities: exposure?.facilities ?? [],
       totalsMinor: exposure?.totalsMinor ?? null,
       decisionStatus: decisionStatus ?? null,

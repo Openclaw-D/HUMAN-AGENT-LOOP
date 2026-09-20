@@ -1,4 +1,6 @@
-// V7 backend-next B 模型 transport(GLM-5.2 预留 + C mock 接入)。
+// V7 backend-next B 模型 transport(GLM 真实接入 + C mock 接入)。
+// 2026-09-20 TAKEOFF:real 模式按本文件既有纪律显式配置后可真实出站
+// (endpoint/model/apiKey/费率/预算全部显式注入;未配置仍 = not_configured)。
 // 本轮硬边界:
 //   - 真实 GLM-5.2 只预留配置形态:endpoint/model/apiKey 全部显式注入,不从环境读取
 //     任何真实密钥;未配置 = not_configured(确定未发送),绝不静默改走 mock 成功。
@@ -29,13 +31,16 @@ function contextTags({ projectId, goalId, runId, role }) {
  * 确定性:同 (runId, stepId, attempt, 捕获输入) → 逐字节同载荷(payloadHash 稳定),
  * 保证恢复重入时回执对账可用。
  */
-export function buildModelRequest({ runId, stepId, attempt, role, purpose, projectId, goalId, goalLabel, factVersion, evidenceRefs, generation = 1 }) {
+export function buildModelRequest({ runId, stepId, attempt, role, purpose, projectId, goalId, goalLabel, factVersion, evidenceRefs, generation = 1, contextBrief }) {
+  // 可选最小上下文(TAKEOFF Edge 助手链):调用方在服务端组装的必要内容摘要;
+  // 缺省不传时与旧版逐字节一致(payloadHash 稳定性不受影响)。仍受 maxRequestChars 上限约束。
+  const brief = typeof contextBrief === 'string' ? contextBrief.trim() : '';
   const text = [
     `[${goalLabel ?? 'goal'}] 项目 ${projectId}`,
     `证据版本 ${factVersion}。`,
     `请以 ${role} 角色做 ${purpose} 复核:只依据给定证据清单提出观察与问题;`,
     `不输出审批、额度、价格、批准结论(模型意见 authority=none)。`,
-  ].join('');
+  ].join('') + (brief.length > 0 ? `\n${brief}` : '');
   const request = {
     requestId: `${runId}::${stepId}::a${attempt}`,
     projectId,
@@ -67,6 +72,8 @@ export function createModelTransport(p = {}) {
   if (mode === 'mock' && !p.mock?.baseUrl) throw new Error('mock transport 缺少 baseUrl(C 假 API 地址)');
   const costLedgerMem = [];
   const costLogPath = p.costLogPath ?? null;
+  const thinkingType = p.real?.thinkingType;
+  if (thinkingType !== undefined && !['enabled', 'disabled'].includes(thinkingType)) throw new Error('real.thinkingType 必须为enabled或disabled');
   // D-25 预算上限(05:00 评审重写;mock/real 同一记账面):
   //   budget 段(maxTotalCost/perCallEstimate,须为正有限数,缺一或非法 = 创建即抛错失败关闭)。
   //   账本语义:reserve = 出站前按 perCallEstimate 的保守预占,永久入账不冲销(失败/崩溃也保留,
@@ -77,7 +84,9 @@ export function createModelTransport(p = {}) {
   const budget = (() => {
     const b = p.budget;
     if (!b) return null;
-    for (const k of ['maxTotalCost', 'perCallEstimate']) {
+    if (b.unlimitedTotalCost !== undefined && typeof b.unlimitedTotalCost !== 'boolean') throw new Error('budget.unlimitedTotalCost 必须为布尔值');
+    if (b.unlimitedTotalCost === true && b.maxTotalCost != null) throw new Error('无限累计金额与有限maxTotalCost不能同时配置');
+    for (const k of (b.unlimitedTotalCost === true ? ['perCallEstimate'] : ['maxTotalCost', 'perCallEstimate'])) {
       if (typeof b[k] !== 'number' || !Number.isFinite(b[k]) || b[k] <= 0) {
         throw new Error(`budget.${k} 必须为正有限数(收到 ${String(b[k])});预算配置不完整或非法 = 失败关闭`);
       }
@@ -97,7 +106,7 @@ export function createModelTransport(p = {}) {
       return v;
     };
     return {
-      maxTotalCost: b.maxTotalCost,
+      maxTotalCost: b.unlimitedTotalCost === true ? null : b.maxTotalCost,
       perCallEstimate: b.perCallEstimate,
       currency: b.currency ?? 'CNY',
       customerMax: sub(b.customer?.maxTotalCost ?? b.customerMax, 'customer.maxTotalCost'),
@@ -253,7 +262,7 @@ export function createModelTransport(p = {}) {
   }
 
   function usedAllCheck(sumAll) {
-    return sumAll + budget.perCallEstimate > budget.maxTotalCost;
+    return budget.maxTotalCost !== null && sumAll + budget.perCallEstimate > budget.maxTotalCost;
   }
 
   async function recordCost(entry) {
@@ -299,6 +308,17 @@ export function createModelTransport(p = {}) {
     if (v === undefined) return null;
     if (!(Number.isInteger(v) && v > 0)) {
       throw new Error(`limits.maxRequestChars 必须为正整数(收到 ${String(v)})`);
+    }
+    return v;
+  })();
+
+  // TAKEOFF(2026-09-20 真实 GLM 接入):可选输出 token 上限,随 real 请求体 max_tokens 下发,
+  // 供费用上限的输出侧硬约束(输入侧由 maxRequestChars 代理)。非法值失败关闭;mock 不下发。
+  const maxOutputTokens = (() => {
+    const v = p.real?.maxOutputTokens;
+    if (v === undefined) return null;
+    if (!(Number.isInteger(v) && v > 0)) {
+      throw new Error(`real.maxOutputTokens 必须为正整数(收到 ${String(v)})`);
     }
     return v;
   })();
@@ -357,6 +377,8 @@ export function createModelTransport(p = {}) {
           model: mockMode ? (p.mock?.model ?? 'mock-glm-5.2') : p.real.model,
           messages: [{ role: 'user', content: request.text }],
           temperature: 0.1,
+          ...(!mockMode && thinkingType ? { thinking: { type: thinkingType } } : {}),
+          ...(mockMode ? {} : (maxOutputTokens ? { max_tokens: maxOutputTokens } : {})),
           // B 扩展字段:C mock 以 x-jw-* 头承载;real 供应商忽略未知字段由服务端裁决
           b_meta: { requestId: request.requestId, contextTags: request.contextTags, evidenceRefs: request.evidenceRefs, generation: request.generation, contextVersion: request.contextVersion },
         }),
@@ -381,6 +403,8 @@ export function createModelTransport(p = {}) {
         source: { mode: mockMode ? 'mock' : 'real' },
         error: {
           code: aborted ? 'RESULT_UNKNOWN_TIMEOUT' : 'RESULT_UNKNOWN_INTERRUPTED',
+          // Keep only a bounded error code, never network messages, URLs or credentials.
+          transportCode: /^[A-Z][A-Z0-9_]{0,63}$/.test(causeCode) ? causeCode : null,
           messageZh: aborted
             ? `等待响应超时(${timeoutMs}ms):请求可能已送达,结果不可知,禁止自动重试`
             : `连接中断:请求可能已送达,结果不可知,禁止自动重试`,
@@ -475,6 +499,7 @@ export function createModelTransport(p = {}) {
       },
       findings: mapped.findings,
       questions: mapped.questions,
+      ...(mapped.decisions !== undefined ? { decisions: mapped.decisions } : {}),
       evidenceRefs: (mapped.evidenceRefs ?? request.evidenceRefs ?? []),
       usage,
       costLedger: { reservationState: 'committed' },
@@ -513,7 +538,7 @@ function estimateCost(usage, cost) {
  * content 解析:JSON 对象(C MOCK_RESPOND_JSON 脚本化响应)→ {observations|findings,
  * questions, evidenceRefs};纯文本 → 单条观察。空内容/缺 choices → 违规(人工处理)。
  */
-function mapCompletionBody(body) {
+export function mapCompletionBody(body) {
   if (body === null || typeof body !== 'object' || Array.isArray(body)) {
     return { ok: false, code: 'MALFORMED_OUTPUT', messageZh: '响应不是 JSON 对象,需人工处理' };
   }
@@ -526,23 +551,26 @@ function mapCompletionBody(body) {
   let questions = [];
   let evidenceRefs;
   let parsed = null;
-  try { parsed = JSON.parse(content); } catch { parsed = null; }
+  // Accept one enclosing JSON fence; never extract arbitrary embedded prose/code.
+  const fenced = content.match(/^```(?:json)?\s*\n([\s\S]*?)\n```$/i);
+  try { parsed = JSON.parse(fenced ? fenced[1] : content); } catch { parsed = null; }
   if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
     const obs = parsed.observations ?? parsed.findings ?? [];
     const qs = parsed.questions ?? parsed.uncertainty ?? [];
     if (!Array.isArray(obs) || !Array.isArray(qs)) {
       return { ok: false, code: 'MALFORMED_OUTPUT', messageZh: '结构化内容 observations/questions 不是数组,需人工处理' };
     }
-    findings = obs.map((t) => ({ text: typeof t === 'string' ? t : String(t?.text ?? '') })).filter((f) => f.text.length > 0);
+    findings = obs.map((t) => ({ text: typeof t === 'string' ? t : String(t?.text ?? ''),
+      ...(Array.isArray(t?.evidenceRefIds) ? { evidenceRefIds: t.evidenceRefIds.filter(id => typeof id === 'string') } : {}) })).filter((f) => f.text.length > 0);
     questions = qs.map((t) => ({ text: typeof t === 'string' ? t : String(t?.text ?? '') })).filter((f) => f.text.length > 0);
     evidenceRefs = Array.isArray(parsed.evidenceRefs) ? parsed.evidenceRefs : undefined;
   } else if (content.length > 0) {
     findings = [{ text: content }];
   }
-  if (findings.length === 0 && questions.length === 0) {
+  if (findings.length === 0 && questions.length === 0 && !Array.isArray(parsed?.decisions)) {
     return { ok: false, code: 'EMPTY_OUTPUT', messageZh: '响应既无观察也无问题,需人工处理' };
   }
-  return { ok: true, findings, questions, evidenceRefs };
+  return { ok: true, findings, questions, evidenceRefs, ...(Array.isArray(parsed?.decisions) ? { decisions: parsed.decisions } : {}) };
 }
 
 export { safeError };

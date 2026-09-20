@@ -139,6 +139,11 @@ export function useWorkbench(baseUrl: string): WbApi {
           clientRef.current = null;
           setPhase('off');
           setSession(null);
+          setCustomerId(null);
+          setSnapshot(null);
+          setSnapshotVersion(0);
+          setNotes([]);
+          setLastEvent(null);
           setError('会话已失效（服务端 401/403）：请重新登录');
           return;
         }
@@ -186,6 +191,11 @@ export function useWorkbench(baseUrl: string): WbApi {
         clientRef.current = null;
         setPhase('off');
         setSession(null);
+        setCustomerId(null);
+        setSnapshot(null);
+        setSnapshotVersion(0);
+        setNotes([]);
+        setLastEvent(null);
         setError(`后台拒绝本会话（${err.code}）：请重新登录`);
       } else if (err.status === 404) {
         epochRef.current += 1;
@@ -203,18 +213,30 @@ export function useWorkbench(baseUrl: string): WbApi {
 
   const doLogin = useCallback(async (login: (c: WbClient) => Promise<EdgeSessionInfo>) => {
     epochRef.current += 1;
+    const myEpoch = epochRef.current;
     clearTimers();
     stopStream();
+    clientRef.current?.endSession();
+    clientRef.current = null;
+    setSession(null);
+    setCustomerId(null);
+    setSnapshot(null);
+    setSnapshotVersion(0);
+    setNotes([]);
+    setLastEvent(null);
     setError(null);
     const c = createWbClient({ baseUrl });
     try {
       const s = await login(c);
+      if (epochRef.current !== myEpoch) { c.endSession(); return; }
       clientRef.current = c;
       setSession(s);
       setPhase('connecting');
       const vz = await c.versionz().catch(() => ({ buildId: undefined }));
+      if (epochRef.current !== myEpoch) return;
       setBuildId(vz.buildId ?? null);
     } catch (e) {
+      if (epochRef.current !== myEpoch) throw e;
       clientRef.current = null;
       setPhase('off');
       const err = e as EdgeHttpError;

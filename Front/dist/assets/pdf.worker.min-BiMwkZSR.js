@@ -1,0 +1,1 @@
+var e=`/assets/pdf.worker.min-CK_pjWcW.js`;export{e as default};

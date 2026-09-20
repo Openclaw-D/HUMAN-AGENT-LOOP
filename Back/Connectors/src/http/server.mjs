@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { ConnError } from '../errors.mjs';
 import { newId, sha256Hex } from '../ids.mjs';
 import { detectFormat } from '../../../C/src/parse/adapters.mjs';
+import { readAssistantEvidence } from '../processing/assistant-evidence.mjs';
 import { verifyCallback, verifyUrlEcho } from '../wecom/crypto.mjs';
 import { verifyTrtcSignature, parseTrtcEvent } from '../rtc/trtc.mjs';
 
@@ -94,6 +95,11 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
       }
       const tid = url.searchParams.get('tid');
       const route = `${req.method} ${url.pathname}`;
+      if (route === 'POST /api/connectors/internal/assistant-evidence') {
+        const input = JSON.parse(body);
+        const materials = await readAssistantEvidence(svc, input);
+        return json(res, 200, { ok: true, materials });
+      }
       /** 人工动作 actor 上下文：返回 {actor, actorSource, caller} 注入请求体；网关未声明时返回 null=维持服务层原校验。 */
       const actorCtx = (b, field) => {
         const binding = callerBindingOf();
@@ -347,7 +353,7 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
       if (route === 'GET /api/connectors/evidence/preview') {
         if (!tid || !url.searchParams.get('eid')) throw new ConnError('INVALID_INPUT', 'preview: tid/eid 必填');
         const art = (await svc.store.query(
-          `SELECT object_ref, sha256, kind, completeness, customer_id FROM evidence_artifacts WHERE tenant_id=$1 AND evidence_id=$2`,
+          `SELECT object_ref, sha256, kind, completeness, customer_id, source_group FROM evidence_artifacts WHERE tenant_id=$1 AND evidence_id=$2`,
           [tid, url.searchParams.get('eid')],
         )).rows[0];
         if (!art) throw new ConnError('NOT_FOUND', 'evidence not found');
@@ -363,7 +369,7 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
           format = sniff.name;
           previewSafe = sniff.previewSafe === true || sniff.family === 'pdf' || sniff.family === 'zipish' || sniff.family === 'csv' || sniff.family === 'text';
           const downloadUrl = svc.objectStore.sign({ objectRef: art.object_ref, op: 'get', tenantId: tid, customerId: cid, ttlSec: 120 });
-          return json(res, 200, { ok: true, evidenceId: url.searchParams.get('eid'), customerId: art.customer_id, format, size, sha256: art.sha256, completeness: art.completeness, previewSafe, downloadUrl, note: '原件字节经短时签名 URL 获取（当前权限内），无公开媒体目录' });
+          return json(res, 200, { ok: true, evidenceId: url.searchParams.get('eid'), customerId: art.customer_id, sourceGroup: art.source_group, format, size, sha256: art.sha256, completeness: art.completeness, previewSafe, downloadUrl, note: '原件字节经短时签名 URL 获取（当前权限内），无公开媒体目录' });
         }
         return json(res, 200, { ok: true, evidenceId: url.searchParams.get('eid'), customerId: art.customer_id, format, size, sha256: art.sha256, completeness: art.completeness, previewSafe: false, downloadUrl: null });
       }

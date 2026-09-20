@@ -1,0 +1,285 @@
+TAP version 13
+# Subtest: 金额：安全整数恰好最大可发送、超界拒绝不发送、0.00 与前导零
+ok 1 - 金额：安全整数恰好最大可发送、超界拒绝不发送、0.00 与前导零
+  ---
+  duration_ms: 245.2107
+  type: 'test'
+  ...
+# Subtest: payload：currency 继承既有评估、全空字段发 null/空数组、term 宽松空白合法
+not ok 2 - payload：currency 继承既有评估、全空字段发 null/空数组、term 宽松空白合法
+  ---
+  duration_ms: 90.2128
+  type: 'test'
+  location: 'C:\\Users\\22673\\Desktop\\JW\\docs\\v0.3\\zcode\\request-qa\\test\\request-boundary.behavior.test.mjs:113:1'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'body')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/Users/22673/Desktop/JW/docs/v0.3/zcode/request-qa/test/request-boundary.behavior.test.mjs:130:19)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: 重复点击：保存等待期间再次点击只发一次请求
+not ok 3 - 重复点击：保存等待期间再次点击只发一次请求
+  ---
+  duration_ms: 67.8877
+  type: 'test'
+  location: 'C:\\Users\\22673\\Desktop\\JW\\docs\\v0.3\\zcode\\request-qa\\test\\request-boundary.behavior.test.mjs:142:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Unable to find an accessible element with the role "button" and name "保存需求登记"
+    
+    Here are the accessible roles:
+    
+      region:
+    
+      Name "首次回租需求登记":
+      [36m<section[39m
+        [33maria-label[39m=[32m"首次回租需求登记"[39m
+      [36m/>[39m
+    
+      --------------------------------------------------
+      paragraph:
+    
+      Name "":
+      [36m<p />[39m
+    
+      Name "":
+      [36m<p[39m
+        [33mclass[39m=[32m"tk-technical"[39m
+      [36m/>[39m
+    
+      Name "":
+      [36m<p[39m
+        [33mclass[39m=[32m"tk-technical"[39m
+      [36m/>[39m
+    
+      --------------------------------------------------
+      group:
+    
+      Name "首次回租 · CNY（空白项为待补）":
+      [36m<fieldset[39m
+        [33mdisabled[39m=[32m""[39m
+      [36m/>[39m
+    
+      --------------------------------------------------
+      textbox:
+    
+      Name "申请金额（元）":
+      [36m<input[39m
+        [33minputmode[39m=[32m"decimal"[39m
+        [33mvalue[39m=[32m"500.00"[39m
+      [36m/>[39m
+    
+      Name "申请期限（月）":
+      [36m<input[39m
+        [33minputmode[39m=[32m"numeric"[39m
+        [33mvalue[39m=[32m""[39m
+      [36m/>[39m
+    
+      Name "资金用途":
+      [36m<textarea[39m
+        [33mmaxlength[39m=[32m"200"[39m
+      [36m/>[39m
+    
+      Name "设备范围（每行一项）":
+      [36m<textarea />[39m
+    
+      Name "补充说明":
+      [36m<textarea[39m
+        [33mmaxlength[39m=[32m"500"[39m
+      [36m/>[39m
+    
+      --------------------------------------------------
+      button:
+    
+      Name "正在提交与读回…":
+      [36m<button[39m
+        [33mclass[39m=[32m"tk-btn primary"[39m
+        [33mdisabled[39m=[32m""[39m
+        [33mtype[39m=[32m"submit"[39m
+      [36m/>[39m
+    
+      Name "读取最新登记（替换草稿）":
+      [36m<button[39m
+        [33mclass[39m=[32m"tk-btn"[39m
+        [33mdisabled[39m=[32m""[39m
+      [36m/>[39m
+    
+      --------------------------------------------------
+      status:
+    
+      Name "":
+      [36m<p[39m
+        [33mclass[39m=[32m""[39m
+        [33mrole[39m=[32m"status"[39m
+      [36m/>[39m
+    
+      --------------------------------------------------
+    
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div[39m
+        [33mid[39m=[32m"root"[39m
+      [36m/>[39m
+      [36m<div>[39m
+        [36m<section[39m
+          [33maria-label[39m=[32m"首次回租需求登记"[39m
+        [36m>[39m
+          [36m<p>[39m
+            [0m记录客户表述，供准入预评估使用；不创建正式融资申请、额度或敞口。[0m
+          [36m</p>[39m
+          [36m<form[39m
+            [33mclass[39m=[32m"tk-admission-form"[39m
+          [36m>[39m
+            [36m<fieldset[39m
+              [33mdisabled[39m=[32m""[39m
+            [36m>[39m
+              [36m<legend>[39m
+                [0m首次回租 · [0m
+                [0mCNY[0m
+                [0m（空白项为待补）[0m
+              [36m</legend>[39m
+              [36m<label>[39m
+                [0m申请金额（元）[0m
+                [36m<input[39m
+                  [33minputmode[39m=[32m"decimal"[39m
+                  [33mvalue[39m=[32m"500.00"[39m
+                [36m/>[39m
+              [36m</label>[39m
+              [36m<label>[39m
+                [0m申请期限（月）[0m
+                [36m<input[39m
+                  [33minputmode[39m=[32m"numeric"[39m
+                  [33mvalue[39m=[32m""[39m
+                [36m/>[39m
+              [36m</label>[39m
+              [36m<label>[39m
+                [0m资金用途[0m
+                [36m<textarea[39m
+                  [33mmaxlength[39m=[32m"200"[39m
+                [36m/>[39m
+              [36m</label>[39m
+              [36m<label>[39m
+                [0m设备范围（每行一项）[0m
+                [36m<textarea />[39m
+              [36m</label>[39m
+              [36m<label>[39m
+                [0m补充说明[0m
+                [36m<textarea[39m
+                  [33mmaxlength[39m=[32m"500"[39m
+                [36m/>[39m
+              [36m</label>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"tk-btn primary"[39m
+                [33mdisabled[39m=[32m""[39m
+                [33mtype[39m=[32m"submit"[39m
+              [36m>[39m
+                [0m正在提交与读回…[0m
+              [36m</button>[39m
+            [36m</fieldset>[39m
+          [36m</form>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m""[39m
+            [33mrole[39m=[32m"status"[39m
+          [36m>[39m
+            [0m已读取服务端当前登记；空白字段仍为待补。[0m
+          [36m</p>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"tk-btn"[39m
+            [33mdisabled[39m=[32m""[39m
+          [36m>[39m
+            [0m读取最新登记（替换草稿）[0m
+          [36m</button>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"tk-technical"[39m
+          [36m>[39m
+            [0m评估版本：[0m
+            [0m1[0m
+            [0m · 需求修订：[0m
+            [0m待登记[0m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"tk-technical"[39m
+          [36m>[39m
+            [0m请求编号：[0m
+            [0madmission-353f7748-1e9a-49ac-b3a3-d1a581c580dc[0m
+            [0m · [0m
+            [0m结果未知，待对账[0m
+          [36m</p>[39m
+        [36m</section>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+  code: 'ERR_TEST_FAILURE'
+  name: 'TestingLibraryElementError'
+  stack: |-
+    Object.getElementError (C:\Users\22673\Desktop\JW\Front\node_modules\@testing-library\dom\dist\config.js:37:19)
+    C:\Users\22673\Desktop\JW\Front\node_modules\@testing-library\dom\dist\query-helpers.js:76:38
+    C:\Users\22673\Desktop\JW\Front\node_modules\@testing-library\dom\dist\query-helpers.js:52:17
+    C:\Users\22673\Desktop\JW\Front\node_modules\@testing-library\dom\dist\query-helpers.js:95:19
+    TestContext.<anonymous> (file:///C:/Users/22673/Desktop/JW/docs/v0.3/zcode/request-qa/test/request-boundary.behavior.test.mjs:150:20)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: 409 闭环：草稿保留、显式读回取得服务端新版本、再次保存用新版本成功
+not ok 4 - 409 闭环：草稿保留、显式读回取得服务端新版本、再次保存用新版本成功
+  ---
+  duration_ms: 73.4219
+  type: 'test'
+  location: 'C:\\Users\\22673\\Desktop\\JW\\docs\\v0.3\\zcode\\request-qa\\test\\request-boundary.behavior.test.mjs:158:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    '' !== '服务端已登记'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '服务端已登记'
+  actual: ''
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/Users/22673/Desktop/JW/docs/v0.3/zcode/request-qa/test/request-boundary.behavior.test.mjs:176:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: 401 会话失效：消息可读、不冒充成功、恢复后可重试
+ok 5 - 401 会话失效：消息可读、不冒充成功、恢复后可重试
+  ---
+  duration_ms: 60.7127
+  type: 'test'
+  ...
+# Subtest: 保存回执成功但读回失败：不报已保存、保留待对账锁、恢复读回后解除
+ok 6 - 保存回执成功但读回失败：不报已保存、保留待对账锁、恢复读回后解除
+  ---
+  duration_ms: 88.0476
+  type: 'test'
+  ...
+# Subtest: 客户切换：等待中的旧保存结果不串入新客户表单
+ok 7 - 客户切换：等待中的旧保存结果不串入新客户表单
+  ---
+  duration_ms: 132.4023
+  type: 'test'
+  ...
+# Subtest: 读回归属不匹配：他人客户的评估不装入表单且不可提交
+ok 8 - 读回归属不匹配：他人客户的评估不装入表单且不可提交
+  ---
+  duration_ms: 20.1207
+  type: 'test'
+  ...
+# Subtest: 会话切换：同客户换会话后表单重挂载并以新会话重新读回
+ok 9 - 会话切换：同客户换会话后表单重挂载并以新会话重新读回
+  ---
+  duration_ms: 85.9571
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 6
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2425.6367

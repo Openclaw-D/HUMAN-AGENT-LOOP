@@ -150,7 +150,8 @@ test('P04 同源派生+部分解析失败：ZIP(csv+txt+pdf) → 子件逐个处
     assert.equal(counts.done, 3, '容器+csv+txt 完成');
     assert.equal(counts.needs_followup, 1, 'pdf 一个转人工');
     const pdfTask = st.tasks.find((t) => t.status === 'needs_followup');
-    assert.equal(pdfTask.failure_code, 'FORMAT_UNSUPPORTED');
+    // PDF.js now supports PDF; this header-only fixture is malformed, not an unsupported format.
+    assert.equal(pdfTask.failure_code, 'PARSE_FAILED');
     // 转人工入口在问题准备可见
     const manual = st.questions.find((q) => q.binding?.purpose === 'manual_entry_required');
     assert.ok(manual, '解析白名单外 → 人工入口');

@@ -18,7 +18,7 @@
 import { inflateSync, inflateRawSync } from 'node:zlib';
 import { stableHash } from '../../domains/util.mjs';
 
-export const PARSE_ADAPTERS_VERSION = 'parse-adapters@2';
+export const PARSE_ADAPTERS_VERSION = 'parse-adapters@2.1';
 
 /** 银行流水聚合强制口径注记（C/intake CALIBER_NOTES 同源）。 */
 const BANK_CALIBER_NOTE = '银行流水口径：全部入账不直接当经营收入；与申报收入的口径差属待核验差异，不是自动欺诈结论';
@@ -162,9 +162,9 @@ function monthOf(dateStr) { return dateStr ? dateStr.slice(0, 7) : null; }
 
 const HEADER_MAP = {
   date: ['交易日期', '日期', '交易时间', '记账日期', 'date', 'transdate'],
-  inflow: ['收入', '入账金额', '贷方发生额', '贷方', '收入金额', 'credit', 'deposit', 'inflow', 'amountcredit'],
-  outflow: ['支出', '出账金额', '借方发生额', '借方', '支出金额', 'debit', 'withdrawal', 'outflow', 'amountdebit'],
-  balance: ['余额', 'balance'],
+  inflow: ['收入元', '收入', '入账金额', '贷方发生额', '贷方', '收入金额', 'credit', 'deposit', 'inflow', 'amountcredit'],
+  outflow: ['支出元', '支出', '出账金额', '借方发生额', '借方', '支出金额', 'debit', 'withdrawal', 'outflow', 'amountdebit'],
+  balance: ['余额元', '余额', 'balance'],
   memo: ['摘要', '备注', '说明', 'description', 'memo', 'summary'],
 };
 
@@ -402,7 +402,23 @@ function xmlText(s) {
     .replace(/&amp;/g, '&');
 }
 
+
+// Normalize only prefixes bound to the SpreadsheetML namespace, never arbitrary XML tags.
+// Conflicting bindings fail closed rather than interpreting a different vocabulary as cells.
+function spreadsheetXml(xml) {
+  const bindings = new Map();
+  for (const m of xml.matchAll(/xmlns:([A-Za-z_][\w.-]*)\s*=\s*["']([^"']+)["']/g)) {
+    if (bindings.has(m[1]) && bindings.get(m[1]) !== m[2])
+      throw Object.assign(new Error('XLSX 命名空间重复绑定'), { code: 'XLSX_INVALID' });
+    bindings.set(m[1], m[2]);
+  }
+  return xml.replace(/<(\/?)([A-Za-z_][\w.-]*):([A-Za-z_][\w.-]*)(?=[\s/>])/g, (tag, close, prefix, name) =>
+    bindings.get(prefix) === 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
+      ? '<' + close + name : tag);
+}
+
 function parseSharedStrings(xml) {
+  xml = spreadsheetXml(xml);
   const out = [];
   const re = /<si>([\s\S]*?)<\/si>|<si\/>/g;
   let m;
@@ -430,13 +446,13 @@ function parseSheetRows(xml) {
         const attrs = cm[1] ?? '';
         const inner = cm[2] ?? '';
         const refM = /\sr="([A-Z]+\d+)"/i.exec(attrs);
-        const typeM = /\st="([a-z]+)"/.exec(attrs);
+        const typeM = /\st="([a-zA-Z]+)"/.exec(attrs);
         const posCol = pos;
         pos += 1;
         const ref = refM ? colIndexOf(refM[1]) : { col: posCol, row: rowNum };
         if (!ref) continue;
         const vM = /<v>([\s\S]*?)<\/v>/.exec(inner);
-        const hasFormula = /<f[\s>]/.test(inner);
+        const hasFormula = /<f[\s/>]/.test(inner);
         const isM = /<is>[\s\S]*?<t[^>]*>([\s\S]*?)<\/t>[\s\S]*?<\/is>/.exec(inner);
         cells.push({
           col: ref.col, row: ref.row,
@@ -460,7 +476,7 @@ export function parseXlsxRows(buf) {
   const sharedStrings = shared ? parseSharedStrings(zipRead(buf, shared)?.toString('utf8') ?? '') : [];
   const sheetName = [...entries.keys()].filter((k) => /^xl\/worksheets\/sheet\d+\.xml$/.test(k)).sort()[0];
   if (!sheetName) throw Object.assign(new Error('XLSX 无工作表'), { code: 'XLSX_INVALID' });
-  const sheetXml = zipRead(buf, entries.get(sheetName))?.toString('utf8') ?? '';
+  const sheetXml = spreadsheetXml(zipRead(buf, entries.get(sheetName))?.toString('utf8') ?? '');
   // 护栏：内容不是 XML（压缩标记与实际不符/文件损坏）→ 诚实拒绝，不静默当空表
   if (!sheetXml.includes('<row') && !sheetXml.includes('<sheetData')) {
     throw Object.assign(new Error('工作表内容不是可读 XML'), { code: 'XLSX_INVALID' });

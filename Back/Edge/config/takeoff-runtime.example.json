@@ -110,5 +110,9 @@
         "customer"
       ]
     }
-  ]
+  ],
+  "assistantModel": {
+    "_note": "可选。提供 configPath 时 Edge 助手模型入口按 real/mock 接线；不提供=not_configured（503，调用未发送）。configPath 相对 Back/Edge 解析；配置文件形状与 Back/B/config/b-config.json 的 transport/budget 段一致（endpoint/model/apiKey/费率/预算显式注入，apiKey 只写在该文件，Git 排除）。模型意见 authority=none，只产生辅助观察，不写任何业务面。",
+    "configPath": "../B/config/b-config.json"
+  }
 }

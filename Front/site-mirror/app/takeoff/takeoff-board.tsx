@@ -1,3 +1,4 @@
+import { StatusObject } from './status-object';
 // TAKEOFF-FA-1.0.0 · 二十格看板（02_FRONTEND_SPEC §1/§3/§4）：
 // 横向五列固定（商机/政策/信审/商务/资产）×纵向四行固定（输入/智能/人工/完成），
 // 行列标题只放两字与小图标。悬浮/键盘聚焦同行同列淡黄交叉高亮、交点边框略深；
@@ -6,12 +7,10 @@ import { useState } from 'react';
 import type { TakeoffCellView, TakeoffDomainId, TakeoffRowId } from '../../lib/workbench/takeoff-projection';
 import { TAKEOFF_DOMAINS, TAKEOFF_ROWS } from '../../lib/workbench/takeoff-projection';
 import { TakeoffCell } from './takeoff-cell';
+import { RoleLogo, ObjectIcon } from './ui-icons';
 
-// 图标只用黑灰小字形（不用 emoji 彩色；01 §7 限定色系）
-const DOMAIN_GLYPH: Record<TakeoffDomainId, string> = {
-  opportunity: '▣', policy: '☰', credit: '⋂', commerce: '∮', asset: '◈',
-};
-const ROW_GLYPH: Record<TakeoffRowId, string> = { input: '⇥', analysis: '⚙', human: '♙', closure: '◉' };
+const ROW_GLYPH: Record<TakeoffRowId, string> = { input: 'materials', analysis: 'analysis', human: 'verify', closure: 'closure' };
+const ROW_TEXT: Record<TakeoffRowId,string> = { input:'材料', analysis:'分析', human:'核验', closure:'办结' };
 
 export function TakeoffBoard({ cells, selected, onSelect }: {
   cells: TakeoffCellView[];
@@ -23,15 +22,15 @@ export function TakeoffBoard({ cells, selected, onSelect }: {
   return (
     <div className="tk-board-wrap" onMouseLeave={() => setHover(null)}>
       <div className="tk-board" role="grid" aria-label="二十格看板（五域×输入/智能/人工/完成；点格查看真实事项，不做手工状态切换）">
-        <div className="tk-corner" aria-hidden="true">工作进展</div>
+        <div className="tk-corner" aria-hidden="true">办理环节</div>
         {TAKEOFF_DOMAINS.map((d) => (
           <div
             key={d.id}
             role="columnheader"
             className={`tk-hcell${hover?.domain === d.id ? ' tk-hi' : ''}`}
           >
-            <span className="tk-ico" aria-hidden="true">{DOMAIN_GLYPH[d.id]}</span>
-            {d.name}
+            <RoleLogo role={d.id} size={42}/>
+            {d.name === '商机' ? '业务' : d.name}
           </div>
         ))}
         {TAKEOFF_ROWS.map((r) => (
@@ -46,6 +45,7 @@ export function TakeoffBoard({ cells, selected, onSelect }: {
           />
         ))}
       </div>
+      <div className="tk-status-legend" aria-label="状态说明"><span><span className="tk-status-icon gray"><StatusObject kind="lock" size={28}/></span>未开始</span><span><span className="tk-status-icon blue"><StatusObject kind="wrench" size={28}/></span>处理中</span><span><span className="tk-status-icon green"><StatusObject kind="check" size={28}/></span>已完成</span><span><StatusObject kind="cross" size={28}/>不通过</span></div>
     </div>
   );
 }
@@ -61,8 +61,8 @@ function RowCells({ row, hover, selected, byKey, onSelect, onHover }: {
   return (
     <>
       <div role="rowheader" className={`tk-hcell rowh${hover?.row === row.id ? ' tk-hi' : ''}`}>
-        <span className="tk-ico" aria-hidden="true">{ROW_GLYPH[row.id]}</span>
-        {row.name}
+        <ObjectIcon name={ROW_GLYPH[row.id]} size={44}/>
+        {ROW_TEXT[row.id]}
       </div>
       {TAKEOFF_DOMAINS.map((d) => {
         const cell = byKey.get(`${d.id}:${row.id}`);
@@ -74,6 +74,7 @@ function RowCells({ row, hover, selected, byKey, onSelect, onHover }: {
           <TakeoffCell
             key={`${d.id}:${row.id}`}
             cell={cell}
+            cells={[...byKey.values()]}
             selected={isSelected}
             highlighted={inHoverRowCol}
             exact={exact}

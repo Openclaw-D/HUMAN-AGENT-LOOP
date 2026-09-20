@@ -2,6 +2,8 @@
 // 增补受控登录（身份目录）、受限原件上传、白名单只读透传与目录前向探测。
 // 纪律与 edge-client 相同：凭据只经会话交换一次；错误统一 EdgeHttpError。
 import { createEdgeClient, EdgeHttpError, type EdgeClient, type EdgeSessionInfo } from '../v5-preview/edge/edge-client';
+import type { AdmissionRequest, AssistantObservation, ModelAssistant } from './takeoff-actions';
+import { validDecisionResponse, type DecisionResponse, type DecisionCommand, type FeedbackCommand } from './decision-feedback';
 
 export interface IdentityMeta { principalId: string; roles: string[]; label: string; demo: boolean }
 
@@ -39,8 +41,29 @@ export function createWbClient({ baseUrl, fetchImpl = fetch }: { baseUrl: string
     return j;
   };
 
+  async function decisionRequest(customerId: string, assistant: ModelAssistant, body?: DecisionCommand | FeedbackCommand): Promise<DecisionResponse> {
+    const feedback = body && 'decisionSetId' in body;
+    const url = body
+      ? `/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/assistant/decisions${feedback ? '/feedback' : ''}`
+      : `/api/jw/v2/customers/${encodeURIComponent(customerId)}/assistant/decisions?assistant=${encodeURIComponent(assistant)}`;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), body && !feedback ? 75_000 : 15_000);
+    try {
+      const r = await fetchImpl(root + url, { method: body ? 'POST' : 'GET',
+        headers: { 'content-type': 'application/json', ...authedHeaders() },
+        ...(body ? { body: JSON.stringify(body) } : {}), signal: controller.signal });
+      const value = await r.json();
+      if (!r.ok) throw new EdgeHttpError(r.status, String(value.error ?? 'REQUEST_FAILED'), '候选或反馈请求未完成');
+      if (!validDecisionResponse(value, customerId, assistant)) throw new EdgeHttpError(0, 'INVALID_RESPONSE', '候选响应不完整或归属不匹配');
+      return value;
+    } finally { clearTimeout(timer); }
+  }
+
   return {
     inner,
+    readDecisions: (customerId: string, assistant: ModelAssistant) => decisionRequest(customerId, assistant),
+    analyzeDecisions: (customerId: string, body: DecisionCommand) => decisionRequest(customerId, body.assistant, body),
+    saveDecisionFeedback: (customerId: string, body: FeedbackCommand) => decisionRequest(customerId, body.assistant, body),
     get session(): EdgeSessionInfo | null { return inner.session; },
     endSession: () => inner.endSession(),
 
@@ -140,6 +163,31 @@ export function createWbClient({ baseUrl, fetchImpl = fetch }: { baseUrl: string
       return inner.action<{ ok: boolean; artifactId?: string; replayed?: boolean }>(
         `/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/originals`, { tenantId: currentTenant(), ...body },
       );
+    },
+
+    updateAdmissionRequest: (assessmentId: string, body: { requestId: string; assessmentVersion: number; request: AdmissionRequest }) =>
+      inner.action<{ ok: boolean; assessmentId: string; assessmentVersion: number; revision: number }>(
+        `/api/jw/v2/actions/assessments/${encodeURIComponent(assessmentId)}/admission-request`, { tenantId: currentTenant(), ...body }),
+
+    // 同源会话；单次非流式等待，无自动重试。浏览器断开不表示服务端取消。
+    async observeAssistant(customerId: string, assistant: ModelAssistant, question: string): Promise<AssistantObservation> {
+      const headers = { 'content-type': 'application/json', ...authedHeaders() };
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 75_000);
+      try {
+        const r = await fetchImpl(`${root}/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/assistant/observe`, {
+          method: 'POST', headers, body: JSON.stringify({ assistant, question }), signal: controller.signal,
+        });
+        const j = await r.json();
+        if (!r.ok) throw new EdgeHttpError(r.status, String(j.error ?? 'REQUEST_FAILED'), String(j.note ?? j.message ?? '观察请求未完成'));
+        if (!j.ok || j.authority !== 'none' || j.scope !== 'preassessment_only' || j.customerId !== customerId || j.assistant !== assistant ||
+          !['succeeded', 'simulated', 'failed', 'unknown'].includes(j.model?.status) || ![true, false, null].includes(j.model?.sent) ||
+          !Array.isArray(j.observations) || !Array.isArray(j.questions) || !Array.isArray(j.evidenceRefs) ||
+          [...j.observations, ...j.questions].some((item) => !item || typeof item.text !== 'string')) {
+          throw new EdgeHttpError(0, 'INVALID_RESPONSE', '模型回执不完整或归属不匹配，结果未知。');
+        }
+        return j as AssistantObservation;
+      } finally { clearTimeout(timer); }
     },
 
     /** TAKEOFF §13（A CONTRACT v2.6）：独立预评估确认——scope=preassessment_only，不产生任何授信效力。

@@ -11,9 +11,10 @@
     "build": "vite build --config preview/vite.config.mjs",
     "preview": "vite preview --config preview/vite.config.mjs --host 127.0.0.1 --port 3617 --strictPort",
     "typecheck": "tsc --noEmit -p preview/tsconfig.json",
-    "test": "node --experimental-strip-types --test preview/test/edge-logic.test.mjs preview/test/wb-logic.test.mjs preview/test/takeoff-projection.test.mjs preview/test/takeoff-assistant-brief.test.mjs preview/test/behavior/directory.behavior.test.mjs preview/test/behavior/portal-upload.behavior.test.mjs preview/test/behavior/originals-unified-upload.behavior.test.mjs preview/test/behavior/proposal-panel.behavior.test.mjs preview/test/behavior/workbench-hook.behavior.test.mjs preview/test/behavior/takeoff-board.behavior.test.mjs preview/test/behavior/result-reconcile.behavior.test.mjs"
+    "test": "node --experimental-strip-types --test preview/test/edge-logic.test.mjs preview/test/wb-logic.test.mjs preview/test/takeoff-projection.test.mjs preview/test/takeoff-assistant-brief.test.mjs preview/test/behavior/directory.behavior.test.mjs preview/test/behavior/portal-upload.behavior.test.mjs preview/test/behavior/originals-unified-upload.behavior.test.mjs preview/test/behavior/proposal-panel.behavior.test.mjs preview/test/behavior/workbench-hook.behavior.test.mjs preview/test/behavior/takeoff-board.behavior.test.mjs preview/test/behavior/result-reconcile.behavior.test.mjs preview/test/behavior/takeoff-actions.behavior.test.mjs preview/test/behavior/visual-workspace.behavior.test.mjs preview/test/behavior/decision-feedback.behavior.test.mjs"
   },
   "dependencies": {
+    "pdfjs-dist": "6.3.289",
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },

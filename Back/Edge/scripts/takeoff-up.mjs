@@ -349,6 +349,17 @@ const edgeStart = await run(process.execPath, [path.join(EDGE_ROOT, 'scripts', '
       '--connectors-tenant', String(connectorsCfg.tenantId ?? 'tenant_takeoff')]
     : []),
   '--messages-file', path.join(RUN_DIR, 'edge-messages.db'),
+  // TAKEOFF（2026-09-20）：助手真实模型入口（可选）。takeoff-runtime.json 提供
+  // assistantModel.configPath（Git 排除、形状同 Back/B/config/b-config.json 的 transport/budget
+  // 段）时才接线；未提供 → 入口 503 not_configured（如实，不冒充已接通）。
+    ...(typeof cfg.assistantModel?.registryPath === 'string' && cfg.assistantModel.registryPath.length > 0
+      ? ['--model-profiles', path.resolve(EDGE_ROOT, cfg.assistantModel.registryPath), '--model-receipts-dir', path.join(RUN_DIR, 'model-receipts')]
+      : typeof cfg.assistantModel?.configPath === 'string' && cfg.assistantModel.configPath.length > 0
+    ? ['--model-config', (path.isAbsolute(cfg.assistantModel.configPath)
+      ? cfg.assistantModel.configPath
+      : path.resolve(EDGE_ROOT, cfg.assistantModel.configPath)),
+    '--model-receipts-dir', path.join(RUN_DIR, 'model-receipts')]
+    : []),
   ...(serveFront ? ['--serve-front', serveFront] : [])], { timeout: 60000 });
 if (edgeStart.err) fail(`Edge 启动失败: ${(edgeStart.stderr || edgeStart.err.message).slice(0, 300)}`);
 console.log(edgeStart.stdout.trim());

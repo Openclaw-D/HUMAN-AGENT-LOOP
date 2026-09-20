@@ -49,7 +49,7 @@ export function declTxtBytes(fields = { equipment_model: 'LX-105', equipment_own
   return Buffer.from(Object.entries(fields).map(([k, v]) => `${k} = ${v}`).join('\n'), 'utf8');
 }
 
-/** 不支持格式（PDF 魔数最小字节）。 */
+/** 损坏PDF（只有魔数与EOF，无页面或交叉引用）；必须拒绝，不可当正文。 */
 export function fakePdfBytes() {
   return Buffer.from('%PDF-1.4\n%%EOF\n', 'utf8');
 }
@@ -154,7 +154,7 @@ export async function makeProcessingHarness({
     trtcCallbackKey: SIGNING_SECRET,
     serviceToken: 'proc_service_token',
   });
-  const base = `http://127.0.0.1:${port}`;
+  const base = `http://127.0.0.1:${server.server.address().port}`;
   const api = async (path, body, { token = 'proc_service_token', expect = 200, method = 'POST' } = {}) => {
     const r = await fetch(`${base}${path}`, {
       method,

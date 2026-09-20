@@ -1,0 +1,106 @@
+{
+  "at": "2026-09-20T15:01:14.852Z",
+  "input": {
+    "file": "KS-LASER-500/originals/D02-主体登记资料.pdf",
+    "bytes": 260867,
+    "sha256": "8eb9eafea3e9d64cded58c8f970013970d1454e9902a350746205af71c4c2f91"
+  },
+  "strategy": {
+    "sequential_observes": 30,
+    "first_request": 1,
+    "independent_cold": 15,
+    "receipt_replays": 14,
+    "note": "first_request=进程首次调用（含一次性图编译）；independent=互不相同问题的独立发送；replay=首问题重复（零外部调用）"
+  },
+  "timing_scope": {
+    "model_wait": "替身 arrive→depart：服务端处理窗口（HTTP往返+替身处理），非真实模型耗时",
+    "orchestration": "端到端−model_wait：请求侧图节点+回执I/O+HTTP栈；first_request 样本含一次性 LangGraph 编译",
+    "e2e": "客户端 fetch 发起至响应体解析完成"
+  },
+  "parse": {
+    "component": "parseArtifactBytesAsync 直接解析固定字节×30（流水线内每个工件仅解析一次，内容寻址判重）",
+    "n": 30,
+    "p50": 233.91,
+    "p95": 265.18,
+    "min": 216.44,
+    "max": 308.11,
+    "ok": 30
+  },
+  "first_request": {
+    "bucket": "进程首次观察全链（含图编译+工作本+证据读取+发送+回执）",
+    "n": 1,
+    "p50": 383.01,
+    "p95": 383.01,
+    "min": 383.01,
+    "max": 383.01
+  },
+  "independent": {
+    "bucket": "独立冷请求（#2..#16，互不相同的问题）",
+    "n": 15,
+    "p50": 350.01,
+    "p95": 445.18,
+    "min": 322.93,
+    "max": 445.18
+  },
+  "orchestration": {
+    "bucket": "请求侧编排=端到端−替身等待（覆盖16次独立发送）",
+    "samples": 16,
+    "n": 16,
+    "p50": 349.62,
+    "p95": 444.93,
+    "min": 322.65,
+    "max": 444.93,
+    "graph_node_sum": {
+      "n": 16,
+      "p50": 110.24,
+      "p95": 153.22,
+      "min": 94.11,
+      "max": 153.22
+    }
+  },
+  "stand_in_wait": {
+    "bucket": "HTTP替身 arrive→depart（本地实测，不代表真实模型）",
+    "samples": 16,
+    "n": 16,
+    "p50": 0.34,
+    "p95": 0.76,
+    "min": 0.23,
+    "max": 0.76
+  },
+  "replay": {
+    "bucket": "合法回执重放（同问题，零模型调用）",
+    "n": 14,
+    "p50": 240.74,
+    "p95": 333.22,
+    "min": 199.83,
+    "max": 333.22
+  },
+  "e2e": {
+    "bucket": "全部30次观察端到端",
+    "n": 30,
+    "p50": 324.4,
+    "p95": 423.52,
+    "min": 199.83,
+    "max": 445.18
+  },
+  "usage": {
+    "promptTokens": null,
+    "completionTokens": null,
+    "note": "替身名义用量 prompt=100+片段数 completion=40/次为名义值，非实测；实测 tokens 仅存在于真实模型调用清单",
+    "model_calls_sequential_window": 16,
+    "model_calls_anti_resend_window": 1
+  },
+  "sequential_window": {
+    "requests": 30,
+    "model_sends": 16,
+    "receipt_replays": 14
+  },
+  "anti_resend_concurrent": {
+    "window": "独立于顺序30次窗口（定向复核#3：两窗口分列，不混算）",
+    "concurrency": 10,
+    "responses_200": 10,
+    "model_calls": 1,
+    "single_requestId": true,
+    "note": "进程内 flight 去重：并发同请求只允许一次发送，其余共享同一在途结果"
+  }
+}

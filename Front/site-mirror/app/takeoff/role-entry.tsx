@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { WbApi } from '../../lib/workbench/use-workbench';
+import { RoleLogo, UiIcon } from './ui-icons';
 
 export const WORK_ROLES = [
   { id: 'business', name: '业务', mark: '↗', description: '了解客户，推进办理' },
@@ -18,22 +19,22 @@ export function RoleEntry({ wb }: { wb: WbApi }) {
   const enter = async (id: string) => {
     setBusy(id); setError('');
     try { await wb.loginWithIdentity(id); }
-    catch { setError('暂时无法进入，请稍后重试。'); }
+    catch (e) { const code=(e as {code?:string}).code; setError(code === 'PRINCIPAL_UNTRUSTED' ? '办理服务或角色配置尚未就绪，请联系工作台维护人员。' : '暂时连接不上工作台，请稍后重试。'); }
     finally { setBusy(null); }
   };
   return <main className="tk-root tk-entry">
-    <header className="tk-entry-brand"><strong>见微</strong><span>首次回租 · 准入预评估</span></header>
+    <header className="tk-entry-brand"><UiIcon name="jianwei" size={32}/><strong>见微</strong><span>客户协作工作台</span></header>
     <section className="tk-role-content">
-      <span className="tk-eyebrow">开始协作</span>
-      <h1>今天，你从哪个角色开始？</h1>
-      <p>选择角色，进入你的客户工作台。</p>
+      <span className="tk-eyebrow">你的专业，让事情向前一步</span>
+      <h1>以你的角色，开始工作。</h1>
+      <p>选好角色，找到客户。材料、进展和伙伴，都在同一个工作台。</p>
       <div className="tk-role-grid">
         {WORK_ROLES.map((role) => {
           const matches = (wb.identities ?? []).filter((p) => p.roles.includes(role.id) && !p.roles.includes('service') && !p.roles.includes('admin'));
           return <div className="tk-role-slot" key={role.id}>
             <button className="tk-role-card" disabled={busy !== null || matches.length === 0}
               onClick={() => matches.length === 1 ? void enter(matches[0].principalId) : setChoosing(role.id)}>
-              <span className="tk-role-symbol" aria-hidden="true">{role.mark}</span>
+              <RoleLogo role={role.id} size={48}/>
               <strong>{role.name}</strong><span>{role.description}</span>
               <small>{busy && matches.some((m) => m.principalId === busy) ? '正在进入…' : matches.length ? '进入工作台 ↗' : wb.identities === null ? '连接中…' : '暂未开放'}</small>
             </button>
@@ -44,6 +45,6 @@ export function RoleEntry({ wb }: { wb: WbApi }) {
       {error && <p role="alert">{error}</p>}
       {wb.identities === null && <p className="tk-entry-hint">正在连接工作台；若长时间未显示，请检查服务后刷新。<button className="tk-btn small ghost" onClick={() => window.location.reload()}>刷新</button></p>}
     </section>
-    <footer className="tk-entry-footer">同一份客户材料，让每一位专业伙伴接着往下做。</footer>
+    <footer className="tk-entry-footer"><span>同一份材料 · 各自的专业 · 清楚的下一步</span><span>见微 / 客户协作</span></footer>
   </main>;
 }

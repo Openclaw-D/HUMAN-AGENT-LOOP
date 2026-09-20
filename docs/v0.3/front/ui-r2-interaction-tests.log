@@ -1,0 +1,142 @@
+TAP version 13
+# Subtest: T01 范围：二十格+六助手结构齐备；默认路径无退休展示与正式额度/融资入口
+ok 1 - T01 范围：二十格+六助手结构齐备；默认路径无退休展示与正式额度/融资入口
+  ---
+  duration_ms: 205.1154
+  type: 'test'
+  ...
+# Subtest: 方案面板无正式额度/融资操作按钮（停用说明可见；冻结依据包办理保留）
+ok 2 - 方案面板无正式额度/融资操作按钮（停用说明可见；冻结依据包办理保留）
+  ---
+  duration_ms: 271.7412
+  type: 'test'
+  ...
+# Subtest: 顶部摘要：待补/待评估/待估如实；有候选=同版金额+倾向标记（≠批准）
+ok 3 - 顶部摘要：待补/待评估/待估如实；有候选=同版金额+倾向标记（≠批准）
+  ---
+  duration_ms: 41.8211
+  type: 'test'
+  ...
+# Subtest: T13 视觉语义：current=完成绿（aria ≠批准）；changed=冻结+卡点；同轮测试 T03 部分并行
+ok 4 - T13 视觉语义：current=完成绿（aria ≠批准）；changed=冻结+卡点；同轮测试 T03 部分并行
+  ---
+  duration_ms: 72.4215
+  type: 'test'
+  ...
+# Subtest: 点格→真实事项分层详情；允许动作打开复用面板；关闭后看板仍在
+ok 5 - 点格→真实事项分层详情；允许动作打开复用面板；关闭后看板仍在
+  ---
+  duration_ms: 388.5293
+  type: 'test'
+  ...
+# Subtest: 辅助页：流程只读 SVG+缩放；记录消费服务端事件；待办可回原格子
+ok 6 - 辅助页：流程只读 SVG+缩放；记录消费服务端事件；待办可回原格子
+  ---
+  duration_ms: 468.4989
+  type: 'test'
+  ...
+# Subtest: 六助手：草稿跨切换保留；@插入；Enter 发送内部线程；Shift+Enter 换行不发送；输入法候选不误发
+ok 7 - 六助手：草稿跨切换保留；@插入；Enter 发送内部线程；Shift+Enter 换行不发送；输入法候选不误发
+  ---
+  duration_ms: 176.5032
+  type: 'test'
+  ...
+# Subtest: 结束对话框：状态门如实——candidate_ready 下正/附条件禁用（须先提交复核）；撤回可用
+ok 8 - 结束对话框：状态门如实——candidate_ready 下正/附条件禁用（须先提交复核）；撤回可用
+  ---
+  duration_ms: 144.3698
+  type: 'test'
+  ...
+# Subtest: 结束对话框：awaiting_human_review 下三类可发起；not_support 提交绑定版本走 confirm-preassessment
+ok 9 - 结束对话框：awaiting_human_review 下三类可发起；not_support 提交绑定版本走 confirm-preassessment
+  ---
+  duration_ms: 300.4597
+  type: 'test'
+  ...
+# Subtest: 结束对话框：附条件支持必须给条件（缺失本地拦截）；补齐后提交带 conditions 数组
+ok 10 - 结束对话框：附条件支持必须给条件（缺失本地拦截）；补齐后提交带 conditions 数组
+  ---
+  duration_ms: 379.6565
+  type: 'test'
+  ...
+# Subtest: 结束对话框：已确认结论读回=终态（三类+撤回全禁用，显示需复核卡）
+ok 11 - 结束对话框：已确认结论读回=终态（三类+撤回全禁用，显示需复核卡）
+  ---
+  duration_ms: 128.4337
+  type: 'test'
+  ...
+# Subtest: admission 投影合并：到件数/失败卡点入格；requestedAmount/期限/价格同版上顶栏
+ok 12 - admission 投影合并：到件数/失败卡点入格；requestedAmount/期限/价格同版上顶栏
+  ---
+  duration_ms: 101.6564
+  type: 'test'
+  ...
+# Subtest: 助手工具栏上传入口打开材料面板（客户联系人门户分支保留在屏内）
+ok 13 - 助手工具栏上传入口打开材料面板（客户联系人门户分支保留在屏内）
+  ---
+  duration_ms: 92.1786
+  type: 'test'
+  ...
+# Subtest: 顶部摘要：已有申请金额首屏直接展示，不以加载占位冒充缺失
+ok 14 - 顶部摘要：已有申请金额首屏直接展示，不以加载占位冒充缺失
+  ---
+  duration_ms: 44.5832
+  type: 'test'
+  ...
+# Subtest: 材料：按服务端清单搜索/筛选、空结果清楚、上传入口可达
+ok 15 - 材料：按服务端清单搜索/筛选、空结果清楚、上传入口可达
+  ---
+  duration_ms: 149.2704
+  type: 'test'
+  ...
+# Subtest: 材料：指针拖动、缩放坐标、撤销、键盘摆放、客户隔离；不发业务写命令
+ok 16 - 材料：指针拖动、缩放坐标、撤销、键盘摆放、客户隔离；不发业务写命令
+  ---
+  duration_ms: 136.9768
+  type: 'test'
+  ...
+# Subtest: 材料：清单拖入画布只接受当前授权清单内的ID
+ok 17 - 材料：清单拖入画布只接受当前授权清单内的ID
+  ---
+  duration_ms: 15.6849
+  type: 'test'
+  ...
+# Subtest: 材料：原件读取/未知格式/关闭恢复焦点；读取失败不冒充空清单
+ok 18 - 材料：原件读取/未知格式/关闭恢复焦点；读取失败不冒充空清单
+  ---
+  duration_ms: 65.8915
+  type: 'test'
+  ...
+# Subtest: 角色流程：五专业并行，20个节点可回真实事项；缩放还原
+ok 19 - 角色流程：五专业并行，20个节点可回真实事项；缩放还原
+  ---
+  duration_ms: 77.0294
+  type: 'test'
+  ...
+# Subtest: 时间轴：服务端分页/去重、筛选、未知时间、未取得数据不假造
+ok 20 - 时间轴：服务端分页/去重、筛选、未知时间、未取得数据不假造
+  ---
+  duration_ms: 98.4342
+  type: 'test'
+  ...
+# Subtest: 时间轴：切客户后旧响应不能写回；失败支持明确重读
+ok 21 - 时间轴：切客户后旧响应不能写回；失败支持明确重读
+  ---
+  duration_ms: 22.7527
+  type: 'test'
+  ...
+# Subtest: 角色入口：图标与角色配对、多身份显式选择，服务不可用不误报个人身份错误
+ok 22 - 角色入口：图标与角色配对、多身份显式选择，服务不可用不误报个人身份错误
+  ---
+  duration_ms: 56.3411
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5261.0186

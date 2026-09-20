@@ -3,6 +3,7 @@
 // 纪律：页面顶部常驻"合成夹具"横幅；数据全部为标记的合成客户/合成材料；不连接任何后台；
 // 真实读写由 preview/test/behavior/takeoff-board.behavior.test.mjs 与 04 路集成联调覆盖。
 import { StrictMode } from 'react';
+import { DesktopFrame } from '../site-mirror/app/takeoff/desktop-frame';
 import { createRoot } from 'react-dom/client';
 import { TakeoffScreen } from '../site-mirror/app/takeoff/takeoff-screen';
 import type { WbApi } from '../site-mirror/lib/workbench/use-workbench';
@@ -19,6 +20,10 @@ const wb: WbApi = {
   lastEvent: { type: 'assessment_candidate', at: new Date().toISOString() },
   client: {
     session: { sessionId: 'sess-fixture', principalId: 'biz1', roles: ['business'], expiresAt: Date.now() + 3_600_000 },
+    workspace: async () => ({ ok: true, snapshot: wb.snapshot }),
+    readDecisions: async (customerId: string, assistant: string) => ({ ok: true, authority: 'none', customerId, assistant, revision: 0, pending: null, latest: null }),
+    analyzeDecisions: async () => { throw Object.assign(new Error('离线夹具不调用模型'), { code: 'MODEL_NOT_CONFIGURED' }); },
+    saveDecisionFeedback: async () => { throw Object.assign(new Error('离线夹具不保存业务反馈'), { code: 'FORBIDDEN' }); },
     read: async (path: string) => {
       if (path.endsWith('/artifacts')) {
         return {
@@ -60,6 +65,7 @@ const wb: WbApi = {
       cursor: 'c3',
     }),
     sendMessage: async () => ({ ok: true, requestId: 'r-fix', delivery: { messageId: 'm9', state: 'sent' } }),
+    artifactContent: async (_customerId: string, artifactId: string) => ({ ok: true, artifact: { content: { label: '合成原件预览测试', artifactId, equipment: '数控车床', note: '只用于离线交互验收，不是业务原件。' } } }),
     action: async () => ({ ok: true }),
     eventsPage: async () => ({
       ok: true,
@@ -145,24 +151,6 @@ const wb: WbApi = {
   },
 };
 
-function Banner() {
-  return (
-    <div style={{ background: '#fff4d6', borderBottom: '1px solid #e2c258', padding: '4px 14px', fontSize: 12, flex: 'none' }}>
-      视觉验收夹具：合成客户/合成材料（非真实数据、不连后台）。真实读写由行为测试与 04 路集成联调覆盖。
-    </div>
-  );
-}
-
 createRoot(document.getElementById('root') as HTMLElement).render(
-  <StrictMode>
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Banner />
-      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-        <style>{`.tk-visual .tk-root { flex: 1; min-height: 0; height: auto; }`}</style>
-        <div className="tk-visual" style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-          <TakeoffScreen wb={wb} onBackToDirectory={() => {}} onLogout={() => {}} />
-        </div>
-      </div>
-    </div>
-  </StrictMode>,
+  <StrictMode><DesktopFrame><TakeoffScreen wb={wb} onBackToDirectory={() => {}} onLogout={() => {}}/><div className="tk-fixture-tag">离线视觉夹具 · 合成材料 · 不连接业务服务</div></DesktopFrame></StrictMode>,
 );

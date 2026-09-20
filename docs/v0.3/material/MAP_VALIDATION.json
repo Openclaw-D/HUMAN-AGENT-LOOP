@@ -1,0 +1,12 @@
+{
+  "sourceHashesAndQuotedLines": "PASS",
+  "scenarioCount": 15,
+  "customerCount": 3,
+  "originalSealFilesVerified": 205,
+  "originalMaterialBytesChanged": false,
+  "heldoutProductRuns": 0,
+  "heldoutModelRuns": 0,
+  "businessHumanReview": "PENDING",
+  "endToEnd": "NOT_RUN",
+  "commitPush": "NOT_RUN"
+}

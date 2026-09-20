@@ -16,6 +16,28 @@ const mkTransport = (api, ledger, budget, over = {}) => createModelTransport({
   mode: 'mock', mock: { baseUrl: api.baseUrl, timeoutMs: 20000 }, budget, costLogPath: ledger, ...over,
 });
 
+test('显式无限累计金额仍记账、保留调用限制并拒绝损坏账本', async () => {
+  const api = await startMockApi({ mode: 'ok' });
+  const dir = await tmpDir('budget-unlimited-');
+  const ledger = `${dir}/cost-ledger.jsonl`;
+  const budget = { unlimitedTotalCost: true, perCallEstimate: 1, maxCalls: 2 };
+  try {
+    assert.throws(() => mkTransport(api, ledger, { ...budget, maxTotalCost: 5 }));
+    const t = mkTransport(api, ledger, budget);
+    assert.equal((await t.complete({ requestId: 'unlimited-1', evidenceRefs: [] })).status, 'simulated');
+    const restarted = mkTransport(api, ledger, budget);
+    assert.equal((await restarted.complete({ requestId: 'unlimited-2', evidenceRefs: [] })).status, 'simulated');
+    assert.equal((await restarted.complete({ requestId: 'unlimited-3', evidenceRefs: [] })).sentFlag, false);
+    assert.equal(api.requests.length, 2);
+    const lines = (await fs.readFile(ledger, 'utf8')).trim().split('\n').map(JSON.parse);
+    assert.equal(lines.filter(l => l.type === 'reserve').length, 2);
+    await fs.appendFile(ledger, 'broken\n');
+    const bad = await mkTransport(api, ledger, { unlimitedTotalCost: true, perCallEstimate: 1 }).complete({ requestId: 'unlimited-4', evidenceRefs: [] });
+    assert.equal(bad.sentFlag, false);
+    assert.equal(api.requests.length, 2);
+  } finally { await api.close(); await rmDir(dir); }
+});
+
 test('T1 预算顺序上限:首调用入账后,后续 BUDGET_EXCEEDED 且未发送', async () => {
   const api = await startMockApi({ mode: 'ok' });
   const dir = await tmpDir('budget-t1-');

@@ -4,7 +4,7 @@ import { workRoleName } from './role-entry';
 // 数据：workspace 快照 + A artifacts/处理通道/依据包详情 真实读面；格子=只读投影，点击看真实事项。
 // 结束=受控预评估结论确认：三类结论走 A confirm-preassessment（§13，绑定版本/候选修订+服务端硬门）；
 // 行政撤回走既有 decide withdraw_assessment；绝不调用 facility.approve（本轮默认路径无正式额度操作）。
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { WbApi } from '../../lib/workbench/use-workbench';
 import type { TakeoffCellView, TakeoffSource } from '../../lib/workbench/takeoff-projection';
 import { CONFIRM_OUTCOME_LABEL, deriveTakeoffCells, deriveTakeoffTop, takeoffDomainName, takeoffRowName } from '../../lib/workbench/takeoff-projection';
@@ -12,6 +12,12 @@ import { wbActionRequestId } from '../../lib/workbench/wb-logic';
 import { TakeoffBoard } from './takeoff-board';
 import { TakeoffCellDetail } from './takeoff-detail';
 import { TakeoffAssistants } from './takeoff-assistants';
+import { AdmissionRequestPanel } from './admission-request-panel';
+import { MaterialsDesk } from './materials-desk';
+import { RoleFlow } from './role-flow';
+import { WorkTimeline } from './work-timeline';
+import { blockingPredecessor } from './cell-status';
+import { RoleLogo, UiIcon, type IconName } from './ui-icons';
 import { FlowView, MaterialsView, RecordsView, TodoView, type PanelKey } from './takeoff-aux';
 import { CustomerPortal } from '../workbench/customer-portal';
 import { VerifyPanel } from '../workbench/verify-panel';
@@ -20,6 +26,7 @@ import { ProposalPanel } from '../workbench/proposal-panel';
 import { ResultPanel } from '../workbench/result-panel';
 import { WbError, useAction } from '../workbench/wb-parts';
 import './takeoff.css';
+import './glass.css';
 
 type DrawerView =
   | { kind: 'cell'; cell: TakeoffCellView }
@@ -28,14 +35,15 @@ type DrawerView =
   | { kind: 'records' }
   | { kind: 'todos' }
   | { kind: 'customer' }
+  | { kind: 'admission' }
   | null;
 
 const PANEL_TITLE: Record<PanelKey, string> = {
-  materials: '材料·上传与处理链（A 权威清单同源）',
-  verify: '核验（检查会话覆盖与留痕）',
-  qa: '问题·补证（服务端线程）',
-  proposal: '方案·决定（依据包/域意见/候选）',
-  result: '结果·对账（回执与报告）',
+  materials: '上传与补充材料',
+  verify: '核验材料',
+  qa: '问题与补证',
+  proposal: '建议方案',
+  result: '办理结果',
 };
 
 export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
@@ -47,16 +55,28 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
   const [drawer, setDrawer] = useState<DrawerView>(null);
   const [zoomed, setZoomed] = useState(false);
   const [endOpen, setEndOpen] = useState(false);
+  const [page, setPage] = useState<'board' | 'materials' | 'flow' | 'records'>('board');
   const [source, setSource] = useState<TakeoffSource>({ snapshot: null, packageDetail: null, channelTasks: [], currentMaterials: null, factConflicts: 0 });
   const act = useAction();
+  const sourceSequence = useRef(0);
+  const drawerElement = useRef<HTMLDivElement>(null);
+  const drawerOpen = drawer !== null;
 
-  useEffect(() => { setDrawer(null); setEndOpen(false); }, [customerId]);
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const previous = document.activeElement as HTMLElement | null;
+    drawerElement.current?.focus();
+    return () => { if (previous?.isConnected) previous.focus(); };
+  }, [drawerOpen]);
+
+  useEffect(() => { setDrawer(null); setEndOpen(false); setPage('board'); }, [customerId]);
 
   // 真实读面装配：artifacts（现行件数/冲突）+ 处理通道任务 + 依据包详情（域结果/采用）。
   // 读取失败 → 对应计数=null/空，投影如实显示未知，不冒充 0。
   const loadSource = useCallback(async () => {
     const client = wb.client;
     if (!client || !customerId) return;
+    const sequence = ++sourceSequence.current;
     // snapshot 经 cast 携带 Edge admission 投影（§13.3）；投影语义由 takeoff-projection 消费。
     const next: TakeoffSource = { snapshot: (wb.snapshot ?? null) as unknown as TakeoffSource['snapshot'], packageDetail: null, channelTasks: [], currentMaterials: null, factConflicts: 0 };
     await Promise.all([
@@ -82,14 +102,15 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
         } catch { /* 包详情读取失败：域结果=空 */ }
       })(),
     ]);
-    setSource(next);
+    if (sourceSequence.current === sequence) setSource(next);
   }, [wb.client, wb.snapshot, customerId]);
 
-  useEffect(() => { void loadSource(); }, [loadSource, wb.snapshotVersion]);
+  useEffect(() => { void loadSource(); return () => { sourceSequence.current += 1; }; }, [loadSource, wb.snapshotVersion]);
 
-  const cells = useMemo(() => deriveTakeoffCells(source), [source]);
-  const top = useMemo(() => deriveTakeoffTop(source), [source]);
-  const todosSource = source;
+  const currentSource = useMemo(() => source.snapshot?.customer?.customerId === customerId ? source : { snapshot: wb.snapshot as TakeoffSource['snapshot'], packageDetail: null, channelTasks: [], currentMaterials: null, factConflicts: 0 }, [source, customerId, wb.snapshot]);
+  const cells = useMemo(() => deriveTakeoffCells(currentSource), [currentSource]);
+  const top = useMemo(() => deriveTakeoffTop(currentSource), [currentSource]);
+  const todosSource = currentSource;
 
   if (!customerId) return null;
   // 客户联系人身份（roles=['customer']）：受限客户门户（保留既有真实门户，不呈现内部看板）。
@@ -102,58 +123,80 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
   const openCell = (c: TakeoffCellView) => { setDrawer({ kind: 'cell', cell: c }); };
   const openPanel = (k: PanelKey) => { setDrawer({ kind: 'panel', panel: k }); };
   const closeDrawer = () => { setDrawer(null); setZoomed(false); };
+  const role = wb.session?.roles.find((r) => ['business', 'policy', 'credit', 'commerce', 'asset'].includes(r)) ?? 'business';
+  const navigate = (next: typeof page) => { setPage(next); closeDrawer(); };
 
   const drawerTitle = drawer === null ? ''
-    : drawer.kind === 'cell' ? `${takeoffDomainName(drawer.cell.domain)} · ${takeoffRowName(drawer.cell.row)} 格事项`
+    : drawer.kind === 'cell' ? `${takeoffDomainName(drawer.cell.domain)} · ${{ input: '材料', analysis: '分析', human: '核验', closure: '办结' }[drawer.cell.row]}`
     : drawer.kind === 'panel' ? PANEL_TITLE[drawer.panel]
     : drawer.kind === 'flow' ? '办理流程'
     : drawer.kind === 'records' ? '办理记录'
     : drawer.kind === 'todos' ? '待办事项'
+    : drawer.kind === 'admission' ? '首次回租需求登记'
     : '客户主体信息';
+  const predecessor = drawer?.kind === 'cell' ? blockingPredecessor(drawer.cell, cells) : null;
 
   return (
-    <div className="tk-root">
+    <div className="tk-root tk-workspace">
       <header className="tk-top">
+        <div className="tk-appbar">
+          <button className="tk-back-client" onClick={onBackToDirectory} aria-label="切换客户"><UiIcon name="back" size={22}/><span>客户</span></button>
+          <span className="tk-appbrand"><UiIcon name="jianwei" size={28}/>见微</span>
+          <nav className="tk-mainnav" aria-label="客户工作区">{([['board','工作台','board'],['materials','材料清单','materials'],['flow','角色流程','flow'],['records','时间轴','timeline']] as const).map(([id,label,icon]) => <button key={id} aria-current={page===id ? 'page' : undefined} onClick={() => navigate(id)}><UiIcon name={icon as IconName} size={22}/>{label}</button>)}</nav>
+          <button className="tk-role-identity" onClick={onLogout}><RoleLogo role={role} size={23}/><span>{workRoleName(wb.session?.roles)}<small>切换角色</small></span></button>
+        </div>
         <div className="tk-summary">
-          <button className="tk-cust-name" onClick={() => setDrawer({ kind: 'customer' })} title={top.customer.displayName || '客户详情'}>{top.customer.displayName || '客户工作区'}</button>
+          <div className="tk-customer-heading"><span className="tk-section-kicker">首次回租 · 准入预评估</span><button className="tk-cust-name" onClick={() => setDrawer({ kind: 'customer' })} title={top.customer.displayName || '客户详情'}>{top.customer.displayName || '客户工作区'}<UiIcon name="arrow" size={20}/></button></div>
           <div className="tk-summary-fields">
-            {[['申请金额', top.requestedAmount], ['建议额度', top.suggestedAmount], ['建议期限', top.suggestedTerm], ['参考价格', top.referencePrice], ['预计', top.expect]].map(([label, value]) => {
+            {[['申请金额', top.requestedAmount], ['建议额度', top.suggestedAmount], ['建议期限', top.suggestedTerm], ['参考价格', top.referencePrice]].map(([label, value]) => {
               const field = value as { text: string; note?: string };
-              return <span className="tk-kv" key={String(label)} title={field.note}><span className="k">{String(label)}</span><span className="v">{field.text}</span></span>;
+              return <span className="tk-kv" key={String(label)}><span className="k">{String(label)}</span><span className="v">{field.text}</span></span>;
             })}
           </div>
-          <button className="tk-btn small ghost tk-role-switch" onClick={onLogout}>{workRoleName(wb.session?.roles)} · 切换角色</button>
+          <button className="tk-btn primary" onClick={() => openPanel('materials')}><UiIcon name="plus" size={19}/>补充材料</button>
         </div>
-        <div className="tk-workbar">
-          <span className="tk-context-label">首次回租 · 准入预评估</span>
-          <button className="tk-plan-link" onClick={() => openPanel('proposal')} title={top.planMarks.join(' · ')}>{top.changedDomains.length ? '方案待复核' : '查看建议方案'} ↗</button>
+        {page==='board' && <div className="tk-workbar">
+          <span className="tk-context-label">协作进展</span>
           <span className="tk-top-entries">
             {wb.phase !== 'live' && <span className="tk-badge">{phaseText}</span>}
-            <button className="tk-btn small ghost" onClick={() => setDrawer({ kind: 'flow' })}>流程</button>
-            <button className="tk-btn small ghost" onClick={() => setDrawer({ kind: 'records' })}>记录</button>
-            <button className="tk-btn small ghost" onClick={() => openPanel('materials')}>材料</button>
             <button className="tk-btn small ghost" onClick={() => setDrawer({ kind: 'todos' })}>待办</button>
-            <button className="tk-btn small ghost" onClick={onBackToDirectory}>切换客户</button>
-            <button className="tk-btn small primary" onClick={() => setEndOpen(true)}>结束</button>
+            <details className="tk-work-actions" onClick={(e) => { if ((e.target as HTMLElement).closest('button')) e.currentTarget.open = false; }}><summary>办理</summary><div>
+              <button className="tk-btn small ghost" onClick={() => setDrawer({ kind: 'admission' })}>需求登记</button>
+              <button className="tk-plan-link" onClick={() => openPanel('proposal')}>{top.changedDomains.length ? '方案待复核' : '查看建议方案'} ↗</button>
+              <button className="tk-btn small ghost" onClick={() => setEndOpen(true)}>结束</button>
+            </div></details>
           </span>
-        </div>
+        </div>}
       </header>
       <WbError error={wb.error} onDismiss={() => wb.setError(null)} />
-      <div className="tk-body">
-        <TakeoffBoard cells={cells} selected={drawer?.kind === 'cell' ? { domain: drawer.cell.domain, row: drawer.cell.row } : null} onSelect={openCell} />
+      <div className="tk-body" hidden={page!=='board'}>
+        <TakeoffBoard key={wb.customerId} cells={cells} selected={drawer?.kind === 'cell' ? { domain: drawer.cell.domain, row: drawer.cell.row } : null} onSelect={openCell} />
         <TakeoffAssistants
+          key={`${wb.session?.sessionId}:${customerId}`}
           wb={wb}
           customerId={customerId}
-          source={source}
+          source={currentSource}
           onOpenMaterials={() => openPanel('materials')}
           cellContext={drawer?.kind === 'cell' ? `${takeoffDomainName(drawer.cell.domain)}·${takeoffRowName(drawer.cell.row)}` : null}
+          focusAssistant={drawer?.kind === 'cell' ? drawer.cell.domain === 'opportunity' ? 'business' : drawer.cell.domain : undefined}
         />
       </div>
+      {page==='materials' && <MaterialsDesk key={`${wb.session?.sessionId}:${customerId}`} wb={wb} customerId={customerId} onUpload={() => openPanel('materials')}/>}
+      {page==='flow' && <RoleFlow key={wb.customerId} cells={cells} top={top} onSelect={openCell}/>}
+      {page==='records' && <WorkTimeline key={customerId} wb={wb} customerId={customerId}/>}
 
       {drawer !== null && (
         <>
           <div className="tk-drawer-veil" onClick={closeDrawer} />
-          <div className="tk-drawer" role="dialog" aria-modal="true" aria-label={drawerTitle} style={{ width: zoomed ? '92%' : '46%', minWidth: 380 }}>
+          <div ref={drawerElement} tabIndex={-1} className="tk-drawer" role="dialog" aria-modal="true" aria-label={drawerTitle} style={{ width: zoomed ? '92%' : '46%', minWidth: 380 }} onKeyDown={(e) => {
+            if (e.key === 'Escape') { e.stopPropagation(); closeDrawer(); }
+            if (e.key !== 'Tab') return;
+            const controls = Array.from(e.currentTarget.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], summary, [tabindex="0"]')).filter((el) => el.getClientRects().length > 0);
+            const first = controls[0]; const last = controls[controls.length - 1];
+            if (!first) { e.preventDefault(); return; }
+            if (e.shiftKey && (document.activeElement === first || document.activeElement === e.currentTarget)) { e.preventDefault(); last.focus(); }
+            if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+          }}>
             <div className="tk-drawer-head">
               <h2>{drawerTitle}</h2>
               <span style={{ flex: 1 }} />
@@ -161,8 +204,10 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
               <button className="tk-btn small ghost" onClick={closeDrawer}>关闭</button>
             </div>
             <div className="tk-drawer-body">
+              {predecessor && <div className="tk-next-action"><span>前序事项还没处理好</span><button className="tk-btn" onClick={() => openCell(predecessor)}>先处理{{input:'材料',analysis:'分析',human:'核验',closure:'办结'}[predecessor.row]} <UiIcon name="arrow" size={18}/></button></div>}
               {drawer.kind === 'cell' && (
-                <TakeoffCellDetail wb={wb} cell={drawer.cell} onOpenPanel={openPanel} />
+                <TakeoffCellDetail wb={wb} cell={drawer.cell} onOpenPanel={openPanel}
+                  onOpenAssistant={closeDrawer} onViewMaterials={() => navigate('materials')} />
               )}
               {drawer.kind === 'panel' && drawer.panel === 'materials' && <MaterialsView wb={wb} customerId={customerId} />}
               {drawer.kind === 'panel' && drawer.panel === 'verify' && <VerifyPanel wb={wb} customerId={customerId} />}
@@ -180,6 +225,7 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
                 />
               )}
               {drawer.kind === 'customer' && <CustomerInfo wb={wb} />}
+              {drawer.kind === 'admission' && <AdmissionRequestPanel wb={wb} onOpenProposal={() => openPanel('proposal')} />}
             </div>
           </div>
         </>
@@ -205,11 +251,8 @@ function CustomerInfo({ wb }: { wb: WbApi }) {
   return (
     <div aria-label="客户主体信息">
       <div className="wb-card">
-        <div className="wb-kv"><span className="k">客户ID</span><span>{c?.customerId ?? '—'}（稳定唯一；简称不作数据库键）</span></div>
-        <div className="wb-kv"><span className="k">展示名</span><span>{c?.displayName ?? '—'}（四字简称只是展示名）</span></div>
-        <div className="wb-kv"><span className="k">状态</span><span>{c?.status ?? '—'}</span></div>
-        <div className="wb-kv"><span className="k">主体标识</span><span>企业全称与统一社会信用代码待01客户主档字段投影（当前读面未含：如实标注，不猜全称）</span></div>
-        <p className="wb-note">不同主体同名不能自动合并：以客户ID与主体标识为准（服务端授权确定当前客户）。</p>
+        <div className="wb-kv"><span className="k">客户名称</span><span>{c?.displayName ?? '名称待补充'}</span></div>
+        <div className="wb-kv"><span className="k">状态</span><span>{c?.status === 'active' ? '正在协作' : '待核实'}</span></div>
       </div>
     </div>
   );
@@ -242,30 +285,30 @@ function EndDialog({ wb, top, onClose, act }: {
   // 状态门只做诚实提示（页面不提权、不替服务端裁决）：正/附条件须 awaiting_human_review 且无未解冲突；
   // not_support 允许 collecting/candidate_ready/awaiting_human_review（有依据的负面终结不被冻结阻断）。
   const statusGate = (o: ConfirmOutcome): { ok: boolean; why: string } => {
-    if (confirmed) return { ok: false, why: '预评估结论已确认为终态：不可重复确认（撤回同样不再受理，服务端 NOT_READY）' };
+    if (confirmed) return { ok: false, why: '本次预评估已经结束，不能重复确认或撤回。' };
     if (!client || !a.id || a.version == null) return { ok: false, why: '评估或版本信息未知：请刷新页面后重试' };
     if (o === 'not_support') {
       const ok = ['collecting', 'candidate_ready', 'awaiting_human_review'].includes(a.status ?? '');
-      return { ok, why: ok ? '' : `评估当前 ${a.status ?? '未知'}：已终结/已确认，不可再记录负面结论` };
+      return { ok, why: ok ? '' : '当前评估不可再次确认，请刷新查看办理结果。' };
     }
     if (a.status !== 'awaiting_human_review') {
-      return { ok: false, why: `评估当前 ${a.status ?? '未知'}：正/附条件确认前须先提交人工审阅（方案·决定页「提交复核」；服务端 NOT_READY 同口径）` };
+      return { ok: false, why: '请先在方案中提交复核，再确认结论。' };
     }
     if (a.stale || top.changedDomains.length > 0 || top.factConflicts > 0) {
-      return { ok: false, why: '存在依据变化/未解决事实冲突：先按待办补证、更新域结论（服务端 STALE_BASIS/REVIEW_REQUIRED 同口径；不可豁免门不能一键解除）' };
+      return { ok: false, why: '材料有变化或内容不一致，请先按待办补充材料并更新专业意见。' };
     }
     return { ok: true, why: '' };
   };
 
   const withdrawGate = confirmed
-    ? { ok: false, why: '已确认的预评估结论为终态：行政撤回不再受理（服务端 NOT_READY）' }
+    ? { ok: false, why: '本次预评估已经结束，不能再撤回。' }
     : { ok: Boolean(a.id) && Boolean(client), why: a.id ? '' : '尚无在册评估可撤回' };
 
   const submit = (o: ConfirmOutcome) => {
     if (!client || !a.id || a.version == null) return;
     const assessmentId: string = a.id;
     const assessmentVersion: number = a.version;
-    if (!rationale.trim()) { setLocalErr('确认理由（rationale）必填：记录当前版本结论的依据（正式性属人）。'); return; }
+    if (!rationale.trim()) { setLocalErr('请填写确认理由。'); return; }
     const conds = conditions.split('\n').map((x) => x.trim()).filter(Boolean);
     if (o === 'support_with_conditions' && conds.length === 0) { setLocalErr('附条件支持必须至少给出一条条件（服务端同口径拒绝）。'); return; }
     const requestId = wbActionRequestId('tk-confirm', customerId, `confirm:${o}`, String(Date.now()));
@@ -273,12 +316,12 @@ function EndDialog({ wb, top, onClose, act }: {
       {
         title: `确认：预评估结论——${CONFIRM_OUTCOME_LABEL[o]}`,
         lines: [
-          `评估：${a.id}（版本 v${a.version}${a.candidateRevision != null ? ` · 候选 r${a.candidateRevision}` : ' · 无候选'}${a.inputVersion != null ? ` · 输入 v${a.inputVersion}` : ''}）`,
-          `客户：${top.customer.displayName ?? '—'}（${top.customer.customerId ?? '—'}）`,
-          o === 'support_with_conditions' ? `条件（${conds.length} 条）：${conds.join('；')}` : '条件：无（附条件只属于 support_with_conditions）',
+          '评估：本次首次回租预评估',
+          `客户：${top.customer.displayName ?? '当前客户'}`,
+          o === 'support_with_conditions' ? `条件（${conds.length} 条）：${conds.join('；')}` : '条件：无',
           `结论依据：${rationale.trim().slice(0, 80)}${rationale.trim().length > 80 ? '…' : ''}`,
-          'scope=preassessment_only：不创建/激活/预占任何额度、不建融资申请、不写敞口账本（服务端机器断言零变化）',
-          '确认权=服务端目录 credit 角色（服务端重查人类身份与版本/硬门；无权限将得到业务语言拒绝）',
+          '本次仅确认预评估结论，不批准正式额度。',
+          '由有权信审人员确认。',
         ],
         confirmLabel: '确认预评估结论',
         requestId,
@@ -305,7 +348,7 @@ function EndDialog({ wb, top, onClose, act }: {
       {
         title: '确认：行政撤回本轮首次预评估',
         lines: [
-          `对象：评估 ${a.id.slice(0, 22)}…（客户 ${customerId.slice(0, 16)}…）`,
+          `客户：${top.customer.displayName ?? '当前客户'}，本次预评估`,
           '语义：客户撤回=行政结束（superseded），不伪装风险拒绝，不删除客户档案与历史',
           '撤回不产生/不修改任何正式授信设施、融资申请或敞口账本',
         ],
@@ -333,14 +376,14 @@ function EndDialog({ wb, top, onClose, act }: {
       <div className="box" style={{ maxWidth: 620 }}>
         <h3>结束本次评估：受控预评估结论确认</h3>
         <ul>
-          <li>客户：{top.customer.displayName ?? '—'}（{top.customer.customerId ?? '—'}）</li>
-          <li>当前候选：{top.suggestedAmount.text}{top.suggestedTerm.text !== '待评估' ? ` · ${top.suggestedTerm.text}` : ''}（金额/期限/价格绑定同一方案版本{a.candidateRevision != null ? `，候选 r${a.candidateRevision}` : ''}）</li>
+          <li>客户：{top.customer.displayName ?? '—'}</li>
+          <li>当前候选：{top.suggestedAmount.text}{top.suggestedTerm.text !== '待评估' ? ` · ${top.suggestedTerm.text}` : ''}</li>
           <li>{top.suggestedAmount.note}</li>
         </ul>
         {confirmed && (
           <div className={`wb-card ${confirmed.needsReview ? 'bad' : 'good'}`} role="status">
-            <div className="wb-kv"><span className="k">已确认结论</span><span>{confirmed.outcomeLabel}（{confirmed.confirmationId ?? 'confirmationId 未知'}）</span></div>
-            <div className="wb-kv"><span className="k">确认人/时间</span><span>{confirmed.confirmedBy ?? '有权人'}{confirmed.confirmedAt ? ` · ${new Date(confirmed.confirmedAt).toLocaleString('zh-CN', { hour12: false })}` : ''}</span></div>
+            <div className="wb-kv"><span className="k">已确认结论</span><span>{confirmed.outcomeLabel}</span></div>
+            <div className="wb-kv"><span className="k">确认人/时间</span><span>{wb.identities?.find((person) => person.principalId === confirmed.confirmedBy)?.label ?? '有权信审人员'}{confirmed.confirmedAt ? ` · ${new Date(confirmed.confirmedAt).toLocaleString('zh-CN', { hour12: false })}` : ''}</span></div>
             {confirmed.conditions.length > 0 && <div className="wb-kv"><span className="k">条件</span><span>{confirmed.conditions.join('；')}</span></div>}
             {confirmed.needsReview && <div className="wb-kv"><span className="k">需复核</span><span>{confirmed.reviewReason ?? '确认依据被取代'}（旧确认保留，只显示需复核，不默认重开）</span></div>}
           </div>
@@ -368,7 +411,7 @@ function EndDialog({ wb, top, onClose, act }: {
                       rows={2}
                       value={rationale}
                       onChange={(e) => setRationale(e.target.value)}
-                      placeholder="确认理由（rationale，必填）：当前版本结论依据哪些材料/事实/域结论"
+                      placeholder="请填写结论依据"
                       aria-label="确认理由"
                     />
                     {g.o === 'support_with_conditions' && (
@@ -395,7 +438,7 @@ function EndDialog({ wb, top, onClose, act }: {
           </div>
         </div>
         <WbError error={localErr} onDismiss={() => setLocalErr(null)} />
-        <p className="wb-note">确认≠正式授信批准≠额度激活≠可提款；确认后不修改信用设施、融资申请或敞口账本（scope=preassessment_only，服务端机器断言）。后续重要证据推翻确认依据时，旧确认保留、只显示需复核，不默认重开。</p>
+        <p className="wb-note">本次仅确认预评估结论，不批准正式额度。后续材料发生重要变化时，需要重新复核。</p>
         <div className="wb-actions">
           <button className="tk-btn small ghost" onClick={onClose}>取消（继续办理）</button>
         </div>

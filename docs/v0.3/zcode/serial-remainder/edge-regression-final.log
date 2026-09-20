@@ -1,0 +1,871 @@
+
+> jw-edge@0.1.0 test
+> node test/run-all.mjs
+
+[edge-test] 23 个测试文件（串行）:
+  assistant-cache.test.mjs
+  assistant-evidence-http.test.mjs
+  assistant-evidence.test.mjs
+  assistant-model.test.mjs
+  assistant-profiles.test.mjs
+  decision-feedback.test.mjs
+  g03-c1-kernel-store.test.mjs
+  g03-c3-same-origin.test.mjs
+  g03c-workbench-surface.test.mjs
+  g03d-decision-channel-surface.test.mjs
+  g03e-message-thread.test.mjs
+  s1-health.test.mjs
+  s1-sse.test.mjs
+  s1-versionz.test.mjs
+  s3-credential-verification-classification.test.mjs
+  s3-csrf.test.mjs
+  s3-harness.test.mjs
+  s3-proxy.test.mjs
+  t4-assembly.test.mjs
+  t4-channel-authz.test.mjs
+  t4-message-store.test.mjs
+  t4-trusted-actor.test.mjs
+  takeoff-surface.test.mjs
+TAP version 13
+# Subtest: EVAL-CACHE-01: changed candidate at identical input version must not replay stale observation
+ok 1 - EVAL-CACHE-01: changed candidate at identical input version must not replay stale observation
+  ---
+  duration_ms: 76.9296
+  type: 'test'
+  ...
+# Subtest: EVAL-CACHE-02: tenant change with colliding customer ID must not reuse other tenant receipt
+ok 2 - EVAL-CACHE-02: tenant change with colliding customer ID must not reuse other tenant receipt
+  ---
+  duration_ms: 28.4322
+  type: 'test'
+  ...
+# Subtest: EVAL-CACHE-03: input version change creates independent receipt
+ok 3 - EVAL-CACHE-03: input version change creates independent receipt
+  ---
+  duration_ms: 31.5745
+  type: 'test'
+  ...
+# Subtest: EVAL-CACHE-04: identical request replay after fresh model instance sends no new request
+ok 4 - EVAL-CACHE-04: identical request replay after fresh model instance sends no new request
+  ---
+  duration_ms: 17.1989
+  type: 'test'
+  ...
+# Subtest: EVAL-CACHE-05: actual Edge HTTP route must refresh observation after candidate revision
+ok 5 - EVAL-CACHE-05: actual Edge HTTP route must refresh observation after candidate revision
+  ---
+  duration_ms: 64.7346
+  type: 'test'
+  ...
+# Subtest: request, assessment revision and complete candidate fields invalidate independently
+ok 6 - request, assessment revision and complete candidate fields invalidate independently
+  ---
+  duration_ms: 60.0753
+  type: 'test'
+  ...
+# Subtest: same origin model/path/output config changes invalidate; secret-only rotation does not
+ok 7 - same origin model/path/output config changes invalidate; secret-only rotation does not
+  ---
+  duration_ms: 60.8152
+  type: 'test'
+  ...
+# Subtest: same process concurrent instances share one flight and preserve immutable intent
+ok 8 - same process concurrent instances share one flight and preserve immutable intent
+  ---
+  duration_ms: 107.6397
+  type: 'test'
+  ...
+# Subtest: two OS processes claim atomically; fresh process replays durable terminal
+ok 9 - two OS processes claim atomically; fresh process replays durable terminal
+  ---
+  duration_ms: 1130.3658
+  type: 'test'
+  ...
+# Subtest: legacy intent stays historical, uncertain blocks
+ok 10 - legacy intent stays historical, uncertain blocks
+  ---
+  duration_ms: 5.8897
+  type: 'test'
+  ...
+# Subtest: legacy unknown stays historical, uncertain blocks
+ok 11 - legacy unknown stays historical, uncertain blocks
+  ---
+  duration_ms: 5.1625
+  type: 'test'
+  ...
+# Subtest: legacy corrupt stays historical, uncertain blocks
+ok 12 - legacy corrupt stays historical, uncertain blocks
+  ---
+  duration_ms: 5.457
+  type: 'test'
+  ...
+# Subtest: legacy success stays historical, uncertain blocks
+ok 13 - legacy success stays historical, uncertain blocks
+  ---
+  duration_ms: 14.7176
+  type: 'test'
+  ...
+# Subtest: durable identity never blindly resends
+ok 14 - durable identity never blindly resends
+  ---
+  duration_ms: 14.9318
+  type: 'test'
+  ...
+# Subtest: durable corrupt never blindly resends
+ok 15 - durable corrupt never blindly resends
+  ---
+  duration_ms: 14.7106
+  type: 'test'
+  ...
+# Subtest: durable null never blindly resends
+ok 16 - durable null never blindly resends
+  ---
+  duration_ms: 18.7453
+  type: 'test'
+  ...
+# Subtest: durable intent never blindly resends
+ok 17 - durable intent never blindly resends
+  ---
+  duration_ms: 13.4265
+  type: 'test'
+  ...
+# Subtest: durable claim never blindly resends
+ok 18 - durable claim never blindly resends
+  ---
+  duration_ms: 13.6531
+  type: 'test'
+  ...
+# Subtest: Edge rechecks after model wait: context
+ok 19 - Edge rechecks after model wait: context
+  ---
+  duration_ms: 17.0303
+  type: 'test'
+  ...
+# Subtest: Edge rechecks after model wait: revoke
+ok 20 - Edge rechecks after model wait: revoke
+  ---
+  duration_ms: 33.9977
+  type: 'test'
+  ...
+# Subtest: Edge rechecks after model wait: session
+ok 21 - Edge rechecks after model wait: session
+  ---
+  duration_ms: 30.42
+  type: 'test'
+  ...
+# Subtest: Edge rechecks after model wait: unavailable
+ok 22 - Edge rechecks after model wait: unavailable
+  ---
+  duration_ms: 18.2481
+  type: 'test'
+  ...
+# Subtest: stable key order and projection clock do not cause a new send
+ok 23 - stable key order and projection clock do not cause a new send
+  ---
+  duration_ms: 13.7443
+  type: 'test'
+  ...
+# Subtest: output cap change creates independent configuration identity
+ok 24 - output cap change creates independent configuration identity
+  ---
+  duration_ms: 30.8156
+  type: 'test'
+  ...
+# Subtest: real Edge → Connectors HTTP → LangGraph → model HTTP carries original, replay and stale evidence handled
+ok 25 - real Edge → Connectors HTTP → LangGraph → model HTTP carries original, replay and stale evidence handled
+  ---
+  duration_ms: 304.7072
+  type: 'test'
+  ...
+# Subtest: stable provenance identity, page and extracted-text positions
+ok 26 - stable provenance identity, page and extracted-text positions
+  ---
+  duration_ms: 2.3696
+  type: 'test'
+  ...
+# Subtest: fail closed on cross-customer, stale, unapproved hash or missing original
+ok 27 - fail closed on cross-customer, stale, unapproved hash or missing original
+  ---
+  duration_ms: 0.5227
+  type: 'test'
+  ...
+# Subtest: limits select complete source spans and disclose omissions
+ok 28 - limits select complete source spans and disclose omissions
+  ---
+  duration_ms: 0.8273
+  type: 'test'
+  ...
+# Subtest: forged and missing citations become questions, never valid observations
+ok 29 - forged and missing citations become questions, never valid observations
+  ---
+  duration_ms: 0.318
+  type: 'test'
+  ...
+# Subtest: actual LangGraph executes six ordered nodes, with one controlled call and no retry
+ok 30 - actual LangGraph executes six ordered nodes, with one controlled call and no retry
+  ---
+  duration_ms: 37.5392
+  type: 'test'
+  ...
+# Subtest: mock 正常结构化响应:强标记 simulated,成功映射 observations/questions,预算记账
+ok 31 - mock 正常结构化响应:强标记 simulated,成功映射 observations/questions,预算记账
+  ---
+  duration_ms: 49.4221
+  type: 'test'
+  ...
+# Subtest: mock 纯文本=单条观察(simulated);缺 choices/空内容=确定失败 MALFORMED_OUTPUT/EMPTY_OUTPUT(sent=true)
+ok 32 - mock 纯文本=单条观察(simulated);缺 choices/空内容=确定失败 MALFORMED_OUTPUT/EMPTY_OUTPUT(sent=true)
+  ---
+  duration_ms: 28.9532
+  type: 'test'
+  ...
+# Subtest: 非法结构(非 JSON)=RESPONSE_CORRUPTED:上游已处理,不自动重发
+ok 33 - 非法结构(非 JSON)=RESPONSE_CORRUPTED:上游已处理,不自动重发
+  ---
+  duration_ms: 9.8085
+  type: 'test'
+  ...
+# Subtest: 401/429/5xx:确定失败,4xx=未处理(sent=false),5xx=已处理(sent=true)
+ok 34 - 401/429/5xx:确定失败,4xx=未处理(sent=false),5xx=已处理(sent=true)
+  ---
+  duration_ms: 27.5752
+  type: 'test'
+  ...
+# Subtest: 超时=发送后未知(RESULT_UNKNOWN_TIMEOUT),重放仍 unknown 零盲重发;intent 残留=RECOVERED
+ok 35 - 超时=发送后未知(RESULT_UNKNOWN_TIMEOUT),重放仍 unknown 零盲重发;intent 残留=RECOVERED
+  ---
+  duration_ms: 634.447
+  type: 'test'
+  ...
+# Subtest: 响应体中途断连=发送后未知(RESULT_UNKNOWN_TRUNCATED)
+ok 36 - 响应体中途断连=发送后未知(RESULT_UNKNOWN_TRUNCATED)
+  ---
+  duration_ms: 36.2368
+  type: 'test'
+  ...
+# Subtest: 预算耗尽:失败关闭确定未发送(BUDGET_EXCEEDED),每次出站含失败均记账
+ok 37 - 预算耗尽:失败关闭确定未发送(BUDGET_EXCEEDED),每次出站含失败均记账
+  ---
+  duration_ms: 22.704
+  type: 'test'
+  ...
+# Subtest: real:出站白名单外 → OUTBOUND_NOT_ALLOWED 确定未发送
+ok 38 - real:出站白名单外 → OUTBOUND_NOT_ALLOWED 确定未发送
+  ---
+  duration_ms: 3.085
+  type: 'test'
+  ...
+# Subtest: real:max_tokens 输出上限与 maxRequestChars 输入上限生效
+ok 39 - real:max_tokens 输出上限与 maxRequestChars 输入上限生效
+  ---
+  duration_ms: 7.8286
+  type: 'test'
+  ...
+# Subtest: 回执幂等:同客户同上下文同问题 → 重放零出站;上下文版本变化 → 新请求
+ok 40 - 回执幂等:同客户同上下文同问题 → 重放零出站;上下文版本变化 → 新请求
+  ---
+  duration_ms: 45.2345
+  type: 'test'
+  ...
+# Subtest: 注入文本("忽略规则/直接批准")不获执行权:仍按辅助观察返回,authority=none
+ok 41 - 注入文本("忽略规则/直接批准")不获执行权:仍按辅助观察返回,authority=none
+  ---
+  duration_ms: 7.2567
+  type: 'test'
+  ...
+# Subtest: 非法助手/超长问题/无配置:失败关闭确定未发送
+ok 42 - 非法助手/超长问题/无配置:失败关闭确定未发送
+  ---
+  duration_ms: 2.246
+  type: 'test'
+  ...
+# Subtest: 路由:未配置模型 → 503 MODEL_NOT_CONFIGURED(确定未发送,不静默 mock)
+ok 43 - 路由:未配置模型 → 503 MODEL_NOT_CONFIGURED(确定未发送,不静默 mock)
+  ---
+  duration_ms: 7.7891
+  type: 'test'
+  ...
+# Subtest: 路由:无会话 401;非法 assistant/question 400;未知客户 404
+ok 44 - 路由:无会话 401;非法 assistant/question 400;未知客户 404
+  ---
+  duration_ms: 44.2694
+  type: 'test'
+  ...
+# Subtest: 路由:成功辅助观察(authority=none)+审计留痕+注入问题不产生业务写入
+ok 45 - 路由:成功辅助观察(authority=none)+审计留痕+注入问题不产生业务写入
+  ---
+  duration_ms: 15.9767
+  type: 'test'
+  ...
+# Subtest: two real loopback services: switch, in-flight identity, replay, explicit rollback, restart
+ok 46 - two real loopback services: switch, in-flight identity, replay, explicit rollback, restart
+  ---
+  duration_ms: 77.8798
+  type: 'test'
+  ...
+# Subtest: unknown remains blocked across profile switch and process-level restart
+ok 47 - unknown remains blocked across profile switch and process-level restart
+  ---
+  duration_ms: 21.9757
+  type: 'test'
+  ...
+# Subtest: activation HTTP rechecks administrator identity and rejects arbitrary config
+ok 48 - activation HTTP rechecks administrator identity and rejects arbitrary config
+  ---
+  duration_ms: 52.9597
+  type: 'test'
+  ...
+# Subtest: candidate schema rejects ungrounded, duplicate and out-of-range values; null confidence remains unknown
+ok 49 - candidate schema rejects ungrounded, duplicate and out-of-range values; null confidence remains unknown
+  ---
+  duration_ms: 1.2456
+  type: 'test'
+  ...
+# Subtest: HTTP/model/receipt/feedback: sorted candidates, no default feedback, persistent selection, undo and next analysis sees feedback
+ok 50 - HTTP/model/receipt/feedback: sorted candidates, no default feedback, persistent selection, undo and next analysis sees feedback
+  ---
+  duration_ms: 210.9975
+  type: 'test'
+  ...
+# Subtest: authorization, forged candidates, CSRF, stale evidence and concurrent feedback are rejected
+ok 51 - authorization, forged candidates, CSRF, stale evidence and concurrent feedback are rejected
+  ---
+  duration_ms: 132.0463
+  type: 'test'
+  ...
+# Subtest: invalid output is not selectable; unknown send survives reload and blocks a new operation without resend
+ok 52 - invalid output is not selectable; unknown send survives reload and blocks a new operation without resend
+  ---
+  duration_ms: 124.452
+  type: 'test'
+  ...
+# Subtest: revocation during inference does not disclose candidates
+ok 53 - revocation during inference does not disclose candidates
+  ---
+  duration_ms: 28.8498
+  type: 'test'
+  ...
+# Subtest: C1 明细缓存：热读取命中缓存（查询数下降 + freshness.cached 如实标注）
+ok 54 - C1 明细缓存：热读取命中缓存（查询数下降 + freshness.cached 如实标注）
+  ---
+  duration_ms: 30.8117
+  type: 'test'
+  ...
+# Subtest: C1 失效钩子：新事件引用该 id → 下次读取权威重取（不缓存旧值）
+ok 55 - C1 失效钩子：新事件引用该 id → 下次读取权威重取（不缓存旧值）
+  ---
+  duration_ms: 4.9538
+  type: 'test'
+  ...
+# Subtest: C1 撤权断流（404 语义）：曾可读的桶遇上游 404 → onAuthFail 断流销桶；首次即 404 不误伤
+ok 56 - C1 撤权断流（404 语义）：曾可读的桶遇上游 404 → onAuthFail 断流销桶；首次即 404 不误伤
+  ---
+  duration_ms: 177.9511
+  type: 'test'
+  ...
+# Subtest: C1 同请求合并：同 (客户×身份×凭据) 在途 workspace 共享一次上游读取
+ok 57 - C1 同请求合并：同 (客户×身份×凭据) 在途 workspace 共享一次上游读取
+  ---
+  duration_ms: 3.2962
+  type: 'test'
+  ...
+# Subtest: C1 合并不跨失败传播窗口之外：一次失败不缓存，下次读取重新直查
+ok 58 - C1 合并不跨失败传播窗口之外：一次失败不缓存，下次读取重新直查
+  ---
+  duration_ms: 3.835
+  type: 'test'
+  ...
+# Subtest: C3 同源前端：/ 与资产由 Edge 同源服务；未知非 API 路径回退 index.html；API 404 不被遮蔽
+ok 59 - C3 同源前端：/ 与资产由 Edge 同源服务；未知非 API 路径回退 index.html；API 404 不被遮蔽
+  ---
+  duration_ms: 481.2932
+  type: 'test'
+  ...
+# Subtest: C3 未配置 frontHandler：行为与既有完全一致（未知路径 JSON 404）
+ok 60 - C3 未配置 frontHandler：行为与既有完全一致（未知路径 JSON 404）
+  ---
+  duration_ms: 10.2223
+  type: 'test'
+  ...
+# Subtest: 受控身份目录：identities 只出元数据；principalId 受控登录成功；未知 principalId 403
+ok 61 - 受控身份目录：identities 只出元数据；principalId 受控登录成功；未知 principalId 403
+  ---
+  duration_ms: 73.2062
+  type: 'test'
+  ...
+# Subtest: 未配置身份目录：identities 404 失败关闭；principalId 登录拒绝；手输凭据仍可用
+ok 62 - 未配置身份目录：identities 404 失败关闭；principalId 登录拒绝；手输凭据仍可用
+  ---
+  duration_ms: 10.747
+  type: 'test'
+  ...
+# Subtest: 受限原件上传：转换为 materialFile 信封登记载荷；业务字段并列透传；上游路径映射 artifacts
+ok 63 - 受限原件上传：转换为 materialFile 信封登记载荷；业务字段并列透传；上游路径映射 artifacts
+  ---
+  duration_ms: 12.0336
+  type: 'test'
+  ...
+# Subtest: 受限原件上传：缺 file/坏 base64/超上限/缺 requestId 分别 400 且不触上游
+ok 64 - 受限原件上传：缺 file/坏 base64/超上限/缺 requestId 分别 400 且不触上游
+  ---
+  duration_ms: 50.4858
+  type: 'test'
+  ...
+# Subtest: 只读透传：白名单命中按会话凭据转发并透传状态；未登记 404；无会话 401
+ok 65 - 只读透传：白名单命中按会话凭据转发并透传状态；未登记 404；无会话 401
+  ---
+  duration_ms: 92.2395
+  type: 'test'
+  ...
+# Subtest: 客户目录前向兼容：上游无清单端点(404)→501 显式 IR-03-1；上游有(200)→原样透传
+ok 66 - 客户目录前向兼容：上游无清单端点(404)→501 显式 IR-03-1；上游有(200)→原样透传
+  ---
+  duration_ms: 11.0242
+  type: 'test'
+  ...
+# Subtest: 受限邀请（G2）：创建/撤销经白名单代理；redeem 匿名透传（无会话，凭据不落日志/响应外）
+ok 67 - 受限邀请（G2）：创建/撤销经白名单代理；redeem 匿名透传（无会话，凭据不落日志/响应外）
+  ---
+  duration_ms: 80.2005
+  type: 'test'
+  ...
+# Subtest: 决策链读面：decision-status / domain-exemptions 透传 A（会话凭据映射；未登记路径 404）
+ok 68 - 决策链读面：decision-status / domain-exemptions 透传 A（会话凭据映射；未登记路径 404）
+  ---
+  duration_ms: 84.9077
+  type: 'test'
+  ...
+# Subtest: IR-03-7 页面化撤权：DELETE grants 透传（requestId 必带）；缺 requestId 400；跨站 Origin 被 CSRF 拒绝
+ok 69 - IR-03-7 页面化撤权：DELETE grants 透传（requestId 必带）；缺 requestId 400；跨站 Origin 被 CSRF 拒绝
+  ---
+  duration_ms: 31.9086
+  type: 'test'
+  ...
+# Subtest: 豁免登记写面：POST domain-exemptions 透传；Body 带 requestId/tenantId
+ok 70 - 豁免登记写面：POST domain-exemptions 透传；Body 带 requestId/tenantId
+  ---
+  duration_ms: 7.45
+  type: 'test'
+  ...
+# Subtest: IR-03-3 工件单件读回（CONTRACT §11.2）：content 路由透传 A（会话凭据映射；上游 404 原样透传）
+ok 71 - IR-03-3 工件单件读回（CONTRACT §11.2）：content 路由透传 A（会话凭据映射；上游 404 原样透传）
+  ---
+  duration_ms: 50.357
+  type: 'test'
+  ...
+# Subtest: 通道原件字节（goal-03e）：签名 URL 归一代理 /connectors/objects/:ref 按字节透传（content-type 保留；会话必需）
+ok 72 - 通道原件字节（goal-03e）：签名 URL 归一代理 /connectors/objects/:ref 按字节透传（content-type 保留；会话必需）
+  ---
+  duration_ms: 17.3435
+  type: 'test'
+  ...
+# Subtest: Connectors 读面：status/tasks/preview 以 X-Service-Token 转发（令牌服务端持有）；未配置 → 404 不伪造
+ok 73 - Connectors 读面：status/tasks/preview 以 X-Service-Token 转发（令牌服务端持有）；未配置 → 404 不伪造
+  ---
+  duration_ms: 61.9208
+  type: 'test'
+  ...
+# Subtest: Connectors 写面：intake/invitations、evidence/upload、questions/verify、processing/pause 经 requestId 门与白名单；未登记路径拒绝
+ok 74 - Connectors 写面：intake/invitations、evidence/upload、questions/verify、processing/pause 经 requestId 门与白名单；未登记路径拒绝
+  ---
+  duration_ms: 75.9166
+  type: 'test'
+  ...
+# (node:23236) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: 双向线程：互发后双方读面均可见；sender 归属与受众如实回传
+ok 75 - 双向线程：互发后双方读面均可见；sender 归属与受众如实回传
+  ---
+  duration_ms: 91.4706
+  type: 'test'
+  ...
+# Subtest: 受众边界（服务端强制）：customer 显式请求 internal → 403；internal 消息不对客户可见
+ok 76 - 受众边界（服务端强制）：customer 显式请求 internal → 403；internal 消息不对客户可见
+  ---
+  duration_ms: 76.4918
+  type: 'test'
+  ...
+# Subtest: 增量游标与幂等：?after 严格续拉；requestId 重放不二次入栈
+ok 77 - 增量游标与幂等：?after 严格续拉；requestId 重放不二次入栈
+  ---
+  duration_ms: 77.3755
+  type: 'test'
+  ...
+# Subtest: 失败关闭：无会话 401；未配置线程存储 501；非法 audience 400；checkCustomer 拒绝按状态映射
+ok 78 - 失败关闭：无会话 401；未配置线程存储 501；非法 audience 400；checkCustomer 拒绝按状态映射
+  ---
+  duration_ms: 23.5403
+  type: 'test'
+  ...
+# Subtest: 线程存储有界：超出上限裁最旧，base 前进后 seq 仍单调
+ok 79 - 线程存储有界：超出上限裁最旧，base 前进后 seq 仍单调
+  ---
+  duration_ms: 1.3742
+  type: 'test'
+  ...
+# Subtest: DB 探针失败时：liveness 正常、readiness 不 ok 且逐依赖给原因（D02 种子）
+ok 80 - DB 探针失败时：liveness 正常、readiness 不 ok 且逐依赖给原因（D02 种子）
+  ---
+  duration_ms: 426.003
+  type: 'test'
+  ...
+# Subtest: 全部依赖健康时 readiness ok，且 ok 由逐项结果推导
+ok 81 - 全部依赖健康时 readiness ok，且 ok 由逐项结果推导
+  ---
+  duration_ms: 6.0905
+  type: 'test'
+  ...
+# Subtest: 方法白名单：非 GET 一律 405；未知路径 404；响应 no-store
+ok 82 - 方法白名单：非 GET 一律 405；未知路径 404；响应 no-store
+  ---
+  duration_ms: 10.908
+  type: 'test'
+  ...
+# Subtest: 信封字段完备：eventId/scope/aggregateVersion/schemaVersion/occurredAt/payloadRef
+ok 83 - 信封字段完备：eventId/scope/aggregateVersion/schemaVersion/occurredAt/payloadRef
+  ---
+  duration_ms: 1.922
+  type: 'test'
+  ...
+# Subtest: 快照→事件订阅之间的写入不漏（D03 种子）
+ok 84 - 快照→事件订阅之间的写入不漏（D03 种子）
+  ---
+  duration_ms: 439.6629
+  type: 'test'
+  ...
+# Subtest: Last-Event-ID 头补取：断线重连不丢事件（D04/D05 种子）
+ok 85 - Last-Event-ID 头补取：断线重连不丢事件（D04/D05 种子）
+  ---
+  duration_ms: 3.9455
+  type: 'test'
+  ...
+# Subtest: 重放严格晚于游标；同游标重放一致保序；落后游标重连会重复投递同 eventId（至少一次）
+ok 86 - 重放严格晚于游标；同游标重放一致保序；落后游标重连会重复投递同 eventId（至少一次）
+  ---
+  duration_ms: 7.3773
+  type: 'test'
+  ...
+# Subtest: 游标失效 → 显式 resync 事件并结束流，绝不静默续播（D05 硬判据）
+ok 87 - 游标失效 → 显式 resync 事件并结束流，绝不静默续播（D05 硬判据）
+  ---
+  duration_ms: 4.0815
+  type: 'test'
+  ...
+# Subtest: 无权限订阅：403 且零回放（D16 种子）；合法身份查未知客户：404
+ok 88 - 无权限订阅：403 且零回放（D16 种子）；合法身份查未知客户：404
+  ---
+  duration_ms: 20.6027
+  type: 'test'
+  ...
+# Subtest: 无游标订阅：先发 cursor 基线，再实时推送（不默认回放历史）
+ok 89 - 无游标订阅：先发 cursor 基线，再实时推送（不默认回放历史）
+  ---
+  duration_ms: 311.1138
+  type: 'test'
+  ...
+# Subtest: 版本封存包含协议要求的全部字段
+ok 90 - 版本封存包含协议要求的全部字段
+  ---
+  duration_ms: 202.2839
+  type: 'test'
+  ...
+# Subtest: 版本封存不泄漏本地绝对路径与敏感字段
+ok 91 - 版本封存不泄漏本地绝对路径与敏感字段
+  ---
+  duration_ms: 188.7681
+  type: 'test'
+  ...
+# Subtest: buildId 覆盖源/契约/迁移/dist 变化（同输入稳定、换输入变化）
+ok 92 - buildId 覆盖源/契约/迁移/dist 变化（同输入稳定、换输入变化）
+  ---
+  duration_ms: 567.0639
+  type: 'test'
+  ...
+# Subtest: 探针200→核实通过：verdict ok 且返回 principal/tenant
+ok 93 - 探针200→核实通过：verdict ok 且返回 principal/tenant
+  ---
+  duration_ms: 31.5245
+  type: 'test'
+  ...
+# Subtest: 探针401/403→A 明确拒绝：PRINCIPAL_UNTRUSTED（凭据错误类）
+ok 94 - 探针401/403→A 明确拒绝：PRINCIPAL_UNTRUSTED（凭据错误类）
+  ---
+  duration_ms: 9.6797
+  type: 'test'
+  ...
+# Subtest: 探针500→基础设施不可用：CREDENTIAL_VERIFICATION_UNAVAILABLE（非凭据错误）
+ok 95 - 探针500→基础设施不可用：CREDENTIAL_VERIFICATION_UNAVAILABLE（非凭据错误）
+  ---
+  duration_ms: 4.1207
+  type: 'test'
+  ...
+# Subtest: A 内核连接拒绝（容器退出形态）→ CREDENTIAL_VERIFICATION_UNAVAILABLE
+ok 96 - A 内核连接拒绝（容器退出形态）→ CREDENTIAL_VERIFICATION_UNAVAILABLE
+  ---
+  duration_ms: 3.4855
+  type: 'test'
+  ...
+# Subtest: 目录无此凭据→PRINCIPAL_UNTRUSTED 且不发探针
+ok 97 - 目录无此凭据→PRINCIPAL_UNTRUSTED 且不发探针
+  ---
+  duration_ms: 1.1933
+  type: 'test'
+  ...
+# Subtest: 会话交换：CREDENTIAL_VERIFICATION_UNAVAILABLE→503；PRINCIPAL_UNTRUSTED→403
+ok 98 - 会话交换：CREDENTIAL_VERIFICATION_UNAVAILABLE→503；PRINCIPAL_UNTRUSTED→403
+  ---
+  duration_ms: 13.0288
+  type: 'test'
+  ...
+# Subtest: 同源 POST 放行（Origin.host === Host）
+ok 99 - 同源 POST 放行（Origin.host === Host）
+  ---
+  duration_ms: 423.5086
+  type: 'test'
+  ...
+# Subtest: 跨站 Origin：三条 POST 路由全部 403 CSRF_ORIGIN_REJECTED
+ok 100 - 跨站 Origin：三条 POST 路由全部 403 CSRF_ORIGIN_REJECTED
+  ---
+  duration_ms: 12.7366
+  type: 'test'
+  ...
+# Subtest: Sec-Fetch-Site：cross-site/same-site/none 拒绝；same-origin 放行；与同源 Origin 组合不一致也拒绝
+ok 101 - Sec-Fetch-Site：cross-site/same-site/none 拒绝；same-origin 放行；与同源 Origin 组合不一致也拒绝
+  ---
+  duration_ms: 47.0183
+  type: 'test'
+  ...
+# Subtest: 非浏览器客户端（无 Origin 无 Sec-Fetch-Site）放行；same-origin 无 Origin 按 X08 放行；不一致仍拒；null origin 拒绝
+ok 102 - 非浏览器客户端（无 Origin 无 Sec-Fetch-Site）放行；same-origin 无 Origin 按 X08 放行；不一致仍拒；null origin 拒绝
+  ---
+  duration_ms: 28.2396
+  type: 'test'
+  ...
+# Subtest: localhost 变体同源放行；未知 Host 的同端口 Origin 拒绝（防端口探针跨源）
+ok 103 - localhost 变体同源放行；未知 Host 的同端口 Origin 拒绝（防端口探针跨源）
+  ---
+  duration_ms: 6.7031
+  type: 'test'
+  ...
+# Subtest: 显式 allowedOrigins 放行（staging 预留）；GET 只读面不受 CSRF 守卫影响
+ok 104 - 显式 allowedOrigins 放行（staging 预留）；GET 只读面不受 CSRF 守卫影响
+  ---
+  duration_ms: 5.317
+  type: 'test'
+  ...
+# Subtest: 静态服务：页面可达、资源类型正确、带 CSP 与 nosniff
+ok 105 - 静态服务：页面可达、资源类型正确、带 CSP 与 nosniff
+  ---
+  duration_ms: 418.3377
+  type: 'test'
+  ...
+# Subtest: 路径穿越防护：编码绕过不落文件内容；越出根目录一律拒绝
+ok 106 - 路径穿越防护：编码绕过不落文件内容；越出根目录一律拒绝
+  ---
+  duration_ms: 8.8573
+  type: 'test'
+  ...
+# Subtest: 页面关键 API 流程可走通：登录→快照→订阅→发消息→审计（app.js 同款调用序列）
+ok 107 - 页面关键 API 流程可走通：登录→快照→订阅→发消息→审计（app.js 同款调用序列）
+  ---
+  duration_ms: 31.4296
+  type: 'test'
+  ...
+# Subtest: 会话换取：凭据错误失败关闭；成功只返回不透明会话，响应不含凭据原文
+ok 108 - 会话换取：凭据错误失败关闭；成功只返回不透明会话，响应不含凭据原文
+  ---
+  duration_ms: 415.9885
+  type: 'test'
+  ...
+# Subtest: 动作代理：无会话 401 先于路由表披露；已认证时白名单外路径明确拒绝；转发路径/凭据映射正确
+ok 109 - 动作代理：无会话 401 先于路由表披露；已认证时白名单外路径明确拒绝；转发路径/凭据映射正确
+  ---
+  duration_ms: 33.7465
+  type: 'test'
+  ...
+# Subtest: requestId 必带且不代生成；浏览器伪造凭据头不透传；响应不泄漏会话 ID
+ok 110 - requestId 必带且不代生成；浏览器伪造凭据头不透传；响应不泄漏会话 ID
+  ---
+  duration_ms: 11.3478
+  type: 'test'
+  ...
+# Subtest: 上游未知（超时）：502 UPSTREAM_UNKNOWN 回显原 requestId，不自动重试（D13 种子）
+ok 111 - 上游未知（超时）：502 UPSTREAM_UNKNOWN 回显原 requestId，不自动重试（D13 种子）
+  ---
+  duration_ms: 267.9746
+  type: 'test'
+  ...
+# Subtest: 消息受众守卫（D09 种子）：内部内容外发默认 403 并留审计；显式确认放行且审计可查
+ok 112 - 消息受众守卫（D09 种子）：内部内容外发默认 403 并留审计；显式确认放行且审计可查
+  ---
+  duration_ms: 76.5429
+  type: 'test'
+  ...
+# Subtest: 装配 E0：透传通道配置→readiness 分项含 connectors；通道读写经会话与逐资源授权；重启恢复消息与回执
+ok 113 - 装配 E0：透传通道配置→readiness 分项含 connectors；通道读写经会话与逐资源授权；重启恢复消息与回执
+  ---
+  duration_ms: 6383.0008
+  type: 'test'
+  ...
+# Subtest: 反例1：customer-only 会话调内部处理动作（暂停恢复/邀请签发/人工转录）→ 403 且上游零触达
+ok 114 - 反例1：customer-only 会话调内部处理动作（暂停恢复/邀请签发/人工转录）→ 403 且上游零触达
+  ---
+  duration_ms: 87.4583
+  type: 'test'
+  ...
+# Subtest: 反例2：改 body customerId 指向不可读客户 → 不转发（403）；业务身份可读客户 → 正常转发
+ok 115 - 反例2：改 body customerId 指向不可读客户 → 不转发（403）；业务身份可读客户 → 正常转发
+  ---
+  duration_ms: 17.8981
+  type: 'test'
+  ...
+# Subtest: 反例2b：目标客户缺失 → 400 失败关闭；customer 会话上传本人客户 → 转发
+ok 116 - 反例2b：目标客户缺失 → 400 失败关闭；customer 会话上传本人客户 → 转发
+  ---
+  duration_ms: 12.4388
+  type: 'test'
+  ...
+# Subtest: 反例3：仅持他人 taskId（query 无 cid）→ 服务端归属预检后 404，不泄露任务内容
+ok 117 - 反例3：仅持他人 taskId（query 无 cid）→ 服务端归属预检后 404，不泄露任务内容
+  ---
+  duration_ms: 7.0518
+  type: 'test'
+  ...
+# Subtest: 反例3b：本人 taskId → 预检通过正常返回；改 query cid 指向不可读客户（status/preview）→ 403
+ok 118 - 反例3b：本人 taskId → 预检通过正常返回；改 query cid 指向不可读客户（status/preview）→ 403
+  ---
+  duration_ms: 53.1295
+  type: 'test'
+  ...
+# Subtest: 边界：无会话 401 先于一切；未配置裁决面 → 503 失败关闭（不静默放行）
+ok 119 - 边界：无会话 401 先于一切；未配置裁决面 → 503 失败关闭（不静默放行）
+  ---
+  duration_ms: 8.9276
+  type: 'test'
+  ...
+# (node:28400) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: 分页缺陷回归：after=0、limit=2 → 返回1和2、cursor=2；逐页续读到5，不漏不重
+ok 120 - 分页缺陷回归：after=0、limit=2 → 返回1和2、cursor=2；逐页续读到5，不漏不重
+  ---
+  duration_ms: 3.4895
+  type: 'test'
+  ...
+# Subtest: 首次历史读取（不带 after）= 最新一页（升序），cursor=本页最后一条
+ok 121 - 首次历史读取（不带 after）= 最新一页（升序），cursor=本页最后一条
+  ---
+  duration_ms: 0.7798
+  type: 'test'
+  ...
+# Subtest: 受众过滤：游标按最后一条返回记录推进，被过滤区段不造成漏读
+ok 122 - 受众过滤：游标按最后一条返回记录推进，被过滤区段不造成漏读
+  ---
+  duration_ms: 0.8585
+  type: 'test'
+  ...
+# Subtest: 保留窗口：超出上限裁最旧；after 落入已裁区段 → truncated:true + retentionBase 显式提示
+ok 123 - 保留窗口：超出上限裁最旧；after 落入已裁区段 → truncated:true + retentionBase 显式提示
+  ---
+  duration_ms: 0.7525
+  type: 'test'
+  ...
+# Subtest: 客户隔离：互不串桶；stats 不回传内容
+ok 124 - 客户隔离：互不串桶；stats 不回传内容
+  ---
+  duration_ms: 0.7562
+  type: 'test'
+  ...
+# Subtest: 持久化与重启恢复：文件库关闭重开后，消息与幂等回执仍在
+ok 125 - 持久化与重启恢复：文件库关闭重开后，消息与幂等回执仍在
+  ---
+  duration_ms: 14.3789
+  type: 'test'
+  ...
+# Subtest: 幂等回执有界：超出 maxReceipts 裁最旧，最新回执保留
+ok 126 - 幂等回执有界：超出 maxReceipts 裁最旧，最新回执保留
+  ---
+  duration_ms: 0.6776
+  type: 'test'
+  ...
+# Subtest: 可信上下文：转发头由会话派生（principal/roles），浏览器伪造 actor 头不透传
+ok 127 - 可信上下文：转发头由会话派生（principal/roles），浏览器伪造 actor 头不透传
+  ---
+  duration_ms: 80.2837
+  type: 'test'
+  ...
+# Subtest: actor 归属覆写：body 自报 actor 被会话 principal 覆写（correct-fact/manual-entry/pause），伪造值不流入上游
+ok 128 - actor 归属覆写：body 自报 actor 被会话 principal 覆写（correct-fact/manual-entry/pause），伪造值不流入上游
+  ---
+  duration_ms: 75.0598
+  type: 'test'
+  ...
+# Subtest: customer 会话 actor 覆写：questions/answer 的 answerer 覆写为客户会话 principal
+ok 129 - customer 会话 actor 覆写：questions/answer 的 answerer 覆写为客户会话 principal
+  ---
+  duration_ms: 7.8013
+  type: 'test'
+  ...
+# Subtest: receipts 读面实际代理：本人客户回执 200；他人客户回执 404 不泄露；未命中 found:false；缺 tid 400
+ok 130 - receipts 读面实际代理：本人客户回执 200；他人客户回执 404 不泄露；未命中 found:false；缺 tid 400
+  ---
+  duration_ms: 87.1984
+  type: 'test'
+  ...
+# Subtest: customers/link 受控映射写面：customer-only 403 零触达；内部可读客户转发；不可读客户 403；缺 customerId 400
+ok 131 - customers/link 受控映射写面：customer-only 403 零触达；内部可读客户转发；不可读客户 403；缺 customerId 400
+  ---
+  duration_ms: 63.4311
+  type: 'test'
+  ...
+# Subtest: 投影：五域×四行全生成；取代/判重件不进输入行；分母未知=null；绝不产生100%或completed
+ok 132 - 投影：五域×四行全生成；取代/判重件不进输入行；分母未知=null；绝不产生100%或completed
+  ---
+  duration_ms: 1.9692
+  type: 'test'
+  ...
+# Subtest: 投影：无评估=无范围如实；stale/needsReview/关键发现 → 阻断与霜冻；outcome 三态映射
+ok 133 - 投影：无评估=无范围如实；stale/needsReview/关键发现 → 阻断与霜冻；outcome 三态映射
+  ---
+  duration_ms: 0.5893
+  type: 'test'
+  ...
+# Subtest: 投影：处理失败件进输入行阻断并带 nextAction；kind→域映射与 03 PROTOCOL §1 冻结面一致
+ok 134 - 投影：处理失败件进输入行阻断并带 nextAction；kind→域映射与 03 PROTOCOL §1 冻结面一致
+  ---
+  duration_ms: 0.1966
+  type: 'test'
+  ...
+# Subtest: TAKEOFF 确认命令经白名单转发：路径映射正确、requestId 强制、可信actor头服务端派生；白名单外拒绝
+    # Subtest: inner
+    ok 1 - inner
+      ---
+      duration_ms: 61.2721
+      type: 'test'
+      ...
+    1..1
+ok 135 - TAKEOFF 确认命令经白名单转发：路径映射正确、requestId 强制、可信actor头服务端派生；白名单外拒绝
+  ---
+  duration_ms: 83.3489
+  type: 'test'
+  ...
+# Subtest: 读面：assessments/:id/candidates 白名单登记；finalization 面tid/cid透传并逐客户校验
+ok 136 - 读面：assessments/:id/candidates 白名单登记；finalization 面tid/cid透传并逐客户校验
+  ---
+  duration_ms: 45.2224
+  type: 'test'
+  ...
+# Subtest: 真实 A 原件 material.kind 归域，解析衍生件不重复计数，未知分母不伪造进度
+ok 137 - 真实 A 原件 material.kind 归域，解析衍生件不重复计数，未知分母不伪造进度
+  ---
+  duration_ms: 0.2827
+  type: 'test'
+  ...
+1..137
+# tests 138
+# suites 0
+# pass 138
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 23415.824

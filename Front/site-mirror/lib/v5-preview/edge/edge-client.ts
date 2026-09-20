@@ -121,7 +121,7 @@ export function createEdgeClient({ baseUrl, fetchImpl = fetch }: EdgeClientOptio
     },
 
     /** 大历史分页（live）：A after/limit 逐页直读，逐请求鉴权；不假装知道总数。 */
-    async eventsPage(customerId: string, afterSeq = '0', limit = 200): Promise<{ ok: boolean; events: Array<{ eventId: string; payloadRef?: { type?: string }; payload?: unknown; aggregateVersion: string }>; nextAfterSeq: string; hasMore: boolean }> {
+    async eventsPage(customerId: string, afterSeq = '0', limit = 200): Promise<{ ok: boolean; events: Array<{ eventId: string; occurredAt?: string; payloadRef?: { type?: string }; payload?: unknown; aggregateVersion: string }>; nextAfterSeq: string; hasMore: boolean }> {
       const s = authed();
       const q = new URLSearchParams({ afterSeq: String(afterSeq), limit: String(limit) });
       const r = await fetchImpl(`${root}/api/jw/v2/customers/${encodeURIComponent(customerId)}/events-page?${q}`, {

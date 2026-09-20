@@ -59,10 +59,10 @@ test('技术字段系统关联：不再手填 Gate/工件/运行/包/规则版�
   const { wb } = makePanel();
   render(React.createElement(ProposalPanel, { wb, customerId: 'cus_1' }));
 
-  await waitFor(() => assert.ok(screen.getByText(/gate_r9/)), 'Gate 回执从通道回执读取并显示');
-  assert.ok(screen.getByText(/来源：处理通道任务回执/), '显示引用来源');
-  assert.ok(screen.getByText(/sim-pack@7/), '规则版本系统关联显示');
-  await waitFor(() => assert.ok(within(creditRow()).getByText(/银行流水 · 2026-07 · cash_balance/)), '现行材料按业务对象呈现');
+  await waitFor(() => assert.ok(screen.getByText('已关联准入检查记录')), 'Gate 回执从通道回执读取并显示');
+  assert.equal(screen.queryByText(/gate_r9|pkg_base|run_credit_1/), null, '前台隐藏后台引用');
+  assert.ok(screen.getByText('已关联现行规则'), '规则版本系统关联显示');
+  await waitFor(() => assert.ok(within(creditRow()).getByText(/银行流水 · 2026-07/)), '现行材料按业务对象呈现');
   assert.equal(screen.queryByText(/art_old/), null, '已取代材料不进勾选清单');
 
   // 旧的手填技术输入框不再存在
@@ -77,15 +77,16 @@ test('冻结依据包：勾选业务材料 → 系统组装 domainDeps/Gate 引�
   t.after(() => cleanup());
   const { wb, calls } = makePanel();
   render(React.createElement(ProposalPanel, { wb, customerId: 'cus_1' }));
-  await waitFor(() => assert.ok(screen.getByText(/gate_r9/)));
+  await waitFor(() => assert.ok(screen.getByText('已关联准入检查记录')));
 
   const row = creditRow();
   const cb = within(row).getByRole('checkbox', { name: /银行流水/ });
   fireEvent.click(cb);
 
-  fireEvent.click(screen.getByText('冻结依据包'));
+  fireEvent.click(screen.getByText('保存本次材料依据'));
   const dialog = await waitFor(() => screen.getByRole('dialog'));
-  assert.ok(dialog.textContent.includes('gate_r9'), '确认框显示 Gate 回执引用');
+  assert.ok(dialog.textContent.includes('准入检查结果已关联'), '确认框显示检查已关联而非编号');
+  assert.ok(!dialog.textContent.includes('gate_r9'));
   assert.ok(dialog.textContent.includes('信审域×1件'), '确认框显示勾选的材料数');
   fireEvent.click(within(dialog).getByText('确认提交'));
 
@@ -102,20 +103,21 @@ test('登记域意见：运行引用下拉取自通道回执；提交携带真�
   t.after(() => cleanup());
   const { wb, calls } = makePanel();
   render(React.createElement(ProposalPanel, { wb, customerId: 'cus_1' }));
-  await waitFor(() => assert.ok(screen.getByText(/gate_r9/)));
+  await waitFor(() => assert.ok(screen.getByText('已关联准入检查记录')));
 
   const runSelect = screen.getByRole('combobox', { name: '分析运行引用' });
-  assert.ok(runSelect.textContent.includes('run_credit_1'), '运行下拉来自通道回执');
+  assert.equal(runSelect.value, 'run_credit_1', '提交引用仍来自真实回执');
+  assert.ok(!runSelect.textContent.includes('run_credit_1'), '显示业务名称');
 
   fireEvent.change(screen.getByRole('combobox', { name: '登记域' }), { target: { value: 'credit' } });
   // 与真实办理一致：先勾选该域依赖的现行材料，再登记基于这些材料的域意见
   fireEvent.click(within(creditRow()).getByRole('checkbox', { name: /银行流水/ }));
   fireEvent.change(screen.getByPlaceholderText('该域对当前材料/事实的结论与关注点（正式性仍属人）'), { target: { value: '流水显示经营现金为正，与申报一致' } });
-  fireEvent.click(screen.getByText('登记域意见'));
+  fireEvent.click(screen.getByText('保存专业意见'));
 
   const dialog = await waitFor(() => screen.getByRole('dialog'));
-  assert.ok(dialog.textContent.includes('run_credit_1'), '确认框显示真实运行引用');
-  assert.ok(dialog.textContent.includes('pkg_base'), '目标包=当前依据包（系统关联）');
+  assert.ok(dialog.textContent.includes('已完成的分析'), '确认框显示已关联分析');
+  assert.ok(!dialog.textContent.includes('pkg_base'), '内部目标包不显示在业务界面');
   fireEvent.click(within(dialog).getByText('确认提交'));
 
   await waitFor(() => assert.equal(calls.recordDomainResult.length, 1));
@@ -133,10 +135,10 @@ test('无真实回执时如实显示：Gate 未读到、运行下拉缺失并禁
   const { wb } = makePanel({ channelOk: false });
   render(React.createElement(ProposalPanel, { wb, customerId: 'cus_1' }));
 
-  await waitFor(() => assert.ok(screen.getByText(/处理通道回执读取失败/)), '通道读取失败如实显示');
-  assert.ok(screen.getByText(/未读到真实 Gate 回执/), 'Gate 缺失如实显示');
-  assert.ok(screen.getByText(/该域暂无已完成的真实分析运行回执/), '运行缺失如实显示');
-  const registerBtn = screen.getByText('登记域意见');
+  await waitFor(() => assert.ok(screen.getByText(/材料处理结果暂时无法读取/)), '通道读取失败如实显示');
+  assert.ok(screen.getByText(/尚未取得准入检查记录/), 'Gate 缺失如实显示');
+  assert.ok(screen.getByText(/本专业分析尚未完成/), '运行缺失如实显示');
+  const registerBtn = screen.getByText('保存专业意见');
   assert.equal(registerBtn.disabled, true, '无真实运行回执时登记按钮禁用（不假装可登记）');
   cleanup();
 });

@@ -1,0 +1,36 @@
+{
+  "version": "v03-material-freeze@1",
+  "frozenAt": "2026-09-20T11:30:57.222Z",
+  "heldoutProductParserRuns": 0,
+  "heldoutModelRuns": 0,
+  "files": [
+    {
+      "file": "docs/v0.3/material/GOLD_ANSWERS.json",
+      "sha256": "582917534f939dd1e00e2c734952d9a17677a6f0282967dcfdb7d4dfccbdc1c6"
+    },
+    {
+      "file": "docs/v0.3/material/SCENARIO_MANIFEST.json",
+      "sha256": "c941a647414af70ce20430b87d838fb899c3dd4fc40a615f1c34f6f83763a225"
+    },
+    {
+      "file": "docs/v0.3/material/PARSER_PROBE.json",
+      "sha256": "143a60ef7aff3bd87841387fe439f9855769c617163a5554938f4cf96027bd51"
+    },
+    {
+      "file": "docs/v0.3/material/MAP_VALIDATION.json",
+      "sha256": "970d6efaf6d924bb338a9a237504b9e96067d3d650b969190270df402d962a52"
+    },
+    {
+      "file": "docs/v0.3/material/REPORT.md",
+      "sha256": "a529365e7ba06a485049bc37205107161905a5b77dbe5c0cf018a2c617332aa8"
+    },
+    {
+      "file": "docs/v0.3/material/build-eval-map.py",
+      "sha256": "27176fc01ccceb891810698ff8d740a8064b214edfd8d6946ef3b2e4e0431667"
+    },
+    {
+      "file": "docs/v0.3/material/probe-parser.mjs",
+      "sha256": "14352f584145693474ef4a8bc2aa2a6f108b4f5db8f854eef477805fb8baf54d"
+    }
+  ]
+}
