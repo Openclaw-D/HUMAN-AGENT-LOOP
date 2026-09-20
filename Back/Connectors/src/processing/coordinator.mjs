@@ -23,7 +23,9 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { parseArtifactBytes, parseCacheKey, PARSE_ADAPTERS_VERSION, detectFormat } from '../../../C/src/parse/adapters.mjs';
+import { projectSemanticFacts, SEMANTIC_FACTS_VERSION } from '../../../C/src/parse/semantic-facts.mjs';
 import { perceptionStage, assessStage, finalizeStage, effectiveRulePack } from '../../../C/domains/pipeline.mjs';
+import { DOMAINS as ALL_DOMAINS } from '../../../C/domains/schema.mjs';
 import { planRecalc, isResultCurrent, DEFAULT_DEPENDENCY_MAP } from '../../../B/src/schedule/recalc-planner.mjs';
 import { bindQuestions, planDispatch, classifyOutboundTier } from '../../../B/src/schedule/question-arbiter.mjs';
 import { extractZip } from '../evidence/zipguard.mjs';
@@ -32,7 +34,8 @@ import { ConnError } from '../errors.mjs';
 import { newId, sha256Hex } from '../ids.mjs';
 
 export const COORDINATOR_VERSION = 'processing-coordinator@1';
-const DOMAINS = ['policy', 'credit', 'commerce', 'asset'];
+// TAKEOFF-FA-1.0.0（03路）：五域（商机/政策/信审/商务/资产）；域表取自 C schema 单一来源。
+const DOMAINS = ALL_DOMAINS;
 const LEVEL_RANK = ['unknown', 'declared', 'source_supported', 'verified'];
 
 /** 规则包消费的全部事实键（requiredFacts + 条件 fact）——规则评估输入，policy/credit/asset 依赖。 */
@@ -50,21 +53,31 @@ function extractPackFactRefs(pack) {
   return s;
 }
 
-/** 域消费面：映射键（声明依赖）∪ 规则评估键（消费 ruleEvaluation 的域）。 */
+/** 域消费面：映射键（声明依赖）∪ 规则评估键（消费 ruleEvaluation 的域）。
+ *  TAKEOFF（03路）：business 亦消费规则评估键（涉诉/回租标的等规则输入进入商机域消费面签名）。 */
 function consumedFactsFor(domain, packRefs) {
   const mapped = Object.entries(DEFAULT_DEPENDENCY_MAP.byFactKey)
     .filter(([, ds]) => ds.includes(domain)).map(([k]) => k);
-  const ruleConsumers = ['policy', 'credit', 'asset'];
+  const ruleConsumers = ['business', 'policy', 'credit', 'asset'];
   return new Set([...mapped, ...(ruleConsumers.includes(domain) ? [...packRefs] : [])]);
 }
 
 export const PROCESSING_VERSION = 'processing-v1';
 
+// 默认规则包=旧四域包（既有测试与部署的回归基线）。TAKEOFF（03路）五域准入包
+// （C/rules/takeoff-first-admission-rule-pack-v1.json）经 config.processing.rulePackPath 显式启用
+// （compose 已支持；04路装配时在启动配置传入即切五域）。
 const DEFAULT_RULE_PACK_PATH = new URL('../../../C/rules/four-domain-rule-pack-v1.json', import.meta.url);
+export const TAKEOFF_RULE_PACK_PATH = new URL('../../../C/rules/takeoff-first-admission-rule-pack-v1.json', import.meta.url);
 
-/** 进件真实 kind → recalc 证据 kind（B 依赖映射消费的词汇）。 */
+/** 进件真实 kind → recalc 证据 kind（B 依赖映射消费的词汇）。
+ *  TAKEOFF（03路 PROTOCOL.md §1）：新增首次准入材料 kind；未知 kind 保守降级 document。 */
 function evidenceKindOf(kind) {
-  const known = ['statement', 'tax_filing', 'sales_purchase', 'accounting_ledger', 'equipment_contract', 'site_evidence', 'document', 'transcript', 'message', 'device_observation', 'image', 'video', 'audio'];
+  const known = [
+    'statement', 'tax_filing', 'sales_purchase', 'accounting_ledger', 'equipment_contract', 'site_evidence',
+    'document', 'transcript', 'message', 'device_observation', 'image', 'video', 'audio',
+    'legal_document', 'financial_statement', 'equipment_list', 'ownership_document', 'order_contract', 'litigation_document',
+  ];
   return known.includes(kind) ? kind : 'document';
 }
 
@@ -809,7 +822,7 @@ export function makeProcessingCoordinator(store, evidence, {
       }
       metadataDupFlag = { flag: 'duplicate_bytes_new_metadata', detail: `同字节但声明元数据与既有件均不同：按新锚点处理，差异交事实层显式并存` };
     }
-    const parserVersion = PARSE_ADAPTERS_VERSION;
+    const parserVersion = `${PARSE_ADAPTERS_VERSION}+${SEMANTIC_FACTS_VERSION}`;
     const parseKey = parseCacheKey({
       tenantId: task.tenant_id, customerId: task.customer_id, sha256: art.sha256 ?? task.evidence_id,
       parserVersion, meta: metaSigOf(art),
@@ -829,6 +842,14 @@ export function makeProcessingCoordinator(store, evidence, {
     const r = parseArtifactBytes(bytes, meta);
     if (metadataDupFlag && r.ok) {
       r.qualityFlags = [...(r.qualityFlags ?? []), metadataDupFlag];
+    }
+    // TAKEOFF（03路 PROTOCOL.md §2）：语义事实投影（确定性）——列名/行聚合/文本键值 →
+    // 规则消费键（declared 级）；指令样式语句只打旗标不执行。合并进 declaredFacts 后
+    // 统一走 facts 段断言与重算事件（单一事实来源），失败时保留原始解析产物（保守）。
+    if (r.ok) {
+      const sem = projectSemanticFacts({ kind: art.kind, parseResult: r });
+      if (sem.facts.length > 0) r.declaredFacts = [...(r.declaredFacts ?? []), ...sem.facts];
+      if (sem.qualityFlags.length > 0) r.qualityFlags = [...(r.qualityFlags ?? []), ...sem.qualityFlags];
     }
     // naive_full 基线也落库解析结果（材料集 join 需要），但从不读它复用——不重用即基线
     await store.query(
@@ -1175,9 +1196,29 @@ export function makeProcessingCoordinator(store, evidence, {
       assessments[domain] = out;
     }
 
-    // 收口（Gate/提问/金额/下一步）：同输入同规则幂等复用
+    // 收口（Gate/提问/金额/下一步）：同输入同规则幂等复用；previous=当前最新既有收口
+    // （TAKEOFF 候选 v2：tendency/changeReason/previousRef 的修订语义锚，旧收口只被引用不被覆盖）
     const finId = `fin-${hash16({ t: task.tenant_id, c: task.customer_id, h: snapshot.inputHash, r: rulesetVersion })}`;
     const finExisting = (await store.query(`SELECT * FROM analysis_finalizations WHERE fin_id=$1`, [finId])).rows[0];
+    let previousFin = null;
+    if (!finExisting) {
+      previousFin = (await store.query(
+        `SELECT fin_id, input_hash, ruleset_version, watermark_generation, amount_candidate
+         FROM analysis_finalizations WHERE tenant_id=$1 AND customer_id=$2 ORDER BY created_at DESC LIMIT 1`,
+        [task.tenant_id, task.customer_id],
+      )).rows[0] ?? null;
+    }
+    const previousSummary = previousFin ? (() => {
+      const prevAmt = typeof previousFin.amount_candidate === 'string'
+        ? (() => { try { return JSON.parse(previousFin.amount_candidate); } catch { return null; } })()
+        : previousFin.amount_candidate;
+      return {
+        evaluable: prevAmt?.evaluable === true,
+        maxValue: prevAmt?.evaluable === true && Number.isFinite(prevAmt?.candidateRange?.max) ? prevAmt.candidateRange.max : null,
+        finId: previousFin.fin_id, inputHash: previousFin.input_hash,
+        inputWatermarkGeneration: previousFin.watermark_generation, rulesetVersion: previousFin.ruleset_version,
+      };
+    })() : null;
     if (!finExisting) {
       const as = assessStage({ snapshot, transaction: cfg.transaction, asOf: nowIso().slice(0, 10), rulePack: pack, domains: [], domainOverrides: Object.fromEntries(DOMAINS.map((d) => [d, { status: 'missing' }])) });
       if (!as.ok) {
@@ -1188,6 +1229,7 @@ export function makeProcessingCoordinator(store, evidence, {
       const fin = finalizeStage({
         snapshot, transaction: {}, pack: as.pack, thresholds: as.thresholds,
         assessments, ruleEvaluation: as.ruleEvaluation, derived: as.derived, projections: as.projections,
+        previous: previousSummary,
       });
       if (!fin.ok) {
         await recordStage(task, 'analyze', 'failed', { stage: 'finalize' });
@@ -1506,12 +1548,25 @@ export function makeProcessingCoordinator(store, evidence, {
     }
     const runRefs = {};
     const runDeps = {};
+    // TAKEOFF（03路）：A 当前 analysis-runs 域枚举只收四域（policy/credit/commerce/asset）；
+    // business 等 A 未扩枚举的域经配置白名单诚实跳过 A 登记（原因留痕、结果保留本地
+    // domain_analyses+收口读面，Gate 回执本身域无关已覆盖其结论）——不伪造域映射、不硬撞 400。
+    // 01路契约扩展 A 域枚举后，配置 aRegisterDomains 加 'business' 即接通，零代码变更。
+    const aDomainAllowlist = new Set(Array.isArray(cfg.aRegisterDomains) && cfg.aRegisterDomains.length > 0
+      ? cfg.aRegisterDomains : ['policy', 'credit', 'commerce', 'asset']);
     for (const domain of DOMAINS) {
       const dRow = (await store.query(
         `SELECT * FROM domain_analyses WHERE tenant_id=$1 AND customer_id=$2 AND domain=$3 ORDER BY created_at DESC LIMIT 1`,
         [task.tenant_id, task.customer_id, domain],
       )).rows[0];
       if (!dRow) continue;
+      if (!aDomainAllowlist.has(domain)) {
+        await recordStage(task, 'register_results', 'skipped', {
+          op: `run-${domain}`, reason: 'a_domain_enum_pending',
+          note: 'A analysis-runs 域枚举暂未含该域（01路契约增量待冻结）：分析结果保留本地（domain_analyses+收口读面），Gate 回执域无关已覆盖其结论；配置 aRegisterDomains 扩展后自动接通',
+        });
+        continue;
+      }
       if (finARefs.length === 0 || finUnlinked.length > 0) {
         await recordStage(task, 'register_results', 'skipped', {
           op: `run-${domain}`,
@@ -1642,7 +1697,7 @@ export function makeProcessingCoordinator(store, evidence, {
 
     await recordStage(task, 'register_results', 'done', {
       runs: Object.keys(runRefs), gate: gate.result ?? null, findings: conflicts.length,
-      note: '四域输出已按真实执行产物登记 A（运行回执/Gate 回执/冲突复核项）',
+      note: '域输出已按真实执行产物登记 A（运行回执/Gate 回执/冲突复核项；A 未扩枚举的域按 a_domain_enum_pending 跳过并留痕）',
     });
     await moveCursor(task, 'done');
     await finishTask(task, 'done');

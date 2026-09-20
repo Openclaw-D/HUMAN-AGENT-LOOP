@@ -1,11 +1,13 @@
 // goal-03d 方案·决定面板（路径五）：decision-status 权威三行语义（候选≠批准≠可用）+
 // 依据包全链——冻结（Gate 回执引用/域依赖声明/收口引用/豁免引用）、包详情（四域意见与当前性）、
-// 域结果登记（域目录角色引用真实运行，authority=none 恒定）、包绑定提案、approver 正式决定
-// （二次确认+幂等）。全部以 A 服务端裁决为准：条件未满足如实阻断，不提供绕过。
-// 任务01 修复面：内部引用（Gate 回执/分析运行/工件/依据包）由系统从客户现行材料清单与
-// 处理通道真实回执关联，业务人员只选业务对象、界面显示来源与版本；不再要求手填
-// runId/packageId/规则版本。缺真实回执时如实显示并说明（服务端同样拒绝），不生成
-// 分析完成/Gate/批准状态。手工引用仅保留为显式例外路径。
+// 域结果登记（域目录角色引用真实运行，authority=none 恒定）、评估候选登记。
+// 全部以 A 服务端裁决为准：条件未满足如实阻断，不提供绕过。
+// TAKEOFF-FA-1.0.0（02路）：按 01_TAKEOFF_CORE_AUTHORITY §4/§5 与 ADAPTATION_MAP「停用」行，
+// 正式额度/用信入口（facility.propose/approve/activate/suspend、fr.create/reserve/commit/release/disburse）
+// 已从本轮默认页面与调用路径移除（底层兼容代码保留在 A/Edge，不属本面板）；预评估确认/撤回
+// 收口在 TAKEOFF 主屏「结束」对话框（正面确认待01契约接入）。任务01 修复面保留：内部引用
+// （Gate 回执/分析运行/工件/依据包）由系统从客户现行材料清单与处理通道真实回执关联，业务人员
+// 只选业务对象；缺真实回执时如实显示并说明，不生成分析完成/Gate/批准状态。
 import { useCallback, useEffect, useState } from 'react';
 import type { WbApi } from '../../lib/workbench/use-workbench';
 import {
@@ -37,14 +39,9 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
   const dv = decisionView(snap ?? {}, fmtAmount);
   const roles = wb.session?.roles ?? [];
   const assessments = snap?.assessments ?? [];
-  const facilities = snap?.facilities ?? [];
   const sessionId = (snap?.session as { sessionId?: string } | null)?.sessionId ?? '';
   const basis = (snap?.decisionStatus as { basis?: { packageId?: string; basisVersion?: string; revision?: number } | null } | null)?.basis ?? null;
 
-  const [amountMinor, setAmountMinor] = useState('50000000');
-  const [months, setMonths] = useState('36');
-  const [frAmount, setFrAmount] = useState('100000000');
-  const [frType, setFrType] = useState('direct_leasing');
   const act = useAction();
 
   // 系统关联引用：客户现行材料清单 + 处理通道回执（Gate/运行/规则版本）。读取失败如实显示。
@@ -77,8 +74,8 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
   const [pkgErr, setPkgErr] = useState<string | null>(null);
 
   const isCredit = roles.includes('credit') || roles.includes('admin');
-  const isApprover = roles.includes('admin') || roles.includes('approver') || roles.includes('business');
-  const isBusiness = roles.includes('business') || roles.includes('credit') || roles.includes('admin');
+  // Gate/分析运行绑定来源材料；parse_extraction 是派生记录，不是额外独立证据。
+  const assessmentMaterials = (materials ?? []).filter((m) => m.kind.startsWith('material.'));
   const myDomainRoles = DOMAINS.filter((d) => roles.includes(DOMAIN_ROLE[d]));
 
   const loadExemptions = useCallback(async () => {
@@ -228,9 +225,6 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
     });
   };
 
-  const activeFacility = facilities.find((f) => f.status === 'active');
-  const facilityId = activeFacility?.facilityId ?? facilities[0]?.facilityId;
-
   return (
     <div>
       <h3 className="wb-h2">当前方案与决策状态（服务端权威 decision-status）</h3>
@@ -328,7 +322,7 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
             ))}
           </div>
         )}
-        {(isCredit || isBusiness) && <button className="wb-btn" onClick={freezePackage}>冻结依据包</button>}
+        {(roles.includes("credit") || roles.includes("business") || roles.includes("admin")) && <button className="wb-btn" onClick={freezePackage}>冻结依据包</button>}
         <details style={{ marginTop: 8 }}>
           <summary className="wb-sub">例外路径：手工引用工件 ID（仅当引用不在上方清单；普通办理不需要，服务端仍校验真实性）</summary>
           <div className="wb-row" style={{ marginTop: 6 }}>
@@ -388,8 +382,11 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
       {isCredit && (
         <div className="wb-actions" style={{ marginBottom: 8 }}>
           <button className="wb-btn small ghost" onClick={() => runAction('assessment.create', `/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/assessments`, {
-            ruleVersion: 'rules-delivery-demo',
-          }, ['创建信审评估：AI 评估将产出候选意见（authority=none），正式性仍属人。'])}>创建评估</button>
+            ruleVersion: chanRuleVersion,
+            evidenceSnapshot: assessmentMaterials.map((m) => ({ artifactId: m.artifactId })),
+          }, ['按当前规则与材料快照创建预评估，候选仅供参考。'])}
+            disabled={refsLoading || !chanRuleVersion || !gateRef.id || assessmentMaterials.length === 0}>创建评估</button>
+          {(!chanRuleVersion || !gateRef.id) && <span className="wb-sub">等待当前规则回执后创建评估。</span>}
         </div>
       )}
       {assessments.length === 0 && <p className="wb-note">暂无评估记录（事件窗口内）。</p>}
@@ -405,7 +402,7 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
             <CandidateForm
               assessmentId={String(a.assessmentId)}
               status={String(a.status ?? '')}
-              onSubmit={(tendency, amount, rationale) => runAction(
+              onSubmit={(tendency, amount, term, price, rationale) => runAction(
                 tendency === 'skip' ? 'assessment.decide' : 'assessment.candidate',
                 tendency === 'skip'
                   ? `/api/jw/v2/actions/assessments/${encodeURIComponent(String(a.assessmentId))}/submit-review`
@@ -414,6 +411,8 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
                   candidate: {
                     tendency,
                     ...(amount != null ? { supportableAmountMinor: amount } : {}),
+                    ...(term != null ? { suggestedTermMonths: term } : {}),
+                    ...(price != null ? { referencePriceMinor: price.minor, priceUnit: price.unit, priceBasis: price.basis } : {}),
                     currency: 'CNY',
                     rationale,
                     producedBy: `page:${wb.session?.principalId ?? 'credit'}(synthetic)`,
@@ -421,106 +420,23 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
                   },
                 },
                 tendency === 'skip'
-                  ? ['提交信审复核：进入送审记录。']
-                  : [`候选倾向：${tendency}`, amount != null ? `支撑金额：${fmtAmount(amount)}（未知则留空）` : '支撑金额：不填（如实未知）', '候选 authority=none（服务端强制）：正式性仍属人。'],
+                  ? ['提交信审复核：进入送审记录（正/附条件预评估确认的前置）。']
+                  : [`候选倾向：${tendency}`,
+                     amount != null ? `支撑金额：${fmtAmount(amount)}（未知则留空）` : '支撑金额：不填（如实未知）',
+                     term != null ? `建议期限：${term} 个月（融资期限，非授信有效期）` : '建议期限：不填（待评估）',
+                     price != null ? `参考价格：${fmtAmount(price.minor)} / ${price.unit}（口径：${price.basis}）` : '参考价格：不填（口径未配置，不编造利率）',
+                     '金额/期限/价格绑定同一候选版本（§13.2）；候选 authority=none（服务端强制）：正式性仍属人。'],
               )}
             />
           )}
         </div>
       ))}
 
-      <h3 className="wb-h2" style={{ marginTop: 12 }}>正式动作（有权人操作 · 二次确认 · 幂等）</h3>
-      <div className="wb-card">
-        <div className="wb-row">
-          <span className="wb-sub">角色：{roles.join('/') || '无'}（服务端权限矩阵裁决，页面不提权）</span>
-        </div>
-        {isCredit && (
-          <div className="wb-row">
-            <span>提案金额（分）：</span>
-            <input className="wb-input" style={{ width: 150 }} value={amountMinor} onChange={(e) => setAmountMinor(e.target.value)} />
-            <span>期限（月）：</span>
-            <input className="wb-input" style={{ width: 80 }} value={months} onChange={(e) => setMonths(e.target.value)} />
-            <span>依据包（系统关联）：</span>
-            <span className="wb-sub">{basisPackageId
-              ? `${basisPackageId.slice(0, 24)}…（当前依据包，修订 r${basis?.revision ?? '?'}）`
-              : '未冻结——正式提案会被服务端 BASIS_PACKAGE_REQUIRED 拒绝'}</span>
-            <button
-              className="wb-btn"
-              onClick={() => {
-                const latest = assessments[assessments.length - 1];
-                if (!latest?.assessmentId) return;
-                if (!basisPackageId) { setPkgErr('正式提案必须绑定依据包：先冻结依据包（服务端 BASIS_PACKAGE_REQUIRED 强制）。'); return; }
-                runAction('facility.propose', `/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/facilities`, {
-                  productType: 'direct_leasing',
-                  approvedAmountMinor: Number(amountMinor) || 0,
-                  currency: 'CNY',
-                  termMonths: Number(months) || undefined,
-                  assessmentId: String(latest.assessmentId),
-                  packageId: basisPackageId,
-                }, [`提案（候选）：${fmtAmount(Number(amountMinor) || 0)} / ${months} 个月`, `绑定评估：${String(latest.assessmentId).slice(0, 20)}…`, `绑定依据包：${basisPackageId.slice(0, 20)}…（系统关联当前依据包）`, '候选≠批准：需有权人正式批准。']);
-              }}
-            >提交额度提案（候选）</button>
-            {assessments.length === 0 && <span className="wb-note">提案须绑定评估：请先创建评估。</span>}
-          </div>
-        )}
-        {isApprover && facilityId && (
-          <div className="wb-actions">
-            <button className="wb-btn" onClick={() => runAction('facility.approve', `/api/jw/v2/actions/facilities/${encodeURIComponent(String(facilityId))}/approve`, {}, [`设施 ${facilityId}`, '正式批准：Gate/依据/差异由服务端机械复查，失败零写入。'])}>正式批准</button>
-            <button className="wb-btn" onClick={() => runAction('facility.activate', `/api/jw/v2/actions/facilities/${encodeURIComponent(String(facilityId))}/activate`, {}, [`设施 ${facilityId}`, '激活后客户方可实际用信。'])}>激活</button>
-            <button className="wb-btn danger" onClick={() => runAction('facility.suspend', `/api/jw/v2/actions/facilities/${encodeURIComponent(String(facilityId))}/suspend`, {}, [`设施 ${facilityId}`, '暂停新用信（存量负债不受影响）。'])}>暂停</button>
-          </div>
-        )}
-        {isBusiness && (
-          <div className="wb-row" style={{ marginTop: 8 }}>
-            <span>用信申请（分）：</span>
-            <input className="wb-input" style={{ width: 150 }} value={frAmount} onChange={(e) => setFrAmount(e.target.value)} />
-            <select className="wb-select" style={{ width: 150 }} value={frType} onChange={(e) => setFrType(e.target.value)}>
-              <option value="direct_leasing">直租</option><option value="sale_leaseback">售后回租</option>
-            </select>
-            <button
-              className="wb-btn ghost"
-              onClick={() => runAction('fr.create', `/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/financing-requests`, {
-                productType: frType,
-                amountMinor: Number(frAmount) || 0,
-                currency: 'CNY',
-              }, [`申请 ${fmtAmount(Number(frAmount) || 0)}（${frType === 'direct_leasing' ? '直租' : '售后回租'}）`])}
-            >创建用信申请</button>
-          </div>
-        )}
+      <h3 className="wb-h2" style={{ marginTop: 12 }}>正式动作（本轮范围外）</h3>
+      <div className="wb-card dim">
+        <p className="wb-note">TAKEOFF-FA-1.0.0 本轮只办理首次回租准入预评估：正式额度提案/批准/激活/暂停与用信申请（预占/承诺/出账）入口已从默认路径移除（底层兼容能力保留在服务端，不在页面提供）。本轮终点的受控结论确认（支持/附条件/不支持/行政撤回）在主屏右上「结束」对话框。</p>
         {act.node}
       </div>
-
-      <h3 className="wb-h2" style={{ marginTop: 12 }}>在途用信申请（事件窗口内，非权威清单 IR-03-4）</h3>
-      {(snap?.financingRequests ?? []).length === 0 && <p className="wb-note">无在途申请记录。</p>}
-      {(snap?.financingRequests ?? []).map((fr) => {
-        const frId = String(fr.frId ?? fr.financingRequestId ?? '');
-        const st = String(fr.status ?? '');
-        return (
-          <div key={frId} className="wb-card dim">
-            <div className="wb-row">
-              <span className="wb-badge">{frId.slice(0, 22)}</span>
-              <span>{String(fr.productType ?? '—')} · {fmtAmount(fr.amountMinor)}</span>
-              <span>状态：{st}</span>
-            </div>
-            {isBusiness && st === 'created' && (
-              <div className="wb-actions">
-                <button className="wb-btn small" onClick={() => runAction('fr.reserve', `/api/jw/v2/actions/financing-requests/${encodeURIComponent(frId)}/reserve`, {}, [`预占 ${fmtAmount(fr.amountMinor)}`, '预占受可用额与设施状态约束（INSUFFICIENT_AVAILABLE_AMOUNT/FACILITY_NOT_ACTIVE 显式拒绝）。'])}>预占额度</button>
-              </div>
-            )}
-            {isBusiness && st === 'reserved' && (
-              <div className="wb-actions">
-                <button className="wb-btn small" onClick={() => runAction('fr.commit', `/api/jw/v2/actions/financing-requests/${encodeURIComponent(frId)}/commit`, {}, [`承诺 ${fmtAmount(fr.amountMinor)}`, '承诺点机械复查：设施硬状态→未决差异→依据包当前性。'])}>承诺用信</button>
-                <button className="wb-btn small ghost" onClick={() => runAction('fr.release', `/api/jw/v2/actions/financing-requests/${encodeURIComponent(frId)}/release`, {}, [`释放预占 ${fmtAmount(fr.amountMinor)}`])}>释放预占</button>
-              </div>
-            )}
-            {isBusiness && st === 'committed' && (
-              <div className="wb-actions">
-                <button className="wb-btn small" onClick={() => runAction('fr.disburse', `/api/jw/v2/actions/financing-requests/${encodeURIComponent(frId)}/disburse`, {}, [`出账 ${fmtAmount(fr.amountMinor)}`, '出账为受控模拟（simulation_only），非真实资金。'])}>出账（模拟）</button>
-              </div>
-            )}
-          </div>
-        );
-      })}
       <WbError error={wb.error && wb.error.includes('刷新失败') ? wb.error : null} />
       <p className="wb-note">条件未满足（POLICY_PENDING/GATE_BLOCKED/STALE_BASIS/REVIEW_REQUIRED…）会以业务语言显示，绿色仅表示指定事项完成，不等于授信通过。</p>
     </div>
@@ -531,11 +447,22 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
 function CandidateForm({ assessmentId, status, onSubmit }: {
   assessmentId: string;
   status: string;
-  onSubmit: (tendency: string, amountMinor: number | null, rationale: string) => void;
+  onSubmit: (tendency: string, amountMinor: number | null, termMonths: number | null, price: { minor: number; unit: string; basis: string } | null, rationale: string) => void;
 }) {
   const [tendency, setTendency] = useState('do');
   const [amount, setAmount] = useState('');
+  const [term, setTerm] = useState('');
+  const [priceMinor, setPriceMinor] = useState('');
+  const [priceUnit, setPriceUnit] = useState('');
+  const [priceBasis, setPriceBasis] = useState('');
   const [rationale, setRationale] = useState('');
+  // §13.2：价格三字段一体——提供价格时单位与口径必填（客户端先按与 Edge 相同规则预检，不触网）。
+  const buildPrice = (): { minor: number; unit: string; basis: string } | null | 'invalid' => {
+    if (!priceMinor.trim() && !priceUnit.trim() && !priceBasis.trim()) return null;
+    const minor = Number(priceMinor);
+    if (!Number.isFinite(minor) || minor < 0 || !priceUnit.trim() || !priceBasis.trim()) return 'invalid';
+    return { minor, unit: priceUnit.trim(), basis: priceBasis.trim() };
+  };
   return (
     <div className="wb-card dim" style={{ marginTop: 6 }}>
       <div className="wb-row">
@@ -555,19 +482,37 @@ function CandidateForm({ assessmentId, status, onSubmit }: {
             <div className="wb-field" style={{ width: 180 }}><label>支撑金额（分，可空=未知）</label>
               <input className="wb-input" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="如 50000000" />
             </div>
+            <div className="wb-field" style={{ width: 120 }}><label>建议期限（月，可空）</label>
+              <input className="wb-input" value={term} onChange={(e) => setTerm(e.target.value)} placeholder="如 36" aria-label="建议期限（月）" />
+            </div>
+            <div className="wb-field" style={{ width: 150 }}><label>参考价格（数值，可空）</label>
+              <input className="wb-input" value={priceMinor} onChange={(e) => setPriceMinor(e.target.value)} placeholder="如 78000000（分）" aria-label="参考价格数值" />
+            </div>
+            <div className="wb-field" style={{ width: 110 }}><label>价格单位</label>
+              <input className="wb-input" value={priceUnit} onChange={(e) => setPriceUnit(e.target.value)} placeholder="如 元/年" aria-label="价格单位" />
+            </div>
+            <div className="wb-field" style={{ width: 160 }}><label>价格口径</label>
+              <input className="wb-input" value={priceBasis} onChange={(e) => setPriceBasis(e.target.value)} placeholder="如 固定租金口径" aria-label="价格口径" />
+            </div>
             <div className="wb-field" style={{ flex: 1 }}><label>理由（业务语言）</label>
               <input className="wb-input" value={rationale} onChange={(e) => setRationale(e.target.value)} placeholder="依据哪些材料/事实（正式性仍属人）" />
             </div>
           </div>
           <div className="wb-actions">
-            <button className="wb-btn small" disabled={!rationale.trim()} onClick={() => onSubmit(tendency, amount.trim() ? Number(amount) : null, rationale.trim())}>登记候选意见</button>
-            <button className="wb-btn small ghost" onClick={() => onSubmit('skip', null, '')}>直接提交复核</button>
+            <button className="wb-btn small" disabled={!rationale.trim()} onClick={() => {
+              const t = term.trim() ? Number(term) : null;
+              if (t != null && (!Number.isInteger(t) || t < 1 || t > 240)) { setRationale(''); return; }
+              const pr = buildPrice();
+              if (pr === 'invalid') { setRationale(''); return; }
+              onSubmit(tendency, amount.trim() ? Number(amount) : null, t, pr, rationale.trim());
+            }}>登记候选意见（同版金额/期限/价格）</button>
+            <button className="wb-btn small ghost" onClick={() => onSubmit('skip', null, null, null, '')}>直接提交复核</button>
           </div>
         </>
       )}
       {(status === 'review_pending' || status === 'candidate_ready') && (
         <div className="wb-actions">
-          <button className="wb-btn small ghost" onClick={() => onSubmit('skip', null, '')}>提交复核</button>
+          <button className="wb-btn small ghost" onClick={() => onSubmit('skip', null, null, null, '')}>提交复核</button>
         </div>
       )}
     </div>

@@ -286,7 +286,75 @@ export function corroborationNote(projection, factKey) {
   return `事实 ${factKey} 的独立来源数=${independentSourceCount(projection, factKey)}（重复内容材料只计一次）`;
 }
 
+// ---------------------------------------------------------------- 商机域（TAKEOFF-FA-1.0.0 五列扩展）
+
+/**
+ * 商机域评估（确定性）：需求与经营动向，为“首次售后回租准入”提供商机面候选意见。
+ * 边界（结构对齐全域纪律）：
+ * - 不用资料页数/材料数量提额（材料数量不是输入，只有带来源的事实条目）；
+ * - 订单/收入为 declared 级声明时如实标声明，不得当作已核验经营表现；
+ * - 未决诉讼等不利动向只作为风险线索（转核验/冲突结构），不作诚信结论。
+ */
+export function assessBusiness({ snapshot, projection, ruleEvaluation, now = () => new Date().toISOString() }) {
+  const a = emptyAssessment('business');
+  a.findingType = 'demand_trajectory';
+  const revenue = topFact(projection, 'revenue_annual_declared');
+  const newOrder = topFact(projection, 'new_order_amount_declared');
+  const litigation = topFact(projection, 'litigation_pending_declared');
+  const totalAssets = topFact(projection, 'total_assets_declared');
+  const totalLiabilities = topFact(projection, 'total_liabilities_declared');
+
+  if (revenue) {
+    a.knownFacts.push(`年收入声明 ${revenue.value}${revenue.unit ? ` ${revenue.unit}` : ''}（等级 ${revenue.verificationLevel}，来源 ${revenue.materialId}）：声明≠已核验经营表现`);
+    if (revenue.verificationLevel !== 'verified') {
+      a.unknowns.push(`收入未达 verified 级（当前 ${revenue.verificationLevel}）：经营动向判断保留为假设`);
+    }
+  } else {
+    a.unknowns.push('收入声明缺失：经营规模 unknown，不推断、不补数');
+  }
+  if (newOrder) {
+    a.knownFacts.push(`新订单金额声明 ${newOrder.value}${newOrder.unit ? ` ${newOrder.unit}` : ''}（等级 ${newOrder.verificationLevel}，来源 ${newOrder.materialId}）：需求改善线索，须以合同/回款核验为准`);
+    a.proposedActions.push({ action: 'verify_order', note: '核验订单真实性与执行前景（合同要件/买方资信/回款记录）', targetFact: 'new_order_amount_declared' });
+  } else {
+    a.unknowns.push('新订单信息缺失：需求动向 unknown');
+  }
+  if (totalAssets && totalLiabilities) {
+    a.knownFacts.push(`资产/负债声明：${totalAssets.value} / ${totalLiabilities.value}（等级 declared）：仅作规模参考，偿债判断归信审域`);
+  }
+  if (litigation && litigation.value === true) {
+    a.findingsSuspicion.push({
+      note: '存在未决诉讼声明：与经营向好线索构成方向性冲突线索（不自行裁决），转政策/信审域与人工复核',
+      evidenceRefs: [factRef(litigation)],
+    });
+    a.proposedQuestions.push({
+      questionId: 'pq-business-litigation-impact',
+      whyNeeded: '未决诉讼对经营与回租标的的可能影响未核验',
+      expectedEvidence: { kind: 'document', factKey: 'litigation_resolution_evidence', minLevel: 'source_supported' },
+      targetFact: 'litigation_resolution_evidence',
+      priority: 'high',
+      optional: false,
+      customerBurden: 'medium',
+      stopCondition: 'fact_verified:litigation_resolution_evidence',
+    });
+  }
+  // 商机域冲突保留：同键取值不一致时逐条定位，不合并
+  const businessKeys = ['revenue_annual_declared', 'new_order_amount_declared', 'litigation_pending_declared'];
+  const bizConflicts = snapshot.conflicts.filter((c) => businessKeys.includes(c.factKey));
+  a.contradictions = bizConflicts.map((c) => ({ factKey: c.factKey, values: c.values }));
+  if (revenue === null && newOrder === null && litigation === null) {
+    a.unknowns.push('无商机面材料：需求/订单/涉诉全部未知（首次回租需求合理性暂不可评）');
+  }
+  a.summary = `商机域意见（候选）：收入${revenue ? `声明 ${revenue.verificationLevel} 级` : '未知'}、订单${newOrder ? '有声明线索' : '未知'}、涉诉${litigation ? (litigation.value === true ? '有未决声明（待核验）' : '声明为无') : '未知'}；材料数量不参与判断`;
+  a.evidenceRefs = [revenue, newOrder, litigation, totalAssets, totalLiabilities].filter(Boolean).map(factRef);
+  const rulesetVersion = ruleEvaluation?.rulesetVersion ?? 'none';
+  const run = baseRun({ domain: 'business', snapshot, rulesetVersion, now });
+  const v = validateDomainAnalysis({ analysisRun: run, assessment: a }, snapshot);
+  if (!v.ok) return { ok: false, reasons: v.reasons };
+  return { ok: true, analysisRun: run, assessment: a };
+}
+
 export const ASSESSORS = Object.freeze({
+  business: assessBusiness,
   policy: assessPolicy,
   credit: assessCredit,
   commerce: assessCommerce,

@@ -1,5 +1,5 @@
 {
-  "runAt": "2026-09-19T16:23:16.654Z",
+  "runAt": "2026-09-19T23:38:25.826Z",
   "design": {
     "experimentType": "feature_ablation（功能消融）——不是\"多 Agent vs 单 Agent\"的因果实验",
     "arms": "single-assistant+rules（刻意移除冲突保留/域完成性/内容去重）vs four-domain+same-rules",
@@ -58,7 +58,7 @@
       "fourQuestions": 0,
       "singleQuestions": 0,
       "divergent": false,
-      "durationMs": 4
+      "durationMs": 5
     },
     {
       "caseId": "S13-caliber-same-value-not-conflict-heldout",
@@ -102,7 +102,7 @@
       "fourQuestions": 0,
       "singleQuestions": 0,
       "divergent": true,
-      "durationMs": 2
+      "durationMs": 1
     },
     {
       "caseId": "S25-txn-financial-leasing-block-heldout",
@@ -135,7 +135,7 @@
       "fourQuestions": 0,
       "singleQuestions": 0,
       "divergent": false,
-      "durationMs": 1
+      "durationMs": 2
     },
     {
       "caseId": "S32-neg-correction-reuploaded-heldout",
@@ -146,7 +146,7 @@
       "fourQuestions": 0,
       "singleQuestions": 0,
       "divergent": false,
-      "durationMs": 1
+      "durationMs": 2
     },
     {
       "caseId": "S34-weak-video-unsupported-modality-heldout",

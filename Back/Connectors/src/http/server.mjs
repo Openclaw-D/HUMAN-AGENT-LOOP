@@ -410,6 +410,34 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
         if (!t) throw new ConnError('NOT_FOUND', `task ${taskId}`);
         return json(res, 200, { ok: true, task: t });
       }
+      // ---- TAKEOFF（03路 PROTOCOL.md §7）：当前收口读面（Gate/提问计划/金额候选 v2/下一步）----
+      // authority=none 投影，非正式授信语义；tenant+customer 维度强制（跨客户查询=404 不泄露存在性）。
+      if (route === 'GET /api/connectors/analysis/finalization') {
+        if (!svc.processing) throw new ConnError('INTERNAL', 'processing not wired');
+        const cid = url.searchParams.get('cid');
+        if (!tid || !cid) throw new ConnError('INVALID_INPUT', 'tid（tenantId）与 cid（customerId）必填');
+        const row = (await svc.store.query(
+          `SELECT fin_id, tenant_id, customer_id, input_hash, ruleset_version, watermark_generation,
+                  gate, question_plan, amount_candidate, next_step, artifact_refs, created_at
+           FROM analysis_finalizations WHERE tenant_id=$1 AND customer_id=$2
+           ORDER BY created_at DESC LIMIT 1`,
+          [tid, cid],
+        )).rows[0];
+        if (!row) return json(res, 404, { ok: false, error: 'NO_FINALIZATION', note: '该客户暂无分析收口（未上传/未解析/未分析）' });
+        const j = (v) => { try { return typeof v === 'string' ? JSON.parse(v) : v; } catch { return v; } };
+        return json(res, 200, {
+          ok: true,
+          finalization: {
+            finId: row.fin_id, tenantId: row.tenant_id, customerId: row.customer_id,
+            inputHash: row.input_hash, rulesetVersion: row.ruleset_version,
+            watermarkGeneration: row.watermark_generation,
+            gate: j(row.gate), questionPlan: j(row.question_plan),
+            amountCandidate: j(row.amount_candidate), nextStep: j(row.next_step),
+            artifactRefs: j(row.artifact_refs), createdAt: row.created_at,
+            authority: 'none', scope: 'preassessment_candidate_only',
+          },
+        });
+      }
       if (route === 'POST /api/connectors/processing/pause') {
         if (!svc.processing) throw new ConnError('INTERNAL', 'processing not wired');
         const b = JSON.parse(body);

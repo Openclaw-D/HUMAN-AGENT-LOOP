@@ -8,7 +8,9 @@ import { stableStringify } from './util.mjs';
 
 export const MODALITIES = Object.freeze(['text', 'image', 'audio', 'video']);
 
-/** 材料种类 → 处理所需最低模态。 */
+/** 材料种类 → 处理所需最低模态。
+ *  TAKEOFF-FA-1.0.0（03路 PROTOCOL.md §1）：首次准入材料 kind 并入模态映射（加法）。
+ *  ownership_document 为扫描/图片类（需 image 模态）；其余新增 kind 为文本类。 */
 export const MATERIAL_MODALITY = Object.freeze({
   document: 'text',
   transcript: 'text',
@@ -17,6 +19,12 @@ export const MATERIAL_MODALITY = Object.freeze({
   image: 'image',
   video: 'video',
   audio: 'audio',
+  legal_document: 'text',
+  financial_statement: 'text',
+  equipment_list: 'text',
+  ownership_document: 'image',
+  order_contract: 'text',
+  litigation_document: 'text',
 });
 
 let seq = 0;

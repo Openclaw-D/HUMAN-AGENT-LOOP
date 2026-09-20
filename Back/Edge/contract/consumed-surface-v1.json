@@ -361,13 +361,14 @@
     "directory": "GET /api/jw/v2/customers → 前向探测 A GET /api/v2/customers（IR-03-1）；上游未实现 → 501 UPSTREAM_DIRECTORY_NOT_AVAILABLE+interfaceRequest，不伪造目录",
     "workbenchReads": "GET /api/jw/v2/{customers/:id/artifacts|customers/:id/reports|reports/:id|assessments/:id|facilities/:id|financing-requests/:id(/use-readiness)|decision-packages/:id|findings/:id|inspections/:id(/snapshot|/next-actions|/summary)} → 白名单只读透传（会话必需，A 逐请求裁决；上游 4xx/5xx 原样透传；网络未知 502）",
     "originals": "POST /api/jw/v2/actions/customers/:id/originals {requestId,kind?,factKey?,materialMeta?,objectRef?,file:{name,mime?,dataBase64}} → Edge 转换为工件登记（content.materialFile 信封 ≤512KB，IR-03-3 临时约定 v0）；校验失败 400 FILE_*，requestId 语义不变",
-    "workspace": "GET /api/jw/v2/customers/:id/workspace → {ok, customerId, principalId, snapshot:{customer,facilities,financingRequests,assessments,decisionStatus,findings,objectInventory,refsSource,refsExhaustive,totalsMinor,openItems,session?}, snapshotVersion(字符串seq), eventCursor, eventWindow, projection.freshness, source:'kernel'|'fixture'}（session 块来自该客户当前检查会话，上游不可用时缺省并在 projection.notes 说明；freshness 逐组件独立，无 all_ok）（goal-03：assessments/financing-requests 明细在本身份桶内缓存，事件引用该 id 或 TTL 过期即权威重取；命中时 projection.freshness[label].cached=true；同 (客户×身份×凭据) 在途 workspace 请求合并，只在途、不跨授权/版本）",
+    "workspace": "GET /api/jw/v2/customers/:id/workspace → {ok, customerId, principalId, snapshot:{customer,facilities,financingRequests,assessments,decisionStatus,findings,objectInventory,refsSource,refsExhaustive,totalsMinor,openItems,admission,session?}, snapshotVersion(字符串seq), eventCursor, eventWindow, projection.freshness, source:'kernel'|'fixture'}（session 块来自该客户当前检查会话，上游不可用时缺省并在 projection.notes 说明；freshness 逐组件独立，无 all_ok）（goal-03：assessments/financing-requests 明细在本身份桶内缓存，事件引用该 id 或 TTL 过期即权威重取；命中时 projection.freshness[label].cached=true；同 (客户×身份×凭据) 在途 workspace 请求合并，只在途、不跨授权/版本）",
     "events": "GET /api/jw/v2/customers/:id/events → SSE（event: cursor|business|resync|auth）；至少一次，客户端按 eventId 去重；Edge 进程重启后旧游标 → resync；凭据被拒/会话过期 → auth 帧后终止（C1.2）；慢客户端超 writableLength 上限 → resync 后断开；goal-03 补强：对本桶曾成功读取的客户，轮询中出现上游 404（A 越权/撤权统一 404，不泄露存在性）视同撤权信号 → auth 帧（code=CUSTOMER_ACCESS_REVOKED）后终止并销桶，不给旧订阅静默失联",
     "eventsPage": "GET /api/jw/v2/customers/:id/events-page?afterSeq=&limit= → A 分页直读（逐请求凭据鉴权；live 专用，fixture 501 NOT_SUPPORTED）",
     "actions": "POST /api/jw/v2/actions/** 白名单（v1 goals/projects + v2 credit 面）；requestId 必带；上游未知 502 UPSTREAM_UNKNOWN",
     "messages": "POST /api/jw/v2/customers/:id/messages（audience=customer|internal；内部外发默认 403 AUDIENCE_MISMATCH，显式 confirmExternalSend 还须通过 messages:external-send 权限点——默认拒绝、--external-send-roles 显式授予；live 模式先以会话凭据校验目标客户可读，防错 customerId；requestId 同载荷重放 replayed:true、异载荷 409 REQUEST_ID_CONFLICT）",
     "sameOriginFront": "--serve-front <dir>（goal-03 C3，默认关）：Edge 同源托管前端构建产物（'/' 与未知非资源路径 SPA 回退 index.html）；CSP connect-src 'self' 不放宽；API 命名空间 404 不被遮蔽；harness 路由优先",
-    "redeem": "POST /api/jw/v2/invitations/redeem {code, requestId?} → 匿名透传 A（无会话必需，CSRF 守卫内）；成功后凭据指纹进入本实例兑换登记（live 校验=静态目录∪兑换登记，均须过 A 探针）——A 撤权级联后即刻 401/403 终态"
+    "redeem": "POST /api/jw/v2/invitations/redeem {code, requestId?} → 匿名透传 A（无会话必需，CSRF 守卫内）；成功后凭据指纹进入本实例兑换登记（live 校验=静态目录∪兑换登记，均须过 A 探针）——A 撤权级联后即刻 401/403 终态",
+    "takeoff": "TAKEOFF-FA-1.0.0（A CONTRACT §13 / 03路 PROTOCOL v1.0）：①POST /api/jw/v2/actions/assessments/:id/confirm-preassessment → A §13.1 独立预评估确认（scope=preassessment_only；不触额度/融资/敞口；鉴权/门序/幂等由 A 裁决）；行政撤回沿用 decide=withdraw_assessment。②GET /api/jw/v2/assessments/:id/candidates → A §13.3 候选修订历史（内部读）。③workspace.snapshot.admission：Edge 侧二十格准入投影（01契约 §7：分母未知=null、本投影不产生100%绿、霜冻仅投影；kind→域映射=03 PROTOCOL §1 冻结面）。④GET /api/jw/v2/connectors/analysis/finalization?tid&cid → 03收口读面（amountCandidate v2/gaps/frozen/nextStep；cid/tid 映射 customerId/tenantId，逐客户校验）。⑤assessments 读回含 §13.2 加法字段 inputVersion/candidateRevision/preassessment{needsReview}。⑥POST /api/jw/v2/actions/assessments/:id/admission-request → A §13.5 首次回租需求登记/修正（评估级客户表述，绝不写 financing_requests；绑定 assessmentVersion 乐观锁；与 candidate/submit-review/decide 同白名单条目）。"
   },
   "roleMatrix": {
     "nineRoles": [
@@ -396,7 +397,7 @@
     "realDisbursement": "simulation_only（受控模拟回执）",
     "replayTrainingNamespace": "not_wired（回放/训练命名空间本轮未建；对外不可用时以明确标记的录制回放讲解，不计实时验收）"
   },
-  "revision": "t4-r2-1（2026-09-19 board-round-02 任务04）：通道面新增 receipts 只读对账与 customers/link 受控登记两路由（消费任务02 已落地上游）；可信调用上下文=转发附加 x-jw-actor-principal/roles + 6 人工动作 actorField 会话覆写（防浏览器伪造 actor 经网关流入审计）；discipline 不变",
+  "revision": "t4-r2-1（2026-09-19 board-round-02 任务04）：通道面新增 receipts 只读对账与 customers/link 受控登记两路由（消费任务02 已落地上游）；可信调用上下文=转发附加 x-jw-actor-principal/roles + 6 人工动作 actorField 会话覆写（防浏览器伪造 actor 经网关流入审计）；discipline 不变+takeoff-fa-1.0.0-edge-wiring(2026-09-20)",
   "upstreamChannel": {
     "baseUrl": "--connectors-url（部署配置；本轮 http://127.0.0.1:17937）",
     "auth": "X-Service-Token（--connectors-token-file / JW_CONNECTORS_TOKEN；仅服务端内存）",

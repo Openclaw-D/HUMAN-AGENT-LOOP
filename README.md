@@ -1,3 +1,7 @@
+> 2026-09-20 当前最高产品基线：`docs/takeoff/first-admission-v1/01_TAKEOFF_CORE_AUTHORITY.md`，版本 **TAKEOFF-FA-1.0.0**。仅做新客户首次回租准入与客户授信预评估，终点为有权人员确认预评估结论；不做正式额度批准、提款、复贷、租后、结清。客户为主对象，五列四行矩阵＋右侧六助手按02文件实施；资产为准入资产核验，可与信审并行。以下旧全生命周期、项目主对象、不以矩阵为主界面及额度使用率等冲突产品方向均被本版替代，仅作历史。安全、权限、凭据、Git和资源保护纪律继续有效。
+>
+> 接续顺序：先读 `docs/takeoff/first-admission-v1/00_START_HERE.md`；当前盘点与实施入口见同目录 `CURRENT_STATE.md`、`ADAPTATION_MAP.md`、`IMPLEMENTATION_PROMPTS.md`。旧任务书不自动恢复执行。本轮文档对齐不等于代码完成或产品验收通过。
+
 > 2026-09-20：现同步冻结中的开发源码、测试、迁移、前端构建及文字交付记录，作为后续精简前的恢复点。最新状态见[CURRENT_STATE](docs/codex-handoff/CURRENT_STATE.md)。未宣称完整验收通过；下文仅文档同步说明属于上一提交历史。
 
 > 2026-09-19 最新冻结：业务视角横屏二维作业看板，明确不做3D/全国地图/办公室/手柄/游戏化，不以表格为主界面。此前见微世界与多输入要求在本轮范围中被替代，历史原型保留但停止投入。复用真实工作本，单项目商机→尽调→政策→信审→商务→资产至结清，依赖可并行不强制流水线。最新复核与四路接续任务见 docs/codex-handoff/board-round-02/REVIEW.md。
@@ -10,13 +14,23 @@
 
 > 当前已有真实客户工作本、客户门户与 Edge/A/Connectors 接线代码，另保留本地训练演示。**D27-L-UI 页面旅程仍未整体通过，不能宣称完整交付或生产可用。** 当前北极星与执行入口见 [北极星](docs/codex-handoff/NORTH_STAR.md)、[当前状态](docs/codex-handoff/CURRENT_STATE.md)、[下一步](docs/codex-handoff/NEXT_ACTION.md)。
 
-## 想先看演示？
+## 当前 TAKEOFF 演示入口
+
+本轮为 **TAKEOFF-FA-1.0.0**：新客户首次回租准入与授信预评估，终点是有权人员确认预评估结论。采用轻量二维矩阵；不产生正式额度、融资申请或敞口。当前状态及独立复核见 [发布复核](docs/takeoff/first-admission-v1/CODEX_RELEASE_REVIEW.md)。
+
+需要 Node.js 22.23.1+、Docker，以及 `Back/A`、`Back/Connectors` 的 npm 依赖（分别执行 `npm ci`）。首次配置将 `Back/Edge/config/takeoff-runtime.example.json` 复制为同目录 `takeoff-runtime.json`；已有本地配置请保留。示例仅供合成演示，含公开测试身份，不能作为生产配置。
+
+在 `Back/Edge` 执行 `node scripts/takeoff-up.mjs --serve-front Front/dist`，就绪后访问 **http://127.0.0.1:48214/**。停止使用同目录 `node scripts/takeoff-down.mjs`，保留数据库。已有服务占用端口时应先核对归属。页面操作顺序见 [演示脚本](docs/takeoff/first-admission-v1/implementation/04/DEMO_SCRIPT.md)。这是本机入口；内网共享部署尚未验收。
+
+助手当前为确定性简报；真实模型及 Jev 未启用。需求登记已有 API，页面录入尚缺，完整新客户全页面办理尚未验收。
+
+## 仅预览前端（不构成可办理的完整演示）
 
 1. 下载/克隆本仓库，先完整解压。Windows电脑需要安装 **Node.js 22.23.1或更新的22.x版本**；已有则无需重复安装。
 2. 双击根目录 **`Start-JW.cmd`**，浏览器会打开 `http://127.0.0.1:3618/`。
 3. 保持启动窗口开启，结束时按 `Ctrl+C` 或关闭窗口。
 
-**不用先运行npm install，也不用安装Docker才能看前端。** 仓库已经包含 `Front/dist` 构建结果。不要直接双击其中的index.html；启动入口会提供所需的本地HTTP服务。端口被占用时会提示，不会关闭其他程序。
+仓库已经包含 `Front/dist` 构建结果，此入口只启动静态 HTTP 服务；登录、客户资料和办理需要上面的完整 TAKEOFF 服务。不要直接双击其中的index.html。端口被占用时会提示，不会关闭其他程序。
 
 macOS/Linux或希望使用命令行：`node Front/start-preview.mjs --no-open`，再打开上述地址。演示中的案例、对话和状态均为合成模拟，启动入口不会连接真实模型、调用付费API或启动后端。
 

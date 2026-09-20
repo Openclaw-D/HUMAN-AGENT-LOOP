@@ -1,0 +1,38 @@
+[
+  {
+    "path": "PR-TEST.md",
+    "backup": "C:\\Users\\22673\\Desktop\\JW-recovery\\TAKEOFF-FA-1.0.0-20260920-022115\\PR-TEST.md",
+    "sha256": "C1EE3BFAD6C50EBCD3BBCFEBAFA0A51E012155ACB7DC368484D0BA874682C705",
+    "action": "removed"
+  },
+  {
+    "path": ".run-t4-quiet-watch.sh",
+    "backup": "C:\\Users\\22673\\Desktop\\JW-recovery\\TAKEOFF-FA-1.0.0-20260920-022115\\.run-t4-quiet-watch.sh",
+    "sha256": "A7AC2BB3AFEDF62C0A6C86767A298C4896EA61B46FAAA5EB3963900630BAFF5E",
+    "action": "removed"
+  },
+  {
+    "path": "HANDOFF.md",
+    "backup": "C:\\Users\\22673\\Desktop\\JW-recovery\\TAKEOFF-FA-1.0.0-20260920-022115\\HANDOFF.md",
+    "sha256": "6DECE8917579002F6E982D8CAD2AFC6B58CB01AB4B89B44CC03BEF5FB5948631",
+    "action": "entry_replaced"
+  },
+  {
+    "path": "ROADMAP.md",
+    "backup": "C:\\Users\\22673\\Desktop\\JW-recovery\\TAKEOFF-FA-1.0.0-20260920-022115\\ROADMAP.md",
+    "sha256": "19AC6B6DA5479FB50D3070B77E37259B07CC06DD15FB724D8A4F5F46572F596E",
+    "action": "entry_replaced"
+  },
+  {
+    "path": "docs/codex-handoff/NORTH_STAR.md",
+    "backup": "C:\\Users\\22673\\Desktop\\JW-recovery\\TAKEOFF-FA-1.0.0-20260920-022115\\docs\\codex-handoff\\NORTH_STAR.md",
+    "sha256": "78D3D48D113F36458E1242A23878F012E836F8C11DA17021DD59BA2991152C1E",
+    "action": "entry_replaced"
+  },
+  {
+    "path": "docs/codex-handoff/NEXT_ACTION.md",
+    "backup": "C:\\Users\\22673\\Desktop\\JW-recovery\\TAKEOFF-FA-1.0.0-20260920-022115\\docs\\codex-handoff\\NEXT_ACTION.md",
+    "sha256": "DA97705CAE6A7AE9F2A72E31042315D8D42060925266094009DC939E4F1919E9",
+    "action": "entry_replaced"
+  }
+]

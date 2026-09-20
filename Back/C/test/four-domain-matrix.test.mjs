@@ -84,7 +84,7 @@ test('C12: 分析引用包外规则 → unsupported，不激活', () => {
   const p = runFourDomainPipeline({ tenantId: 't', customerId: 'c', materials: BASE, transaction: TXN, asOf: '2026-09-16', rulePack: pack });
   const fake = { ...p.analyses.policy.assessment, ruleRefs: ['INVENTED-COMPANY-RULE-1'] };
   const g = evaluateGate({
-    domainAnalyses: { policy: { analysisRun: p.analyses.policy.analysisRun, assessment: fake }, credit: p.analyses.credit, commerce: p.analyses.commerce, asset: p.analyses.asset },
+    domainAnalyses: { business: p.analyses.business, policy: { analysisRun: p.analyses.policy.analysisRun, assessment: fake }, credit: p.analyses.credit, commerce: p.analyses.commerce, asset: p.analyses.asset },
     ruleEvaluation: evaluateRules({ pack, projection: p.projections.policy, asOf: '2026-09-16', transaction: TXN }),
     transaction: TXN,
   });

@@ -1,6 +1,8 @@
-// 任务 03 · 四域评估流水线（确定性编排；E1：四域用同一可追溯输入产出候选，Gate 与正式权威分离）。
-// 编排序：共享感知快照 → 四域投影 → 派生事实（覆盖率等，等级取输入最低）→ 规则评估 →
-//          四域评估 → Gate 汇总 → 提问计划 → 金额候选 → 单一下一步。
+// 任务 03 · 域评估流水线（确定性编排；E1：各域用同一可追溯输入产出候选，Gate 与正式权威分离）。
+// TAKEOFF-FA-1.0.0（03路）：五域=商机/政策/信审/商务/资产；旧 runFourDomainPipeline 导出名保留
+// 为兼容别名（四域 ⊂ 五域，行为为加法扩展）。
+// 编排序：共享感知快照 → 域投影 → 派生事实（覆盖率等，等级取输入最低）→ 规则评估 →
+//          域评估 → Gate 汇总 → 提问计划 → 金额候选 → 单一下一步。
 // 单助手对照模式（任务书 §8）：同一规则包，单遍评估——不做跨来源冲突保留/域完成性/
 // 质量传播，用于最小可证伪对照实验；两臂均为确定性实现，比较的是管线设计差异，不是模型质量。
 
@@ -15,6 +17,7 @@ import { planQuestions } from '../questions/planner.mjs';
 import { computeAmountCandidate } from '../amount/candidate.mjs';
 import { coordinateNextStep } from '../coordination/next-step.mjs';
 import { stableHash } from './util.mjs';
+import { DOMAINS } from './schema.mjs';
 
 const PROVIDER = Object.freeze({ providerMode: 'simulation', modelVersion: 'deterministic-extractor@0.3' });
 const ASSET_CONFLICT_KEYS = ['equipment_deal_amount', 'equipment_model', 'nameplate_serial'];
@@ -150,7 +153,7 @@ export function perceptionStage({ tenantId, customerId, materials, rulePack, reg
 export function assessStage({
   snapshot, transaction = {}, asOf, rulePack,
   domainOverrides = {},
-  domains = ['policy', 'credit', 'commerce', 'asset'],
+  domains = [...DOMAINS],
   packOverrides = null,
   now = () => new Date().toISOString(),
 }) {
@@ -161,7 +164,7 @@ export function assessStage({
 
   const projections = {};
   const analyses = {};
-  for (const domain of ['policy', 'credit', 'commerce', 'asset']) {
+  for (const domain of DOMAINS) {
     const pr = projectForDomain(snapshot, domain);
     projections[domain] = pr.projection;
     const ov = domainOverrides[domain];
@@ -175,6 +178,7 @@ export function assessStage({
   });
 
   const evalInputs = {
+    business: { snapshot, projection: projections.business, ruleEvaluation, now },
     policy: { snapshot, projection: projections.policy, ruleEvaluation, now },
     credit: { snapshot, projection: projections.credit, thresholds, now, coverageRuleApplied: ruleEvaluation.results.find((x) => x.ruleId === 'SIM-CASH-COVERAGE-01')?.scopeApplied === true },
     commerce: { snapshot, projection: projections.commerce, thresholds, now },
@@ -199,6 +203,9 @@ export function finalizeStage({
   assessments, ruleEvaluation, derived = {}, projections,
   amountModelConfigured = true,
   approvedAmount = null,
+  previous = null,
+  materialIds = [],
+  runRefs = {},
   now = () => new Date().toISOString(),
 }) {
   const gate = evaluateGate({ domainAnalyses: assessments, ruleEvaluation, transaction, now });
@@ -224,6 +231,9 @@ export function finalizeStage({
   }
 
   const { best } = projectionFacts(projections.credit);
+  // TAKEOFF（03路）：期限/价格口径来自规则包合成配置（缺配置=null+缺口，不编数）；
+  // 冻结态来自 Gate（HOLD_FOR_REVIEW/HARD_BLOCK → frozen）；previous/materialIds/runRefs 由调用方传入
+  // （修订语义：同版协议锚与变更理由，旧运行不能覆盖新版本由收口键保证）。
   const amountCandidate = computeAmountCandidate({
     productCap: pack.productCap,
     amountModelConfigured,
@@ -237,6 +247,14 @@ export function finalizeStage({
     thresholds,
     inputWatermark: snapshot.watermark,
     rulesetVersion: ruleEvaluation.rulesetVersion,
+    termPolicy: pack.termPolicy ?? null,
+    pricePolicy: pack.pricePolicy ?? null,
+    assetCapPolicy: pack.assetCapPolicy ?? null,
+    assetValue: best('equipment_net_book_value_total'),
+    gate: gate ?? null,
+    previous,
+    materialIds,
+    runRefs,
   });
 
   const nextStep = coordinateNextStep({ domainAnalyses: assessments, gate, questionPlan, amountCandidate });
@@ -255,6 +273,7 @@ export function runFourDomainPipeline({
   packOverrides = null,
   amountModelConfigured = true,
   approvedAmount = null,
+  previous = null,
   registry = null,
   now = () => new Date().toISOString(),
 }) {
@@ -268,7 +287,7 @@ export function runFourDomainPipeline({
   const fin = finalizeStage({
     snapshot, transaction, pack: as.pack, thresholds: as.thresholds,
     assessments: as.analyses, ruleEvaluation: as.ruleEvaluation, derived: as.derived,
-    projections: as.projections, amountModelConfigured, approvedAmount, now,
+    projections: as.projections, amountModelConfigured, approvedAmount, previous, now,
   });
   if (!fin.ok) return fin;
 
@@ -279,6 +298,29 @@ export function runFourDomainPipeline({
     pipelineVersion: 'four-domain-pipeline@1',
     pipelineFingerprint: stableHash({ rulePack: as.pack.version, thresholds: as.thresholds.versions }),
   };
+}
+
+/**
+ * TAKEOFF-FA-1.0.0（03路）五域管线：与 runFourDomainPipeline 同一实现（域表已是五域），
+ * 仅以显式名称与版本号如实标注五域消费面；旧导出名保留为兼容别名。
+ */
+export function runFiveDomainPipeline({
+  tenantId, customerId, materials, transaction = {}, asOf,
+  rulePack,
+  domainOverrides = {},
+  packOverrides = null,
+  amountModelConfigured = true,
+  approvedAmount = null,
+  previous = null,
+  registry = null,
+  now = () => new Date().toISOString(),
+} = {}) {
+  const r = runFourDomainPipeline({
+    tenantId, customerId, materials, transaction, asOf, rulePack,
+    domainOverrides, packOverrides, amountModelConfigured, approvedAmount, previous, registry, now,
+  });
+  if (r.ok) return { ...r, pipelineVersion: 'five-domain-pipeline@1' };
+  return r;
 }
 
 /**

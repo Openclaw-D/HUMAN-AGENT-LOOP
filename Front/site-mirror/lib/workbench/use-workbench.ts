@@ -1,5 +1,5 @@
 // goal-03c 客户工作本·React hook：登录会话生命周期 + 客户打开/切换 + 快照/事件。
-// 复用 use-edge-live 的纪律（代际守卫/终态不复活/事件去重/退避重连），但连接流不同：
+// 连接纪律（代际守卫/终态不复活/事件去重/退避重连，自 v5 线沿用；原 use-edge-live 已随训练分支退休）：
 // 先登录（会话先于客户），后打开客户；切换客户不换会话。动作类操作由面板直接调 client，
 // 未知结果（502）的对账入口统一在结果面板（requestId 查询），hook 不代重发业务命令。
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';

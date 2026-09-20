@@ -19,6 +19,7 @@ const files = [
   'parse-adapters.test.mjs',
   'parse-adapters-v2.test.mjs',
   'eval-discipline.test.mjs',
+  'takeoff-five-domain.test.mjs',
 ].map((f) => path.join(here, f));
 
 const only = process.argv.slice(2);

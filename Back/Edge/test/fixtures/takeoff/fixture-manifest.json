@@ -1,0 +1,100 @@
+{
+  "note": "TAKEOFF-FA-1.0.0 路04 验收夹具。全部合成。kind 词表已按03路 PROTOCOL v1.1 §1 冻结面核对一致。PDF 生成器于 2026-09-20 修复 DEF-03-01（UTF-8 文本层，中文可提取，03路探针实测通过）后重新生成。",
+  "syntheticCustomer": {
+    "displayName": "恒锐精密机械制造（合成测试）有限公司",
+    "legalEntityRef": "SYNTHETIC-HRJM-2026-001",
+    "profile": "小微制造业新客户，首次售后回租需求；全部数字为测试值，不代表任何机构制度或真实报价。"
+  },
+  "materials": [
+    {
+      "file": "N1-business-license.pdf",
+      "mime": "application/pdf",
+      "kind": "legal_document",
+      "label": "主体资料：营业执照副本（合成）",
+      "sha256": "270869cec8fbcf2f95091cf16dba1ba7c5f780cd186bc67b31de857388a504c1",
+      "bytes": 1113
+    },
+    {
+      "file": "N2-balance-sheet.csv",
+      "mime": "text/csv",
+      "kind": "financial_statement",
+      "label": "经营/负债资料：近两年资产负债简表（合成）",
+      "sha256": "cb07613d99c503ceaedb79bdbc98240ae1e89ef0e3264392c9821350a7895b80",
+      "bytes": 185
+    },
+    {
+      "file": "N3-equipment-list.csv",
+      "mime": "text/csv",
+      "kind": "equipment_list",
+      "label": "设备范围：拟回租设备清单 v1（合成；净值待C1纠正下调）",
+      "sha256": "8846554c17cadd5cb2335e0e8fc40b6ebd8f52e920e95789e4864ec0075f9f6e",
+      "bytes": 307
+    },
+    {
+      "file": "N4-ownership-invoice.png",
+      "mime": "image/png",
+      "kind": "ownership_document",
+      "label": "权属支持：设备购置发票扫描样张（合成纯色图，无法可靠解析→转人工）",
+      "sha256": "750f1bf4e9bdb1750123b652d9e0fa53ff9b333acdf620721bec7081395d75ba",
+      "bytes": 179
+    },
+    {
+      "file": "N5-entity-identity-license.png",
+      "mime": "image/png",
+      "kind": "legal_document",
+      "label": "主体身份：执照扫描样张（合成纯色图，无法可靠解析→转人工；verified 级唯一来源=人工转录+核验）",
+      "sha256": "08c6232ac2a27786772e2aa4351992e7cf04f26a7cf9c47346cdb414ef4998aa",
+      "bytes": 179
+    },
+    {
+      "file": "P1-new-order-contract.pdf",
+      "mime": "application/pdf",
+      "kind": "order_contract",
+      "label": "改善证据：新签订单合同（合成；支持候选上调）",
+      "sha256": "95a52972b6ebdb5e5118a3ea98954ff522590122571076b6987c02ae918b3230",
+      "bytes": 1140
+    },
+    {
+      "file": "A1-litigation-notice.pdf",
+      "mime": "application/pdf",
+      "kind": "litigation_document",
+      "label": "不利/冲突证据：未决诉讼通知（合成；与经营向好证据冲突→T06冻结）",
+      "sha256": "c5d795d60db309f78373b8e06296f2d77578794c7bddaa5555440fb54aeff4ed",
+      "bytes": 1076
+    },
+    {
+      "file": "A2-litigation-withdrawal.pdf",
+      "mime": "application/pdf",
+      "kind": "litigation_document",
+      "label": "解除证据：法院准予撤诉裁定（合成；supersedes A1；T06 解除须有新有效依据，不一键豁免）",
+      "sha256": "3957402e8f455cbf47e28ac1f6912a8ed6476e9728196b1797b2e8090cd3c024",
+      "bytes": 1087
+    },
+    {
+      "file": "D1-ownership-invoice-copy.png",
+      "mime": "image/png",
+      "kind": "ownership_document",
+      "label": "重复材料：与N4同字节不同文件名（T05：重复不增加证明力）",
+      "sha256": "750f1bf4e9bdb1750123b652d9e0fa53ff9b333acdf620721bec7081395d75ba",
+      "bytes": 179
+    },
+    {
+      "file": "C1-equipment-list-v2.csv",
+      "mime": "text/csv",
+      "kind": "equipment_list",
+      "label": "纠正材料：设备清单 v2（净值下调；supersedes N3；T04可减/T08新旧竞争）",
+      "sha256": "384333ed66ad9d766a4bb0514be55ea060f36685958d7f8428218fbf93a8a628",
+      "bytes": 448
+    }
+  ],
+  "injectionOrder": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "P1",
+    "A1",
+    "D1",
+    "C1"
+  ]
+}

@@ -517,9 +517,13 @@ function convertSerialDates(rows, headMap) {
 // ---------------------------------------------------------------------------
 
 function decodePdfLiteral(s) {
-  return s
+  const unescaped = s
     .replace(/\\([nrtbf()\\])/g, (_, c) => ({ n: '\n', r: '\r', t: '\t', b: '\b', f: '\f' }[c] ?? c))
     .replace(/\\([0-7]{1,3})/g, (_, o) => String.fromCharCode(parseInt(o, 8)));
+  // 内容流经 latin1 读取：多字节 UTF-8 文本（中文业务材料）须按字节还原；
+  // 还原出现 U+FFFD 视为非 UTF-8（PDFDocEncoding 扩展段）：保原始 latin1，不猜。
+  const utf8 = Buffer.from(unescaped, 'latin1').toString('utf8');
+  return utf8.includes('\uFFFD') ? unescaped : utf8;
 }
 
 function decodePdfHexString(s) {

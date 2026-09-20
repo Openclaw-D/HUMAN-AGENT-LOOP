@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { makeStore } from './store/pg.mjs';
 import { migrate } from './store/pg.mjs';
 import { makeFsObjectStore } from './objectstore/fs.mjs';
@@ -59,9 +61,12 @@ export async function compose(config) {
     })
     : null;
   // goal-02 · 资料处理与尽调执行协调器（config.processing===false 显式关闭；默认装配）
+  // TAKEOFF（03路 PROTOCOL.md）：config.processing.rulePackPath 指向五域准入规则包
+  // （C/rules/takeoff-first-admission-rule-pack-v1.json）即启用五域；缺省旧四域包=回归基线。
+  const packPath = config.processing?.rulePackPath;
   const processing = config.processing === false ? null : makeProcessingCoordinator(store, evidence, {
     objectStore,
-    rulePack: config.processing?.rulePack,
+    rulePack: config.processing?.rulePack ?? (packPath ? JSON.parse(readFileSync(resolve(packPath), 'utf8')) : null),
     aBridge,
     sendService: send,
     config: resolveProcessingConfig(config),

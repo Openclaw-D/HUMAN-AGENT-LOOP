@@ -191,7 +191,7 @@ test('S2: 规则包 boundary 必须 simulation_only', () => {
 function gateFixture(overrides = {}) {
   const p = pipe();
   const assessments = {};
-  for (const d of ['policy', 'credit', 'commerce', 'asset']) assessments[d] = p.analyses[d];
+  for (const d of ['business', 'policy', 'credit', 'commerce', 'asset']) assessments[d] = p.analyses[d];
   return evaluateGate({
     domainAnalyses: { ...assessments, ...overrides },
     ruleEvaluation: evaluateRules({ pack, projection: p.projections.policy, asOf: '2026-09-16', transaction: TXN }),
@@ -248,7 +248,7 @@ test('S2: 模型凭空规则引用 → unsupported 不激活（C12）', () => {
   const p = pipe();
   const fake = { ...p.analyses.policy.assessment, ruleRefs: ['COMPANY-SECRET-RULE-99'] };
   const g = evaluateGate({
-    domainAnalyses: { policy: { analysisRun: p.analyses.policy.analysisRun, assessment: fake }, credit: p.analyses.credit, commerce: p.analyses.commerce, asset: p.analyses.asset },
+    domainAnalyses: { business: p.analyses.business, policy: { analysisRun: p.analyses.policy.analysisRun, assessment: fake }, credit: p.analyses.credit, commerce: p.analyses.commerce, asset: p.analyses.asset },
     ruleEvaluation: evaluateRules({ pack, projection: p.projections.policy, asOf: '2026-09-16', transaction: TXN }),
     transaction: TXN,
   });

@@ -301,6 +301,10 @@ export function createKernelStore({
     const objectInventoryAll = Array.isArray(inventoryRes?.objects) ? inventoryRes.objects
       : Array.isArray(inventoryRes?.inventory) ? inventoryRes.inventory : [];
     const objectInventory = objectInventoryAll.slice(0, MAX_LIST_ITEMS);
+    // TAKEOFF（01契约 §7）：材料清单（kind/处理状态/取代关系）是准入投影输入行的权威源；best-effort。
+    const artifactsRes = await settle('artifactList', `/api/v2/customers/${enc}/artifacts?limit=100`, (r) => r);
+    const artifactList = Array.isArray(artifactsRes?.artifacts) ? artifactsRes.artifacts
+      : Array.isArray(artifactsRes?.items) ? artifactsRes.items : [];
 
     // 事件桶：本身份自己的缓冲（不读他人桶）
     const b = bucketOf(customerId, ctx);
@@ -392,6 +396,16 @@ export function createKernelStore({
       openItems: [],
     };
     snapshot.openItems = deriveOpenItems(snapshot);
+    // TAKEOFF 准入投影（01契约 §7：Edge 按现有读取面聚合；分母未知=null，未闭合≤75%）。
+    const { deriveAdmission } = await import('./admission-projection.mjs');
+    snapshot.admission = deriveAdmission({
+      customerId,
+      assessments,
+      artifacts: artifactList,
+      findings,
+      decisionStatus: decisionStatus ?? null,
+      at: new Date().toISOString(),
+    });
     const last = b.envelopes[b.envelopes.length - 1] || null;
     return {
       customerId,
@@ -501,12 +515,14 @@ export function createKernelStore({
   }
 
   // 会话目标校验（C2.5）：消息发往的客户必须对该凭据可读（A 逐请求裁决），防错 customerId。
+  // 附带返回权威租户（TAKEOFF：读面 tid 以服务端归一，页面自报 tid 不采信）。
   async function checkCustomer(customerId, opts = {}) {
     const credential = opts.credential;
     if (typeof credential !== 'string' || credential.length === 0) return { ok: false, status: 401, code: 'SESSION_REQUIRED' };
     try {
-      await kernelFetch(credential, `/api/v2/customers/${encodeURIComponent(customerId)}`);
-      return { ok: true };
+      const payload = await kernelFetch(credential, `/api/v2/customers/${encodeURIComponent(customerId)}`);
+      const tenantId = payload?.customer?.tenantId ?? null;
+      return { ok: true, ...(tenantId ? { tenantId } : {}) };
     } catch (e) {
       return { ok: false, status: e.upstream?.status ?? 502, code: e.upstream?.code ?? 'UPSTREAM_ERROR' };
     }

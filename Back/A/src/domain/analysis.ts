@@ -12,7 +12,7 @@ import {
   requireMatrixPermission, lockCustomer,
   type RequestFrame,
 } from './v2kit.ts';
-import { computeDomainDigest } from './decision-support.ts';
+import { computeDomainDigest, DOMAINS } from './decision-support.ts';
 
 export interface AnalysisApi {
   activateRulePack(frame: RequestFrame): Promise<Record<string, unknown>>;
@@ -115,7 +115,7 @@ export function buildAnalysisCommands(kernel: Kernel): AnalysisApi {
         if (stored !== null) return stored;
         void customer;
         const domain = reqString(frame.domain, 'domain', 16);
-        if (!['policy', 'credit', 'commerce', 'asset'].includes(domain)) throw invalid('domain 必须 policy|credit|commerce|asset');
+        if (!(DOMAINS as readonly string[]).includes(domain)) throw invalid(`domain 必须 ${DOMAINS.join('/')}`);
         const deps = reqObject(frame.deps ?? {}, 'deps');
         const strArr = (v: unknown, label: string): string[] => {
           if (v === undefined || v === null) return [];
@@ -197,7 +197,7 @@ export function buildAnalysisCommands(kernel: Kernel): AnalysisApi {
         if (stored !== null) return stored;
         void customer;
         const domain = reqString(frame.domain, 'domain', 16);
-        if (!['policy', 'credit', 'commerce', 'asset'].includes(domain)) throw invalid('domain 必须 policy|credit|commerce|asset');
+        if (!(DOMAINS as readonly string[]).includes(domain)) throw invalid(`domain 必须 ${DOMAINS.join('/')}`);
         const scope = reqString(frame.scope ?? 'package', 'scope', 64);
         const reason = reqString(frame.reason, 'reason', 500);
         const cfg = cfgRef();

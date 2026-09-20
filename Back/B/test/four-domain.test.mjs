@@ -164,9 +164,21 @@ test('路由配置: routes-four-domain.json 通过规则表校验且首中即用
   const r = router.routeTask({ taskId: 't', taskKind: 'four_domain_evaluation' });
   assert.equal(r.ok, true);
   assert.equal(r.ruleId, 'FD-FULL-EVALUATION');
-  assert.equal(r.plan.length, 9);
+  assert.equal(r.plan.length, 10); // TAKEOFF（03路）五域：感知+5域评估+gate+questions+amount+nextstep
   const r2 = router.routeTask({ taskId: 't2', taskKind: 'four_domain_recalc', role: 'asset' });
   assert.equal(r2.ruleId, 'FD-RECALC-ASSET');
   const r3 = router.routeTask({ taskId: 't3', taskKind: 'four_domain_recalc', role: 'alien' });
   assert.equal(r3.ok, false); // NO_ROUTE:升级人工,不猜
+  // TAKEOFF 新任务种类（PROTOCOL.md §4）：五域全量/商机单域重算
+  const r4 = router.routeTask({ taskId: 't4', taskKind: 'takeoff_evaluation' });
+  assert.equal(r4.ok, true);
+  assert.equal(r4.ruleId, 'TAKEOFF-FULL-EVALUATION');
+  assert.equal(r4.plan.length, 10);
+  assert.ok(r4.plan.some((s) => s.toolName === 'fd:assess:business'), '五域全量含商机评估步');
+  const r5 = router.routeTask({ taskId: 't5', taskKind: 'takeoff_recalc', role: 'business' });
+  assert.equal(r5.ruleId, 'TAKEOFF-RECALC-BUSINESS');
+  const r6 = router.routeTask({ taskId: 't6', taskKind: 'four_domain_recalc', role: 'business' });
+  assert.equal(r6.ruleId, 'FD-RECALC-BUSINESS', '兼容别名：旧种类+business 角色可路由');
+  const r7 = router.routeTask({ taskId: 't7', taskKind: 'takeoff_gate' });
+  assert.equal(r7.ruleId, 'TAKEOFF-GATE-ONLY');
 });

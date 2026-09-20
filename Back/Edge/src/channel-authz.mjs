@@ -29,12 +29,16 @@ export function trustedActorHeaders(session) {
 export function createChannelAuthorizers({ store, log = () => { } }) {
   const customerOnly = (session) => (session?.roles ?? []).length > 0 && (session?.roles ?? []).every((r) => r === 'customer');
 
-  const checkCustomerOrReject = async (session, customerId, { notFoundOnDeny = false } = {}) => {
+  const checkCustomerOrReject = async (session, customerId, { notFoundOnDeny = false, tenantOut = null } = {}) => {
     if (typeof store?.checkCustomer !== 'function') {
       return { status: 503, body: { ok: false, error: 'AUTHZ_SOURCE_UNAVAILABLE', note: 'live 模式要求上游客户授权裁决面（store.checkCustomer）：失败关闭' } };
     }
     const target = await store.checkCustomer(customerId, { credential: session.credential }).catch((e) => ({ ok: false, code: 'UPSTREAM_UNKNOWN', status: 502, reason: String(e?.message || e) }));
-    if (target?.ok) return null;
+    if (target?.ok) {
+      // TAKEOFF：把 A 权威租户带给调用方（读面 tid 归一用；页面/调用方自报 tid 不采信）
+      if (tenantOut && typeof target.tenantId === 'string' && target.tenantId) tenantOut.tenantId = target.tenantId;
+      return null;
+    }
     if (notFoundOnDeny) return { status: 404, body: { ok: false, error: 'NOT_FOUND' } };
     const status = target?.status === 403 ? 403 : target?.status === 404 ? 404 : 502;
     return { status, body: { ok: false, error: target?.code || 'TARGET_UNVERIFIED', note: '目标客户对本会话不可读或校验失败：不转发' } };
@@ -107,7 +111,13 @@ export function createChannelAuthorizers({ store, log = () => { } }) {
     if (!customerId || typeof customerId !== 'string') {
       return { status: 400, body: { ok: false, error: 'CUSTOMER_REQUIRED', note: '本读面必须携带目标客户 cid：逐资源授权失败关闭' } };
     }
-    return await checkCustomerOrReject(session, customerId);
+    const tenantBox = {};
+    const verdict = await checkCustomerOrReject(session, customerId, { tenantOut: tenantBox });
+    if (verdict) return verdict;
+    // TAKEOFF：tid 以 A 权威租户归一（客户归属从权威上下文确定；urlObj.search 随 searchParams 联动，
+    // readproxy 以 urlObj.search 构造上游 URL——页面自报 tid 即使错误也已被纠正）。
+    if (tenantBox.tenantId) urlObj.searchParams.set('tid', tenantBox.tenantId);
+    return null;
   };
 
   return { writeAuthorize, readAuthorize };

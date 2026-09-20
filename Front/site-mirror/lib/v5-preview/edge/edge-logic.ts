@@ -39,11 +39,21 @@ export interface EdgeSnapshotShapes {
   refsExhaustive?: boolean;
   assessments?: Array<{
     assessmentId?: string; status?: string; stale?: boolean; ruleVersion?: string | null;
-    snapshotHash?: string | null; candidate?: {
+    snapshotHash?: string | null;
+    // TAKEOFF §13.2（A CONTRACT v2.6）加法字段：同版候选 期限/价格/口径 + 修订与输入版本 + 预评估读回
+    version?: number; candidateRevision?: number | null; inputVersion?: number | null;
+    requestedAmountMinor?: number | null;
+    preassessment?: Record<string, unknown> | null;
+    candidate?: {
       tendency?: string; supportableAmountMinor?: number; currency?: string;
       conditions?: string[]; warnings?: string[]; producedBy?: string;
+      suggestedTermMonths?: number | null; referencePriceMinor?: number | null;
+      priceUnit?: string | null; priceBasis?: string | null;
+      revision?: number | null; inputVersion?: number | null;
     } | null;
   }>;
+  /** TAKEOFF §13.3：Edge admission 投影（04路聚合面）。形状详见 lib/workbench/takeoff-projection.ts。 */
+  admission?: Record<string, unknown> | null;
   session?: {
     sessionId?: string; version?: number; runStatus?: string; closureStatus?: string; title?: string;
     availableActions?: string[];

@@ -75,9 +75,10 @@ export function createBRuntime({
 
   const receipts = overrides.receipts ?? new ReceiptsPort(new LocalFileReceipts(dataDir));
   const tools = overrides.tools ?? (config.tools?.mode === 'four-domain'
-    // 任务 03:四域确定性工具集(消费 C 流水线;任务参数经 task.params 传入,step 间
+    // 任务 03:域确定性工具集(消费 C 流水线;任务参数经 task.params 传入,step 间
     // 经 _priorOutputs 传递)。路由须使用 config/routes-four-domain.json 的 fd:* 规则。
-    ? new ToolsPort(createFourDomainTools())
+    // TAKEOFF(03路):tools.rulePackPath 可指向五域规则包(缺省旧四域包,回归兼容)。
+    ? new ToolsPort(createFourDomainTools({ rulePackPath: config.tools?.rulePackPath }))
     : new ToolsPort(new LocalStubCalculation()));
   const factVersions = overrides.factVersions ?? createContractFactVersions(contract);
 

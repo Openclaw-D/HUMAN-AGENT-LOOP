@@ -57,3 +57,12 @@ Back/Edge/config/g03d-conn-token.txt
 # R2 裁决（2026-09-19，任务04）：docs/ 下 .log 为刻意留存的回归/验收证据，放行入库；
 # 代码区运行态日志（Back/**、.run 目录等）仍被上方 **/*.log 排除。
 !docs/**/*.log
+
+# TAKEOFF-FA-1.0.0 路04 本轮运行态配置（凭据/令牌，本地生成，不入库）
+Back/Edge/config/takeoff-runtime.json
+
+# Local recovery copies and raw acceptance captures; publish reviewed text reports.
+docs/takeoff/first-admission-v1/implementation/02/retired-backup/
+docs/takeoff/first-admission-v1/implementation/02/evidence/
+docs/takeoff/first-admission-v1/implementation/04/evidence/
+docs/takeoff/first-admission-v1/implementation/03/evidence-*-final.txt

@@ -13,6 +13,8 @@ export interface EdgeSessionInfo {
   principalId: string;
   roles: string[];
   expiresAt: number;
+  /** 登录身份的权威租户（TAKEOFF 装配目录；历史栈可能缺省） */
+  tenantId?: string | null;
 }
 
 export interface WorkspaceResponse {
@@ -75,7 +77,7 @@ export function createEdgeClient({ baseUrl, fetchImpl = fetch }: EdgeClientOptio
       });
       const j = await r.json().catch(() => ({ ok: false, error: 'INVALID_RESPONSE' }));
       if (!r.ok || !j.ok) throw new EdgeHttpError(r.status, String(j.error ?? 'EXCHANGE_FAILED'), String(j.note ?? '会话建立失败'));
-      session = { sessionId: j.session.sessionId, principalId: j.session.principalId, roles: j.session.roles ?? [], expiresAt: j.session.expiresAt };
+      session = { sessionId: j.session.sessionId, principalId: j.session.principalId, roles: j.session.roles ?? [], tenantId: j.session.tenantId ?? null, expiresAt: j.session.expiresAt };
       return session;
     },
 

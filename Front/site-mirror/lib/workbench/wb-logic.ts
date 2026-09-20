@@ -90,7 +90,6 @@ const ERROR_TEXT: Record<string, string> = {
   TOKEN_INVALID: '处理通道令牌无效：请核对办理人提供的通道令牌',
   TOKEN_EXPIRED: '处理通道令牌已过期：请联系办理人重新发起',
   INVALID_STATE: '当前状态不允许该操作：请按页面提示先完成前置步骤',
-  NOT_READY: '前置条件未满足：按缺口提示补齐后重试',
   ANALYSIS_RUN_NOT_COMPLETED: '该分析运行未完成（失败/超时不算完成）：不能作为域结论登记',
   ARTIFACT_SUPERSEDED: '材料已被取代或重复：依据包须引用现行件，先补正后再冻结',
   // ---- 方案R 统一上传链（任务02 冻结语义）：阻断/等待态与通道面错误 → 业务语言 ----
@@ -102,6 +101,9 @@ const ERROR_TEXT: Record<string, string> = {
   A_TENANT_MISMATCH: 'A 客户租户不匹配：材料停在通道等待处理，请核对建档租户（勿重复提交）',
   A_UNREACHABLE: 'A 暂不可达：材料停在通道，恢复后自动续跑登记（勿重复提交）',
   A_UPLOAD_PRINCIPAL_MISSING: 'A 登记凭据缺失：材料停在通道等待部署配置（勿重复提交）',
+  // ---- TAKEOFF §13 预评估确认面 ----
+  IDEMPOTENCY_REPLAY_CONFLICT: '同一编号曾提交过不同内容：服务端幂等保护拒绝重放。请刷新后用新编号提交（不要覆盖旧记录）',
+  // NOT_READY 不映射：服务端按场景给出精确业务语言（先提交人工审阅 / 已确认终态），原样透传。
 };
 
 export function errorText(code: string | undefined | null, fallback?: string): string {
@@ -556,104 +558,6 @@ export function base64ToBytes(dataBase64: string): Uint8Array {
   const out = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
   return out;
-}
-
-// ---------------------------------------------------------------------------
-// 业务看板·生命周期阶段概览（board-round-02 任务01）：从工作台快照的服务端字段做
-// 展示投影。纪律：职责/阶段不强制一一串行（并行呈现，不做流水线推进器）；
-// 状态全部来自服务端字段映射，不推导业务结论；后端没有的能力（起租/租后/结清）
-// 如实标"未支持"，不用本地状态编造。
-// ---------------------------------------------------------------------------
-
-export type LifecycleStageState = 'done' | 'active' | 'pending' | 'unsupported';
-
-export interface LifecycleStageRow {
-  key: string;
-  label: string;
-  state: LifecycleStageState;
-  /** 状态依据（服务端字段/口径），供详情查看；不放业务结论。 */
-  basis: string;
-}
-
-type LifecycleSnap = {
-  customer?: { customerId?: string; displayName?: string; status?: string } | null;
-  session?: { runStatus?: string; closureStatus?: string } | null;
-  decisionStatus?: {
-    basis?: { packageId?: string; currency?: Array<{ domain?: string; currency?: string }> } | null;
-    facilityTotalsMinor?: { active?: number; approvedInactive?: number } | null;
-  } | null;
-  facilities?: Array<{ status?: string }> | null;
-  assessments?: Array<{ candidate?: unknown } | null> | null;
-  financingRequests?: Array<{ status?: string }> | null;
-  totalsMinor?: { outstanding?: number } | null;
-};
-
-/** 金额（分）→ 展示串（与 edge-logic fmtAmount 同口径的本地内联版；本模块零 import）。 */
-function fmtWan(minor: number): string {
-  const WAN = 1_000_000;
-  return Math.abs(minor) >= WAN
-    ? `${(minor / WAN).toLocaleString('zh-CN', { maximumFractionDigits: 2 })} 万元`
-    : `${(minor / 100).toLocaleString('zh-CN', { maximumFractionDigits: 2 })} 元`;
-}
-
-export function deriveLifecycleStages(snap: LifecycleSnap | null): LifecycleStageRow[] {
-  const s = snap ?? {};
-  const rows: LifecycleStageRow[] = [];
-  // 商机·建档：客户档案存在即有产出（打开客户的前提）。
-  rows.push(
-    s.customer?.customerId
-      ? { key: 'opportunity', label: '商机·建档', state: 'done', basis: `客户档案 ${s.customer.customerId}（状态 ${s.customer.status ?? '未知'}）` }
-      : { key: 'opportunity', label: '商机·建档', state: 'pending', basis: '客户档案未打开' },
-  );
-  // 尽调·检查：检查会话 runStatus/closureStatus（服务端状态，不推测结论）。
-  const run = s.session?.runStatus;
-  if (!s.session || !run) rows.push({ key: 'due_diligence', label: '尽调·检查', state: 'pending', basis: '尚无检查会话' });
-  else if (run === 'ended' || run === 'closed') rows.push({ key: 'due_diligence', label: '尽调·检查', state: 'done', basis: `检查会话 ${run}` });
-  else rows.push({ key: 'due_diligence', label: '尽调·检查', state: 'active', basis: `检查会话 ${run}` });
-  // 政策/信审：依据包域当前性判定（current=该域结论当前；stale=需更新；无=未开始）。
-  const verdicts = s.decisionStatus?.basis?.currency ?? [];
-  const domainRow = (domain: string, key: string, label: string) => {
-    const v = verdicts.find((d) => d.domain === domain);
-    if (!v) { rows.push({ key, label, state: 'pending', basis: '无该域当前性判定（未开始/未知）' }); return; }
-    if (v.currency === 'current') rows.push({ key, label, state: 'done', basis: `该域结论当前（${v.currency}；当前≠批准）` });
-    else rows.push({ key, label, state: 'active', basis: `该域当前性=${v.currency ?? '未知'}（需按当前版本更新）` });
-  };
-  domainRow('policy', 'policy', '政策·规则');
-  domainRow('credit', 'credit', '信审·评估');
-  // 商务·额度：设施状态（proposed=候选≠批准；active=已激活）。
-  const facilities = s.facilities ?? [];
-  if (facilities.some((f) => f.status === 'active')) rows.push({ key: 'commerce', label: '商务·额度', state: 'done', basis: '存在已激活额度设施' });
-  else if (facilities.length > 0) rows.push({ key: 'commerce', label: '商务·额度', state: 'active', basis: `存在设施（状态 ${[...new Set(facilities.map((f) => f.status ?? '?'))].join('/')}；候选≠批准）` });
-  else rows.push({ key: 'commerce', label: '商务·额度', state: 'pending', basis: '尚无额度设施' });
-  // 资产·用信：融资申请/在途敞口（用信=资产形成；仅显示服务端状态）。
-  const frs = s.financingRequests ?? [];
-  const outstanding = s.totalsMinor?.outstanding ?? 0;
-  if (outstanding > 0) rows.push({ key: 'asset', label: '资产·用信', state: 'active', basis: `在途敞口 ${fmtWan(outstanding)}（服务端权威投影）` });
-  else if (frs.length > 0) rows.push({ key: 'asset', label: '资产·用信', state: 'active', basis: `融资申请 ${frs.length} 笔（状态 ${[...new Set(frs.map((f) => f.status ?? '?'))].join('/')}）` });
-  else rows.push({ key: 'asset', label: '资产·用信', state: 'pending', basis: '尚无用信/敞口' });
-  // 结清：后端无起租/租后/结清完整能力——如实标未支持，不编造。
-  rows.push({ key: 'settle', label: '结清·合同', state: 'unsupported', basis: '后端未提供起租/租后/结清完整能力（如实标注，不用本地状态编造）' });
-  return rows;
-}
-
-/** 看板顶部摘要：融资金额（融资申请清单）与授信额度分开——采购金额无权威字段时不编造。 */
-export function deriveBoardSummary(snap: LifecycleSnap | null): Array<{ label: string; value: string; tone: 'neutral' | 'warn' | 'info' }> {
-  const s = snap ?? {};
-  const lines: Array<{ label: string; value: string; tone: 'neutral' | 'warn' | 'info' }> = [];
-  const frs = s.financingRequests ?? [];
-  if (frs.length > 0) {
-    lines.push({ label: '融资申请', value: `${frs.length} 笔在册（金额与状态以融资申请清单为准）`, tone: 'info' });
-  } else {
-    lines.push({ label: '融资申请', value: '尚无融资申请登记', tone: 'neutral' });
-  }
-  const facilities = s.facilities ?? [];
-  if (facilities.length > 0) {
-    lines.push({ label: '授信额度', value: `${facilities.length} 个额度设施（额度≠项目融资，两者分列不互冒）`, tone: 'neutral' });
-  } else {
-    lines.push({ label: '授信额度', value: '尚无额度设施', tone: 'neutral' });
-  }
-  lines.push({ label: '项目采购金额', value: '以合同/发票原件登记为准（系统未单列采购金额字段，不用授信额度冒充）', tone: 'warn' });
-  return lines;
 }
 
 /** 对象字节魔数嗅探：上游 /objects 常回 octet-stream，按 PNG/JPEG/GIF 魔数识别图片 mime（供内联 data:URL）。 */

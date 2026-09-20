@@ -53,3 +53,12 @@
 ## 真实模型接入增量 · 2026-09-19
 
 用户授权接入真实 GLM-5.2（此前"GLM-5.2 只预留 transport、0 调用"边界自此解除，仅限 B transport 面）。新增：根目录一键密钥入口 `Set-GLM-Key.cmd` + `Back/B/scripts/setup-glm-key.mjs`（打码输入、粘贴清洗、写入前 .gitignore 护栏、自动冒烟）与 `Back/B/scripts/glm-real-smoke.mjs`（七状态冒烟；启用预算必须配账本，冒烟账本落 gitignored `.tmp`）。用户 Key 经入口显式注入 gitignored 的 `Back/B/config/b-config.json`：mode=real、model=glm-5.2、endpoint=open.bigmodel.cn v4 chat/completions、outboundAllow 仅该 origin、预算 0.5 元/次估 0.01 元失败关闭。验证链：mock 全链路（C loopback，simulated+usage+成本入账+串线探针）→ 真实端点无效凭据 401→INVALID_CREDENTIAL 映射（零费用）→ 首次真实调用成功（prompt 71+completion 786 tokens、14.3s；模型遵守 authority=none、缺证据输出 unknown 不编造；费率未注入，成本如实标未估算）。模型意见仍 authority=none；E1 42 场景冻结评测与前端六角色演示保持零真实模型；无 Git 提交。
+
+## 2026-09-20 TAKEOFF-FA-1.0.0 接续对齐（文档）
+保存用户原始包并校验8份内容文件SHA-256；更新五个入口产品指针，登记适配映射、验收状态、清理记录与分阶段ZCode任务。源码仍为原二维事项卡版本，预评估确认与同版方案扩展尚待实施；未宣称功能完成。
+# 2026-09-20 TAKEOFF-FA-1.0.0 发布修复
+
+- 集成本轮首次回租准入二维工作台、预评估确认、五专业证据链与独立启动能力。
+- 正面确认缺少 CLEAR Gate 时失败关闭；核对当前激活规则、候选规则及相同证据集合，保留负面结论与正式授信账本边界。
+- 页面与演示脚本从实际处理链取规则版本，使用来源材料快照；账本验收绑定实际运行库并拒绝跨库基线。
+- 验证、清理和限制见 `docs/takeoff/first-admission-v1/CODEX_RELEASE_REVIEW.md`。

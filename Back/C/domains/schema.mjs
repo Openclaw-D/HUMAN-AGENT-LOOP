@@ -5,7 +5,12 @@
 // - 关键发现必须定位到材料页/字段或媒体时间片段；定位缺失只能作为假设，不得标已核验。
 // 本文件为确定性纯校验，无 IO，无第三方依赖（对齐 C 路零依赖纪律）。
 
-export const DOMAINS = Object.freeze(['policy', 'credit', 'commerce', 'asset']);
+// TAKEOFF-FA-1.0.0（03路）：五列=商机/政策/信审/商务/资产；business 为加法扩展，
+// 旧四域消费方按包含关系兼容（四域 ⊂ 五域），列顺序对齐看板五列。
+export const DOMAINS = Object.freeze(['business', 'policy', 'credit', 'commerce', 'asset']);
+
+/** TAKEOFF 前四域（兼容消费方：仍按旧四域语义工作的面可引用此常量）。 */
+export const LEGACY_FOUR_DOMAINS = Object.freeze(['policy', 'credit', 'commerce', 'asset']);
 
 /** 证据核验等级（由低到高）；等级语义对齐规则包 v2 evidence_five_grades。 */
 export const VERIFICATION_LEVELS = Object.freeze(['unknown', 'declared', 'source_supported', 'verified']);

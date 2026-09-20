@@ -19,12 +19,14 @@ export function createSessionStore({ ttlMs = 30 * 60 * 1000, now = () => Date.no
         sessionId,
         principalId: verdict.principalId,
         roles: verdict.roles || [],
+        // TAKEOFF：登录身份的权威租户（装配目录第 5 段/条目 tenantId）；前端命令帧以此为准，不再硬编码
+        tenantId: typeof verdict.tenantId === 'string' && verdict.tenantId ? verdict.tenantId : null,
         credential: String(credential),
         createdAt: now(),
         expiresAt: now() + ttlMs,
       };
       sessions.set(sessionId, rec);
-      return { ok: true, session: { sessionId, principalId: rec.principalId, roles: rec.roles, expiresAt: rec.expiresAt } };
+      return { ok: true, session: { sessionId, principalId: rec.principalId, roles: rec.roles, tenantId: rec.tenantId, expiresAt: rec.expiresAt } };
     },
 
     resolve(sessionId) {

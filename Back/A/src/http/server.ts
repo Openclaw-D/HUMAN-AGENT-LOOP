@@ -165,6 +165,10 @@ export function startHttpServer(kernel: Kernel, port: number): Promise<Server> {
     route('POST', '/api/v2/assessments/:assessmentId/candidate', async (_q, _s, p, _sp, body) => C.submitCandidate(F(body), S(p.assessmentId)));
     route('POST', '/api/v2/assessments/:assessmentId/submit-review', async (_q, _s, p, _sp, body) => C.submitForReview(F(body), S(p.assessmentId)));
     route('POST', '/api/v2/assessments/:assessmentId/decide', async (_q, _s, p, _sp, body) => C.decideAssessment(F(body), S(p.assessmentId)));
+    // TAKEOFF-FA-1.0.0 v2.6：预评估结论确认（scope=preassessment_only；契约 §13）+ 候选修订历史读回
+    route('POST', '/api/v2/assessments/:assessmentId/confirm-preassessment', async (_q, _s, p, _sp, body) => C.confirmPreassessment(F(body), S(p.assessmentId)));
+    route('POST', '/api/v2/assessments/:assessmentId/admission-request', async (_q, _s, p, _sp, body) => C.updateAdmissionRequest(F(body), S(p.assessmentId)));
+    route('GET', '/api/v2/assessments/:assessmentId/candidates', async (_q, _s, p, _sp, body) => C.listAssessmentCandidates(cred(body, _q), S(p.assessmentId)));
     route('POST', '/api/v2/customers/:customerId/facilities', async (_q, _s, p, _sp, body) => C.proposeFacility(F(body), S(p.customerId)));
     route('POST', '/api/v2/facilities/:facilityId/approve', async (_q, _s, p, _sp, body) => C.approveFacility(F(body), S(p.facilityId)));
     route('POST', '/api/v2/facilities/:facilityId/activate', async (_q, _s, p, _sp, body) => C.activateFacility(F(body), S(p.facilityId)));

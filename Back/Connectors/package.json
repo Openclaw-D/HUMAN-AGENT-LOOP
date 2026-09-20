@@ -9,8 +9,8 @@
   },
   "scripts": {
     "_test_note": "Node 22 测试发现规则匹配不到 test/ 下非 *.test.mjs 命名的既有用例——显式枚举（Windows cmd 无 shell glob）；helpers 不入清单",
-    "test": "node --test --test-force-exit test/b1-intake.mjs test/e1-integration.mjs test/i01-i05-ingest.mjs test/i06-i08-consent-binding.mjs test/i09-i15-session-recording.mjs test/i16-i20-evidence.mjs test/i21-i25-outbound-safety.mjs test/processing.e2e.mjs test/goal02-parsing.test.mjs test/goal02-manual.test.mjs test/goal02-a-bridge.test.mjs test/goal02-link-chain.test.mjs test/goal02-blocked-recovery.test.mjs test/goal02-actor-trust.test.mjs test/defects-g04n.test.mjs",
-    "test:processing": "node --test --test-force-exit test/processing.e2e.mjs test/goal02-parsing.test.mjs test/goal02-manual.test.mjs test/goal02-a-bridge.test.mjs test/goal02-link-chain.test.mjs test/goal02-blocked-recovery.test.mjs test/goal02-actor-trust.test.mjs test/defects-g04n.test.mjs",
+    "test": "node --test --test-force-exit test/b1-intake.mjs test/e1-integration.mjs test/i01-i05-ingest.mjs test/i06-i08-consent-binding.mjs test/i09-i15-session-recording.mjs test/i16-i20-evidence.mjs test/i21-i25-outbound-safety.mjs test/processing.e2e.mjs test/goal02-parsing.test.mjs test/goal02-manual.test.mjs test/goal02-a-bridge.test.mjs test/goal02-link-chain.test.mjs test/goal02-blocked-recovery.test.mjs test/goal02-actor-trust.test.mjs test/defects-g04n.test.mjs test/takeoff-chain.test.mjs",
+    "test:processing": "node --test --test-force-exit test/processing.e2e.mjs test/goal02-parsing.test.mjs test/goal02-manual.test.mjs test/goal02-a-bridge.test.mjs test/goal02-link-chain.test.mjs test/goal02-blocked-recovery.test.mjs test/goal02-actor-trust.test.mjs test/defects-g04n.test.mjs test/takeoff-chain.test.mjs",
     "test:e0": "node --test test/ --test-name-pattern=\"^E0\" ",
     "start": "node scripts/start-connectors.mjs",
     "e2e:local": "node scripts/e2e-local.mjs"

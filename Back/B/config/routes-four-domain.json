@@ -1,12 +1,13 @@
 {
-  "_comment": "任务 03 四域路由配置(规则限定可信路由;消费 B/src/domains/four-domain-tools.mjs)。全部为确定性工具步,零外部调用;线性计划前序=数组前项,_priorOutputs 由编排器注入,四域共享同一感知快照(E1 同源)。fd:* 工具由 B/src/domains/four-domain-tools.mjs 提供;calc:* 由 C 确定性工具提供。",
-  "roles": ["policy", "credit", "commerce", "asset", "jianwei"],
+  "_comment": "任务 03 域路由配置(规则限定可信路由;消费 B/src/domains/four-domain-tools.mjs)。全部为确定性工具步,零外部调用;线性计划前序=数组前项,_priorOutputs 由编排器注入,五域共享同一感知快照(E1 同源)。TAKEOFF-FA-1.0.0(03路):新增 takeoff_* 任务种类(五域:商机/政策/信审/商务/资产,列序对齐看板)与 business 角色;four_domain_* 保留为兼容别名(计划同为五域,Gate 完整性要求五域)。fd:* 工具由 B/src/domains/four-domain-tools.mjs 提供;calc:* 由 C 确定性工具提供。协议来源:docs/takeoff/first-admission-v1/implementation/03/PROTOCOL.md §4。",
+  "roles": ["business", "policy", "credit", "commerce", "asset", "jianwei"],
   "rules": [
     {
-      "ruleId": "FD-FULL-EVALUATION",
-      "when": { "taskKind": "four_domain_evaluation" },
+      "ruleId": "TAKEOFF-FULL-EVALUATION",
+      "when": { "taskKind": "takeoff_evaluation" },
       "plan": [
         { "stepId": "fd:perception", "kind": "tool", "toolName": "fd:perception" },
+        { "stepId": "fd:assess:business", "kind": "tool", "toolName": "fd:assess:business" },
         { "stepId": "fd:assess:policy", "kind": "tool", "toolName": "fd:assess:policy" },
         { "stepId": "fd:assess:credit", "kind": "tool", "toolName": "fd:assess:credit" },
         { "stepId": "fd:assess:commerce", "kind": "tool", "toolName": "fd:assess:commerce" },
@@ -15,6 +16,83 @@
         { "stepId": "fd:questions", "kind": "tool", "toolName": "fd:questions" },
         { "stepId": "fd:amount", "kind": "tool", "toolName": "fd:amount" },
         { "stepId": "fd:nextstep", "kind": "tool", "toolName": "fd:nextstep" }
+      ]
+    },
+    {
+      "ruleId": "TAKEOFF-RECALC-BUSINESS",
+      "when": { "taskKind": "takeoff_recalc", "role": "business" },
+      "plan": [
+        { "stepId": "fd:perception", "kind": "tool", "toolName": "fd:perception" },
+        { "stepId": "fd:assess:business", "kind": "tool", "toolName": "fd:assess:business" },
+        { "stepId": "fd:gate", "kind": "tool", "toolName": "fd:gate" }
+      ]
+    },
+    {
+      "ruleId": "TAKEOFF-RECALC-POLICY",
+      "when": { "taskKind": "takeoff_recalc", "role": "policy" },
+      "plan": [
+        { "stepId": "fd:perception", "kind": "tool", "toolName": "fd:perception" },
+        { "stepId": "fd:assess:policy", "kind": "tool", "toolName": "fd:assess:policy" },
+        { "stepId": "fd:gate", "kind": "tool", "toolName": "fd:gate" }
+      ]
+    },
+    {
+      "ruleId": "TAKEOFF-RECALC-CREDIT",
+      "when": { "taskKind": "takeoff_recalc", "role": "credit" },
+      "plan": [
+        { "stepId": "fd:perception", "kind": "tool", "toolName": "fd:perception" },
+        { "stepId": "fd:assess:credit", "kind": "tool", "toolName": "fd:assess:credit" },
+        { "stepId": "fd:gate", "kind": "tool", "toolName": "fd:gate" }
+      ]
+    },
+    {
+      "ruleId": "TAKEOFF-RECALC-COMMERCE",
+      "when": { "taskKind": "takeoff_recalc", "role": "commerce" },
+      "plan": [
+        { "stepId": "fd:perception", "kind": "tool", "toolName": "fd:perception" },
+        { "stepId": "fd:assess:commerce", "kind": "tool", "toolName": "fd:assess:commerce" },
+        { "stepId": "fd:gate", "kind": "tool", "toolName": "fd:gate" }
+      ]
+    },
+    {
+      "ruleId": "TAKEOFF-RECALC-ASSET",
+      "when": { "taskKind": "takeoff_recalc", "role": "asset" },
+      "plan": [
+        { "stepId": "fd:perception", "kind": "tool", "toolName": "fd:perception" },
+        { "stepId": "fd:assess:asset", "kind": "tool", "toolName": "fd:assess:asset" },
+        { "stepId": "fd:gate", "kind": "tool", "toolName": "fd:gate" }
+      ]
+    },
+    {
+      "ruleId": "TAKEOFF-GATE-ONLY",
+      "when": { "taskKind": "takeoff_gate" },
+      "plan": [
+        { "stepId": "fd:gate", "kind": "tool", "toolName": "fd:gate" }
+      ]
+    },
+    {
+      "ruleId": "FD-FULL-EVALUATION",
+      "when": { "taskKind": "four_domain_evaluation" },
+      "plan": [
+        { "stepId": "fd:perception", "kind": "tool", "toolName": "fd:perception" },
+        { "stepId": "fd:assess:business", "kind": "tool", "toolName": "fd:assess:business" },
+        { "stepId": "fd:assess:policy", "kind": "tool", "toolName": "fd:assess:policy" },
+        { "stepId": "fd:assess:credit", "kind": "tool", "toolName": "fd:assess:credit" },
+        { "stepId": "fd:assess:commerce", "kind": "tool", "toolName": "fd:assess:commerce" },
+        { "stepId": "fd:assess:asset", "kind": "tool", "toolName": "fd:assess:asset" },
+        { "stepId": "fd:gate", "kind": "tool", "toolName": "fd:gate" },
+        { "stepId": "fd:questions", "kind": "tool", "toolName": "fd:questions" },
+        { "stepId": "fd:amount", "kind": "tool", "toolName": "fd:amount" },
+        { "stepId": "fd:nextstep", "kind": "tool", "toolName": "fd:nextstep" }
+      ]
+    },
+    {
+      "ruleId": "FD-RECALC-BUSINESS",
+      "when": { "taskKind": "four_domain_recalc", "role": "business" },
+      "plan": [
+        { "stepId": "fd:perception", "kind": "tool", "toolName": "fd:perception" },
+        { "stepId": "fd:assess:business", "kind": "tool", "toolName": "fd:assess:business" },
+        { "stepId": "fd:gate", "kind": "tool", "toolName": "fd:gate" }
       ]
     },
     {

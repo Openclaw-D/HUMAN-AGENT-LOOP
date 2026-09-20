@@ -1,15 +1,17 @@
-// 任务 03 · B 路四域工具适配器：把 C 的确定性四域流水线接入现有持久执行器
-// （ToolsPort.calculate 形状）。目标 E1：四域用同一可追溯输入，经现有持久执行器
+// 任务 03 · B 路域工具适配器：把 C 的确定性域流水线接入现有持久执行器
+// （ToolsPort.calculate 形状）。目标 E1：各域用同一可追溯输入，经现有持久执行器
 // （claim→complete、checkpoint、fencing、恢复）产出候选——本模块只做确定性编排适配，
 // 不实现业务计算、不做外部调用（provider 恒为 calculation，authority 恒 none）。
 // 步间传递：前序工具输出经编排器注入的 inputs._priorOutputs 读取；各步只做本阶段计算
 // （感知一次规范化；单域评估只算该域；收口只算收口），满足“少重复感知、少无关重算”。
 // 工具清单（路由配置 config/routes-four-domain.json 按任务种类编排为线性计划）：
 //   fd:perception   材料 → 共享感知快照
-//   fd:assess:policy|credit|commerce|asset   快照 → 该域 AnalysisRun+DomainAssessment
-//   fd:gate         快照+四域结果 → 业务门（含规则评估）
+//   fd:assess:business|policy|credit|commerce|asset   快照 → 该域 AnalysisRun+DomainAssessment
+//   fd:gate         快照+五域结果 → 业务门（含规则评估）
 //   fd:questions / fd:amount / fd:nextstep   收口三件（提问计划/金额候选/单一下一步）
 //   calc:cash-flow-coverage / calc:ratio     委托 C 原生确定性工具
+// TAKEOFF-FA-1.0.0（03路）：域表扩为五域（商机/政策/信审/商务/资产，列序对齐看板）；
+// rulePackPath 可经 config.tools.rulePackPath 指向 TAKEOFF 五域规则包（缺省仍为旧四域包，回归兼容）。
 // 失败语义：输入非法/结构违规 → {ok:false, code} → 编排器标 failed（失败关闭），不静默成功（C15）。
 
 import { readFileSync } from 'node:fs';
@@ -18,13 +20,13 @@ import path from 'node:path';
 import {
   perceptionStage, assessStage, finalizeStage, effectiveRulePack,
 } from '../../../C/domains/pipeline.mjs';
+import { DOMAINS } from '../../../C/domains/schema.mjs';
 import { calculateCashFlowCoverage } from '../../../C/src/calculation-tool.mjs';
 import { calculateRatio } from '../../../C/src/ratio-tool.mjs';
 import { sha256hex } from '../ports.mjs';
 import { stableJson } from '../graph/decision.mjs';
 
-export const FOUR_DOMAIN_TOOL_VERSION = 'fd-tools@1.0.0';
-const DOMAINS = ['policy', 'credit', 'commerce', 'asset'];
+export const FOUR_DOMAIN_TOOL_VERSION = 'fd-tools@1.1.0';
 const DEFAULT_PACK = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'C', 'rules', 'four-domain-rule-pack-v1.json');
 
 function priorOf(inputs, toolName) {

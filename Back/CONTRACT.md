@@ -1,4 +1,4 @@
-# V7 backend-next CONTRACT v1.3（A 路独占 writer；2026-09-16；按 03:05 监督纠偏实现 DEF-01 语义候选）｜v2 增量登记最新至 §12（v2.5，2026-09-19 任务03：权威查询与授权支撑）
+# V7 backend-next CONTRACT v1.3（A 路独占 writer；2026-09-16；按 03:05 监督纠偏实现 DEF-01 语义候选）｜v2 增量登记最新至 §13（v2.6，2026-09-20 TAKEOFF-FA-1.0.0：首次回租准入预评估确认）
 
 状态：`v1.3`（v1.2 及之前为 FROZEN 文字；**v1.3 新增部分为 CANDIDATE——语义 PENDING-USER-RULING**，反例分析与候选说明见 `A/DEF01-analysis.md`）。本合同是 backend-next 四路唯一共享接口；B/C/D 只读，接口变更只能在各自目录写 `interface-change-request.md`，A 裁量后升版本号发布（新增可选字段=小版本；破坏性=v1.x+迁移说明）。上一轮 `V7/backend/CONTRACT.md`（JSON 存储 v0.2）被本合同取代：业务事实已迁入 PostgreSQL 事务存储（真实本机容器，非内存桩）。§8 起为 v2 增量登记（§8/§9/§10/§11/§12 = 任务02/任务01审核轮/goal-01/goal-01交付轮/任务03），登记性指针不改变 §0–§7 已冻结文字的效力。
 
@@ -280,3 +280,36 @@ blocked ──(deps accepted+输入kind当前证据齐备)──▶ ready ──
 ### 12.7 组织层级（V0.2 地图视角）：只登记数据建议与接口缺口，本轮不建平台
 
 全国—可配置大区—省级门店—客户的组织树与业绩/资产/新客视角**不在本轮实现**。现有客户目录响应不含大区/门店/坐标/业绩指标；"有客户额度"不等于"有门店业绩"。最小数据建议与接口缺口清单见 `docs/v02-remediation/task-03/POLICY_PENDING.md` §2。
+
+## 13｜v2.6 增量契约登记（2026-09-20，TAKEOFF-FA-1.0.0 A 权威路 writer：首次回租准入预评估确认）
+
+来源：`docs/takeoff/first-admission-v1/implementation/01/CONTRACT-PREASSESSMENT.md`（冻结契约全文、门序、样例与消费方动作）。基线 `main@8c6d3b0`（工作树优先，不回退）。v1（§0–§7）与 §8–§12 语义除下述显式加法外不变。迁移 `012_takeoff_preassessment.sql`（只新增对象/列/枚举值；回退=保留对象停用入口）。
+
+### 13.1 预评估确认命令（TAKEOFF 终点=有权人员确认预评估结论）
+
+- **`POST /api/v2/assessments/:assessmentId/confirm-preassessment`**：`outcome ∈ support|support_with_conditions|not_support`；绑定 `requestId/tenantId/assessmentVersion(乐观锁)/candidateRevision/conditions/rationale`，可选期望 `inputVersion/ruleVersion/snapshotHash`。返回 `confirmationId + scope='preassessment_only'`。**只产生预评估结论：不创建/激活/预占任何额度、不建融资申请、不写敞口账本**（`credit_facilities/financing_requests/exposure_entries` 零新增零变化，机器断言口径）。禁止借 facility.approve 或占位设施完成预评估。
+- **门序（事务内重查）**：幂等（同号同载荷单效果/异载荷 `IDEMPOTENCY_REPLAY_CONFLICT`）→ 评估行锁 + `scopeByRow`（越权 404）→ `requireHuman` → 目录角色 `credit`（服务端目录；业务角色默认无确认权；agent/service 403）→ 载荷严格 Schema（未知字段 400）→ 版本门（不匹配 409 `VERSION_CONFLICT` 附服务端当前值）→ 状态门 → 结果相关硬门：正/附条件要求 `stale=false`+快照工件逐一现行+候选 `inputVersion` 当前+客户最新 Gate 回执非 CLEAR（HARD_BLOCK/NEEDS_EVIDENCE/HOLD_FOR_REVIEW → 409 `GATE_BLOCKED`；CLEAR 但规则已换版 → 409 `STALE_BASIS` 须按当前规则重新收口；与决策闭环 `evaluateReadiness` 同判据，D-03 修复）+无关键差异（`REVIEW_REQUIRED`）+快照内无事实冲突（`REVIEW_REQUIRED`）；**`not_support` 不适用上述硬门**（有依据的负面终结不被冲突/冻结阻断，也不要求无价值工作刷绿）。失败零部分写入。
+- **写入**：`credit_assessments.status` 新枚举值 `'preassessment_confirmed'`（加法）；新表 `preassessment_confirmations`（UNIQUE(assessment_id)，历史确认永不覆盖）；`decision_records`（action=`preassessment.confirm`，permission_ref=`directory:credit`，复用决定设施）；audit + 事件 `PREASSESSMENT_CONFIRMED`；幂等回执。
+- **行政撤回/旧拒绝**：沿用 `decideAssessment` `withdraw_assessment`（→`superseded`）/`reject_assessment`，语义零变化；确认后 decide 一律 409 `NOT_READY`。
+- **新证据失效投影**：确认后快照工件被 supersede → 既有 stale 标记同事务追加 `preassessment_confirmations.needs_review=true`（`review_reason/review_marked_at`）+ 事件 `PREASSESSMENT_REVIEW_FLAGGED`；旧确认保留，只显示"需复核"，不默认重开。
+
+### 13.2 候选方案修订历史（submitCandidate 加法扩展）
+
+- 新增可选字段：`suggestedTermMonths(1..240)`、`referencePriceMinor(≥0)`+`priceUnit`+`priceBasis`（提供价格时后两者必填）、`basisRefs[]`（须属本客户且现行）、`runRefs[]`、`changeReason`、`ruleVersion`。严格 Schema 白名单扩展，未知字段仍 400；`authority` 仍禁带。
+- 服务端盖章 `revision`（=该评估历史最大+1）与 `inputVersion`（=评估当前 `input_version`）；每次提交追加新表 `assessment_candidates` 历史行（永不改写），legacy `candidate` jsonb 继续同步当前版（老消费者零破坏）。
+- 状态门加法放宽：`awaiting_human_review` 可提交候选修订（保持 awaiting_human_review，不回退 candidate_ready）；`collecting|draft→candidate_ready` 与 `stale→409 STALE_BASIS` 原语义不变。
+- 新读口 `GET /api/v2/assessments/:assessmentId/candidates`（内部读，权限同评估单件：客户联系人 403、越权 404）返回修订历史。
+- `credit_assessments` 新列 `input_version int NOT NULL DEFAULT 0`：快照受影响 supersede 事件同事务 +1（既有 stale 标记同一 WHERE）；历史行保持 0 不推定。
+- `GET /api/v2/assessments/:id` 与按客户清单响应加法新增：`inputVersion/candidateRevision/preassessment{...}|null`（含 `needsReview` 投影）；既有字段不变。
+
+### 13.3 责任边界
+
+- A 只提供权威原子读取面，不建二十格聚合平台；投影由 Edge 按现有读取面聚合（分母未知=null，未闭合≤75%）。
+- 不 seed 任何生产权限/政策数据；预评估确认授权=服务端目录角色，无矩阵新条目需求。
+- 测试与证据：`Back/A/test/preassessment-confirm.test.mjs`；交付目录 `docs/takeoff/first-admission-v1/implementation/01/`（契约/迁移计划/测试结果/清理记录）。
+### 13.4 五域词表扩展（OBS-03-01；03路 DEFECTS_REPORT 2026-09-20）
+
+TAKEOFF 五列 = 商机/政策/信审/商务/资产 ↔ `business/policy/credit/commerce/asset`。`decision-support.ts` 的 `DOMAINS` 扩为五域（business 居首）；`analysis-runs/start`、豁免登记、依据包 domainDeps 等代码校验统一引用该词表。迁移 `013_five_domain_vocab.sql`：`package_domain_results / analysis_runs / domain_requirement_policies / domain_exemptions` 四表 `domain` CHECK 重建为五域（只放宽枚举，零行改写；回退=保留对象停用入口）。**03 路接通 = 其 `aRegisterDomains` 配置加 `'business'`，零代码变更**；既有四域调用与数据完全不受影响。必需域政策仍由显式配置声明，词表扩展不改变 fail-closed 语义。
+### 13.5 首次回租需求登记（迁移 `014_admission_request.sql`；契约 §12）
+
+客户首次回租需求 = 评估级客户表述（产品/申请金额/用途/设备范围），**绝不写 financing_requests**。`credit_assessments` 加 `admission_request jsonb + admission_request_revision int`（存量行空 → 页面待补，未知≠0）。创建命令可选 `request`（严格 Schema，productType 本轮恒 `sale_leaseback`）；新命令 `POST /api/v2/assessments/:id/admission-request` 修正（人类 business|credit；绑定 `assessmentVersion` 乐观锁；整块快照式替换、revision+1、declaredAt 保留；结论确认后 409 NOT_READY）。读回：GET 评估/清单加 `request{...}` 与顶部镜像 `requestedAmountMinor`（Edge admission-projection 既有读取零改动）。全程账本零变化（PA-18 整表断言）。

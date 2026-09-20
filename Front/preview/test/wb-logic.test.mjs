@@ -260,8 +260,6 @@ test('提案确认计划：facility.propose 标题与依据包绑定行进确认
 // ---------------------------------------------------------------------------
 import {
   channelBridgeView,
-  deriveLifecycleStages,
-  deriveBoardSummary,
 } from '../../site-mirror/lib/workbench/wb-logic.ts';
 
 test('方案R 通道任务投影：blocked_* 等待态与 aRegistered/bridgeState 逐任务字段映射', () => {
@@ -284,34 +282,4 @@ test('方案R 诚实性核心：done 且未回写 A 不得呈现为全链完成�
   assert.match(channelBridgeView('done', true, 'registered').text, /已回写 A/);
   assert.match(channelBridgeView('running', false, 'unknown').text, /A 登记对账中/);
   assert.equal(channelBridgeView('running', null, null).tone, 'gray', '字段缺失=未知，不猜');
-});
-
-test('业务看板阶段概览：空快照=全部未开始+结清未支持；服务端字段驱动各段状态', () => {
-  const empty = deriveLifecycleStages(null);
-  assert.equal(empty.length, 7, '商机/尽调/政策/信审/商务/资产/结清 七段');
-  assert.equal(empty.find((s) => s.key === 'settle').state, 'unsupported', '结清如实标未支持（不编造）');
-  assert.ok(empty.every((s) => s.key !== 'settle' ? s.state === 'pending' || s.state === 'unsupported' : true));
-
-  const rows = deriveLifecycleStages({
-    customer: { customerId: 'cus_1', displayName: '喀什客户', status: 'active' },
-    session: { runStatus: 'in_progress' },
-    decisionStatus: { basis: { packageId: 'pkg_1', currency: [{ domain: 'policy', currency: 'current' }, { domain: 'credit', currency: 'stale' }] } },
-    facilities: [{ status: 'proposed' }],
-    financingRequests: [{ status: 'submitted' }],
-  });
-  assert.equal(rows.find((s) => s.key === 'opportunity').state, 'done');
-  assert.equal(rows.find((s) => s.key === 'due_diligence').state, 'active');
-  assert.equal(rows.find((s) => s.key === 'policy').state, 'done', '域 currency=current → 该段有当前产出（≠批准）');
-  assert.equal(rows.find((s) => s.key === 'credit').state, 'active', 'stale=需更新');
-  assert.equal(rows.find((s) => s.key === 'commerce').state, 'active', '设施候选≠批准');
-  assert.equal(rows.find((s) => s.key === 'asset').state, 'active');
-  assert.equal(rows.find((s) => s.key === 'settle').state, 'unsupported');
-});
-
-test('业务看板顶部摘要：融资申请与授信额度分列；采购金额不以授信额度冒充', () => {
-  const lines = deriveBoardSummary({ financingRequests: [{ status: 'submitted' }], facilities: [{ status: 'active' }] });
-  assert.ok(lines.some((l) => l.label === '融资申请'), '融资申请独立行');
-  assert.ok(lines.some((l) => l.label === '授信额度'), '授信额度独立行（额度≠项目融资）');
-  const purchase = lines.find((l) => l.label === '项目采购金额');
-  assert.match(purchase.value, /不用授信额度冒充/, '采购金额诚实标注数据来源边界');
 });

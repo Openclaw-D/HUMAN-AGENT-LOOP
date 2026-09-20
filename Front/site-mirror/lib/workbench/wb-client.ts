@@ -22,6 +22,8 @@ export function createWbClient({ baseUrl, fetchImpl = fetch }: { baseUrl: string
   const inner: EdgeClient = createEdgeClient({ baseUrl, fetchImpl });
   const root = baseUrl.replace(/\/$/, '');
 
+  // 登录身份的权威租户（Edge 会话透出 tenantId）；未携带时回退旧演示租户（兼容历史测试栈）。
+  const currentTenant = (): string => (inner.session && (inner.session as { tenantId?: string | null }).tenantId) || 't1';
   const authedHeaders = (): Record<string, string> => {
     const s = inner.session;
     if (!s) throw new EdgeHttpError(0, 'NO_SESSION', '尚未登录');
@@ -91,12 +93,12 @@ export function createWbClient({ baseUrl, fetchImpl = fetch }: { baseUrl: string
     /** 创建受限邀请（业务/管理员；code 明文仅此一次出现于响应）。 */
     createInvitation: (customerId: string, body: { requestId: string; role: string; allowedKinds: string[]; expiresInHours?: number; note?: string; subjectRef?: string }) =>
       inner.action<{ ok: boolean; invitation?: { invitationId: string; code: string; expiresAt?: string; role: string; allowedKinds: string[] } }>(
-        `/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/invitations`, { tenantId: 't1', ...body },
+        `/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/invitations`, { tenantId: currentTenant(), ...body },
       ),
 
     /** 撤销邀请（即刻生效）。 */
     revokeInvitation: (invitationId: string, requestId: string) =>
-      inner.action<{ ok: boolean }>(`/api/jw/v2/actions/invitations/${encodeURIComponent(invitationId)}/revoke`, { requestId, tenantId: 't1' }),
+      inner.action<{ ok: boolean }>(`/api/jw/v2/actions/invitations/${encodeURIComponent(invitationId)}/revoke`, { requestId, tenantId: currentTenant() }),
 
     /** 邀请清单（只读透传，不含 code）。 */
     listInvitations: (customerId: string) => getJson(`/api/jw/v2/customers/${encodeURIComponent(customerId)}/invitations`),
@@ -136,9 +138,24 @@ export function createWbClient({ baseUrl, fetchImpl = fetch }: { baseUrl: string
       file: { name: string; mime: string; dataBase64: string };
     }): Promise<{ artifactId?: string; replayed?: boolean }> {
       return inner.action<{ ok: boolean; artifactId?: string; replayed?: boolean }>(
-        `/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/originals`, { tenantId: 't1', ...body },
+        `/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/originals`, { tenantId: currentTenant(), ...body },
       );
     },
+
+    /** TAKEOFF §13（A CONTRACT v2.6）：独立预评估确认——scope=preassessment_only，不产生任何授信效力。
+     * 服务端重查：人类身份+目录 credit 角色、assessmentVersion 乐观锁、候选修订当前性、结果相关硬门。 */
+    confirmPreassessment: (assessmentId: string, body: {
+      requestId: string;
+      outcome: 'support' | 'support_with_conditions' | 'not_support';
+      assessmentVersion: number;
+      candidateRevision?: number;
+      inputVersion?: number;
+      ruleVersion?: string;
+      conditions?: string[];
+      rationale: string;
+    }) => inner.action<{ ok: boolean; confirmationId: string; scope: string; outcome: string; status: string; assessmentVersion: number; confirmedBy?: string; confirmedAt?: string }>(
+      `/api/jw/v2/actions/assessments/${encodeURIComponent(assessmentId)}/confirm-preassessment`, { tenantId: currentTenant(), ...body },
+    ),
 
     /** 白名单只读透传（材料清单/报告/检查会话/评估/设施/依据包/发现）。 */
     read: (path: string) => getJson(path),
@@ -160,14 +177,14 @@ export function createWbClient({ baseUrl, fetchImpl = fetch }: { baseUrl: string
 
     /** 登记域豁免（human；服务端记批准人与有效期）。 */
     registerDomainExemption: (customerId: string, body: { requestId: string; domain: string; reason: string; scopeDays?: number; note?: string }) =>
-      inner.action(`/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/domain-exemptions`, { tenantId: 't1', ...body }),
+      inner.action(`/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/domain-exemptions`, { tenantId: currentTenant(), ...body }),
 
     /** 冻结决策依据包（credit/business；gate 只收服务端回执引用）。 */
     freezePackage: (customerId: string, body: {
       requestId: string; gateReceiptId?: string; domainDeps: Array<{ domain: string; artifactIds: string[]; factKeys?: string[]; rulePackVersion?: string | null }>;
       inspectionRevision?: { sessionId: string; summaryRef?: string }; exemptions?: Array<{ exemptionId: string; note?: string }>; assessmentId?: string;
     }) => inner.action<{ ok: boolean; packageId?: string; revision?: number; basisVersion?: string; decisionReadiness?: boolean; gaps?: unknown[] }>(
-      `/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/decision-packages`, { tenantId: 't1', ...body },
+      `/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/decision-packages`, { tenantId: currentTenant(), ...body },
     ),
 
     /** 登记包域结果（域目录角色；analysisRun 只收真实运行引用；authority 恒 none 由 A 强制）。 */
@@ -175,7 +192,7 @@ export function createWbClient({ baseUrl, fetchImpl = fetch }: { baseUrl: string
       requestId: string; domain: string; analysisRun: { runId: string; rulesetVersion?: string };
       opinion: Record<string, unknown>; deps: { artifactIds: string[]; factKeys?: string[]; rulePackVersion?: string | null };
       adoption?: { adopted: boolean; rationale: string };
-    }) => inner.action(`/api/jw/v2/actions/decision-packages/${encodeURIComponent(packageId)}/domain-results`, { tenantId: 't1', ...body }),
+    }) => inner.action(`/api/jw/v2/actions/decision-packages/${encodeURIComponent(packageId)}/domain-results`, { tenantId: currentTenant(), ...body }),
 
     /** 页面化撤权（IR-03-7）：admin 撤客户 grants，级联停用其客户身份（即刻生效）。 */
     async revokeGrant(customerId: string, principalId: string, requestId: string): Promise<Record<string, unknown>> {
@@ -184,7 +201,7 @@ export function createWbClient({ baseUrl, fetchImpl = fetch }: { baseUrl: string
       const r = await fetchImpl(`/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/grants/${encodeURIComponent(principalId)}`, {
         method: 'DELETE',
         headers: { 'content-type': 'application/json', 'x-jw-session': s.sessionId },
-        body: JSON.stringify({ requestId, tenantId: 't1' }),
+        body: JSON.stringify({ requestId, tenantId: currentTenant() }),
       });
       const j = await r.json().catch(() => ({ ok: false, error: 'INVALID_RESPONSE' }));
       if (!r.ok) throw new EdgeHttpError(r.status, String(j.error ?? 'REVOKE_FAILED'), String(j.note ?? j.message ?? '撤权未成功'));
@@ -194,13 +211,13 @@ export function createWbClient({ baseUrl, fetchImpl = fetch }: { baseUrl: string
     // ---- goal-03d 处理通道面（Connectors IR-02-C；服务令牌在 Edge 服务端） ----
 
     /** 分段进度 + 通道补证问题 + 暂停态（?tid&cid）。 */
-    channelStatus: (customerId: string) => getJson(`/api/jw/v2/connectors/processing/status?tid=${encodeURIComponent('t1')}&cid=${encodeURIComponent(customerId)}`),
+    channelStatus: (customerId: string) => getJson(`/api/jw/v2/connectors/processing/status?tid=${encodeURIComponent(currentTenant())}&cid=${encodeURIComponent(customerId)}`),
 
     /** 逐任务回执：阶段留痕 stages + A 侧登记留痕 aOps（运行/Gate 回执引用）。 */
-    channelTask: (taskId: string) => getJson(`/api/jw/v2/connectors/processing/tasks/${encodeURIComponent(taskId)}?tid=${encodeURIComponent('t1')}`),
+    channelTask: (taskId: string) => getJson(`/api/jw/v2/connectors/processing/tasks/${encodeURIComponent(taskId)}?tid=${encodeURIComponent(currentTenant())}`),
 
     /** 原件预览（魔数嗅探 + 短时签名 downloadUrl；Edge 不经手字节）。 */
-    channelPreview: (evidenceId: string, customerId: string) => getJson(`/api/jw/v2/connectors/evidence/preview?tid=${encodeURIComponent('t1')}&eid=${encodeURIComponent(evidenceId)}&cid=${encodeURIComponent(customerId)}`),
+    channelPreview: (evidenceId: string, customerId: string) => getJson(`/api/jw/v2/connectors/evidence/preview?tid=${encodeURIComponent(currentTenant())}&eid=${encodeURIComponent(evidenceId)}&cid=${encodeURIComponent(customerId)}`),
 
     /** 通道对象字节（签名 URL 归一后的 Edge 代理路径；会话必需，签名/有效期由 Connectors 验证）。 */
     async fetchChannelObject(path: string): Promise<{ status: number; contentType: string; bytes: Uint8Array }> {
@@ -218,7 +235,7 @@ export function createWbClient({ baseUrl, fetchImpl = fetch }: { baseUrl: string
     /** 通道回执按对账编号查询（IR-T01-3 消费面）。页面面路由由 Edge 白名单登记；
      *  未登记/未配置时 404/503 原样上抛，调用方如实显示"对账口未接线"，不冒充查无回执。 */
     channelReceipt: (requestId: string) =>
-      getJson(`/api/jw/v2/connectors/processing/receipts/${encodeURIComponent(requestId)}?tid=${encodeURIComponent('t1')}`),
+      getJson(`/api/jw/v2/connectors/processing/receipts/${encodeURIComponent(requestId)}?tid=${encodeURIComponent(currentTenant())}`),
 
     action: <T = Record<string, unknown>>(path: string, body: Record<string, unknown>) => inner.action<T>(path, body),
     sendMessage: (customerId: string, body: Parameters<EdgeClient['sendMessage']>[1]) => inner.sendMessage(customerId, body),

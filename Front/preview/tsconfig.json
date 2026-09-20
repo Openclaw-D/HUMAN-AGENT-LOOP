@@ -15,5 +15,5 @@
     "noEmit": true,
     "types": []
   },
-  "include": ["../site-mirror/app/v5-preview/**/*", "../site-mirror/lib/**/*", "./**/*"]
+  "include": ["../site-mirror/app/v5-preview/**/*", "../site-mirror/app/takeoff/**/*", "../site-mirror/lib/**/*", "./**/*"]
 }

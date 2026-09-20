@@ -6,7 +6,7 @@
 
 export const DEFAULT_DEPENDENCY_MAP = Object.freeze({
   byEvidenceKind: Object.freeze({
-    document: ['policy', 'credit', 'commerce', 'asset'],
+    document: ['business', 'policy', 'credit', 'commerce', 'asset'],
     transcript: ['policy', 'credit', 'asset'],
     message: [],                       // 无事实声明的留言不影响任何域（C09）
     device_observation: ['asset'],
@@ -21,6 +21,13 @@ export const DEFAULT_DEPENDENCY_MAP = Object.freeze({
     equipment_contract: ['asset', 'commerce'],      // 购机合同：资产权属+商务条款
     site_evidence: ['asset'],                       // 现场证据：存在性/铭牌
     media: ['asset'],                               // 现场媒体（与 image 同面）
+    // TAKEOFF-FA-1.0.0（03路 PROTOCOL.md §1）：首次回租准入材料 kind（加法；既有映射不动）
+    legal_document: ['policy', 'business'],             // 主体资料：身份/资质适用面+需求主体
+    financial_statement: ['credit', 'commerce', 'business'], // 经营/负债：偿债+交易结构+经营动向
+    equipment_list: ['asset', 'commerce'],              // 设备清单：范围/净值/权属声明
+    ownership_document: ['asset', 'policy'],            // 权属支持：真实性核验
+    order_contract: ['business', 'credit'],             // 订单合同：需求动向+经营改善/恶化
+    litigation_document: ['policy', 'credit', 'business'], // 涉诉：合规/偿债/经营动向
   }),
   byFactKey: Object.freeze({
     entity_identity_verified: ['policy'],
@@ -33,6 +40,15 @@ export const DEFAULT_DEPENDENCY_MAP = Object.freeze({
     top1_customer_revenue_share: ['credit'],
     proposed_monthly_rent: ['commerce'],
     lease_registration_done: ['asset'],
+    // TAKEOFF-FA-1.0.0（03路 PROTOCOL.md §2）：语义映射事实键（加法；既有键不动）
+    revenue_annual_declared: ['business', 'credit'],
+    new_order_amount_declared: ['business'],
+    litigation_pending_declared: ['policy', 'credit', 'business'],
+    total_assets_declared: ['credit', 'business'],
+    total_liabilities_declared: ['credit', 'business'],
+    net_fixed_assets_declared: ['credit', 'asset'],
+    equipment_net_book_value_total: ['asset', 'commerce'],
+    equipment_ownership_declared: ['asset'],
   }),
   policyUpdate: ['policy', 'gate'],   // 规则版本更新 → 政策域重评 + 受影响评估重新核验（C11）
 });
@@ -68,7 +84,7 @@ export function planRecalc({ event, dependencyMap = DEFAULT_DEPENDENCY_MAP, curr
       }
       // 取代事件：所有消费旧版本的域都要重算（旧候选失效）
       if (event.type === 'evidence_superseded' && affected.size === 0) {
-        for (const d of ['policy', 'credit', 'commerce', 'asset']) add(d, 'superseded_unknown_consumer', 'high');
+        for (const d of ['business', 'policy', 'credit', 'commerce', 'asset']) add(d, 'superseded_unknown_consumer', 'high');
       }
       break;
     }

@@ -1,0 +1,114 @@
+{
+  "_note": "TAKEOFF-FA-1.0.0 路04 合成验收运行时配置模板（2026-09-20）：全部为公开合成演示值，明确标注非真实凭据、非公司制度；复制为 takeoff-runtime.json（Git 排除）后随 takeoff-up.mjs 使用。与既有 delivery-runtime.json（私有运行配置）完全独立；真实凭据不入 Git。",
+  "_synthetic": true,
+  "tenantId": "tt1",
+  "dbUser": "jw",
+  "dbPassword": "jw-takeoff-local",
+  "dbName": "jw",
+  "principalTokens": "tk-biz1=tkbiz1:human:business:all:tt1,tk-cust1=tkcust1:human:customer:all:tt1,tk-cred1=tkcred1:human:credit:all:tt1,tk-comm1=tkcomm1:human:commerce:all:tt1,tk-asset1=tkasset1:human:asset:all:tt1,tk-app1=tkapp1:human:approver:all:tt1,tk-svc1=tksvc1:service:service:all:tt1,tk-adm1=tkadm1:human:admin:all:all,tk-out2=tkout2:human:customer:all:tt2",
+  "creditMatrix": "matrix-takeoff-synthetic",
+  "creditConcentration": "conc-takeoff-synthetic",
+  "matrixSeedSql": "-- 合成开发矩阵（非公司制度）：TAKEOFF 预评估链所需的权限位；正式动作仍需对应角色。最终内容以01路冻结契约核后为准。\nINSERT INTO permission_matrix (matrix_version, role, action, allowed, max_amount_minor) VALUES ('matrix-takeoff-synthetic','approver','facility.approve',true,1000000000),('matrix-takeoff-synthetic','approver','facility.activate',true,NULL),('matrix-takeoff-synthetic','business','fr.confirm-external',true,1000000000) ON CONFLICT (matrix_version, role, action) DO NOTHING;",
+  "requiredDomainsPolicy": {
+    "version": "domreq-takeoff-synthetic",
+    "annotation": "非公司制度（演示）：TAKEOFF 合成验收必需域政策位；仅用于合成旅程打通『依据包冻结→Gate→有权人类确认预评估』链路，不作为任何真实业务政策依据",
+    "seedSql": "INSERT INTO domain_requirement_policies (policy_version, domain, required, created_by) VALUES ('domreq-takeoff-synthetic','policy',true,'takeoff-up-synthetic'),('domreq-takeoff-synthetic','credit',true,'takeoff-up-synthetic'),('domreq-takeoff-synthetic','commerce',true,'takeoff-up-synthetic'),('domreq-takeoff-synthetic','asset',true,'takeoff-up-synthetic') ON CONFLICT (policy_version, domain) DO UPDATE SET required=EXCLUDED.required;"
+  },
+  "takeoffSeedSql": "-- TAKEOFF 本轮受控合成规则种子占位（非公司制度）：数值政策、候选推导规则等在01/03路冻结契约后由本路核对接入；未接入时本段留空或删除，不以SQL补业务结果。",
+  "connectors": {
+    "port": 48114,
+    "tenantId": "tt1",
+    "pg": {
+      "database": "cnext_takeoff"
+    },
+    "wecom": {
+      "callbackToken": "takeoff-synthetic-callback-token"
+    },
+    "a": {
+      "credentials": {
+        "service": "tk-svc1",
+        "registrar": "tk-biz1",
+        "upload": {
+          "customer_owner": "tk-cust1"
+        },
+        "uploadFallback": "tk-cust1"
+      },
+      "customerLinks": {}
+    },
+    "driverIntervalMs": 2000,
+    "outboundPolicy": "suggest_only",
+    "rulePackPath": "../C/rules/takeoff-first-admission-rule-pack-v1.json",
+    "aRegisterDomains": [
+      "business",
+      "policy",
+      "credit",
+      "commerce",
+      "asset"
+    ]
+  },
+  "authEntries": [
+    {
+      "credential": "tk-biz1",
+      "principalId": "biz1",
+      "roles": [
+        "business"
+      ]
+    },
+    {
+      "credential": "tk-cust1",
+      "principalId": "cust1",
+      "roles": [
+        "customer"
+      ]
+    },
+    {
+      "credential": "tk-cred1",
+      "principalId": "cred1",
+      "roles": [
+        "credit"
+      ]
+    },
+    {
+      "credential": "tk-comm1",
+      "principalId": "comm1",
+      "roles": [
+        "commerce"
+      ]
+    },
+    {
+      "credential": "tk-asset1",
+      "principalId": "asset1",
+      "roles": [
+        "asset"
+      ]
+    },
+    {
+      "credential": "tk-app1",
+      "principalId": "app1",
+      "roles": [
+        "approver"
+      ]
+    },
+    {
+      "credential": "tk-svc1",
+      "principalId": "svc1",
+      "roles": [
+        "service"
+      ]
+    },
+    {
+      "credential": "tk-adm1",
+      "principalId": "adm1",
+      "roles": [
+        "admin"
+      ]
+    },
+    {
+      "credential": "tk-out2",
+      "principalId": "out2",
+      "roles": [
+        "customer"
+      ]
+    }
+  ]
+}

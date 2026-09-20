@@ -1,0 +1,5 @@
+line,equipment,model,qty,original_cost_wan,net_book_value_wan,ownership,note
+1,五轴加工中心,DMG-MORI-DMU50,2,560,403,self-owned,SYNTHETIC fixture lane04 revised valuation
+2,数控车床,CK6150,6,360,259,self-owned,SYNTHETIC fixture lane04 revised valuation
+3,三坐标测量机,ZEISS-CALIPRO,1,180,130,self-owned,SYNTHETIC fixture lane04 revised valuation
+correction_of,N3-equipment-list.csv,reason,valuation recheck (synthetic),supersedes,v1

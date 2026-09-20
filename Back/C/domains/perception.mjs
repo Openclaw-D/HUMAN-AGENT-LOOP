@@ -11,7 +11,13 @@
 
 import { stableStringify, stableHash } from './util.mjs';
 
-const KNOWN_KINDS = Object.freeze(['document', 'transcript', 'message', 'device_observation', 'image', 'video', 'audio']);
+// TAKEOFF-FA-1.0.0（03路 PROTOCOL.md §1）：进件真实材料 kind 并入感知白名单（加法；
+// 域投影/冲突/判重语义与 document 一致——kind 只影响事实溯源与重算依赖映射，不改变可信级）。
+const KNOWN_KINDS = Object.freeze([
+  'document', 'transcript', 'message', 'device_observation', 'image', 'video', 'audio',
+  'legal_document', 'financial_statement', 'equipment_list', 'ownership_document',
+  'order_contract', 'litigation_document',
+]);
 
 /** 内容规范化（哈希用）：压缩全部空白，防止“重排版/复制粘贴”绕过同源判定（C01）。 */
 function canonicalContent(text) {
@@ -197,6 +203,7 @@ export function buildPerceptionSnapshot({ tenantId, customerId, materials, capab
 
 /** 域读取权限投影（输入最小化）：每域只见其权限内切片；默认全量仅限内部协调面。 */
 export const DOMAIN_READ_SCOPE = Object.freeze({
+  business: { factKeys: '*', materialKinds: '*', note: '商机读订单/收入动向与回租需求合理性事实；不用资料页数提额' },
   policy: { factKeys: '*', materialKinds: '*', note: '政策域读适用面（机构/地区/产品/主体）所需全量事实键' },
   credit: { factKeys: '*', materialKinds: '*', note: '信审读经营/负债/集中度事实' },
   commerce: { factKeys: '*', materialKinds: '*', note: '商务读期限/租金表/付款交付条件/成本' },

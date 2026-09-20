@@ -13,7 +13,7 @@ export interface Queryable {
 export const GATE_RESULTS = ['CLEAR', 'NEEDS_EVIDENCE', 'HOLD_FOR_REVIEW', 'HARD_BLOCK'] as const;
 export type GateResult = (typeof GATE_RESULTS)[number];
 
-export const DOMAINS = ['policy', 'credit', 'commerce', 'asset'] as const;
+export const DOMAINS = ['business', 'policy', 'credit', 'commerce', 'asset'] as const; // TAKEOFF-FA：五列词表（§13.4；OBS-03-01）
 export type Domain = (typeof DOMAINS)[number];
 
 // ---------------------------------------------------------------------------

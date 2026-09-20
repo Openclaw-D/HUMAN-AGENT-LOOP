@@ -1,0 +1,572 @@
+{
+  "rulePackId": "jw-takeoff-first-admission-rule-pack",
+  "version": "1.0.0",
+  "createdAt": "2026-09-20",
+  "boundary": "simulation_only",
+  "boundaryNote": "本包全部为显式 simulation_rule 合成演示规则与合成期限/价格口径，不冒充任何机构制度；真实政策接入须治理流程批准并扩展 sourceRef.kind。TAKEOFF-FA-1.0.0 首次回租准入预评估专用：终点为有权人员确认预评估结论，本包硬门只阻断正面确认与正式动作，不产生任何授信效力。机构类型区分：商业融资租赁(commercial_leasing) ≠ 金融租赁公司(financial_leasing)。",
+  "activation": {
+    "note": "approvalStatus 必须为 approved 且在生效窗口内且来源可确认才激活为正式硬门；否则按 policy_pending 透出，不放行也不阻断",
+    "historyReplay": "规则文件不可变；改版=新版本文件；历史回放=用旧版本文件+当时 asOf 重放"
+  },
+  "exceptionPolicy": {
+    "approved": false,
+    "note": "未批准任何例外政策：attemptWaiver 一律拒绝，无通用强制放行接口"
+  },
+  "businessThresholds": {
+    "version": "sim-business@0.3",
+    "thresholds": [
+      {
+        "key": "sim_min_cash_coverage",
+        "value": 1.0,
+        "unit": "倍(x)",
+        "source": "simulation://cash-coverage-demo",
+        "note": "演示值：与 SIM-CASH-COVERAGE-01 同源；真实阈值须公司批准"
+      },
+      {
+        "key": "sim_top1_concentration_max",
+        "value": 80,
+        "unit": "%",
+        "source": "simulation://concentration-demo"
+      }
+    ]
+  },
+  "systemThresholds": {
+    "version": "sim-system@0.1",
+    "thresholds": [
+      {
+        "key": "model_timeout",
+        "value": 30000,
+        "unit": "ms",
+        "source": "config://b-worker-defaults"
+      },
+      {
+        "key": "budget_exhausted",
+        "value": 1,
+        "unit": "boolean",
+        "source": "config://budget"
+      },
+      {
+        "key": "recording_unhealthy",
+        "value": 1,
+        "unit": "boolean",
+        "source": "config://recorder"
+      }
+    ]
+  },
+  "productCap": {
+    "value": 10000000,
+    "currency": "CNY",
+    "source": "user://demo-product-cap@2026-09-16",
+    "note": "用户提出的产品上限（1,000 万）：非监管限额、非默认批准金额"
+  },
+  "termPolicy": {
+    "defaultMonths": 36,
+    "minMonths": 12,
+    "maxMonths": 60,
+    "unit": "month",
+    "basis": "合成演示期限政策：默认36期、可夹取12–60期；非机构制度，正式期限由人工确认",
+    "source": "simulation://term-policy-takeoff-v1"
+  },
+  "pricePolicy": {
+    "referenceRateAnnual": 0.08,
+    "caliber": "含息平均月租（合成名义口径）",
+    "basis": "合成演示参考价格：名义年利率8%摊入平均月租，仅作候选参考口径；非报价、非机构定价",
+    "source": "simulation://price-policy-takeoff-v1"
+  },
+  "rules": [
+    {
+      "ruleId": "SIM-ASSET-OWNERSHIP-01",
+      "version": 1,
+      "name": "租赁物权属经核验属第三方（合成硬门）",
+      "scope": {
+        "orgTypes": [
+          "commercial_leasing"
+        ],
+        "regions": [
+          "*"
+        ],
+        "products": [
+          "direct_lease",
+          "sale_leaseback"
+        ],
+        "customerRange": "*"
+      },
+      "effectiveFrom": "2026-01-01",
+      "effectiveTo": null,
+      "sourceRef": {
+        "kind": "simulation_rule",
+        "id": "sim://asset-ownership-demo-v1",
+        "note": "合成演示：权属文件证明非客户所有 → 阻断授信与放款"
+      },
+      "approvalStatus": "approved",
+      "requiredFacts": [
+        {
+          "factKey": "equipment_ownership_verified",
+          "minLevel": "verified"
+        }
+      ],
+      "condition": {
+        "fact": "equipment_ownership_verified",
+        "op": "is_false"
+      },
+      "effect": {
+        "kind": "hard_block",
+        "blockedActions": [
+          "approve_facility",
+          "disburse"
+        ]
+      },
+      "nonWaivable": true,
+      "review": {
+        "role": "asset_reviewer",
+        "escalateRole": "risk_committee"
+      },
+      "alternativeVersions": []
+    },
+    {
+      "ruleId": "SIM-ENTITY-IDENTITY-01",
+      "version": 1,
+      "name": "主体身份经核验不匹配（合成硬门）",
+      "scope": {
+        "orgTypes": [
+          "commercial_leasing"
+        ],
+        "regions": [
+          "*"
+        ],
+        "products": [
+          "*"
+        ],
+        "customerRange": "*"
+      },
+      "effectiveFrom": "2026-01-01",
+      "effectiveTo": null,
+      "sourceRef": {
+        "kind": "simulation_rule",
+        "id": "sim://entity-identity-demo-v1",
+        "note": "合成演示：身份核验确认主体不符 → 阻断"
+      },
+      "approvalStatus": "approved",
+      "requiredFacts": [
+        {
+          "factKey": "entity_identity_verified",
+          "minLevel": "verified"
+        }
+      ],
+      "condition": {
+        "fact": "entity_identity_verified",
+        "op": "is_false"
+      },
+      "effect": {
+        "kind": "hard_block",
+        "blockedActions": [
+          "approve_facility",
+          "disburse",
+          "sign_contract"
+        ]
+      },
+      "nonWaivable": true,
+      "review": {
+        "role": "compliance_reviewer",
+        "escalateRole": "risk_committee"
+      },
+      "alternativeVersions": []
+    },
+    {
+      "ruleId": "SIM-CASH-COVERAGE-01",
+      "version": 1,
+      "name": "现金流覆盖率低于演示下限（可复核门）",
+      "scope": {
+        "orgTypes": [
+          "commercial_leasing"
+        ],
+        "regions": [
+          "*"
+        ],
+        "products": [
+          "direct_lease",
+          "sale_leaseback"
+        ],
+        "customerRange": "*"
+      },
+      "effectiveFrom": "2026-01-01",
+      "effectiveTo": null,
+      "sourceRef": {
+        "kind": "simulation_rule",
+        "id": "sim://cash-coverage-demo-v1",
+        "note": "合成演示阈值 1.0（无单位比值），非公司制度；命中 → HOLD 人工复核（可豁免=false：非不可豁免，但本环境无例外政策，仍无放行接口）"
+      },
+      "approvalStatus": "approved",
+      "requiredFacts": [
+        {
+          "factKey": "monthly_operating_cash_flow",
+          "minLevel": "source_supported"
+        },
+        {
+          "factKey": "monthly_debt_service",
+          "minLevel": "source_supported"
+        }
+      ],
+      "condition": {
+        "fact": "cash_coverage_ratio",
+        "op": "lt",
+        "value": 1.0
+      },
+      "effect": {
+        "kind": "hard_block",
+        "blockedActions": [
+          "approve_facility"
+        ]
+      },
+      "nonWaivable": false,
+      "review": {
+        "role": "credit_reviewer",
+        "escalateRole": "risk_committee"
+      },
+      "alternativeVersions": []
+    },
+    {
+      "ruleId": "SIM-CASH-COVERAGE-STRESSED-01",
+      "version": 1,
+      "name": "叠加声明新增债务后覆盖率低于演示下限（压力门）",
+      "scope": {
+        "orgTypes": [
+          "commercial_leasing"
+        ],
+        "regions": [
+          "*"
+        ],
+        "products": [
+          "direct_lease",
+          "sale_leaseback"
+        ],
+        "customerRange": "*"
+      },
+      "effectiveFrom": "2026-01-01",
+      "effectiveTo": null,
+      "sourceRef": {
+        "kind": "simulation_rule",
+        "id": "sim://cash-coverage-stressed-demo-v1",
+        "note": "合成演示：派生事实 cash_coverage_ratio_stressed = 现金流/(偿债+声明新增债务)；新增负债使材料更齐不抵消风险（C07）"
+      },
+      "approvalStatus": "approved",
+      "requiredFacts": [
+        {
+          "factKey": "monthly_operating_cash_flow",
+          "minLevel": "source_supported"
+        },
+        {
+          "factKey": "monthly_debt_service",
+          "minLevel": "source_supported"
+        }
+      ],
+      "condition": {
+        "fact": "cash_coverage_ratio_stressed",
+        "op": "lt",
+        "value": 1.0
+      },
+      "effect": {
+        "kind": "hard_block",
+        "blockedActions": [
+          "approve_facility"
+        ]
+      },
+      "nonWaivable": false,
+      "review": {
+        "role": "credit_reviewer",
+        "escalateRole": "risk_committee"
+      },
+      "alternativeVersions": []
+    },
+    {
+      "ruleId": "SIM-CUSTOMER-CONCENTRATION-01",
+      "version": 1,
+      "name": "第一大客户收入占比超演示上限（主包为 approved；C28 场景经 packOverride 置 pending 演示）",
+      "scope": {
+        "orgTypes": [
+          "commercial_leasing"
+        ],
+        "regions": [
+          "*"
+        ],
+        "products": [
+          "*"
+        ],
+        "customerRange": "*"
+      },
+      "effectiveFrom": "2026-01-01",
+      "effectiveTo": null,
+      "sourceRef": {
+        "kind": "simulation_rule",
+        "id": "sim://concentration-demo-v1",
+        "note": "合成演示：上限 80%（演示值）；C28 用 packOverride 将本规则置 approvalStatus=pending_approval 演示 policy_pending"
+      },
+      "approvalStatus": "approved",
+      "requiredFacts": [
+        {
+          "factKey": "top1_customer_revenue_share",
+          "minLevel": "source_supported"
+        }
+      ],
+      "condition": {
+        "fact": "top1_customer_revenue_share",
+        "op": "gt",
+        "value": 80
+      },
+      "effect": {
+        "kind": "hard_block",
+        "blockedActions": [
+          "approve_facility"
+        ]
+      },
+      "nonWaivable": false,
+      "review": {
+        "role": "credit_reviewer",
+        "escalateRole": "risk_committee"
+      },
+      "alternativeVersions": []
+    },
+    {
+      "ruleId": "SIM-MATERIAL-FRESHNESS-01",
+      "version": 1,
+      "name": "关键材料超过演示新鲜期（过期资料门）",
+      "scope": {
+        "orgTypes": [
+          "*"
+        ],
+        "regions": [
+          "*"
+        ],
+        "products": [
+          "*"
+        ],
+        "customerRange": "*"
+      },
+      "effectiveFrom": "2026-01-01",
+      "effectiveTo": null,
+      "sourceRef": {
+        "kind": "simulation_rule",
+        "id": "sim://freshness-demo-v1",
+        "note": "合成演示：任一材料 capturedAt 距 asOf 超过 365 天 → 派生事实 materials_freshness_ok=false → HOLD 补新件；365 天为演示值非公司制度"
+      },
+      "approvalStatus": "approved",
+      "requiredFacts": [],
+      "condition": {
+        "fact": "materials_freshness_ok",
+        "op": "is_false"
+      },
+      "effect": {
+        "kind": "hard_block",
+        "blockedActions": [
+          "approve_facility"
+        ]
+      },
+      "nonWaivable": false,
+      "review": {
+        "role": "business",
+        "escalateRole": "risk_committee"
+      },
+      "alternativeVersions": []
+    },
+    {
+      "ruleId": "SIM-LEASE-REGISTER-01",
+      "version": 1,
+      "name": "租赁物未办理登记（已过期规则：生效窗口演示）",
+      "scope": {
+        "orgTypes": [
+          "commercial_leasing"
+        ],
+        "regions": [
+          "*"
+        ],
+        "products": [
+          "*"
+        ],
+        "customerRange": "*"
+      },
+      "effectiveFrom": "2025-01-01",
+      "effectiveTo": "2026-06-30",
+      "sourceRef": {
+        "kind": "simulation_rule",
+        "id": "sim://lease-register-demo-v1",
+        "note": "合成演示：asOf 晚于 effectiveTo → 不激活（过期规则不得当现行硬门；C11/C 历史回放用）"
+      },
+      "approvalStatus": "approved",
+      "requiredFacts": [
+        {
+          "factKey": "lease_registration_done",
+          "minLevel": "verified"
+        }
+      ],
+      "condition": {
+        "fact": "lease_registration_done",
+        "op": "is_false"
+      },
+      "effect": {
+        "kind": "hard_block",
+        "blockedActions": [
+          "disburse"
+        ]
+      },
+      "nonWaivable": false,
+      "review": {
+        "role": "asset_reviewer",
+        "escalateRole": "risk_committee"
+      },
+      "alternativeVersions": []
+    },
+    {
+      "ruleId": "SIM-FINANCIAL-LEASING-ONLY-01",
+      "version": 1,
+      "name": "金融租赁公司专属演示规则（机构适用性演示）",
+      "scope": {
+        "orgTypes": [
+          "financial_leasing"
+        ],
+        "regions": [
+          "*"
+        ],
+        "products": [
+          "*"
+        ],
+        "customerRange": "*"
+      },
+      "effectiveFrom": "2026-01-01",
+      "effectiveTo": null,
+      "sourceRef": {
+        "kind": "simulation_rule",
+        "id": "sim://flc-only-demo-v1",
+        "note": "合成演示：scope 限定金融租赁公司；商业融资租赁交易不适用（不命中、不阻断），演示机构分层不套用"
+      },
+      "approvalStatus": "approved",
+      "requiredFacts": [
+        {
+          "factKey": "entity_identity_verified",
+          "minLevel": "verified"
+        },
+        {
+          "factKey": "equipment_ownership_verified",
+          "minLevel": "verified"
+        }
+      ],
+      "condition": {
+        "fact": "equipment_ownership_verified",
+        "op": "is_false"
+      },
+      "effect": {
+        "kind": "hard_block",
+        "blockedActions": [
+          "approve_facility"
+        ]
+      },
+      "nonWaivable": true,
+      "review": {
+        "role": "compliance_reviewer",
+        "escalateRole": "risk_committee"
+      },
+      "alternativeVersions": []
+    },
+    {
+      "ruleId": "SIM-LITIGATION-PENDING-01",
+      "version": 1,
+      "name": "存在未决诉讼声明且无解除证据（合成硬门）",
+      "scope": {
+        "orgTypes": [
+          "commercial_leasing"
+        ],
+        "regions": [
+          "*"
+        ],
+        "products": [
+          "sale_leaseback",
+          "direct_lease"
+        ],
+        "customerRange": "*"
+      },
+      "effectiveFrom": "2026-01-01",
+      "effectiveTo": null,
+      "sourceRef": {
+        "kind": "simulation_rule",
+        "id": "sim://litigation-pending-takeoff-v1",
+        "note": "合成演示：未决诉讼声明（declared级即触发评估）→ 阻断正面确认；解除只能由诉讼解除证据（核验）后重算，无通用强制放行"
+      },
+      "approvalStatus": "approved",
+      "requiredFacts": [
+        {
+          "factKey": "litigation_pending_declared",
+          "minLevel": "declared"
+        }
+      ],
+      "condition": {
+        "fact": "litigation_pending_declared",
+        "op": "is_true"
+      },
+      "effect": {
+        "kind": "hard_block",
+        "blockedActions": [
+          "confirm_preassessment",
+          "approve_facility"
+        ]
+      },
+      "nonWaivable": true,
+      "review": {
+        "role": "credit_reviewer",
+        "escalateRole": "risk_committee"
+      },
+      "alternativeVersions": []
+    },
+    {
+      "ruleId": "SIM-LEASEBACK-BASIS-01",
+      "version": 1,
+      "name": "回租标的净值声明缺失或非正（合成门）",
+      "scope": {
+        "orgTypes": [
+          "commercial_leasing"
+        ],
+        "regions": [
+          "*"
+        ],
+        "products": [
+          "sale_leaseback"
+        ],
+        "customerRange": "*"
+      },
+      "effectiveFrom": "2026-01-01",
+      "effectiveTo": null,
+      "sourceRef": {
+        "kind": "simulation_rule",
+        "id": "sim://leaseback-basis-takeoff-v1",
+        "note": "合成演示：售后回租须有可回租标的；净值声明缺失=补证门（NEEDS_EVIDENCE），声明值≤0=硬门（标的不存在）"
+      },
+      "approvalStatus": "approved",
+      "requiredFacts": [
+        {
+          "factKey": "equipment_net_book_value_total",
+          "minLevel": "declared"
+        }
+      ],
+      "condition": {
+        "fact": "equipment_net_book_value_total",
+        "op": "lte",
+        "value": 0
+      },
+      "effect": {
+        "kind": "hard_block",
+        "blockedActions": [
+          "confirm_preassessment"
+        ]
+      },
+      "nonWaivable": false,
+      "review": {
+        "role": "asset_reviewer",
+        "escalateRole": "risk_committee"
+      },
+      "alternativeVersions": []
+    }
+  ],
+  "assetCapPolicy": {
+    "ltv": 0.8,
+    "basis": "合成演示资产价值上限：售后回租候选金额不超过可回租设备净值声明×80%；非机构制度",
+    "source": "simulation://asset-cap-takeoff-v1"
+  }
+}

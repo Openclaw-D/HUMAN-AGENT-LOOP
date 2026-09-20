@@ -27,6 +27,13 @@ export const READ_ROUTES = [
     upstream: (m) => `/api/v2/assessments/${encodeURIComponent(m[1])}`,
   },
   {
+    // TAKEOFF（A CONTRACT §13.3）：候选修订历史读回（含同版金额/期限/价格/口径/依据/变化理由）。
+    // 内部读，权限同评估单件（客户联系人 403、越权 404 由 A 结构保证并原样透传）。
+    pattern: /^\/api\/jw\/v2\/assessments\/([^/]+)\/candidates$/,
+    action: 'assessments:read',
+    upstream: (m) => `/api/v2/assessments/${encodeURIComponent(m[1])}/candidates`,
+  },
+  {
     pattern: /^\/api\/jw\/v2\/facilities\/([^/]+)$/,
     action: 'facilities:read',
     upstream: (m) => `/api/v2/facilities/${encodeURIComponent(m[1])}`,
@@ -123,6 +130,15 @@ export const READ_ROUTES = [
 //   ownership: 'receipt'（IR-T01-3 回执对账面）目标客户在 a_links 回执行内（页面只持
 //     requestId?tid）→ 同样预检；命中且不可读 → 404，回执不能凭 requestId 越权查询。
 export const CONNECTORS_READ_ROUTES = [
+  {
+    // TAKEOFF（03路 PROTOCOL §7）：分析收口读面（gate/questionPlan/amountCandidate v2/nextStep +
+    // inputHash/rulesetVersion/watermark/artifactRefs）。上游实现参数名=tid/cid（与其余通道面一致；
+    // PROTOCOL 文本中的 tenantId/customerId 即 tid/cid），原样透传；customerOf 逐客户校验先行。
+    pattern: /^\/api\/jw\/v2\/connectors\/analysis\/finalization$/,
+    action: 'channel:read',
+    upstream: (_m, search) => `/api/connectors/analysis/finalization${search || ''}`,
+    customerOf: (m, urlObj) => urlObj.searchParams.get('cid'),
+  },
   {
     pattern: /^\/api\/jw\/v2\/connectors\/processing\/status$/,
     action: 'channel:read',

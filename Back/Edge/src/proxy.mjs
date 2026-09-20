@@ -81,9 +81,17 @@ export const ACTION_ROUTES = [
     upstream: (m) => `/api/v2/customers/${encodeURIComponent(m[1])}/artifacts`,
     transform: transformOriginals,
   },
+  // ---- TAKEOFF-FA-1.0.0（A CONTRACT §13）：独立预评估确认——只产生 scope=preassessment_only
+  //      结论，不触任何正式额度/融资/敞口写；鉴权/门序/幂等全部由 A 服务端裁决，Edge 只做
+  //      会话/CSRF/白名单/可信actor/凭据服务端映射。行政撤回沿用既有 decide=withdraw_assessment。
   {
     method: 'POST',
-    pattern: /^\/api\/jw\/v2\/actions\/assessments\/([^/]+)\/(candidate|submit-review|decide)$/,
+    pattern: /^\/api\/jw\/v2\/actions\/assessments\/([^/]+)\/confirm-preassessment$/,
+    upstream: (m) => `/api/v2/assessments/${encodeURIComponent(m[1])}/confirm-preassessment`,
+  },
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/assessments\/([^/]+)\/(candidate|submit-review|decide|admission-request)$/,
     upstream: (m) => `/api/v2/assessments/${encodeURIComponent(m[1])}/${m[2]}`,
   },
   {

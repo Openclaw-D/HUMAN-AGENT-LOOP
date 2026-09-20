@@ -67,7 +67,7 @@ test('P01 完整链：原始银行 CSV 经真实入口 → 解析/事实/四域/
     assert.deepEqual(facts.map((f) => f.predicate), ['bank_inflow_total', 'bank_outflow_total']);
     // 四域预审结果落库（候选）+ 收口
     const domains = (await h.store.query(`SELECT domain FROM domain_analyses WHERE tenant_id=$1 AND customer_id=$2`, [TENANT, CUST])).rows.map((r) => r.domain).sort();
-    assert.deepEqual(domains, ['asset', 'commerce', 'credit', 'policy']);
+    assert.deepEqual(domains, ['asset', 'business', 'commerce', 'credit', 'policy']); // TAKEOFF（03路）五域
     const fin = (await h.store.query(`SELECT gate FROM analysis_finalizations WHERE tenant_id=$1 AND customer_id=$2`, [TENANT, CUST])).rows[0];
     assert.ok(fin.gate, '收口 Gate 落库');
     // 问题准备：流水≠经营收入 → monthly_operating_cash_flow 缺 → 客户补证问题（排队建议态，默认零外发）
@@ -186,14 +186,14 @@ test('P05 修正原件+局部重算：supersede 更新收口；无关新材料�
     await driveToEnd(h.api);
     const a3 = (await fetchDetail(h, bank.processing.taskId)).task.stages.find((s) => s.stage === 'analyze');
     assert.deepEqual(a3.detail.computed, [], `与域消费面无关的新材料不触发重算: ${JSON.stringify(a3.detail)}`);
-    assert.equal(a3.detail.reused.length, 4, `四域结果复用: ${JSON.stringify(a3.detail)}`);
+    assert.equal(a3.detail.reused.length, 5, `五域结果复用: ${JSON.stringify(a3.detail)}`);
     // 局部重算正例 B：新增件只含铭牌事实 → 只重算 asset（政策/信审/商务消费面未变）
     const inv3 = await setupInvitation(h.api);
     const plate = await uploadBytes(h.api, inv3, { kind: 'document', bytes: declTxtBytes({ equipment_model: 'LX-300' }) });
     await driveToEnd(h.api);
     const a4 = (await fetchDetail(h, plate.processing.taskId)).task.stages.find((s) => s.stage === 'analyze');
     assert.deepEqual(a4.detail.computed.map((x) => x.domain), ['asset'], `补铭牌只重算资产域: ${JSON.stringify(a4.detail)}`);
-    assert.deepEqual(a4.detail.reused.map((x) => x.domain).sort(), ['commerce', 'credit', 'policy'], `无关域复用: ${JSON.stringify(a4.detail)}`);
+    assert.deepEqual(a4.detail.reused.map((x) => x.domain).sort(), ['business', 'commerce', 'credit', 'policy'], `无关域复用: ${JSON.stringify(a4.detail)}`);
   } finally { await h.dispose(); }
 });
 

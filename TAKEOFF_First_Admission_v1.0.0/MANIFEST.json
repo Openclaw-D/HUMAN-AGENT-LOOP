@@ -1,0 +1,62 @@
+{
+  "package": "TAKEOFF_First_Admission",
+  "version": "TAKEOFF-FA-1.0.0",
+  "created_date": "2026-09-20",
+  "language": "zh-CN",
+  "authority_file": "01_TAKEOFF_CORE_AUTHORITY.md",
+  "scope": "新客户首次回租准入与客户授信预评估",
+  "recipient": "Codex / Takeoff 接续执行者",
+  "repository": "Openclaw-D/HUMAN-AGENT-LOOP",
+  "reviewed_remote_sha": "8c6d3b0edc7d0c467ab6876a765b80a30b1e268b",
+  "review_type": "selected remote code and documentation reads; not a full audit",
+  "local_workspace_verified": false,
+  "repository_modified": false,
+  "product_tests_run": false,
+  "paid_model_calls_made": false,
+  "contains_images": false,
+  "contains_credentials_or_customer_records": false,
+  "target_relative_path": "docs/takeoff/first-admission-v1/",
+  "files": [
+    {
+      "path": "00_START_HERE.md",
+      "bytes": 3019,
+      "sha256": "0754b5f7b7532f05e6b4350ed3421908985b2b6509591c77f594e1bd9d248ec7"
+    },
+    {
+      "path": "01_TAKEOFF_CORE_AUTHORITY.md",
+      "bytes": 6339,
+      "sha256": "55177919118404a69d2d6d1815de067ab3811d4a606123ca475c473112440283"
+    },
+    {
+      "path": "02_FRONTEND_SPEC.md",
+      "bytes": 9098,
+      "sha256": "41149cfa2a5250b6152300662ed42d0d629d36db6b071f774e942060518fddf6"
+    },
+    {
+      "path": "03_BUSINESS_STATE_RULES.md",
+      "bytes": 9456,
+      "sha256": "0f97bcd16761ed7104ffae3301d6636c4c78740a2084636ab0f0d7479459bd9b"
+    },
+    {
+      "path": "04_BACKEND_ADAPTATION.md",
+      "bytes": 8915,
+      "sha256": "237074ff990f7dea98d4e89e5a973426859db5a18d3ad8296a9818739f70e17e"
+    },
+    {
+      "path": "05_ACCEPTANCE_AND_DELIVERY.md",
+      "bytes": 6446,
+      "sha256": "eb059d5f1ba53529a2946891deced90fb34fc8ac0009da82ecfcbcbf7e11f750"
+    },
+    {
+      "path": "06_REPO_BASELINE_AND_REFERENCES.md",
+      "bytes": 6165,
+      "sha256": "9d702abcfebc7c9346a39344132b862e49f7557c57625883fee6b549db7918ab"
+    },
+    {
+      "path": "CODEX_START_PROMPT.txt",
+      "bytes": 2926,
+      "sha256": "5739b9fe5d541efbade98b46c102c1882f1c66acb88953c5d6d2673a6601fdf4"
+    }
+  ],
+  "note": "Checksums cover content files only; MANIFEST does not include itself. They certify file integrity, not business correctness or software test success."
+}

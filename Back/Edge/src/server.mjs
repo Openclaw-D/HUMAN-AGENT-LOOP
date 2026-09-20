@@ -653,7 +653,7 @@ export async function main(argv) {
     for (const e of parsed.entries ?? []) {
       if (typeof e.credential !== 'string' || typeof e.principalId !== 'string') continue;
       const roles = Array.isArray(e.roles) ? e.roles : [];
-      const meta = { principalId: e.principalId, roles, label: typeof e.label === 'string' && e.label ? e.label : e.principalId, demo: e.demo === true };
+      const meta = { principalId: e.principalId, roles, label: typeof e.label === 'string' && e.label ? e.label : e.principalId, demo: e.demo === true, tenantId: typeof e.tenantId === 'string' && e.tenantId ? e.tenantId : null };
       byHash.set(createHash('sha256').update(e.credential).digest('hex'), meta);
       byPrincipal.set(e.principalId, { ...meta, credential: e.credential });
       list.push({ principalId: meta.principalId, roles: meta.roles, label: meta.label, demo: meta.demo });
@@ -676,7 +676,7 @@ export async function main(argv) {
       const entry = directory?.byHash.get(h) ?? redeemedDirectory.byHash.get(h);
       if (!entry) return { ok: false, reason: 'PRINCIPAL_UNTRUSTED' };
       if (!(await probeKernelCredential(credential))) return { ok: false, reason: 'PRINCIPAL_UNTRUSTED', note: 'A 目录探针未通过' };
-      return { ok: true, principalId: entry.principalId, roles: entry.roles };
+      return { ok: true, principalId: entry.principalId, roles: entry.roles, tenantId: entry.tenantId ?? null };
     }
     : null;
 
