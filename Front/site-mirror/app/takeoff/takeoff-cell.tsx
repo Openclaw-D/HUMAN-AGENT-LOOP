@@ -44,6 +44,9 @@ export function TakeoffCell({ cell, selected, highlighted, exact, onSelect, onHo
   if (highlighted) cls.push('tk-hi');
   if (exact) cls.push('tk-hi-exact');
   if (cell.frozen) cls.push('tk-frozen');
+  const blocked = cell.items.some((item) => item.tone === 'red' && !item.key.startsWith('adm-pb'));
+  const materialCount = cell.items.find((item) => item.key === 'adm-cnt')?.label.match(/\d+/)?.[0];
+  const status = cell.completed ? '已办结' : cell.frozen ? '待复核' : blocked ? '有阻断' : cell.needsReview ? '待处理' : cell.running ? '处理中' : materialCount ? `已收到 ${materialCount} 件` : ({ input: '查看材料', analysis: '查看分析', human: '待核验', closure: '待办结' })[cell.row];
   return (
     <button
       type="button"
@@ -63,7 +66,8 @@ export function TakeoffCell({ cell, selected, highlighted, exact, onSelect, onHo
           <path d={sectorPath(cell.displayBucket as 25 | 50 | 75)} fill="var(--tk-progress)" stroke="none" />
         )}
       </svg>
-      {cell.needsReview && <span className="tk-flag" aria-hidden="true">!</span>}
+      <span className="tk-cell-caption">{status}</span>
+      {cell.needsReview && <span className={`tk-flag${blocked ? '' : ' caution'}`} aria-hidden="true">!</span>}
       {cell.frozen && <LockGlyph />}
     </button>
   );

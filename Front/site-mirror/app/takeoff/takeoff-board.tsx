@@ -11,7 +11,7 @@ import { TakeoffCell } from './takeoff-cell';
 const DOMAIN_GLYPH: Record<TakeoffDomainId, string> = {
   opportunity: '▣', policy: '☰', credit: '⋂', commerce: '∮', asset: '◈',
 };
-const ROW_GLYPH: Record<TakeoffRowId, string> = { input: '⇥', analysis: '⚙', human: '✋', closure: '◉' };
+const ROW_GLYPH: Record<TakeoffRowId, string> = { input: '⇥', analysis: '⚙', human: '♙', closure: '◉' };
 
 export function TakeoffBoard({ cells, selected, onSelect }: {
   cells: TakeoffCellView[];
@@ -23,7 +23,7 @@ export function TakeoffBoard({ cells, selected, onSelect }: {
   return (
     <div className="tk-board-wrap" onMouseLeave={() => setHover(null)}>
       <div className="tk-board" role="grid" aria-label="二十格看板（五域×输入/智能/人工/完成；点格查看真实事项，不做手工状态切换）">
-        <div className="tk-corner" aria-hidden="true">域×行</div>
+        <div className="tk-corner" aria-hidden="true">工作进展</div>
         {TAKEOFF_DOMAINS.map((d) => (
           <div
             key={d.id}

@@ -210,14 +210,11 @@ export function TakeoffAssistants({ wb, customerId, source, onOpenMaterials, cel
         ))}
       </div>
       <div className="tk-asst-body">
-        <div className="tk-asst-note">
-          当前助手：<strong>{ASSISTANTS.find((a) => a.id === assistant)?.name}</strong>（助手平时安静：仅相关事件/@/点选触发；「受控简报」=服务端读面确定性组答，真实模型未授权 NOT_RUN，不伪装流式/自动回复；聊天文本不改变任何业务状态）
-          {cellContext ? ` · 上下文：${cellContext}` : ''}
-        </div>
+        <div className="tk-asst-note tk-assistant-context"><strong>{ASSISTANTS.find((a) => a.id === assistant)?.name}助手</strong><span>规则简报 · 未连接模型</span>{cellContext && <small>{cellContext}</small>}</div>
         <div className="tk-audience">
           <button className="tk-btn small" aria-pressed={audience === 'internal'} onClick={() => setAudience('internal')}>内部协作</button>
           <button className="tk-btn small" aria-pressed={audience === 'customer'} onClick={() => setAudience('customer')}>对客户</button>
-          <span className="tk-asst-note">内部讨论不自动发客户；页内消息办理（无真实外部渠道，不显示“已送达企业微信”）</span>
+          <span className="tk-asst-note">仅发送至所选会话</span>
         </div>
         <div className="tk-thread" ref={threadRef} aria-label={audience === 'customer' ? '对客户消息' : '内部消息'} aria-live="polite">
           {briefs.length > 0 && (
@@ -225,12 +222,12 @@ export function TakeoffAssistants({ wb, customerId, source, onOpenMaterials, cel
               {briefs.map((b) => (
                 <div key={b.key} role="listitem" className="tk-msg brief">
                   <div style={{ whiteSpace: 'pre-line' }}>{b.text}</div>
-                  <div className="tk-meta">{ASSISTANT_BRIEF_NAMES[b.kind]} · {new Date(b.at).toLocaleTimeString('zh-CN', { hour12: false })} · 确定性简报（只读；不入服务端线程，不产生业务写入）</div>
+                  <div className="tk-meta">{ASSISTANT_BRIEF_NAMES[b.kind]} · {new Date(b.at).toLocaleTimeString('zh-CN', { hour12: false })} · 只读简报</div>
                 </div>
               ))}
             </div>
           )}
-          {rows.length === 0 && briefs.length === 0 && <span className="tk-asst-note">（{audience === 'customer' ? '对客户' : '内部'}线程为空）</span>}
+          {rows.length === 0 && briefs.length === 0 && <span className="tk-asst-note">{audience === 'customer' ? '与客户沟通材料和需求。' : '选一个格子查看事项，或获取当前客户简报。'}</span>}
           {rows.map((m) => (
             <div key={m.key} className={`tk-msg${m.mine ? ' mine' : ''}`}>
               <div>{m.text}</div>
@@ -240,7 +237,7 @@ export function TakeoffAssistants({ wb, customerId, source, onOpenMaterials, cel
         </div>
         {pollNote && <span className="tk-asst-note">{pollNote}</span>}
         <div className="tk-toolbar" aria-label="工具栏（未接入能力明确禁用）">
-          <button className="tk-tool" disabled={briefBusy || !client} onClick={() => void requestBrief()} title="受控简报：读取当前客户收口/评估读面后确定性组答（替身，非真实模型；同一收口自动去重；只读不写）">{briefBusy ? '读取中…' : '受控简报'}</button>
+          <button className="tk-tool" disabled={briefBusy || !client} onClick={() => void requestBrief()} title="受控简报：读取当前客户收口/评估读面后确定性组答（替身，非真实模型；同一收口自动去重；只读不写）">{briefBusy ? '读取中…' : '客户简报'}</button>
           <button className="tk-tool" onClick={onOpenMaterials} title="上传原件（统一提交链，一次上传）">上传</button>
           <button className="tk-tool" onClick={() => insertMention(ASSISTANTS.find((a) => a.id === assistant)?.name ?? '')} title="在草稿中@当前助手（长按助手标签同效；@不是唯一入口）">@</button>
           <span style={{ flex: 1 }} />
@@ -262,12 +259,12 @@ export function TakeoffAssistants({ wb, customerId, source, onOpenMaterials, cel
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder={`向${audience === 'customer' ? '客户' : '内部协作'}发送消息…（Enter 发送，Shift+Enter 换行）`}
+          placeholder={audience === 'customer' ? '写给客户…' : '与团队协作…'}
           aria-label="消息草稿"
         />
         {imeNote && <span className="tk-asst-note">输入法候选确认不会误发送。</span>}
         <div className="tk-sendrow">
-          <span className="tk-asst-note" style={{ flex: 1 }}>草稿在切换助手时保留（一份草稿共用）。</span>
+          <span className="tk-asst-note" style={{ flex: 1 }}>Enter 发送 · Shift+Enter 换行</span>
           <button className="tk-btn primary" disabled={!draft.trim()} onClick={() => void send()}>发送</button>
         </div>
         <WbError error={err} onDismiss={() => setErr(null)} />

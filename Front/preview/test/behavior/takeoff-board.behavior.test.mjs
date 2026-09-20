@@ -119,7 +119,7 @@ test('顶部摘要：待补/待评估/待估如实；有候选=同版金额+倾�
   assert.ok(screen.getByText('待评估'), '建议期限待评估（候选未登记期限字段，不是0）');
   assert.ok(screen.getByText('口径未配置'), '参考价格不编造');
   assert.ok(screen.getByText('待估'), '预计完成=待估（不给假倒计时）');
-  assert.ok(screen.getByText(/候选倾向：可做（支持）（authority=none）/), '方案标记倾向');
+  assert.ok(screen.getByTitle(/候选倾向：可做（支持）（authority=none）/), '方案标记倾向');
   cleanup();
 });
 
@@ -146,8 +146,8 @@ test('点格→真实事项分层详情；允许动作打开复用面板；关�
   assert.ok(screen.getByText('当前问题'));
   assert.ok(screen.getByText('依据位置'));
   assert.ok(screen.getByText('需要谁做什么'));
-  assert.ok(screen.getByText('允许动作（打开真实办理面板；不做手工改状态）'));
-  assert.ok(screen.getByText('本轮输出与历史（同源记录投影）'));
+  assert.ok(screen.getByText('下一步'));
+  assert.ok(screen.getByText('办理进展'));
   assert.match(drawer.textContent, /evidence_artifacts/, '依据引用服务端字段');
 
   fireEvent.click(screen.getByRole('button', { name: '打开材料·上传' }));
@@ -330,7 +330,7 @@ test('admission 投影合并：到件数/失败卡点入格；requestedAmount/�
   await waitFor(() => assert.ok(screen.getByText('8,000 万元')), '申请金额=admission 权威需求金额');
   assert.ok(screen.getByText('36 个月'), '建议期限=候选同版字段');
   assert.ok(screen.getByText(/780 万元 \/ 元\/年/), '参考价格=数值+单位');
-  assert.ok(screen.getByText(/候选 r2 · 输入 v3/), '方案标记带候选修订与输入版本');
+  assert.ok(screen.getByTitle(/候选 r2 · 输入 v3/), '方案标记带候选修订与输入版本');
   await screen.findByRole('button', { name: /资产，输入，.*运行中/ });
   fireEvent.click(screen.getByRole('button', { name: /资产，输入，/ }));
   const drawer = await screen.findByRole('dialog', { name: /资产 · 输入 格事项/ });

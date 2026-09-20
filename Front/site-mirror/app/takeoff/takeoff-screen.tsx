@@ -1,3 +1,4 @@
+import { workRoleName } from './role-entry';
 // TAKEOFF-FA-1.0.0 · 主屏（02路）：顶部客户与同版候选方案摘要；左侧二十格看板（~80%）；
 // 右侧六助手（~20%）；两主体区向下铺满。流程/记录/材料/待办只做入口（抽屉内消费同源记录）。
 // 数据：workspace 快照 + A artifacts/处理通道/依据包详情 真实读面；格子=只读投影，点击看真实事项。
@@ -105,49 +106,37 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
   const drawerTitle = drawer === null ? ''
     : drawer.kind === 'cell' ? `${takeoffDomainName(drawer.cell.domain)} · ${takeoffRowName(drawer.cell.row)} 格事项`
     : drawer.kind === 'panel' ? PANEL_TITLE[drawer.panel]
-    : drawer.kind === 'flow' ? '流程（只读依赖/办理图）'
-    : drawer.kind === 'records' ? '记录（服务端事件时间轴）'
-    : drawer.kind === 'todos' ? '待办（谁处理/什么/完成判据）'
+    : drawer.kind === 'flow' ? '办理流程'
+    : drawer.kind === 'records' ? '办理记录'
+    : drawer.kind === 'todos' ? '待办事项'
     : '客户主体信息';
 
   return (
     <div className="tk-root">
       <header className="tk-top">
-        <span className="tk-cust">
-          <button className="tk-cust-name" onClick={() => setDrawer({ kind: 'customer' })} title="点击查看主体信息（不同主体同名不自动合并）">
-            {top.customer.displayName || '客户工作区'}
-          </button>
-          <span className="tk-cust-id">{top.customer.customerId ?? ''}{top.customer.status ? ` · ${top.customer.status}` : ''}</span>
-        </span>
-        <span className={`tk-kv${top.requestedAmount.text === '待补' ? ' warn' : ''}`} title={top.requestedAmount.note}>
-          <span className="k">申请金额</span><span className="v">{top.requestedAmount.text}</span>
-        </span>
-        <span className={`tk-kv${top.suggestedAmount.text === '待评估' ? ' warn' : ''}`} title={top.suggestedAmount.note}>
-          <span className="k">建议额度</span><span className="v">{top.suggestedAmount.text}</span>
-        </span>
-        <span className="tk-kv warn" title={top.suggestedTerm.note}>
-          <span className="k">建议期限</span><span className="v">{top.suggestedTerm.text}</span>
-        </span>
-        <span className="tk-kv warn" title={top.referencePrice.note}>
-          <span className="k">参考价格</span><span className="v">{top.referencePrice.text}</span>
-        </span>
-        <span className="tk-kv warn" title={top.expect.note}>
-          <span className="k">预计</span><span className="v">{top.expect.text}</span>
-        </span>
-        <span className="tk-planmark" aria-label="方案标记（同一候选方案版本）">
-          {top.planMarks.map((m, i) => <span key={i} style={{ display: 'block' }}>· {m}</span>)}
-          {top.changedDomains.length > 0 && <span className="tk-badge frost" style={{ marginTop: 2 }}>冻结影响：{top.changedDomains.map(takeoffDomainName).join('/')}</span>}
-          {top.gateResult != null && <span style={{ display: 'block' }}>· Gate：{top.gateResult === 'approved' ? '通过（规则回执）' : top.gateResult === 'rejected' ? '拒绝（终态）' : String(top.gateResult)}</span>}
-        </span>
-        <span className="tk-top-entries">
-          <span className="tk-badge">{phaseText}</span>
-          <button className="tk-btn small" onClick={() => setDrawer({ kind: 'flow' })}>流程</button>
-          <button className="tk-btn small" onClick={() => setDrawer({ kind: 'records' })}>记录</button>
-          <button className="tk-btn small" onClick={() => openPanel('materials')}>材料</button>
-          <button className="tk-btn small" onClick={() => setDrawer({ kind: 'todos' })}>待办</button>
-          <button className="tk-btn small ghost" onClick={onBackToDirectory} title="返回当前上层入口（客户目录）；不新建目录项目">返回</button>
-          <button className="tk-btn small danger" onClick={() => setEndOpen(true)}>结束</button>
-        </span>
+        <div className="tk-summary">
+          <button className="tk-cust-name" onClick={() => setDrawer({ kind: 'customer' })} title={top.customer.displayName || '客户详情'}>{top.customer.displayName || '客户工作区'}</button>
+          <div className="tk-summary-fields">
+            {[['申请金额', top.requestedAmount], ['建议额度', top.suggestedAmount], ['建议期限', top.suggestedTerm], ['参考价格', top.referencePrice], ['预计', top.expect]].map(([label, value]) => {
+              const field = value as { text: string; note?: string };
+              return <span className="tk-kv" key={String(label)} title={field.note}><span className="k">{String(label)}</span><span className="v">{field.text}</span></span>;
+            })}
+          </div>
+          <button className="tk-btn small ghost tk-role-switch" onClick={onLogout}>{workRoleName(wb.session?.roles)} · 切换角色</button>
+        </div>
+        <div className="tk-workbar">
+          <span className="tk-context-label">首次回租 · 准入预评估</span>
+          <button className="tk-plan-link" onClick={() => openPanel('proposal')} title={top.planMarks.join(' · ')}>{top.changedDomains.length ? '方案待复核' : '查看建议方案'} ↗</button>
+          <span className="tk-top-entries">
+            {wb.phase !== 'live' && <span className="tk-badge">{phaseText}</span>}
+            <button className="tk-btn small ghost" onClick={() => setDrawer({ kind: 'flow' })}>流程</button>
+            <button className="tk-btn small ghost" onClick={() => setDrawer({ kind: 'records' })}>记录</button>
+            <button className="tk-btn small ghost" onClick={() => openPanel('materials')}>材料</button>
+            <button className="tk-btn small ghost" onClick={() => setDrawer({ kind: 'todos' })}>待办</button>
+            <button className="tk-btn small ghost" onClick={onBackToDirectory}>切换客户</button>
+            <button className="tk-btn small primary" onClick={() => setEndOpen(true)}>结束</button>
+          </span>
+        </div>
       </header>
       <WbError error={wb.error} onDismiss={() => wb.setError(null)} />
       <div className="tk-body">

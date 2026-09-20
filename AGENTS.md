@@ -1,3 +1,5 @@
+> 2026-09-20 UI-R1 用户最新决定：前端由 Codex 全程直接实施、排版纠偏与验收，替代旧的中大型前端交 ZCode 分工。首屏选角色，无前台账号密码、技术登录和服务地址配置；后台身份、客户隔离及记录保留。黑白灰为主，红色阻断、黄色局部进展/关注（文字区分）、绿色真实办结。详见 docs/takeoff/first-admission-v1/FRONTEND_UI_R1.md。
+
 > 2026-09-20 当前最高产品基线：`docs/takeoff/first-admission-v1/01_TAKEOFF_CORE_AUTHORITY.md`，版本 **TAKEOFF-FA-1.0.0**。仅做新客户首次回租准入与客户授信预评估，终点为有权人员确认预评估结论；不做正式额度批准、提款、复贷、租后、结清。客户为主对象，五列四行矩阵＋右侧六助手按02文件实施；资产为准入资产核验，可与信审并行。以下旧全生命周期、项目主对象、不以矩阵为主界面及额度使用率等冲突产品方向均被本版替代，仅作历史。安全、权限、凭据、Git和资源保护纪律继续有效。
 >
 > 接续顺序：先读 `docs/takeoff/first-admission-v1/00_START_HERE.md`；当前盘点与实施入口见同目录 `CURRENT_STATE.md`、`ADAPTATION_MAP.md`、`IMPLEMENTATION_PROMPTS.md`。旧任务书不自动恢复执行。本轮文档对齐不等于代码完成或产品验收通过。

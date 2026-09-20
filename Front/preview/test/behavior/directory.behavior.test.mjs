@@ -1,105 +1,70 @@
-// 任务01 行为测试·客户目录（用户行为，非实现同构辅助函数）：
-// 1) 新建客户只触发一次打开（修复：原实现建档后 wb.openCustomer + onOpen 二次打开）；
-// 2) 搜索提示与任务03目录口径一致（名称/标识匹配由服务端裁决），持有标识者也可走"以标识打开"统一入口；
-// 3) 最近访问按登录身份分区：换身份看不到上一个人的客户 ID。
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { render, screen, fireEvent, waitFor, cleanup, fakeSession } from './harness.mjs';
-
 const React = (await import('react')).default;
 const { CustomerDirectory } = await import('../../../site-mirror/app/workbench/customer-directory.tsx');
-
-function makeWb(overrides = {}) {
-  const calls = { openCustomer: [], createCustomer: [], directory: [] };
-  const client = {
-    directory: async (search, cursor) => {
-      calls.directory.push({ search, cursor });
-      return { kind: 'ok', customers: [{ customerId: 'cus_1', displayName: '青山机械（合成）', status: 'active' }], nextCursor: null };
-    },
-    createCustomer: async (body) => { calls.createCustomer.push(body); return { ok: true, customerId: 'cus_new_1' }; },
-  };
-  const wb = {
-    client,
-    session: fakeSession('biz-1'),
-    error: null,
-    setError: () => {},
-    logout: () => {},
-    openCustomer: async (cid) => { calls.openCustomer.push(cid); return true; },
-    ...overrides,
-  };
-  return { wb, calls };
+const { RoleEntry } = await import('../../../site-mirror/app/takeoff/role-entry.tsx');
+function makeWb() {
+  const calls = { create: [], directory: [] };
+  const wb = { session: {...fakeSession('biz-1'), tenantId:'tenant-synthetic'}, error:null, setError(){}, logout(){}, client: {
+    async directory(search, cursor) { calls.directory.push({search,cursor}); return {kind:'ok',customers:[{customerId:'cus_1',displayName:'青山机械（合成）'}]}; },
+    async createCustomer(body) { calls.create.push(body); return {customerId:'cus_new_1'}; }
+  }};
+  return {wb,calls};
 }
-
-test('新建客户只打开一次：建档后 openCustomer 恰好一次，onOpen 不再触发第二次', async (t) => {
-  t.after(() => cleanup());
-  const { wb, calls } = makeWb();
-  const onOpenCalls = [];
-  render(React.createElement(CustomerDirectory, { wb, onOpen: (id) => onOpenCalls.push(id) }));
-  await waitFor(() => assert.ok(screen.getByText('青山机械（合成）')));
-
-  fireEvent.change(screen.getByPlaceholderText('如 演示·青山机械制造（合成）'), { target: { value: '演示·测试客户' } });
-  fireEvent.change(screen.getByPlaceholderText('如 USCC-DEMO-0001'), { target: { value: 'USCC-DEMO-9001' } });
-  fireEvent.click(screen.getByText('建档并进入'));
-
-  await waitFor(() => assert.equal(calls.openCustomer.length, 1));
-  assert.equal(calls.createCustomer.length, 1);
-  assert.deepEqual(calls.openCustomer, ['cus_new_1'], '建档后只经统一入口打开一次');
-  assert.deepEqual(onOpenCalls, [], 'onOpen 不应再触发第二次打开');
+test('新建折叠：提交实际租户，只通过统一入口打开一次', async(t)=>{
+  t.after(cleanup); const {wb,calls}=makeWb(); const opened=[];
+  render(React.createElement(CustomerDirectory,{wb,onOpen:id=>opened.push(id)}));
+  await screen.findByText('青山机械（合成）');
+  assert.equal(screen.queryByLabelText('客户全称'),null);
+  fireEvent.click(screen.getByRole('button',{name:'＋ 新建客户'}));
+  fireEvent.change(screen.getByLabelText('客户全称'),{target:{value:'合成新客户'}});
+  fireEvent.change(screen.getByLabelText('统一社会信用代码'),{target:{value:'SYNTH-001'}});
+  fireEvent.click(screen.getByRole('button',{name:'创建并进入'}));
+  await waitFor(()=>assert.deepEqual(opened,['cus_new_1']));
+  assert.equal(calls.create.length,1); assert.equal(calls.create[0].tenantId,'tenant-synthetic');
 });
-
-test('搜索能力与任务03目录口径一致（名称/标识服务端裁决）；持有标识者可用"以标识打开"统一入口', async (t) => {
-  t.after(() => cleanup());
-  const { wb, calls } = makeWb();
-  const onOpenCalls = [];
-  render(React.createElement(CustomerDirectory, { wb, onOpen: (id) => onOpenCalls.push(id) }));
-  await waitFor(() => assert.ok(screen.getByText('青山机械（合成）')));
-
-  assert.ok(screen.getByPlaceholderText('按客户名称/标识搜索（回车）'), '搜索提示与任务03目录口径一致（名称+标识，服务端裁决）');
-  assert.ok(screen.getByText(/匹配口径由服务端目录决定/), '如实标注匹配口径由服务端决定');
-
-  fireEvent.change(screen.getByLabelText('客户标识直接打开'), { target: { value: 'cus_direct_9' } });
-  fireEvent.click(screen.getByText('以标识打开'));
-  await waitFor(() => assert.deepEqual(onOpenCalls, ['cus_direct_9']), '标识直开与目录行同走 onOpen 统一入口');
-  cleanup();
-
-  // 换一个标识再试：入口不因标识内容变化；授权与否由 openCustomer 的服务端裁决结果呈现
-  const wb2 = makeWb({ openCustomer: async () => false });
-  const onOpenCalls2 = [];
-  render(React.createElement(CustomerDirectory, { wb: wb2.wb, onOpen: (id) => onOpenCalls2.push(id) }));
-  await waitFor(() => assert.ok(screen.getByText('青山机械（合成）')));
-  fireEvent.change(screen.getByLabelText('客户标识直接打开'), { target: { value: 'cus_secret' } });
-  fireEvent.click(screen.getByText('以标识打开'));
-  await waitFor(() => assert.deepEqual(onOpenCalls2, ['cus_secret']));
+test('搜索交给授权目录；点客户只打开一次；不暴露技术配置',async(t)=>{
+  t.after(cleanup); const {wb,calls}=makeWb(); const opened=[];
+  render(React.createElement(CustomerDirectory,{wb,onOpen:id=>opened.push(id)}));
+  await screen.findByText('青山机械（合成）');
+  fireEvent.change(screen.getByLabelText('搜索客户'),{target:{value:'青山'}});
+  fireEvent.click(screen.getByRole('button',{name:'搜索'}));
+  await waitFor(()=>assert.equal(calls.directory.at(-1).search,'青山'));
+  fireEvent.click(screen.getByRole('button',{name:/青山机械/}));
+  assert.deepEqual(opened,['cus_1']); assert.equal(screen.queryByLabelText('Edge 服务地址'),null);
 });
-
-test('最近访问按身份分区：身份 A 的最近客户不出现在身份 B 的目录页', async (t) => {
-  t.after(() => cleanup());
-  sessionStorage.clear();
-  sessionStorage.setItem('jw-wb-recent:alice', JSON.stringify(['cus_a1']));
-
-  const wbA = makeWb();
-  wbA.wb.session = fakeSession('alice');
-  render(React.createElement(CustomerDirectory, { wb: wbA.wb, onOpen: () => {} }));
-  await waitFor(() => assert.ok(screen.getByText('cus_a1', { selector: 'button' })), '身份 A 能看到自己的最近访问');
-  cleanup();
-
-  const wbB = makeWb();
-  wbB.wb.session = fakeSession('bob');
-  render(React.createElement(CustomerDirectory, { wb: wbB.wb, onOpen: () => {} }));
-  await waitFor(() => assert.ok(screen.getByText('青山机械（合成）')));
-  assert.equal(screen.queryByText('cus_a1'), null, '身份 B 看不到 alice 的最近客户');
-  cleanup();
-
-  // 身份 A 打开目录行 → 记入 alice 桶（不串到别的桶）
-  sessionStorage.clear();
-  const wbA2 = makeWb();
-  wbA2.wb.session = fakeSession('alice');
-  const onOpenCalls = [];
-  render(React.createElement(CustomerDirectory, { wb: wbA2.wb, onOpen: (id) => onOpenCalls.push(id) }));
-  await waitFor(() => assert.ok(screen.getByText('青山机械（合成）')));
-  fireEvent.click(screen.getByText('打开工作本'));
-  await waitFor(() => assert.deepEqual(onOpenCalls, ['cus_1']));
-  const aliceBucket = JSON.parse(sessionStorage.getItem('jw-wb-recent:alice'));
-  assert.ok(aliceBucket.includes('cus_1'), '打开的客户记入当前身份的最近访问');
-  assert.equal(sessionStorage.getItem('jw-wb-recent:bob'), null, '不产生其他身份的桶');
+test('旧最近访问不越过服务端目录；读取失败不冒充空客户',async(t)=>{
+  t.after(cleanup); sessionStorage.setItem('jw-wb-recent:biz-1',JSON.stringify(['cus_private']));
+  const {wb}=makeWb(); wb.client.directory=async()=>({kind:'unknown',code:'UNAVAILABLE'});
+  render(React.createElement(CustomerDirectory,{wb,onOpen(){}}));
+  await screen.findByRole('alert'); assert.equal(screen.queryByText('cus_private'),null);
+  assert.equal(screen.queryByText('还没有客户'),null); sessionStorage.clear();
+});
+test('角色首屏只交换服务端提供的身份，无账号密码与登录前置页',async(t)=>{
+  t.after(cleanup); const ids=[]; const wb={identities:[{principalId:'credit-real',label:'信审',roles:['credit']}],loginWithIdentity:async(id)=>ids.push(id)};
+  render(React.createElement(RoleEntry,{wb}));
+  fireEvent.click(screen.getByRole('button',{name:/信审 判断风险/}));
+  await waitFor(()=>assert.deepEqual(ids,['credit-real']));
+  assert.equal(screen.queryByRole('textbox'),null);
+  assert.equal(screen.getByRole('button',{name:/政策 核对准入/}).disabled,true);
+});
+test('服务与管理员身份不伪装成业务角色；多身份必须明确选择',async(t)=>{
+  t.after(cleanup); const ids=[]; const wb={identities:[
+    {principalId:'admin',label:'管理员',roles:['admin','business']},
+    {principalId:'service',label:'机器',roles:['service','credit']},
+    {principalId:'a',label:'业务甲',roles:['business']}, {principalId:'b',label:'业务乙',roles:['business']}],loginWithIdentity:async(id)=>ids.push(id)};
+  render(React.createElement(RoleEntry,{wb}));
+  assert.equal(screen.getByRole('button',{name:/信审 判断风险/}).disabled,true);
+  fireEvent.click(screen.getByRole('button',{name:/业务 了解客户/})); assert.deepEqual(ids,[]);
+  fireEvent.click(screen.getByRole('button',{name:'业务乙'}));
+  await waitFor(()=>assert.deepEqual(ids,['b']));
+});
+test('角色进入失败可重试，不伪装为已进入',async(t)=>{
+  t.after(cleanup); let tries=0;
+  const wb={identities:[{principalId:'b',label:'业务',roles:['business']}],loginWithIdentity:async()=>{tries++;throw Error('offline');}};
+  render(React.createElement(RoleEntry,{wb}));
+  fireEvent.click(screen.getByRole('button',{name:/业务 了解客户/}));
+  await screen.findByRole('alert'); assert.equal(tries,1);
+  assert.equal(screen.getByRole('button',{name:/业务 了解客户/}).disabled,false);
 });

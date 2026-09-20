@@ -542,7 +542,8 @@ export function deriveTakeoffTop(src: TakeoffSource): TakeoffTopSummary {
   const requested = adm?.request?.requestedAmount ?? latest?.requestedAmountMinor ?? null;
   const term = cand?.suggestedTermMonths ?? latest?.candidate?.suggestedTermMonths ?? null;
   const price = cand?.referencePriceMinor ?? latest?.candidate?.referencePriceMinor ?? null;
-  const priceUnit = cand?.priceUnit ?? latest?.candidate?.priceUnit ?? null;
+  const rawPriceUnit = cand?.priceUnit ?? latest?.candidate?.priceUnit ?? null;
+  const priceUnit = rawPriceUnit === 'cny_per_annum' ? '年' : rawPriceUnit;
   const priceBasis = cand?.priceBasis ?? latest?.candidate?.priceBasis ?? null;
   return {
     customer: {

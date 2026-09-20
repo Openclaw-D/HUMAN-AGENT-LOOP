@@ -20,6 +20,12 @@ export const DOMAIN_BY_EVIDENCE_KIND = {
 
 const isBlank = (v) => v === null || v === undefined;
 
+// A 的原件登记带 material. 命名空间；解析衍生记录不得重复计为到件。
+function evidenceDomains(artifact) {
+  const kind = String(artifact?.kind ?? '').replace(/^material\./, '');
+  return DOMAIN_BY_EVIDENCE_KIND[kind] ?? [];
+}
+
 function currentArtifacts(artifacts) {
   if (!Array.isArray(artifacts)) return [];
   return artifacts.filter((a) => a && isBlank(a.supersededBy) && isBlank(a.superseded_by)
@@ -61,12 +67,12 @@ export function deriveAdmission({ customerId, assessments = [], artifacts = [], 
   const cells = [];
   for (const domain of TAKEOFF_DOMAINS) {
     // 输入行：权威材料清单按冻结映射归domain；必要集合分母（requiredItemCount）无权威来源 → null。
-    const feeding = current.filter((a) => (DOMAIN_BY_EVIDENCE_KIND[String(a.kind)] ?? []).includes(domain));
+    const feeding = current.filter((a) => evidenceDomains(a).includes(domain));
     const input = cell(domain, 'input');
     input.satisfiedItemCount = feeding.length; // 到件数是权威事实；比例不硬算（分母未知）
     input.allowedActions = ['upload_evidence', 'open_materials'];
     for (const a of artifacts) {
-      if (!(DOMAIN_BY_EVIDENCE_KIND[String(a.kind)] ?? []).includes(domain)) continue;
+      if (!evidenceDomains(a).includes(domain)) continue;
       const stage = a.procStage ?? a.proc_stage ?? null;
       const failure = a.procFailureReason ?? a.proc_failure_reason ?? null;
       if (failure) {

@@ -5,17 +5,17 @@
    动效工程初始值：悬浮 120–160ms、点选/抽屉 160–220ms、状态 200–300ms；尊重 prefers-reduced-motion。 */
 
 :root {
-  --tk-paper: #F8F5E9;
-  --tk-paper-deep: #F1ECDA;
+  --tk-paper: #F7F7F5;
+  --tk-paper-deep: #EFEFED;
   --tk-ink: #222222;
   --tk-dim: #737373;
   --tk-line: #B8B8B8;
   --tk-white: #FFFFFF;
   --tk-progress: #EED267;
-  --tk-progress-soft: #F6E9B5;
+  --tk-progress-soft: #F4E7B4;
   --tk-done: #4B7B45;
   --tk-alert: #B63737;
-  --tk-hover-tint: #F3ECCF;
+  --tk-hover-tint: #F0F0EC;
 }
 
 /* 纸底+静态纤维噪声（feTurbulence 生成一次的低对比平铺纹理；不脏、不厚黄、不影响小字） */
@@ -196,3 +196,97 @@
 /* 助手受控简报（确定性替身）：纸面卡，本地展示不入服务端线程 */
 .tk-briefs { display: flex; flex-direction: column; gap: 6px; margin-bottom: 6px; }
 .tk-msg.brief { max-width: 100%; background: var(--tk-paper-soft, #FCFAF2); border-style: dashed; font-size: 12px; }
+
+/* UI-R1 · 2026-09-20：角色直达、黑白灰、状态色克制。 */
+.tk-root { background-image: none; font-family: Inter, 'Segoe UI', 'Microsoft YaHei', sans-serif; }
+.tk-root *, .tk-root *::before, .tk-root *::after { box-sizing: border-box; }
+.tk-entry-brand { display:flex; align-items:center; gap:18px; padding:24px 40px; border-bottom:1px solid #e4e4e0; flex:none; }
+.tk-entry-brand strong { font-size:24px; letter-spacing:4px; }
+.tk-entry-brand > span { color:var(--tk-dim); font-size:13px; }
+.tk-role-switch { margin-left:auto; white-space:nowrap; }
+.tk-entry { min-height:560px; }
+.tk-role-content { width:min(1120px, calc(100% - 80px)); margin:auto; padding:36px 0; }
+.tk-eyebrow { color:#777; font-size:12px; letter-spacing:2px; }
+.tk-role-content h1, .tk-directory-content h1 { margin:12px 0; font-size:clamp(26px, 3vw, 38px); font-weight:550; letter-spacing:-1px; }
+.tk-role-content > p { color:#777; }
+.tk-role-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:16px; margin-top:42px; }
+.tk-role-card { width:100%; display:flex; flex-direction:column; align-items:flex-start; gap:12px; padding:28px 22px; min-height:240px; border:1px solid #deded9; border-radius:14px; background:#fff; cursor:pointer; text-align:left; transition:transform .15s,border-color .15s; }
+.tk-role-card:hover:not(:disabled) { border-color:#222; transform:translateY(-3px); }
+.tk-role-card:disabled { cursor:default; color:#9b9b96; background:#f1f1ee; }
+.tk-role-symbol { width:44px; height:44px; border:1px solid #deded9; border-radius:50%; display:grid; place-items:center; font-size:25px; }
+.tk-role-card strong { font-size:21px; font-weight:600; }
+.tk-role-card > span:not(.tk-role-symbol) { font-size:12px; color:#777; }
+.tk-role-card small { margin-top:auto; font-size:12px; padding-top:12px; }
+.tk-role-people { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+.tk-entry-footer { padding:24px 40px; color:#8a8a85; font-size:12px; }
+.tk-entry-hint { font-size:12px; }
+.tk-directory-content { width:min(1080px, calc(100% - 80px)); margin:0 auto; padding:32px 0; display:flex; flex-direction:column; flex:1; min-height:0; }
+.tk-directory-title { display:flex; align-items:center; justify-content:space-between; }
+.tk-search { display:flex; gap:10px; margin:20px 0; }
+.tk-search input, .tk-new-customer input { border:1px solid #ddd; border-radius:7px; background:#fff; padding:11px 14px; font:inherit; min-width:0; }
+.tk-search input { flex:1; }
+.tk-customer-list { overflow:auto; flex:1; min-height:0; border-top:1px solid #deded9; }
+.tk-customer-row { display:flex; width:100%; align-items:center; gap:18px; padding:20px 12px; text-align:left; border:0; border-bottom:1px solid #e4e4e0; background:transparent; cursor:pointer; }
+.tk-customer-row:hover { background:#fff; }
+.tk-customer-monogram { width:44px; height:44px; display:grid; place-items:center; border:1px solid #deded9; border-radius:10px; background:#fff; font-size:18px; flex:none; }
+.tk-customer-copy { display:flex; flex-direction:column; gap:5px; min-width:0; }
+.tk-customer-copy strong { font-size:15px; font-weight:550; }
+.tk-customer-copy small { color:#888; font-size:11px; }
+.tk-customer-enter { margin-left:auto; white-space:nowrap; font-size:12px; color:#777; }
+.tk-new-customer { display:flex; align-items:end; gap:12px; padding:18px; border:1px solid #ddd; border-radius:10px; margin-bottom:20px; }
+.tk-new-customer label { flex:1; display:flex; flex-direction:column; gap:7px; font-size:12px; }
+.tk-new-customer input { width:100%; }
+.tk-directory-empty { padding:48px; text-align:center; color:#777; }
+.tk-top { display:block; padding:0 24px; background:#fff; border-color:#ddd; }
+.tk-summary { display:flex; align-items:center; gap:24px; min-height:88px; }
+.tk-top .tk-cust-name { max-width:240px; min-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-decoration:none; font-size:19px; text-align:left; }
+.tk-summary-fields { display:flex; flex:1; gap:clamp(16px,3vw,52px); justify-content:center; }
+.tk-kv { min-width:65px; gap:4px; }
+.tk-kv .k { font-size:11px; }
+.tk-kv .v { font-size:16px; font-variant-numeric:tabular-nums; }
+.tk-workbar { display:flex; align-items:center; gap:20px; border-top:1px solid #eee; min-height:42px; }
+.tk-context-label { color:#777; font-size:11px; white-space:nowrap; }
+.tk-plan-link { border:0; background:none; color:#555; font-size:11px!important; cursor:pointer; white-space:nowrap; }
+.tk-btn { border-color:#d1d1cd; border-radius:6px; padding:7px 14px; }
+.tk-btn.ghost { background:transparent; border-color:transparent; }
+.tk-btn.small { padding:5px 9px; }
+.tk-top-entries { flex-wrap:nowrap; gap:5px; }
+.tk-body { grid-template-columns:minmax(0,4fr) minmax(310px,1fr); }
+.tk-board-wrap { padding:16px 22px 22px 14px; }
+.tk-board { grid-template-columns:64px repeat(5,minmax(84px,1fr)); grid-template-rows:48px repeat(4,minmax(90px,1fr)); gap:10px; min-height:450px; }
+.tk-hcell { font-size:16px; font-weight:550; }
+.tk-hcell.rowh { font-size:13px; font-weight:500; }
+.tk-corner { align-items:center; font-size:10px; color:#969691; }
+.tk-cell { background:#fff; border-color:#e0e0dc; border-radius:12px; }
+.tk-cell[aria-selected='true'] { border-width:1px; box-shadow:inset 0 0 0 1px #333; }
+.tk-flag { top:10px; right:10px; }
+.tk-right { border-color:#ddd; background:#fff; }
+.tk-asst-tabs { min-height:54px; border-color:#e6e6e2; }
+.tk-asst-tab { padding:14px 3px; font-size:12px; }
+.tk-asst-tab[aria-selected='true'] { background:#f5f5f2; }
+.tk-asst-body { padding:16px 14px; gap:12px; }
+.tk-assistant-context { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.tk-assistant-context strong { color:#333; font-size:12px; }
+.tk-assistant-context span { margin-left:auto; font-size:10px; }
+.tk-assistant-context small { width:100%; }
+.tk-audience { flex-wrap:wrap; }
+.tk-audience .tk-asst-note { display:none; }
+.tk-thread { background:#fafaf8; border:0; border-radius:8px; padding:12px; }
+.tk-thread > .tk-asst-note { line-height:1.9; margin:auto; max-width:210px; text-align:center; }
+.tk-msg.mine { background:#ededeb; }
+.tk-draft { min-height:82px; padding:12px; border-color:#ddd; }
+.tk-tool { border-color:transparent; background:transparent; }
+.tk-toolbar { gap:2px; }
+.tk-drawer { border-left:1px solid #ddd; background:#fafaf8; }
+.tk-drawer-head { padding:18px 22px; background:#fff; border-color:#e3e3df; }
+.tk-drawer-body { padding:22px; }
+@media(max-width:1100px) { .tk-summary { gap:14px; } .tk-top { padding:0 14px; } .tk-summary-fields { gap:12px; } .tk-top .tk-cust-name { max-width:145px; } .tk-kv .v { font-size:14px; } .tk-role-grid { gap:10px; } .tk-role-card { padding:20px 14px; } .tk-body { grid-template-columns:minmax(580px,1fr) 300px; overflow:auto; } }
+@media(prefers-reduced-motion:reduce) { .tk-role-card { transition:none; } .tk-role-card:hover:not(:disabled) { transform:none; } }
+.tk-cell { flex-direction:column; gap:8px; }
+.tk-cell-caption { font-size:11px; color:#83837e; }
+.tk-flag.caution { background:var(--tk-progress); color:#444; }
+.tk-detail-sec { padding-bottom:20px; margin-bottom:20px; border-bottom:1px solid #e5e5e0; }
+.tk-detail-sec h3 { color:#333; font-size:14px; margin-bottom:12px; }
+.tk-detail-sec .tk-item { flex-wrap:wrap; line-height:1.8; margin:8px 0; }
+.tk-technical { color:#888; font-size:11px; line-height:1.8; }
+.tk-technical summary { cursor:pointer; }

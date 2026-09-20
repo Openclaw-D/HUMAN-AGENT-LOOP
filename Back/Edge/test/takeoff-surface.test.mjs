@@ -205,3 +205,19 @@ test('读面：assessments/:id/candidates 白名单登记；finalization 面tid/
     channel.close();
   }
 });
+
+test('真实 A 原件 material.kind 归域，解析衍生件不重复计数，未知分母不伪造进度', () => {
+  const result = deriveAdmission({customerId:'synthetic-c',artifacts:[
+    {artifactId:'a',kind:'material.financial_statement'},
+    {artifactId:'b',kind:'material.equipment_list'},
+    {artifactId:'parsed',kind:'parse_extraction'},
+    {artifactId:'old',kind:'material.equipment_list',supersededBy:'b'},
+    {artifactId:'duplicate',kind:'material.equipment_list',duplicateOf:'b'},
+    {artifactId:'unknown',kind:'material.unconfigured_kind'},
+  ]});
+  for (const [domain,count] of [['business',1],['credit',1],['commerce',2],['asset',1],['policy',0]]) {
+    const cell=result.cells.find(c=>c.domain===domain&&c.row==='input');
+    assert.equal(cell.satisfiedItemCount,count,domain);
+    assert.equal(cell.displayBucket,null); assert.equal(cell.completed,false);
+  }
+});
