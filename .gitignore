@@ -82,3 +82,10 @@ docs/**/run-log.jsonl
 docs/**/*.log
 docs/**/perf/results-*.json
 docs/**/RESOURCES.json
+
+# V0.4: keep these raw acceptance snapshots local; retain scripts and summaries.
+/docs/v0.4/results/parallel-arrows-front/before-selection.json
+/docs/v0.4/results/parallel-arrows-front/medium-initial.json
+/docs/v0.4/results/parallel-arrows-front/bad-initial.json
+/docs/v0.4/results/parallel-arrows-front/medium-ui-reassessed.json
+/docs/v0.4/results/parallel-arrows-front/final-three-cases.json

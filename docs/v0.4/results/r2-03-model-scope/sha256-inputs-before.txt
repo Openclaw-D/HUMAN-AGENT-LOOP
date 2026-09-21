@@ -1,0 +1,7 @@
+41a7029d7177ef7c6e67fff563ca612bfb44c1fd5db98b6a9b3fa622af8b91b3 *Back/Edge/src/assistant-model.mjs (ownership, before)
+31ca78085e0687db0b8ccef3264b0189670cda4b10e358f849b583f5d0cfca59 *Back/Edge/src/assistant-decisions.mjs (ownership, before)
+9da6362de1b6408e30078e35c7a419881debee531feaa20d3916b76e524a92e4 *Back/Edge/src/assistant-evidence-scope.mjs (readonly input, 02路交付)
+f5b7b8bffc98ac23270179d0cc49c2765aace8b0f44298dd42ff0f1c3bc86e08 *Back/Edge/src/assistant-evidence-provider.mjs (readonly input, 02路交付)
+3177fb8d812037dbe690d08cb3e8cdcefeaa3239a92b30660e2a24b8e84bcb0b *Back/Edge/src/assistant-receipts.mjs (readonly input)
+b6d3b8d7b745d8a4bdd5acc97dc3c34db3521c31fa9d550dd79448997891bc72 *Back/Edge/src/assistant-evidence.mjs (readonly input)
+8858a62d9898f7eeb2dc7580d9962d1150f714445347656a5eaaf4be795c4307 *Back/Edge/src/server.mjs (readonly, 并行路04 ownership 在改)

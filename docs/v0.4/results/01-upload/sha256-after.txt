@@ -1,0 +1,10 @@
+7ac68e2ae41e92b995e857806a203b95b3cc3384bf6be3abd192283c4b89cb91 *Back/A/src/domain/upload-authorization.ts
+c65bd514ff6c272a5fa13347cc0d725728759cbffb8af287e01f35222cdf078c *Back/A/src/http/server.ts
+17cb897b3e2d56795ee8bcf44a68b0e4d8356e150266df1b94d83e73ce294ded *Back/A/test/v04-upload-authz.test.mjs
+437354045a33531bbb53c3c25f6411e0a317012a7e027ba56b08bcd1bceec132 *Back/A/test/v04-upload-failclosed.test.mjs
+3a7eec269e983c681ced4392f26cd2bc30b8112642ddcc8d9dd724947c54372b *Back/A/src/domain/credit.ts
+b04defa08e6794cc7c3d06e9b3bf77aa1bb0367be477bd861d29e8c752ce5f3a *Back/A/src/domain/v2kit.ts
+89bc121eb2010156fe22d5b64cf1485089f34b4d0d34512efb83facf6f18b85f *Back/A/src/domain/principal.ts
+41f2c946436b95fb135b91ca01dd37dcd48b2231d2d48d708fcae53481031ebd *Back/A/src/domain/identity.ts
+8446d2a94acb56bf995547c72498fdbfa78830e149693ef2e6a559b78f60e0eb *Back/Edge/src/upload-context.mjs
+4c376ccded20510296f2d0b4a5ed7d23f9f1b15090893bbb6e34dffac7ce510f *docs/v0.4/results/01-upload/CONTRACT.md

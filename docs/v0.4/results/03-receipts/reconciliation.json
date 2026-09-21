@@ -1,0 +1,1346 @@
+{
+  "generatedAt": "2026-09-20T19:52:27.581Z",
+  "window": [
+    "2026-09-20T17:19:00",
+    "2026-09-20T18:05:00"
+  ],
+  "sources": {
+    "runlog": "C:\\Users\\22673\\Desktop\\JW\\docs\\v0.3\\real-api-qa\\evidence\\run-log.jsonl",
+    "ledger": "C:\\Users\\22673\\Desktop\\JW\\Back\\Edge\\.run\\zloop\\model-cost-ledger.jsonl",
+    "receiptsDir": "C:\\Users\\22673\\Desktop\\JW\\Back\\Edge\\.run\\zloop\\model-receipts\\receipts",
+    "receiptsFiles": 117
+  },
+  "totals": {
+    "runlogLines": 42,
+    "outboundRunlogLines": 26,
+    "distinctOutboundRequestIds": 26,
+    "authoritativeOutbound": 28,
+    "usageRunlogLines": 27,
+    "distinctUsageRequestIds": 26,
+    "usageSumDistinct": {
+      "prompt": 94264,
+      "completion": 33762
+    },
+    "usageSumAllLines": {
+      "prompt": 97358,
+      "completion": 35340
+    },
+    "annotationUsageDupLines": [
+      {
+        "line": 41,
+        "caseId": "R25b"
+      }
+    ],
+    "ledgerWindow": {
+      "total": 56,
+      "reserves": 28,
+      "actuals": 28,
+      "beforeWindow": 56,
+      "reserveAmount": 9.8,
+      "reserveAmounts": [
+        0.35
+      ]
+    },
+    "zeroOutboundGates": [
+      "R04(L4,http=503)",
+      "R15(L15,http=422)",
+      "R21(L21,http=200)",
+      "R21b(L24,http=200)",
+      "R26(L27,http=409)",
+      "R27(L28,http=400)",
+      "R29(L30,http=0)",
+      "R29(L32,http=0)",
+      "R01-replay(L35,http=409)"
+    ],
+    "outboundUnattributed": [
+      "R05-replay(L34,at=2026-09-20T17:45:51.908Z)",
+      "R28-replay(L37,at=2026-09-20T17:46:49.707Z)"
+    ],
+    "replayZeroOutbound": [
+      "R30-replay(L38)"
+    ],
+    "orphanLedgerEntries": []
+  },
+  "perRequest": [
+    {
+      "requestId": "amq:cust-mu9yqi5s-a0beff262876:v2-7edcd248920143fd403595efff86abe08d16544367305437c04664a9e43323f8::obs:credit:b4791e5d71de::a1",
+      "runlogCases": [
+        "R18"
+      ],
+      "runlogLines": [
+        18
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 3059,
+          "completion": 1881
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 3059,
+        "completion": 1881
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9yqi5s-a0beff262876:v2-e170df60241b62d27d0c96d3278479bdab64b122eca278275619a8f92761985e::obs:credit:c4612c764d94::a1",
+      "runlogCases": [
+        "R17"
+      ],
+      "runlogLines": [
+        17
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 2228,
+          "completion": 646
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 2228,
+        "completion": 646
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9yqi5s-a0beff262876:v2-e331f9138a04a2b129635a4ec9ea2993e66e69ceb02a65040916e1d6211ec4f7::obs:credit:524d6f6bc164::a1",
+      "runlogCases": [
+        "R19"
+      ],
+      "runlogLines": [
+        19
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 2878,
+          "completion": 1247
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 2878,
+        "completion": 1247
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9yqi5s-a0beff262876:v2-f14356eb27a2ace9bea551ea32bcd124ec0ac5f88f04bbe1b3acfc5423d77a2b::obs:credit:4a4ac25460c2::a1",
+      "runlogCases": [],
+      "runlogLines": [],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 2241,
+          "completion": 711
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 0,
+        "actuals": 0,
+        "reserveAmount": 0,
+        "actualAmount": 0,
+        "actualBillKnown": []
+      },
+      "usageRunlog": null
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-3045d21413446b7353aaacaea16ee1640c548a25e2c636169f06b346f6dcc96d::obs:credit:63dd209ca917::a1",
+      "runlogCases": [
+        "R02"
+      ],
+      "runlogLines": [
+        2
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 3242,
+          "completion": 1801
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 3242,
+        "completion": 1801
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-316bd94e13e723b0783a2bbf856b6e90a4b852ee14acd35b987095dfaa11c876::obs:credit:3ef3f6c8feda::a1",
+      "runlogCases": [],
+      "runlogLines": [],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 3116,
+          "completion": 1773
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 0,
+        "actuals": 0,
+        "reserveAmount": 0,
+        "actualAmount": 0,
+        "actualBillKnown": []
+      },
+      "usageRunlog": null
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-57e410c37eaafe720eac5710d929d0cf95eff9431de49e28bffb77fcd193f1c4::obs:credit:45d05b0d0e17::a1",
+      "runlogCases": [],
+      "runlogLines": [],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 2952,
+          "completion": 1355
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 0,
+        "actuals": 0,
+        "reserveAmount": 0,
+        "actualAmount": 0,
+        "actualBillKnown": []
+      },
+      "usageRunlog": null
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-5ba736db32503659144d1e6f1084b823c248613304cfb6efd3354c074fc8136b::obs:credit:bf17b8b8fc33::a1",
+      "runlogCases": [
+        "R20"
+      ],
+      "runlogLines": [
+        20
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 3899,
+          "completion": 1260
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 3899,
+        "completion": 1260
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-622bed14b43d44a18047c866422f68b8f53facd78b35e7fff33ceffd16eec01c::obs:credit:137c8d68a5b8::a1",
+      "runlogCases": [
+        "R05"
+      ],
+      "runlogLines": [
+        5
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 2948,
+          "completion": 834
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 2948,
+        "completion": 834
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-71d6115d93265cc64de9848da371b2d76c843e67cabc59596bc3e9fe5b1c643b::obs:asset:ba8bcd5b5b39::a1",
+      "runlogCases": [
+        "R09"
+      ],
+      "runlogLines": [
+        9
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 3880,
+          "completion": 1237
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 3880,
+        "completion": 1237
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-74cf3a097bd916e27af2012849241f6568194ed99232a2c2dd9f03c54cea2d74::obs:credit:3ef3f6c8feda::a1",
+      "runlogCases": [],
+      "runlogLines": [],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 2251,
+          "completion": 1623
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 0,
+        "actuals": 0,
+        "reserveAmount": 0,
+        "actualAmount": 0,
+        "actualBillKnown": []
+      },
+      "usageRunlog": null
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-74f7b5ca97f0497bea0cdafe1516cbee705d971eb83cbd4f5550e3e55c2949c3::obs:asset:1e3a6d0b23b9::a1",
+      "runlogCases": [
+        "R22"
+      ],
+      "runlogLines": [
+        22
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 3884,
+          "completion": 769
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 3884,
+        "completion": 769
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-9d6899391ec6f5796903f5bcaf1876e64298abcfc47217b989d5260e93eaa530::obs:credit:137c8d68a5b8::a1",
+      "runlogCases": [],
+      "runlogLines": [],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 4427,
+          "completion": 1321
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": null
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-b02a919c14c7219b71593e00e6053df49958a2f9d97ba219b2d7279e4bc4cef1::obs:business:fc4097cdbb18::a1",
+      "runlogCases": [
+        "R06"
+      ],
+      "runlogLines": [
+        6
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 3878,
+          "completion": 1471
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 3878,
+        "completion": 1471
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-b2e4cada2db60552ae0f33858c496c3b3c4241f31251895a0b3ddebf72baf329::obs:policy:bffea61b9e2e::a1",
+      "runlogCases": [
+        "R07"
+      ],
+      "runlogLines": [
+        7
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 3880,
+          "completion": 590
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 3880,
+        "completion": 590
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-be5bde28843061cb8c208468a2508d4d17256d6c5c1641121513f267a87ed80e::obs:business:125c7e3679dd::a1",
+      "runlogCases": [],
+      "runlogLines": [],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 3119,
+          "completion": 1000
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 0,
+        "actuals": 0,
+        "reserveAmount": 0,
+        "actualAmount": 0,
+        "actualBillKnown": []
+      },
+      "usageRunlog": null
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-c74bff15262921fb6512ce85d3cee084dbed8256b4c42845d78cc05b199fbb81::obs:credit:3ef3f6c8feda::a1",
+      "runlogCases": [],
+      "runlogLines": [],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 3116,
+          "completion": 736
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 0,
+        "actuals": 0,
+        "reserveAmount": 0,
+        "actualAmount": 0,
+        "actualBillKnown": []
+      },
+      "usageRunlog": null
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-ce57319b1c7502607412039864cd94211228811b9c1082477625637bb2517c9e::obs:credit:e565720a8bca::a1",
+      "runlogCases": [
+        "R30"
+      ],
+      "runlogLines": [
+        31
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 4437,
+          "completion": 1523
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 4437,
+        "completion": 1523
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-d93b7f2ea837c3d9139194508a43293573ccee89588e8e61f3e94c4df0572246::obs:commerce:22a66f1a6a3f::a1",
+      "runlogCases": [],
+      "runlogLines": [],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 3119,
+          "completion": 585
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 0,
+        "actuals": 0,
+        "reserveAmount": 0,
+        "actualAmount": 0,
+        "actualBillKnown": []
+      },
+      "usageRunlog": null
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-d9fc6a940920f06d96957249e3b1420f4eb479f99c7dc43ae3c7a8bdf802150d::obs:credit:3ef3f6c8feda::a1",
+      "runlogCases": [],
+      "runlogLines": [],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 2326,
+          "completion": 944
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 0,
+        "actuals": 0,
+        "reserveAmount": 0,
+        "actualAmount": 0,
+        "actualBillKnown": []
+      },
+      "usageRunlog": null
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-deee8abf5fcb777d82e038065c2737789f9dd7bdb3a9e54a923f05608a9729cc::obs:commerce:5eda8ca6b1ef::a1",
+      "runlogCases": [
+        "R08"
+      ],
+      "runlogLines": [
+        8
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 3878,
+          "completion": 721
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 3878,
+        "completion": 721
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-e8acd95397ee3d96be9cf3faf20779ef80f26f8ae801f1d4a645207539f77960::obs:credit:bf17b8b8fc33::a1",
+      "runlogCases": [
+        "R01"
+      ],
+      "runlogLines": [
+        1
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 3144,
+          "completion": 743
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 3144,
+        "completion": 743
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-ece662a43127c65ac8a36c764f94e7f20104e9f33298368e8b6742b6c0760d7e::obs:credit:faeb1be650ae::a1",
+      "runlogCases": [
+        "R10"
+      ],
+      "runlogLines": [
+        10
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 3889,
+          "completion": 1814
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 3889,
+        "completion": 1814
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9zheml-a99d1b6c3080:v2-08da02e7f437363be84a2e94238871bbada6176312360d112f93ee2c479d56a5::obs:asset:2cda85084c93::a1",
+      "runlogCases": [
+        "R24"
+      ],
+      "runlogLines": [
+        25
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 4972,
+          "completion": 1859
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 4972,
+        "completion": 1859
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9zheml-a99d1b6c3080:v2-0e61b12a60f6f108c123b3f5601dfc21bee2b928f3eac3602cbfc52a49b776a9::obs:asset:2cda85084c93::a1",
+      "runlogCases": [
+        "R28"
+      ],
+      "runlogLines": [
+        33
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 5041,
+          "completion": 1423
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 5041,
+        "completion": 1423
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9zheml-a99d1b6c3080:v2-13647111cae2531143f566da0313bf8c1d25670c33874e14b1159ae61ef6b7c2::obs:credit:3ef3f6c8feda::a1",
+      "runlogCases": [],
+      "runlogLines": [],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "unknown",
+        "sentFlag": null,
+        "usageInReceipt": null,
+        "error": "RESULT_UNKNOWN_INTERRUPTED"
+      },
+      "ledger": {
+        "reserves": 0,
+        "actuals": 0,
+        "reserveAmount": 0,
+        "actualAmount": 0,
+        "actualBillKnown": []
+      },
+      "usageRunlog": null
+    },
+    {
+      "requestId": "amq:cust-mu9zheml-a99d1b6c3080:v2-207b9c0eb7d1ef44487b5b2866cde418bf20c2b1bdd073939aad55c0f580cf2c::obs:asset:16796b7bcdf2::a1",
+      "runlogCases": [
+        "R11"
+      ],
+      "runlogLines": [
+        11
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 4853,
+          "completion": 1275
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 4853,
+        "completion": 1275
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9zheml-a99d1b6c3080:v2-43433639b629c1a907fe559a6f1363f8b447d1dbecb416f07566626f77ded423::obs:asset:2cda85084c93::a1",
+      "runlogCases": [],
+      "runlogLines": [],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 4697,
+          "completion": 1216
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": null
+    },
+    {
+      "requestId": "amq:cust-mu9zheml-a99d1b6c3080:v2-5933f2de70d0c550560fb0da7450e9a19727710d192664cf565247178428d90e::obs:business:63e34b10b3d5::a1",
+      "runlogCases": [
+        "R12"
+      ],
+      "runlogLines": [
+        12
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 4849,
+          "completion": 1306
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 4849,
+        "completion": 1306
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9zheml-a99d1b6c3080:v2-8e4eb2facef7f3bfcb0bbeb79b02455cfa5a90459b6c7e602f6087a070be2a84::obs:credit:3ef3f6c8feda::a1",
+      "runlogCases": [
+        "R03"
+      ],
+      "runlogLines": [
+        3
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 4844,
+          "completion": 1475
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 4844,
+        "completion": 1475
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9zheml-a99d1b6c3080:v2-a47dbbe9551b4b55bdc623e4b1f43676a680046ea2d24668855c446db5beb234::obs:asset:2b9d20c7b158::a1",
+      "runlogCases": [],
+      "runlogLines": [],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 4844,
+          "completion": 1296
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 0,
+        "actuals": 0,
+        "reserveAmount": 0,
+        "actualAmount": 0,
+        "actualBillKnown": []
+      },
+      "usageRunlog": null
+    },
+    {
+      "requestId": "amq:cust-mu9zheml-a99d1b6c3080:v2-b3e7dd0678eb70aa9e4b7e6aa3d752f285d8a989bfd908e00de3d1e67ce991c2::obs:asset:2cda85084c93::a1",
+      "runlogCases": [
+        "R28"
+      ],
+      "runlogLines": [
+        29
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 4972,
+          "completion": 1929
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 4972,
+        "completion": 1929
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9zp319-80f58775851e:v2-1ab277c1e65708967364105b0be991a65cf745337a4e9cfb2a04e4c051877afb::obs:asset:66e53261f833::a1",
+      "runlogCases": [
+        "R16"
+      ],
+      "runlogLines": [
+        16
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 2025,
+          "completion": 582
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 2025,
+        "completion": 582
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9zp319-80f58775851e:v2-863c874916d4b212e9563c82bba2e152b2b6cd2eb6e53c98d066eb541cac886a::obs:policy:bffea61b9e2e::a1",
+      "runlogCases": [
+        "R14"
+      ],
+      "runlogLines": [
+        14
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 2205,
+          "completion": 683
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 2205,
+        "completion": 683
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9zp319-80f58775851e:v2-a96c8a45db0e4c07ffe7e43bfe2901b2ef769323a936af0e952e5851862a4be8::obs:credit:97dae69bffb8::a1",
+      "runlogCases": [
+        "R25"
+      ],
+      "runlogLines": [
+        40
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 3094,
+          "completion": 1578
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 3094,
+        "completion": 1578
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9zp319-80f58775851e:v2-c34b10a869580f96a4596d37af68eacb37cf33d4375719e1d5228a966dd1b030::obs:policy:f4f5ae132fe8::a1",
+      "runlogCases": [
+        "R23"
+      ],
+      "runlogLines": [
+        23
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 2985,
+          "completion": 1508
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 2985,
+        "completion": 1508
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9zp319-80f58775851e:v2-dfd9be26e1bbd477452fd871c005d6be1755ccced449c85c337464cde6270db9::obs:credit:97dae69bffb8::a1",
+      "runlogCases": [
+        "R25"
+      ],
+      "runlogLines": [
+        26
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 3094,
+          "completion": 2000
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 3094,
+        "completion": 2000
+      }
+    },
+    {
+      "requestId": "amq:cust-mu9zp319-80f58775851e:v2-f60db225f86af7a4a97f03af081ffb94ea6af767ff2fec56ea212d0bbbe2b7ce::obs:credit:3ef3f6c8feda::a1",
+      "runlogCases": [],
+      "runlogLines": [],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 2196,
+          "completion": 1418
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 0,
+        "actuals": 0,
+        "reserveAmount": 0,
+        "actualAmount": 0,
+        "actualBillKnown": []
+      },
+      "usageRunlog": null
+    },
+    {
+      "requestId": "amq:cust-mu9zp319-80f58775851e:v2-f75bcda9c45021a9ca2bb21ae5c3ae1da3e41eccfc427ec77de9264f67a3cfdc::obs:credit:782c6042a3fa::a1",
+      "runlogCases": [
+        "R13"
+      ],
+      "runlogLines": [
+        13
+      ],
+      "receipt": {
+        "terminal": true,
+        "intent": true,
+        "claim": false,
+        "status": "succeeded",
+        "sentFlag": true,
+        "usageInReceipt": {
+          "prompt": 2206,
+          "completion": 1607
+        },
+        "error": null
+      },
+      "ledger": {
+        "reserves": 1,
+        "actuals": 1,
+        "reserveAmount": 0.35,
+        "actualAmount": 0,
+        "actualBillKnown": [
+          true
+        ]
+      },
+      "usageRunlog": {
+        "prompt": 2206,
+        "completion": 1607
+      }
+    }
+  ],
+  "accidentalReceiptUsage": [
+    {
+      "caseId": "R05-replay",
+      "at": "2026-09-20T17:45:51.908Z",
+      "runlogHasUsage": false,
+      "receiptUsage": [
+        {
+          "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-9d6899391ec6f5796903f5bcaf1876e64298abcfc47217b989d5260e93eaa530::obs:credit:137c8d68a5b8::a1",
+          "at": "2026-09-20T17:46:08.085Z",
+          "prompt": 4427,
+          "completion": 1321
+        },
+        {
+          "requestId": "amq:cust-mu9zheml-a99d1b6c3080:v2-0e61b12a60f6f108c123b3f5601dfc21bee2b928f3eac3602cbfc52a49b776a9::obs:asset:2cda85084c93::a1",
+          "at": "2026-09-20T17:45:06.691Z",
+          "prompt": 5041,
+          "completion": 1423
+        },
+        {
+          "requestId": "amq:cust-mu9zheml-a99d1b6c3080:v2-43433639b629c1a907fe559a6f1363f8b447d1dbecb416f07566626f77ded423::obs:asset:2cda85084c93::a1",
+          "at": "2026-09-20T17:47:14.912Z",
+          "prompt": 4697,
+          "completion": 1216
+        }
+      ]
+    },
+    {
+      "caseId": "R28-replay",
+      "at": "2026-09-20T17:46:49.707Z",
+      "runlogHasUsage": false,
+      "receiptUsage": [
+        {
+          "requestId": "amq:cust-mu9yu9db-948bbe5d2f28:v2-9d6899391ec6f5796903f5bcaf1876e64298abcfc47217b989d5260e93eaa530::obs:credit:137c8d68a5b8::a1",
+          "at": "2026-09-20T17:46:08.085Z",
+          "prompt": 4427,
+          "completion": 1321
+        },
+        {
+          "requestId": "amq:cust-mu9zheml-a99d1b6c3080:v2-0e61b12a60f6f108c123b3f5601dfc21bee2b928f3eac3602cbfc52a49b776a9::obs:asset:2cda85084c93::a1",
+          "at": "2026-09-20T17:45:06.691Z",
+          "prompt": 5041,
+          "completion": 1423
+        },
+        {
+          "requestId": "amq:cust-mu9zheml-a99d1b6c3080:v2-43433639b629c1a907fe559a6f1363f8b447d1dbecb416f07566626f77ded423::obs:asset:2cda85084c93::a1",
+          "at": "2026-09-20T17:47:14.912Z",
+          "prompt": 4697,
+          "completion": 1216
+        }
+      ]
+    }
+  ],
+  "crossChecks": {
+    "outboundRequestIdsMissingTerminalReceipt": [],
+    "terminalReceiptsWithoutRunlogLine": [
+      "amq:cust-mu9yqi5s-a0beff262876:v2-f14356eb27a2ace9bea551ea32bcd124ec0ac5f88f04bbe1b3acfc5423d77a2b::obs:credit:4a4ac25460c2::a1",
+      "amq:cust-mu9yu9db-948bbe5d2f28:v2-316bd94e13e723b0783a2bbf856b6e90a4b852ee14acd35b987095dfaa11c876::obs:credit:3ef3f6c8feda::a1",
+      "amq:cust-mu9yu9db-948bbe5d2f28:v2-57e410c37eaafe720eac5710d929d0cf95eff9431de49e28bffb77fcd193f1c4::obs:credit:45d05b0d0e17::a1",
+      "amq:cust-mu9yu9db-948bbe5d2f28:v2-74cf3a097bd916e27af2012849241f6568194ed99232a2c2dd9f03c54cea2d74::obs:credit:3ef3f6c8feda::a1",
+      "amq:cust-mu9yu9db-948bbe5d2f28:v2-9d6899391ec6f5796903f5bcaf1876e64298abcfc47217b989d5260e93eaa530::obs:credit:137c8d68a5b8::a1",
+      "amq:cust-mu9yu9db-948bbe5d2f28:v2-be5bde28843061cb8c208468a2508d4d17256d6c5c1641121513f267a87ed80e::obs:business:125c7e3679dd::a1",
+      "amq:cust-mu9yu9db-948bbe5d2f28:v2-c74bff15262921fb6512ce85d3cee084dbed8256b4c42845d78cc05b199fbb81::obs:credit:3ef3f6c8feda::a1",
+      "amq:cust-mu9yu9db-948bbe5d2f28:v2-d93b7f2ea837c3d9139194508a43293573ccee89588e8e61f3e94c4df0572246::obs:commerce:22a66f1a6a3f::a1",
+      "amq:cust-mu9yu9db-948bbe5d2f28:v2-d9fc6a940920f06d96957249e3b1420f4eb479f99c7dc43ae3c7a8bdf802150d::obs:credit:3ef3f6c8feda::a1",
+      "amq:cust-mu9zheml-a99d1b6c3080:v2-13647111cae2531143f566da0313bf8c1d25670c33874e14b1159ae61ef6b7c2::obs:credit:3ef3f6c8feda::a1",
+      "amq:cust-mu9zheml-a99d1b6c3080:v2-43433639b629c1a907fe559a6f1363f8b447d1dbecb416f07566626f77ded423::obs:asset:2cda85084c93::a1",
+      "amq:cust-mu9zheml-a99d1b6c3080:v2-a47dbbe9551b4b55bdc623e4b1f43676a680046ea2d24668855c446db5beb234::obs:asset:2b9d20c7b158::a1",
+      "amq:cust-mu9zp319-80f58775851e:v2-f60db225f86af7a4a97f03af081ffb94ea6af767ff2fec56ea212d0bbbe2b7ce::obs:credit:3ef3f6c8feda::a1"
+    ]
+  }
+}

@@ -1,0 +1,178 @@
+TAP version 13
+# Subtest: real receipt shape, history and same-round newer version
+ok 1 - real receipt shape, history and same-round newer version
+  ---
+  duration_ms: 35.6941
+  type: 'test'
+  ...
+# Subtest: POST uses exact server plan and rejects mismatched request
+ok 2 - POST uses exact server plan and rejects mismatched request
+  ---
+  duration_ms: 1.8171
+  type: 'test'
+  ...
+# Subtest: 五六次为演示目标，终态依赖服务端结果而不依赖固定点击次数
+ok 3 - 五六次为演示目标，终态依赖服务端结果而不依赖固定点击次数
+  ---
+  duration_ms: 0.9863
+  type: 'test'
+  ...
+# Subtest: 终态页面可返回、可查看记录，不改变服务端记录
+ok 4 - 终态页面可返回、可查看记录，不改变服务端记录
+  ---
+  duration_ms: 159.3517
+  type: 'test'
+  ...
+# Subtest: right submits once, auto publishes server receipt and refreshes without extra controls
+ok 5 - right submits once, auto publishes server receipt and refreshes without extra controls
+  ---
+  duration_ms: 178.9919
+  type: 'test'
+  ...
+# Subtest: unknown remount recovers original request without POST or a user refresh
+ok 6 - unknown remount recovers original request without POST or a user refresh
+  ---
+  duration_ms: 24.9428
+  type: 'test'
+  ...
+# Subtest: right reuses already completed next column without executing again
+ok 7 - right reuses already completed next column without executing again
+  ---
+  duration_ms: 9.7511
+  type: 'test'
+  ...
+# Subtest: partial reports cannot paint a complete column; current server results can
+ok 8 - partial reports cannot paint a complete column; current server results can
+  ---
+  duration_ms: 13.6204
+  type: 'test'
+  ...
+# Subtest: unknown POST is automatically reconciled with the same request and never resent
+ok 9 - unknown POST is automatically reconciled with the same request and never resent
+  ---
+  duration_ms: 2043.4012
+  type: 'test'
+  ...
+# Subtest: processing still permits read-only previous recorded column
+ok 10 - processing still permits read-only previous recorded column
+  ---
+  duration_ms: 9.8604
+  type: 'test'
+  ...
+# Subtest: parallel non-current receipt updates publish without changing viewed domain
+ok 11 - parallel non-current receipt updates publish without changing viewed domain
+  ---
+  duration_ms: 2078.654
+  type: 'test'
+  ...
+# Subtest: late old-customer response cannot publish into the new customer
+ok 12 - late old-customer response cannot publish into the new customer
+  ---
+  duration_ms: 4.8763
+  type: 'test'
+  ...
+# Subtest: core right arrow explicitly adopts shown result, not just browsing past confirmation
+ok 13 - core right arrow explicitly adopts shown result, not just browsing past confirmation
+  ---
+  duration_ms: 13.3748
+  type: 'test'
+  ...
+# Subtest: ambiguous human selection stays fenced when recovery lacks selection event
+ok 14 - ambiguous human selection stays fenced when recovery lacks selection event
+  ---
+  duration_ms: 3.3938
+  type: 'test'
+  ...
+# Subtest: 客户页只保留三个色板与角色图标，读取获准案例且不创建客户
+ok 15 - 客户页只保留三个色板与角色图标，读取获准案例且不创建客户
+  ---
+  duration_ms: 155.3036
+  type: 'test'
+  ...
+# Subtest: 旧最近访问不越过服务端目录；读取失败不冒充空客户
+ok 16 - 旧最近访问不越过服务端目录；读取失败不冒充空客户
+  ---
+  duration_ms: 30.2866
+  type: 'test'
+  ...
+# Subtest: 三案例只打开授权目录唯一匹配；未建档或同名冲突不预造客户
+ok 17 - 三案例只打开授权目录唯一匹配；未建档或同名冲突不预造客户
+  ---
+  duration_ms: 24.9798
+  type: 'test'
+  ...
+# Subtest: 三案例可匹配现行合成目录名，激光近名记录不被误选
+ok 18 - 三案例可匹配现行合成目录名，激光近名记录不被误选
+  ---
+  duration_ms: 52.9726
+  type: 'test'
+  ...
+# Subtest: 角色首屏只交换服务端提供的身份，无账号密码与登录前置页
+ok 19 - 角色首屏只交换服务端提供的身份，无账号密码与登录前置页
+  ---
+  duration_ms: 21.1626
+  type: 'test'
+  ...
+# Subtest: 服务与管理员身份不伪装成业务角色；多身份必须明确选择
+ok 20 - 服务与管理员身份不伪装成业务角色；多身份必须明确选择
+  ---
+  duration_ms: 21.9394
+  type: 'test'
+  ...
+# Subtest: 角色进入失败可重试，不伪装为已进入
+ok 21 - 角色进入失败可重试，不伪装为已进入
+  ---
+  duration_ms: 35.1082
+  type: 'test'
+  ...
+# Subtest: 首页三个缩略看板使用各自快照与补充读面，失败不伪造状态
+ok 22 - 首页三个缩略看板使用各自快照与补充读面，失败不伪造状态
+  ---
+  duration_ms: 42.6273
+  type: 'test'
+  ...
+# Subtest: stable manifest binds IDs despite new names and shuffled case order
+ok 23 - stable manifest binds IDs despite new names and shuffled case order
+  ---
+  duration_ms: 60.3306
+  type: 'test'
+  ...
+# Subtest: explicit evidence verification uses authoritative customer tenant and immutable supersedes
+ok 24 - explicit evidence verification uses authoritative customer tenant and immutable supersedes
+  ---
+  duration_ms: 220.9848
+  type: 'test'
+  ...
+# Subtest: mixed-version or cross-customer views fail closed
+ok 25 - mixed-version or cross-customer views fail closed
+  ---
+  duration_ms: 1.174
+  type: 'test'
+  ...
+# Subtest: materials renders only explicit same-round references
+ok 26 - materials renders only explicit same-round references
+  ---
+  duration_ms: 95.1388
+  type: 'test'
+  ...
+# Subtest: decision reader consumes round view rather than newer chat candidates
+ok 27 - decision reader consumes round view rather than newer chat candidates
+  ---
+  duration_ms: 37.9844
+  type: 'test'
+  ...
+# Subtest: timeline uses server event timestamp and actual actor, roles remain separate
+ok 28 - timeline uses server event timestamp and actual actor, roles remain separate
+  ---
+  duration_ms: 30.9895
+  type: 'test'
+  ...
+1..28
+# tests 28
+# suites 0
+# pass 28
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6575.2174

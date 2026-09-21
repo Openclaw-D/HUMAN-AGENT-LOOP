@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: cashflow changes policy and credit only; unaffected actual C outputs remain identical
+ok 1 - cashflow changes policy and credit only; unaffected actual C outputs remain identical
+  ---
+  duration_ms: 28.852
+  type: 'test'
+  ...
+# Subtest: unrelated fresh fact is not a dependency or a changed result
+ok 2 - unrelated fresh fact is not a dependency or a changed result
+  ---
+  duration_ms: 14.5349
+  type: 'test'
+  ...
+# Subtest: missing future facts, asset conflicts, scope and global unreadability are covered
+ok 3 - missing future facts, asset conflicts, scope and global unreadability are covered
+  ---
+  duration_ms: 14.9143
+  type: 'test'
+  ...
+# Subtest: source grade and global freshness expiry cannot be hidden
+ok 4 - source grade and global freshness expiry cannot be hidden
+  ---
+  duration_ms: 7.3649
+  type: 'test'
+  ...
+# Subtest: uploaded verification claims are not facts; real registered facts carry source and grade
+ok 5 - uploaded verification claims are not facts; real registered facts carry source and grade
+  ---
+  duration_ms: 5.0249
+  type: 'test'
+  ...
+# Subtest: superseded material is not used and non-synthetic scope fails closed
+ok 6 - superseded material is not used and non-synthetic scope fails closed
+  ---
+  duration_ms: 0.4239
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 156.3028

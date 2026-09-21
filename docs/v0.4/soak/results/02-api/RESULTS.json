@@ -1,0 +1,404 @@
+{
+ "pack": "02-api",
+ "version": 1,
+ "startedAt": "2026-09-20T23:00:02.949Z",
+ "endedAt": "2026-09-20T23:25:16.776Z",
+ "env": {
+  "node": "v22.23.1",
+  "platform": "win32"
+ },
+ "copyHashes": {
+  "at": "2026-09-20T23:40:40.290Z",
+  "files": {
+   "admission-projection.mjs": "9d07b5ee8de1bbdf3d880282735b03876437bd719739410007fb3ed26a59d13a",
+   "advance-round.mjs": "9896166b94a1e3c0e593584361806a6dc028f5c5190b5868d7518fece6f0986b",
+   "assistant-decisions.mjs": "6530b1b1d89d10600a701026d33f048062089578fdec68dc07c237ec8185ca2d",
+   "assistant-evidence-provider.mjs": "f5b7b8bffc98ac23270179d0cc49c2765aace8b0f44298dd42ff0f1c3bc86e08",
+   "assistant-evidence-scope.mjs": "9da6362de1b6408e30078e35c7a419881debee531feaa20d3916b76e524a92e4",
+   "assistant-evidence.mjs": "b6d3b8d7b745d8a4bdd5acc97dc3c34db3521c31fa9d550dd79448997891bc72",
+   "assistant-model.mjs": "74d6a4a59fd10dc4a69d7e5dd866a8d3ddd790f5145d2ba61defa3a697ff31d3",
+   "assistant-profiles.mjs": "e3b43746ef0b58adfc6fc3e91a9b5caa1bb9a98fa871293b0ad6aa981f372bc2",
+   "assistant-receipts.mjs": "0a4be3043df04cb17ffda1ccc015fc5988dfa590079ac77f1c4f7bad53d909fc",
+   "assistant-route.mjs": "8109fce7fe48ab9fe1985af4cf4127bb57aba356da7301246fe2bc6e83a450b4",
+   "audit.mjs": "ecb1968580e4284757b6c9030794b8af54e905621c6030f515912579f06a0659",
+   "channel-authz.mjs": "24bd9d0d1909061e8fcbc31a5ecdb46ff80b5a95ddfc4341136988f3f6b7bec0",
+   "customer-activity.mjs": "de36c7ec3d2ac62506f4a3da013760321aa20638b0709877e2610267a222726f",
+   "decision-feedback-store.mjs": "d3701573cf0b872c80c43926014483ac140749cda7b51b8e9be2cd70f73180f4",
+   "kernel-store.mjs": "32d4771ff128e47d5d0c239ba41a8b96b51e81438c2c2cf550a7f8c0f7fb6aea",
+   "message-store.mjs": "925de0a850d104919f3664075f929544ddb6ec230719c409f2042e9120903fa1",
+   "messages.mjs": "7094b2886157d2a81df47fbcd24f21d9760bc8093652092565e0896b8d5f1ae7",
+   "probes.mjs": "e245cc565259cbe4a98909073318b42f7fe7b5bd28236a294e8c5e3fa56d2137",
+   "proxy.mjs": "6e065176dda6c5dac0444bb8e7f94457c3789d5c0a475154f5b0e0eb777c5fc7",
+   "readproxy.mjs": "f048b0bc1987cd20af55a839fe7f5dfc05cc862d9c16f264e1f08b682d225fe4",
+   "server.mjs": "8858a62d9898f7eeb2dc7580d9962d1150f714445347656a5eaaf4be795c4307",
+   "session.mjs": "eea9c23aef93cf421e792b8953d58bfd40b60d9eece77b73d4958d5672b213e7",
+   "static.mjs": "150c738e48d6e2c70bb487d302fe6c03810049444dc9f129a35933e3d96dca64",
+   "store.mjs": "6a94a7d34ecc369454d2f7688cecb2a28f0a1248ad9bdd868ba96f35e2e7bbc8",
+   "upload-context-assembly.mjs": "c6fc78bdbb78e3d91ca69efdea757c9af14a8e594e201078e813b75ad83f04f4",
+   "upload-context.mjs": "8446d2a94acb56bf995547c72498fdbfa78830e149693ef2e6a559b78f60e0eb",
+   "version.mjs": "9fb358c0628fc63ddbecf8f29639ed847095f7c65522f30c9845b5b915488653"
+  },
+  "note": "phase-start refresh"
+ },
+ "whitelistHashStart": {
+  "kernel-store.mjs": "314c5f9f12476e92e4fe807447a6bcea24697901ab986db3cb38428e63903845",
+  "customer-activity.mjs": "de36c7ec3d2ac62506f4a3da013760321aa20638b0709877e2610267a222726f"
+ },
+ "whitelistHashEnd": null,
+ "phases": {
+  "P1": {
+   "id": "P1",
+   "title": "低载基线 c=1",
+   "startedAt": "2026-09-20T23:00:02.910Z",
+   "endedAt": "2026-09-20T23:25:16.776Z",
+   "seconds": 1514,
+   "plannedMinutes": 25,
+   "concurrency": 1,
+   "byEndpoint": {
+    "neg-method": {
+     "n": 29,
+     "ok": 29,
+     "expectedReject": 0,
+     "unexpected": 0,
+     "status": {
+      "405": 29
+     },
+     "p50": 1,
+     "p95": 1,
+     "p99": 3,
+     "max": 3
+    },
+    "messages-get": {
+     "n": 181,
+     "ok": 181,
+     "expectedReject": 0,
+     "unexpected": 0,
+     "status": {
+      "200": 181
+     },
+     "p50": 16,
+     "p95": 17,
+     "p99": 18,
+     "max": 18
+    },
+    "events-page": {
+     "n": 209,
+     "ok": 209,
+     "expectedReject": 0,
+     "unexpected": 0,
+     "status": {
+      "200": 209
+     },
+     "p50": 17,
+     "p95": 19,
+     "p99": 20,
+     "max": 22
+    },
+    "sse-cycle": {
+     "n": 76,
+     "ok": 76,
+     "expectedReject": 0,
+     "unexpected": 0,
+     "status": {
+      "200": 76
+     },
+     "p50": 21614,
+     "p95": 22767,
+     "p99": 22773,
+     "max": 22773
+    },
+    "activity-first": {
+     "n": 189,
+     "ok": 189,
+     "expectedReject": 0,
+     "unexpected": 0,
+     "status": {
+      "200": 189
+     },
+     "p50": 33,
+     "p95": 37,
+     "p99": 38,
+     "max": 38
+    },
+    "workspace": {
+     "n": 193,
+     "ok": 193,
+     "expectedReject": 0,
+     "unexpected": 0,
+     "status": {
+      "200": 193
+     },
+     "p50": 141,
+     "p95": 158,
+     "p99": 204,
+     "max": 345
+    },
+    "audit-read": {
+     "n": 70,
+     "ok": 70,
+     "expectedReject": 0,
+     "unexpected": 0,
+     "status": {
+      "200": 70
+     },
+     "p50": 1,
+     "p95": 1,
+     "p99": 2,
+     "max": 2
+    },
+    "neg-cursor": {
+     "n": 36,
+     "ok": 36,
+     "expectedReject": 0,
+     "unexpected": 0,
+     "status": {
+      "400": 36
+     },
+     "p50": 1,
+     "p95": 1,
+     "p99": 1,
+     "max": 1
+    },
+    "healthz": {
+     "n": 84,
+     "ok": 84,
+     "expectedReject": 0,
+     "unexpected": 0,
+     "status": {
+      "200": 84
+     },
+     "p50": 1,
+     "p95": 1,
+     "p99": 1,
+     "max": 1
+    },
+    "activity-cust": {
+     "n": 96,
+     "ok": 96,
+     "expectedReject": 0,
+     "unexpected": 0,
+     "status": {
+      "200": 96
+     },
+     "p50": 20,
+     "p95": 33,
+     "p99": 34,
+     "max": 34
+    },
+    "healthz-ready": {
+     "n": 4,
+     "ok": 4,
+     "expectedReject": 0,
+     "unexpected": 0,
+     "status": {
+      "200": 4
+     },
+     "p50": 3,
+     "p95": 15,
+     "p99": 15,
+     "max": 15
+    },
+    "versionz": {
+     "n": 22,
+     "ok": 22,
+     "expectedReject": 0,
+     "unexpected": 0,
+     "status": {
+      "200": 22
+     },
+     "p50": 1,
+     "p95": 1,
+     "p99": 1,
+     "max": 1
+    },
+    "neg-cross": {
+     "n": 62,
+     "ok": 62,
+     "expectedReject": 0,
+     "unexpected": 0,
+     "status": {
+      "404": 62
+     },
+     "p50": 15,
+     "p95": 17,
+     "p99": 17,
+     "max": 17
+    },
+    "churn-late": {
+     "n": 10,
+     "ok": 10,
+     "expectedReject": 0,
+     "unexpected": 0,
+     "status": {
+      "200": 10
+     },
+     "p50": 16,
+     "p95": 17,
+     "p99": 17,
+     "max": 17
+    },
+    "churn-receipt": {
+     "n": 7,
+     "ok": 7,
+     "expectedReject": 0,
+     "unexpected": 0,
+     "status": {
+      "200": 7
+     },
+     "p50": 18,
+     "p95": 20,
+     "p99": 20,
+     "max": 20
+    },
+    "churn-dup": {
+     "n": 6,
+     "ok": 5,
+     "expectedReject": 0,
+     "unexpected": 1,
+     "status": {
+      "200": 6
+     },
+     "p50": 32,
+     "p95": 33,
+     "p99": 33,
+     "max": 33
+    }
+   },
+   "defectsInPhase": 4,
+   "edgeTail": {
+    "ts": "2026-09-20T23:25:04.246Z",
+    "pid": 31240,
+    "rss": 101687296,
+    "heapUsed": 22530944,
+    "heapTotal": 31997952,
+    "external": 4048262,
+    "eventloopLagMs": 0.02,
+    "activeHandles": 6,
+    "serverConns": 2,
+    "uptimeSec": 1501,
+    "kernelBuckets": 5,
+    "kernelBuffered": 4359,
+    "kernelSubs": 1,
+    "qTotal": 6499,
+    "qSnapshot": 3314,
+    "qEvents": 3013,
+    "qDetail": 0,
+    "qOther": 172,
+    "sessions": 2,
+    "messageStats": {
+     "threads": 6,
+     "messages": 87,
+     "receipts": 0,
+     "persistence": "sqlite",
+     "file": "messages-soak.sqlite"
+    }
+   }
+  }
+ },
+ "defects": [
+  {
+   "at": "2026-09-20T23:09:02.147Z",
+   "phase": "P1",
+   "kind": "INVARIANT",
+   "where": "sse-cycle",
+   "what": "回放含游标之前事件",
+   "occurrences": 1,
+   "cursor": "cust-mix-late-20003",
+   "frames": 3
+  },
+  {
+   "at": "2026-09-20T23:16:12.198Z",
+   "phase": "P1",
+   "kind": "INVARIANT",
+   "where": "sse-cycle",
+   "what": "回放含游标之前事件",
+   "occurrences": 2,
+   "cursor": "cust-mix-late-20006",
+   "frames": 6
+  },
+  {
+   "at": "2026-09-20T23:18:33.486Z",
+   "phase": "P1",
+   "kind": "INVARIANT",
+   "where": "sse-cycle",
+   "what": "回放含游标之前事件",
+   "occurrences": 3,
+   "cursor": "cust-mix-late-20007",
+   "frames": 7
+  },
+  {
+   "at": "2026-09-20T23:20:04.702Z",
+   "phase": "P1",
+   "kind": "INVARIANT",
+   "where": "churn-dup",
+   "what": "重复 eventId 追加后 activity 条目数变化 7->8",
+   "occurrences": 1
+  }
+ ],
+ "faultWindows": [],
+ "slowClient": [],
+ "edgeRestarts": [],
+ "totals": {
+  "requests": 1274,
+  "ok": 1273,
+  "expectedReject": 0,
+  "unexpected": 1,
+  "effectiveSeconds": 1514,
+  "effectiveMinutes": 25,
+  "phasesRun": [
+   "P1"
+  ]
+ },
+ "stableWindow": null,
+ "resource": {
+  "edge": {
+   "rssMinMB": 86.48704,
+   "rssMedianMB": 91.283456,
+   "rssMaxMB": 106.881024,
+   "eventloopLagMaxMs": 0.09,
+   "serverConnsMax": 3,
+   "activeHandlesMax": 8,
+   "kernelBucketsMax": 5,
+   "kernelBufferedMax": 4351,
+   "upstreamQueriesTotal": 2800,
+   "sessionsMax": 2
+  },
+  "host": {
+   "cpuPctMedian": 15.1,
+   "cpuPctMax": 25.1,
+   "freeMemMinGB": 0.273956864,
+   "runDirMaxMB": 2.712449,
+   "samples": 29
+  }
+ },
+ "hashEnd": {
+  "kernel-store.mjs": "32d4771ff128e47d5d0c239ba41a8b96b51e81438c2c2cf550a7f8c0f7fb6aea",
+  "customer-activity.mjs": "de36c7ec3d2ac62506f4a3da013760321aa20638b0709877e2610267a222726f"
+ },
+ "whitelistDrift": {
+  "kernel-store.mjs": true,
+  "customer-activity.mjs": false
+ },
+ "retained": {
+  "runDir": "C:\\Users\\22673\\Desktop\\JW\\.local\\soak-v04-api\\run",
+  "runDirBytes": 2669935,
+  "note": "运行副本/SQLite/日志保留作证据；driver 已停所有本包子进程"
+ },
+ "generatedAt": "2026-09-20T23:48:18.453Z",
+ "closeout": {
+  "reason": "用户指示快速收束（2026-09-21 会话内指令）：P2 于 23:44Z 提前终止，P3-P7 未执行",
+  "p2Partial": {
+   "startedAt": "2026-09-20T23:40:40Z",
+   "terminatedAt": "2026-09-20T23:44:41Z",
+   "approxSeconds": 250,
+   "source": "edge-metrics.jsonl P2 时段（windows 文件未及首个 5 分钟窗）",
+   "edgeRssMaxMB": 106.9,
+   "eventloopLagMaxMs": 0.05,
+   "note": "请求级分项统计随进程终止丢失；此后相位无数据"
+  },
+  "contractVerdict": "原契约 4 小时有效长测 + 60 分钟稳定窗：未达成（有效约 30 分钟）。按契约如实报告未通过；已交付可复用 harness 与两条真实缺陷修复，恢复执行入口见 RUN.md（--plan full 可从 P1 重跑或逐相位续跑）"
+ },
+ "dataLoss": [
+  "P1 时段 edge-metrics.jsonl 被 P2 子进程截断覆盖（P1 资源趋势仅存 driver 日志 close 行与 host-metrics）"
+ ]
+}

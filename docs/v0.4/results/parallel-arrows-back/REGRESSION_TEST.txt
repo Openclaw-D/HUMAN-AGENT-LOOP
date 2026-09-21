@@ -1,0 +1,88 @@
+TAP version 13
+# Subtest: uploaded verification claims are not facts; real registered facts carry source and grade
+ok 1 - uploaded verification claims are not facts; real registered facts carry source and grade
+  ---
+  duration_ms: 5.9896
+  type: 'test'
+  ...
+# Subtest: superseded material is not used and non-synthetic scope fails closed
+ok 2 - superseded material is not used and non-synthetic scope fails closed
+  ---
+  duration_ms: 0.4733
+  type: 'test'
+  ...
+# Subtest: 同源 POST 放行（Origin.host === Host）
+ok 3 - 同源 POST 放行（Origin.host === Host）
+  ---
+  duration_ms: 693.6692
+  type: 'test'
+  ...
+# Subtest: 跨站 Origin：三条 POST 路由全部 403 CSRF_ORIGIN_REJECTED
+ok 4 - 跨站 Origin：三条 POST 路由全部 403 CSRF_ORIGIN_REJECTED
+  ---
+  duration_ms: 31.6765
+  type: 'test'
+  ...
+# Subtest: Sec-Fetch-Site：cross-site/same-site/none 拒绝；same-origin 放行；与同源 Origin 组合不一致也拒绝
+ok 5 - Sec-Fetch-Site：cross-site/same-site/none 拒绝；same-origin 放行；与同源 Origin 组合不一致也拒绝
+  ---
+  duration_ms: 62.5355
+  type: 'test'
+  ...
+# Subtest: 非浏览器客户端（无 Origin 无 Sec-Fetch-Site）放行；same-origin 无 Origin 按 X08 放行；不一致仍拒；null origin 拒绝
+ok 6 - 非浏览器客户端（无 Origin 无 Sec-Fetch-Site）放行；same-origin 无 Origin 按 X08 放行；不一致仍拒；null origin 拒绝
+  ---
+  duration_ms: 27.5899
+  type: 'test'
+  ...
+# Subtest: localhost 变体同源放行；未知 Host 的同端口 Origin 拒绝（防端口探针跨源）
+ok 7 - localhost 变体同源放行；未知 Host 的同端口 Origin 拒绝（防端口探针跨源）
+  ---
+  duration_ms: 12.0372
+  type: 'test'
+  ...
+# Subtest: 显式 allowedOrigins 放行（staging 预留）；GET 只读面不受 CSRF 守卫影响
+ok 8 - 显式 allowedOrigins 放行（staging 预留）；GET 只读面不受 CSRF 守卫影响
+  ---
+  duration_ms: 8.6248
+  type: 'test'
+  ...
+# Subtest: 会话换取：凭据错误失败关闭；成功只返回不透明会话，响应不含凭据原文
+ok 9 - 会话换取：凭据错误失败关闭；成功只返回不透明会话，响应不含凭据原文
+  ---
+  duration_ms: 708.1597
+  type: 'test'
+  ...
+# Subtest: 动作代理：无会话 401 先于路由表披露；已认证时白名单外路径明确拒绝；转发路径/凭据映射正确
+ok 10 - 动作代理：无会话 401 先于路由表披露；已认证时白名单外路径明确拒绝；转发路径/凭据映射正确
+  ---
+  duration_ms: 47.876
+  type: 'test'
+  ...
+# Subtest: requestId 必带且不代生成；浏览器伪造凭据头不透传；响应不泄漏会话 ID
+ok 11 - requestId 必带且不代生成；浏览器伪造凭据头不透传；响应不泄漏会话 ID
+  ---
+  duration_ms: 29.4858
+  type: 'test'
+  ...
+# Subtest: 上游未知（超时）：502 UPSTREAM_UNKNOWN 回显原 requestId，不自动重试（D13 种子）
+ok 12 - 上游未知（超时）：502 UPSTREAM_UNKNOWN 回显原 requestId，不自动重试（D13 种子）
+  ---
+  duration_ms: 274.8352
+  type: 'test'
+  ...
+# Subtest: 消息受众守卫（D09 种子）：内部内容外发默认 403 并留审计；显式确认放行且审计可查
+ok 13 - 消息受众守卫（D09 种子）：内部内容外发默认 403 并留审计；显式确认放行且审计可查
+  ---
+  duration_ms: 90.6431
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1273.7845
