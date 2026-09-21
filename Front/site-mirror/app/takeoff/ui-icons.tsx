@@ -25,7 +25,7 @@ const paths: Record<IconName, React.ReactNode> = {
 };
 export function UiIcon({ name, size = 24, style }: { name: IconName; size?: number; style?: CSSProperties }) {
   if (name === 'board' || name === 'flow' || name === 'timeline') return <img className="tk-object-icon" src={`/objects/${name === 'board' ? 'desk' : name === 'flow' ? 'branch' : 'timeline'}-v1.png`} width={size} height={size} style={style} alt="" aria-hidden="true" draggable={false}/>;
-  if (name === 'jianwei') return <img className="tk-object-icon tk-eye-icon" src="/objects/eye-v3.png" width={size} height={size} style={style} alt="" aria-hidden="true" draggable={false}/>;
+  if (name === 'jianwei') return <span className="tk-eye-mark" style={{width:size,height:size,...style}} aria-hidden="true"><img className="tk-object-icon tk-eye-icon" src="/objects/eye-v3.png" width={size} height={size} alt="" draggable={false}/></span>;
   return <svg className="tk-ui-icon" width={size} height={size} viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={style}>{paths[name]}</svg>;
 }
 

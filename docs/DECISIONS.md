@@ -221,3 +221,22 @@ transport新增显式budget.unlimitedTotalCost=true，保留原账本、预占�
 
 ## 2026-09-21 · V0.3收口
 用户授权简化目录、移除过时历史/测试抓包、发布main并打V0.3标签；随后新建V0.4 Kanban。根主目录保留Front/Back/docs，当前源码/合成材料保留；历史从Git旧提交恢复。修复Connectors数据库重启崩溃，隔离恢复36/36通过。四页和最新纯聊天界面保持，4项旧回归失败如实登记。V0.4工作范围见V0.4_KANBAN.md。新授权不归档旧任务，不允许并发writer或无目标耗尽模型额度。
+## 2026-09-21 政策岗位入口与首屏简化
+
+用户要求首屏政策入口可用，五个专业去掉卡片外框、放大 Logo，每个 Logo 下仅用八个字说明价值。当前本地合成演示栈复用 A 内核已有的 `policy1`，补齐 Edge 受控身份目录；任何访问此本地演示首屏的人都可选择政策岗位。该入口仍经服务端身份交换和原有客户/动作权限校验，不把政策权限附加给其他岗位，也不代表生产身份策略已获批准。
+
+## 2026-09-21 客户选择页三选一
+
+用户要求客户选择页大幅精简：右上仅角色图标用于切换；好/中/差使用绿/黄/红三个底板，内置空白流程图轮廓，整卡选择客户。移除新建、搜索、其他客户和说明段落。颜色表示合成案例分类，空白图为装饰，不代表实际业务状态；授权目录唯一匹配与异常失败关闭继续保留。
+
+## 2026-09-21 首页复用客户真实进度
+
+用户纠正首页空白流程图：三个客户卡必须复用内部五专业×四阶段看板的布局、图标与真实状态，替代上一条装饰流程图决定。首页与内部页共用readTakeoffSource及TakeoffBoard；首页只读，进入/返回时重新读取，失败标明不可读。品牌眼睛放大并用轻微呼吸/眨眼增强辨识度，遵循减少动态效果设置。
+
+
+## 2026-09-21 固定 UI 验收基准
+用户明确锁定 1920×1080、浏览器页面缩放 100%。响应式使用实际 CSS 视口，不用整页 transform 缩小补偿；1920×1080 是唯一主验收基准。测试必须同时记录 CSS viewport、浏览器 zoom、画布 transform，不能只读取预览工具尺寸设置。
+顶部前后导航为两个灰黑箭头；主导航放大并居中，眼睛放大。聊天长按助手可 @ 点名；普通消息与模型观察区分。自动转交与语音/电话/扫码不得用假回执冒充接通。
+
+## 2026-09-21 — Unified presentation entry
+User requires one frontend preserving native materials/tree/timeline, driven by synthetic click events with synchronized chat. Every completed decision stage retains three candidates, one black and two white. 1920x1080 baseline fills viewport at 100%; large navigation and left/right buttons. Backend production integration remains separately validated. See v0.4/results/final-integration/REPORT.md.

@@ -305,6 +305,10 @@ export function createKernelStore({
     const artifactsRes = await settle('artifactList', `/api/v2/customers/${enc}/artifacts?limit=100`, (r) => r);
     const artifactList = Array.isArray(artifactsRes?.artifacts) ? artifactsRes.artifacts
       : Array.isArray(artifactsRes?.items) ? artifactsRes.items : [];
+    // 上游还有更多材料页（元数据>单页100）→ 如实披露截断（与 findings/objectInventory 同纪律，
+    // 不因单页限制悄悄丢失准入输入行；完整分页走工作本读面）。
+    const artifactsTruncated = Boolean(artifactsRes?.nextCursor);
+    if (artifactsTruncated) notes.push('材料清单超过单页上限（limit=100）：快照仅含第一页，完整分页走工作本读面');
 
     // 事件桶：本身份自己的缓冲（不读他人桶）
     const b = bucketOf(customerId, ctx);
@@ -388,6 +392,7 @@ export function createKernelStore({
       listTruncated: {
         findings: findingsAll.length > findings.length,
         objectInventory: objectInventoryAll.length > objectInventory.length,
+        artifacts: artifactsTruncated,
       },
       objectInventory,
       financingRequests,
@@ -471,23 +476,40 @@ export function createKernelStore({
     }
     const b = bucketOf(customerId, ctx);
     const sub = { cb, onAuthFail: opts.onAuthFail };
-    b.subs.add(sub);
-    if (!b.timer) {
-      b.timer = setInterval(() => {
-        if (b.subs.size === 0) { // 最后一个订阅者离开 → 释放缓冲（按身份分桶防泄漏）
-          if (b.timer) { clearInterval(b.timer); b.timer = null; }
-          if (b.subs.size === 0 && !b.authDead) buckets.delete(b.key);
-          return;
-        }
-        pullEvents(b).catch((e) => {
-          log(`[kernel-store] 轮询失败 customer=${customerId}: ${e.upstream?.code || e.message}（保流不断，readiness/freshness 反映内核状态）`);
-        });
-      }, pollIntervalMs);
-      b.timer.unref?.();
-    }
+    let dead = false;
     const safe = (env) => { try { cb(env); } catch { } };
     const kick = (async () => {
       await sleep(0);
+      // SOAK-02b（长程测试02包）：带基线游标且桶为空 → 先补缓冲再注册订阅。否则首拉把
+      // 整窗历史按 fresh 全量投给本订阅，客户端 after 游标被重放洪泛忽略（竞态路径见
+      // SOAK-02a：在途 workspace 合并 + 同键旧桶被上一定时器错删 → subscribe 落在新空桶）。
+      // 缓冲就绪后统一走 replayFrom(after)：游标之后才投递；游标未知 → 仅 resync 不投递。
+      if (!dead && b.envelopes.length === 0 && opts.after != null) {
+        try { await pullEvents(b); } catch (e) {
+          log(`[kernel-store] 首轮补取失败 customer=${customerId}: ${e.upstream?.code || e.message}`);
+        }
+      }
+      if (dead) return;
+      if (b.authDead) { // 预取中凭据已被拒（C1.2）：补发通知，不留哑订阅
+        try { opts.onAuthFail?.(b.authDead); } catch { }
+        return;
+      }
+      b.subs.add(sub);
+      if (!b.timer) {
+        b.timer = setInterval(() => {
+          if (b.subs.size === 0) { // 最后一个订阅者离开 → 释放缓冲（按身份分桶防泄漏）
+            if (b.timer) { clearInterval(b.timer); b.timer = null; }
+            // SOAK-02a：仅当映射仍指向本桶才删除。旧定时器按 key 无条件 delete 会把同键
+            // 新桶错删（新桶丢地图注册：replayFrom 静默 miss、首轮整窗重放洪泛）。
+            if (b.subs.size === 0 && !b.authDead && buckets.get(b.key) === b) buckets.delete(b.key);
+            return;
+          }
+          pullEvents(b).catch((e) => {
+            log(`[kernel-store] 轮询失败 customer=${customerId}: ${e.upstream?.code || e.message}（保流不断，readiness/freshness 反映内核状态）`);
+          });
+        }, pollIntervalMs);
+        b.timer.unref?.();
+      }
       try {
         const r = await pullEvents(b);
         if (r === 'auth') return; // 桶已销毁并通知
@@ -506,14 +528,14 @@ export function createKernelStore({
           schemaVersion: 'jw.event.v1',
           occurredAt: new Date().toISOString(),
           payloadRef: { type: 'EDGE_RESYNC_REQUIRED', seq: b.lastSeq.toString() },
-          payload: { after: opts.after, reason: r.reason },
+          payload: { after: opts.after, reason: replay.reason },
         });
         return;
       }
       for (const env of replay.events) safe(env);
     })();
     void kick;
-    return () => { b.subs.delete(sub); };
+    return () => { dead = true; b.subs.delete(sub); };
   }
 
   // 会话目标校验（C2.5）：消息发往的客户必须对该凭据可读（A 逐请求裁决），防错 customerId。

@@ -3,8 +3,10 @@
 // 与写面（proxy.mjs）同一纪律：绝不做任意 URL 代理；未登记路径明确拒绝。
 // 注意：customer-only principal 对 artifacts/reports/内部读口的 403 由 A 结构保证（B13），Edge 原样呈现。
 import { trustedActorHeaders } from './channel-authz.mjs';
+import { ADVANCE_READ_ROUTES } from './advance-round.mjs';
 
 export const READ_ROUTES = [
+  ...ADVANCE_READ_ROUTES,
   {
     pattern: /^\/api\/jw\/v2\/customers\/([^/]+)\/artifacts$/,
     action: 'artifacts:read',

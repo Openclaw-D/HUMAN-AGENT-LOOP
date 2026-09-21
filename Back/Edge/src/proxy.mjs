@@ -8,8 +8,10 @@
 // 白名单：Back/CONTRACT.md §4 v1 敏感写 + 任务三消费面（consumed-surface-v1.json）的
 // v2 客户授信写与检查会话写。新内核路由以消费面快照为准登记，不做任意 URL 代理。
 import { trustedActorHeaders } from './channel-authz.mjs';
+import { ADVANCE_WRITE_ROUTES } from './advance-round.mjs';
 
 export const ACTION_ROUTES = [
+  ...ADVANCE_WRITE_ROUTES,
   {
     method: 'POST',
     pattern: /^\/api\/jw\/v2\/actions\/goals\/([^/]+)\/(claim|complete|fail|accept|decide|pause|resume|takeover)$/,

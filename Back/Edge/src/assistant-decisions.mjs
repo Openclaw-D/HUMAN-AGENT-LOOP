@@ -21,6 +21,17 @@ export function createDecisionHandler({ sessionOf, verify, store, model, evidenc
       const body = parsed.body ?? {};
       const assistant = req.method === 'GET' ? url.searchParams.get('assistant') : body.assistant;
       if (!assistants.includes(assistant)) throw decisionError('INVALID_ASSISTANT', 400);
+      // R2-03 显式材料选择（可选）：此处只做形状门（非法进入即拒 400，零 Connectors/模型出站、
+      // 不写决策仓库）；缺省=undefined→provider legacy 全量语义，与改动前逐字节一致。
+      // 空集/越权/上游缺件等语义校验归 provider 精确错误码，不在此重复发明。
+      let materialScope;
+      if (body.materialScope !== undefined) {
+        const ms = body.materialScope;
+        if (!ms || typeof ms !== 'object' || Array.isArray(ms) || !Array.isArray(ms.artifactIds) ||
+            ms.artifactIds.some(id => typeof id !== 'string' || !id.length))
+          throw decisionError('INVALID_MATERIAL_SCOPE', 400);
+        materialScope = { artifactIds: ms.artifactIds };
+      }
       const initialSession = sessionOf(req);
       if (!initialSession) throw decisionError('SESSION_REQUIRED', 401);
       async function authorized() {
@@ -36,7 +47,8 @@ export function createDecisionHandler({ sessionOf, verify, store, model, evidenc
         const tenantId = session.tenantId ?? (snapshot.snapshot ?? snapshot)?.admission?.scope?.tenantId;
         if (!tenantId || !session.principalId) throw decisionError('DECISION_SCOPE_MISSING', 403);
         if (!evidence) throw decisionError('EVIDENCE_UNAVAILABLE', 422);
-        context.evidencePack = await evidence({ snapshot, tenantId, customerId, revision: context.contextVersion });
+        // scope 经闭包进入全部再入（respond/checkCurrent/finish sameBasis），同一请求内 basis 一致。
+        context.evidencePack = await evidence({ snapshot, tenantId, customerId, revision: context.contextVersion, scope: materialScope });
         context.evidenceRefs = context.evidencePack.snippets.map(s => ({ id: s.id, version: s.parserVersion, hash: s.hash }));
         return { scope: { tenantId, customerId, principalId: session.principalId, assistant }, context, baseHash: contextHash(context) };
       }
@@ -137,6 +149,12 @@ export function createDecisionHandler({ sessionOf, verify, store, model, evidenc
         });
       await respond(); return true;
     } catch (e) {
+      // R2-03：证据层（provider/scope）失败如实透出精确码与 detail（全部发生在模型出站之前），
+      // 不再并入 DECISION_UNAVAILABLE；EVIDENCE_UNAVAILABLE 既有 422 语义不变，其余映射不变。
+      if (typeof e?.message === 'string' && e.message.startsWith('EVIDENCE_')) {
+        sendJson(res, e.status ?? 422, { ok: false, error: e.message, ...(e.detail !== undefined ? { detail: e.detail } : {}) });
+        return true;
+      }
       const status = e.status ?? (e.upstream?.status === 403 ? 403 : 503);
       sendJson(res, status, { ok: false, error: e.status ? e.code : 'DECISION_UNAVAILABLE' });
       return true;

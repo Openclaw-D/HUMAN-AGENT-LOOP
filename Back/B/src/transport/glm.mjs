@@ -31,7 +31,7 @@ function contextTags({ projectId, goalId, runId, role }) {
  * 确定性:同 (runId, stepId, attempt, 捕获输入) → 逐字节同载荷(payloadHash 稳定),
  * 保证恢复重入时回执对账可用。
  */
-export function buildModelRequest({ runId, stepId, attempt, role, purpose, projectId, goalId, goalLabel, factVersion, evidenceRefs, generation = 1, contextBrief }) {
+export function buildModelRequest({ runId, stepId, attempt, role, purpose, projectId, goalId, goalLabel, factVersion, evidenceRefs, generation = 1, contextBrief, routeClass }) {
   // 可选最小上下文(TAKEOFF Edge 助手链):调用方在服务端组装的必要内容摘要;
   // 缺省不传时与旧版逐字节一致(payloadHash 稳定性不受影响)。仍受 maxRequestChars 上限约束。
   const brief = typeof contextBrief === 'string' ? contextBrief.trim() : '';
@@ -50,6 +50,7 @@ export function buildModelRequest({ runId, stepId, attempt, role, purpose, proje
     role, purpose, text,
     contextTags: contextTags({ projectId, goalId, runId, role }),
     evidenceRefs: (evidenceRefs ?? []).map((e) => ({ id: String(e.id), version: String(e.version), hash: String(e.hash) })),
+    ...(routeClass ? { routeClass } : {}),
   };
   return { request, payloadHash: stableJson(request) };
 }
@@ -74,6 +75,15 @@ export function createModelTransport(p = {}) {
   const costLogPath = p.costLogPath ?? null;
   const thinkingType = p.real?.thinkingType;
   if (thinkingType !== undefined && !['enabled', 'disabled'].includes(thinkingType)) throw new Error('real.thinkingType 必须为enabled或disabled');
+  const routeStrategy = p.real?.routing?.strategy;
+  const deepseekRouting = routeStrategy === 'deepseek-flash-pro-v1' || routeStrategy === 'deepseek-flash-only-v1';
+  if (p.real?.routing && !deepseekRouting) throw new Error('real.routing.strategy 不支持');
+  if (deepseekRouting && (new URL(p.real.endpoint).origin !== 'https://api.deepseek.com' ||
+      p.real.routing.flashModel !== 'deepseek-flash' ||
+      (routeStrategy === 'deepseek-flash-pro-v1' && p.real.routing.proModel !== 'deepseek-v4-pro') ||
+      (routeStrategy === 'deepseek-flash-only-v1' && p.real.model !== 'deepseek-flash'))) {
+    throw new Error('DeepSeek route endpoint/model 配置非法');
+  }
   // D-25 预算上限(05:00 评审重写;mock/real 同一记账面):
   //   budget 段(maxTotalCost/perCallEstimate,须为正有限数,缺一或非法 = 创建即抛错失败关闭)。
   //   账本语义:reserve = 出站前按 perCallEstimate 的保守预占,永久入账不冲销(失败/崩溃也保留,
@@ -322,6 +332,13 @@ export function createModelTransport(p = {}) {
     }
     return v;
   })();
+  if (routeStrategy === 'deepseek-flash-pro-v1' && (maxOutputTokens ?? 0) < 2000) {
+    throw new Error('DeepSeek Flash/Pro route 需要 real.maxOutputTokens >= 2000（Pro 思考与正式输出共用上限）');
+  }
+  if (deepseekRouting && p.real.routing.flashMaxOutputTokens !== undefined &&
+      (!Number.isInteger(p.real.routing.flashMaxOutputTokens) || p.real.routing.flashMaxOutputTokens < 64 || p.real.routing.flashMaxOutputTokens > 1000)) {
+    throw new Error('real.routing.flashMaxOutputTokens 必须为 64..1000');
+  }
 
   /**
    * 单次补全调用(七状态结果,供编排桥接)。
@@ -352,10 +369,18 @@ export function createModelTransport(p = {}) {
     if (blocked) return blocked;
     const gate = await budgetGate(request);
     if (gate) return gate;
-    return callHttp({ endpoint: p.real.endpoint, apiKey: p.real.apiKey ?? null, mockMode: false, request });
+    const tier = routeStrategy === 'deepseek-flash-only-v1' || (deepseekRouting && request.routeClass === 'simple') ? 'flash' : 'pro';
+    const route = deepseekRouting ? {
+      model: tier === 'flash' ? p.real.routing.flashModel : p.real.routing.proModel,
+      thinkingType: tier === 'flash' ? 'disabled' : 'enabled',
+      jsonObject: tier === 'flash',
+      reasoningEffort: tier === 'flash' ? undefined : 'low',
+      maxOutputTokens: tier === 'flash' ? (p.real.routing.flashMaxOutputTokens ?? 500) : maxOutputTokens,
+    } : null;
+    return callHttp({ endpoint: p.real.endpoint, apiKey: p.real.apiKey ?? null, mockMode: false, request, route });
   }
 
-  async function callHttp({ endpoint, apiKey, mockMode, request }) {
+  async function callHttp({ endpoint, apiKey, mockMode, request, route = null }) {
     const timeoutMs = (mockMode ? p.mock?.timeoutMs : p.real?.timeoutMs) ?? 20000;
     const startedAt = Date.now();
     const controller = new AbortController();
@@ -374,11 +399,13 @@ export function createModelTransport(p = {}) {
           ...(mockMode && request.contextTags ? { 'x-jw-project': request.contextTags.projectId, 'x-jw-run': request.contextTags.runId } : {}),
         },
         body: JSON.stringify({
-          model: mockMode ? (p.mock?.model ?? 'mock-glm-5.2') : p.real.model,
+          model: mockMode ? (p.mock?.model ?? 'mock-glm-5.2') : (route?.model ?? p.real.model),
           messages: [{ role: 'user', content: request.text }],
           temperature: 0.1,
-          ...(!mockMode && thinkingType ? { thinking: { type: thinkingType } } : {}),
-          ...(mockMode ? {} : (maxOutputTokens ? { max_tokens: maxOutputTokens } : {})),
+          ...(!mockMode && route?.jsonObject ? { response_format: { type: 'json_object' } } : {}),
+          ...(!mockMode && (route?.thinkingType ?? thinkingType) ? { thinking: { type: route?.thinkingType ?? thinkingType } } : {}),
+          ...(!mockMode && route?.reasoningEffort ? { reasoning_effort: route.reasoningEffort } : {}),
+          ...(mockMode ? {} : ((route?.maxOutputTokens ?? maxOutputTokens) ? { max_tokens: route?.maxOutputTokens ?? maxOutputTokens } : {})),
           // B 扩展字段:C mock 以 x-jw-* 头承载;real 供应商忽略未知字段由服务端裁决
           b_meta: { requestId: request.requestId, contextTags: request.contextTags, evidenceRefs: request.evidenceRefs, generation: request.generation, contextVersion: request.contextVersion },
         }),
@@ -477,7 +504,7 @@ export function createModelTransport(p = {}) {
         : estimateCost(usage, p.real?.cost);
       await recordCost({
         requestId: request.requestId, at: new Date().toISOString(), durationMs,
-        mode: mockMode ? 'mock' : 'real', model: mockMode ? (body.model ?? 'c-mock') : p.real.model,
+        mode: mockMode ? 'mock' : 'real', model: mockMode ? (body.model ?? 'c-mock') : (route?.model ?? p.real.model),
         inputTokens: usage.inputTokens ?? usage.prompt_tokens ?? null,
         outputTokens: usage.outputTokens ?? usage.completion_tokens ?? null,
         cost,
@@ -492,7 +519,7 @@ export function createModelTransport(p = {}) {
       source: {
         mode: mockMode ? 'mock' : 'real',
         endpointOrigin: originOf(endpoint),
-        model: body.model ?? (mockMode ? 'c-mock' : p.real.model),
+        model: body.model ?? (mockMode ? 'c-mock' : (route?.model ?? p.real.model)),
         simulationOnly: body.mock?.simulationOnly === true, // C mock 强标记,消费方可见
         canary: body.mock?.canary ?? null,                  // 串线探针锚点
         credentialAnomaly: body.mock?.credentialAnomaly ?? null, // 凭据异常标记(不回显凭据)

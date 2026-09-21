@@ -99,3 +99,16 @@ V0.3-Jev释放assistant-decisions、decision-feedback-store、assistant-model、
 - Connectors监听空闲PG连接错误，数据库恢复后可继续查询；隔离部署回归36/36。
 - 当前前端构建/类型检查通过；全套132项中4项旧界面测试待V0.4更新。
 - 完成范围、限制和V0.4接续详见v0.3/RELEASE_V0.3.md与V0.4_KANBAN.md。
+## V0.4 · 2026-09-21
+- 政策岗位合成身份在首屏可选并进入客户工作区；运行配置模板补齐该身份映射。五专业入口移除卡片框与底部说明，显示放大的 Logo 和各八字价值说明；前端构建已更新。
+
+- V0.4 客户选择页简化为绿/黄/红三张空白流程图色板，角色切换仅保留图标；目录行为回归6/6、typecheck/build通过，已在现有浏览器检查，待用户视觉接受。
+
+- V0.4 首页三个客户卡改用内部同组件真实进度缩略看板；共享补充读面加载逻辑。眼睛标识放大并加轻微动效。相关回归26/26及typecheck/build通过，1468×808现有预览视觉检查完成，用户接受待确认。
+
+
+## 2026-09-21 UI 比例与聊天工具栏
+移除 DesktopFrame 小窗口整页缩放；调整顶部导航与前后箭头。增加长按 @、表情、引用和现有材料上传入口；普通内部消息使用 messages 接口。语音/电话/扫码明确未接通，自动转交未实施。typecheck/build、14 项工作区测试及 2 项聊天工具栏测试通过。当前浏览器实测仍有 144% zoom，1920×1080/100% 的运行视觉验收未通过，不能标成已锁定。
+
+## 2026-09-21 V0.4 integration
+Unified demo entry, native material/tree/timeline reuse, good/medium/bad click-driven progression, synchronized chat and confidence bars, per-stage branching, large presentation controls and Escape return. Includes independent regression and ZCode soak limitations report.

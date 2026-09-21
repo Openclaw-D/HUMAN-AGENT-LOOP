@@ -59,7 +59,7 @@ export function DecisionFeedbackPanel({ wb, assistant, requiredQuestion, onState
     try {
       const result = await checked(await client.readDecisions(customerId, assistant), startAnchor);
       if (!alive.current || epoch !== generation.current) return;
-      displayedAnchor.current = startAnchor;
+      displayedAnchor.current = startAnchor; displayedVersion.current = wb.snapshotVersion;
       setData(result); setReady(true); setNote('');
       if (result.latest && !requiredQuestion) setQuestion(result.latest.question);
     } catch (e) { if (alive.current && epoch === generation.current) { setData(null); setNote(failure(e)); } }
@@ -68,10 +68,11 @@ export function DecisionFeedbackPanel({ wb, assistant, requiredQuestion, onState
   useEffect(() => {
     alive.current = true; void read();
     return () => { alive.current = false; generation.current++; inFlight.current = false; };
-  }, [client, customerId, assistant, anchor]);
+  }, [client, customerId, assistant, anchor, wb.snapshotVersion]);
   // A changed workspace invalidates the displayed selection immediately, without starting a paid call.
   const displayedAnchor = useRef(anchor);
-  const staleLocally = displayedAnchor.current !== anchor;
+  const displayedVersion = useRef(wb.snapshotVersion);
+  const staleLocally = displayedAnchor.current !== anchor || displayedVersion.current !== wb.snapshotVersion;
 
   async function analyze(reconcile = false) {
     if (!client || !customerId || !data || inFlight.current || !ready || (!reconcile && data.pending)) return;
@@ -84,7 +85,7 @@ export function DecisionFeedbackPanel({ wb, assistant, requiredQuestion, onState
         operationId: reconcile ? data.pending!.operationId : crypto.randomUUID(),
       }), startAnchor);
       if (!alive.current || epoch !== generation.current) return;
-      displayedAnchor.current = startAnchor; setData(result); setReady(true);
+      displayedAnchor.current = startAnchor; displayedVersion.current = wb.snapshotVersion; setData(result); setReady(true);
       setNote(result.error ? '运行结果仍未知，已保留本次身份；请核对回执。' : '');
     } catch (e) { if (alive.current && epoch === generation.current) setNote(failure(e)); }
     finally { if (epoch === generation.current) { inFlight.current = false; if (alive.current) setBusy(false); } }

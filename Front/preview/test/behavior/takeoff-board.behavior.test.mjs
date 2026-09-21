@@ -5,12 +5,12 @@
 // 3) T13 视觉语义：currency=current → 完成格绿（aria「已完成…≠批准」）；changed → 冻结+卡点（白霜语义可读）。
 // 4) 点格打开真实事项分层（当前问题→依据→需要谁→允许动作→输出与历史）；动作打开复用面板；关闭后看板仍在。
 // 5) T14 辅助页：流程只读 SVG、记录时间轴消费服务端事件、待办回原格子。
-// 6) 六助手：六个入口一个消息区；草稿切换保留；@插入；Enter 发送/Shift+Enter 换行/输入法候选不误发；
-//    未接入工具明确禁用；上传打开材料面板。
+// 6) 纯聊天六助手：显式模型观察发送；草稿跨页保留、跨身份/客户清理；输入法不误发、未知防重发。
+//    上传由材料页打开既有面板。
 // 7) 结束对话框：三类确认走 A confirm-preassessment（状态门/版本绑定如实；服务端硬门重查）；行政撤回走既有 decide（二次确认+幂等），不调用 facility.approve。
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { render, screen, fireEvent, waitFor, cleanup, within } from './harness.mjs';
+import { render, screen, fireEvent, waitFor, cleanup, within, act } from './harness.mjs';
 
 const React = (await import('react')).default;
 const { TakeoffScreen } = await import('../../../site-mirror/app/takeoff/takeoff-screen.tsx');
@@ -25,7 +25,8 @@ test('状态动效不推进业务，快速失败打断解锁，重进不重播',
   assert.equal(scene().dataset.transition, undefined);
   view.rerender(React.createElement(StatusObject, { kind: 'wrench' }));
   assert.equal(scene().dataset.transition, 'unlock');
-  assert.ok(view.container.querySelector('.tk-unlock-key'));
+  assert.ok(view.container.querySelector('.tk-status-front .lock'));
+  assert.ok(view.container.querySelector('.tk-status-back .wrench'));
   act(() => t.mock.timers.tick(3000));
   assert.equal(scene().dataset.state, 'wrench', '视觉计时器不能制造已完成');
   assert.equal(scene().dataset.transition, undefined);
@@ -34,8 +35,8 @@ test('状态动效不推进业务，快速失败打断解锁，重进不重播',
   view.rerender(React.createElement(StatusObject, { kind: 'lock' }));
   view.rerender(React.createElement(StatusObject, { kind: 'wrench' }));
   view.rerender(React.createElement(StatusObject, { kind: 'cross' }));
-  assert.equal(scene().dataset.transition, 'fail');
-  assert.equal(view.container.querySelector('.tk-unlock-key'), null);
+  assert.equal(scene().dataset.transition, undefined);
+  assert.equal(view.container.querySelector('.tk-status-flipper'), null);
   act(() => t.mock.timers.tick(3000));
   assert.equal(scene().dataset.state, 'cross', '旧解锁计时器不能覆盖失败');
   view.unmount();
@@ -98,6 +99,20 @@ const CURRENCY_PARTIAL = [
   { domain: 'credit', currency: 'current' },
   { domain: 'asset', currency: 'changed', reasons: ['new_evidence'] },
 ];
+
+test('推进接口缺失不切页、不移动画布、不伪造业务',async t=>{
+ t.after(cleanup);const {wb,calls}=makeScreen();await act(async()=>{render(React.createElement(TakeoffScreen,{wb,onBackToDirectory:()=>{},onLogout:()=>{}}));});
+ await act(async()=>{fireEvent.click(screen.getByRole('button',{name:'材料',exact:true}));});
+ const canvas=screen.getByLabelText('可缩放的材料画布');canvas.scrollTop=137;canvas.scrollLeft=219;
+ const before=canvas.innerHTML;const route=window.location.href;const focus=screen.getByLabelText('聊天消息');focus.focus();
+ const button=screen.getByRole('button',{name:'推进下一专业列'});assert.equal(button.disabled,false);
+ fireEvent.click(button);fireEvent.click(button);
+ assert.equal(screen.getByLabelText('可缩放的材料画布'),canvas);assert.equal(canvas.scrollTop,137);assert.equal(canvas.scrollLeft,219);assert.equal(canvas.innerHTML,before);assert.equal(window.location.href,route);assert.equal(document.activeElement,focus);
+ assert.equal(calls.action.length,0);assert.equal(calls.confirm.length,0);assert.equal(calls.send.length,0);
+ assert.ok(screen.getByText(/1\/5 业务/));
+ await act(async()=>fireEvent.click(screen.getByRole('button',{name:'平台',exact:true})));
+ assert.equal(screen.getByRole('columnheader',{name:/业务/}).getAttribute('aria-current'),'true');
+});
 
 test('T01 范围：二十格+六助手结构齐备；默认路径无退休展示与正式额度/融资入口', async (t) => {
   t.after(() => cleanup());
@@ -220,43 +235,47 @@ test('辅助页：流程只读 SVG+缩放；记录消费服务端事件；待办
   cleanup();
 });
 
-test('长按助手只插入@，打开团队消息并聚焦；不会同时切换助手',async t=>{
-  t.after(cleanup);const {wb}=makeScreen();render(React.createElement(TakeoffScreen,{wb,onBackToDirectory:()=>{},onLogout:()=>{}}));
-  const credit=screen.getByRole('tab',{name:'信审'});
-  fireEvent.pointerDown(credit);
-  await waitFor(()=>assert.match(screen.getByLabelText('消息草稿').value,/@信审/));
-  fireEvent.pointerUp(credit);fireEvent.click(credit);
-  assert.equal(screen.getByRole('tab',{name:'业务'}).getAttribute('aria-selected'),'true');
-  assert.equal(screen.getByLabelText('消息草稿').closest('details').open,true);
+test('聊天助手：切换只更换接收助手，不发送或执行业务动作', async t => {
+  t.after(cleanup); const {wb,calls}=makeScreen();
+  render(React.createElement(TakeoffScreen,{wb,onBackToDirectory:()=>{},onLogout:()=>{}}));
+  fireEvent.click(screen.getByRole('tab',{name:'信审'}));
+  assert.equal(screen.getByRole('tab',{name:'信审'}).getAttribute('aria-selected'),'true');
+  assert.equal(screen.getByLabelText('聊天消息').placeholder,'发消息，@ 点名助手…');
+  assert.ok(screen.getByRole('button',{name:'发送消息'}).disabled);
+  assert.equal(calls.send.length,0); assert.equal(calls.action.length,0);
 });
 
-test('六助手：草稿跨切换保留；@插入；Enter 发送内部线程；Shift+Enter 换行不发送；输入法候选不误发', async (t) => {
-  t.after(() => cleanup());
-  const { wb, calls } = makeScreen({ currency: CURRENCY_PARTIAL });
-  render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
-  const input = screen.getByLabelText('消息草稿');
-  fireEvent.change(input, { target: { value: '信审材料已补齐' } });
-
-  fireEvent.click(screen.getByRole('tab', { name: '见微' }));
-  assert.equal(screen.getByLabelText('消息草稿').value, '信审材料已补齐', '切换助手草稿保留');
-
-  fireEvent.click(screen.getByRole('tab', { name: '资产' }));
-  fireEvent.click(screen.getByRole('button', { name: '@' }));
-  assert.match(screen.getByLabelText('消息草稿').value, /@资产/, '@入口插入');
-
-  fireEvent.keyDown(screen.getByLabelText('消息草稿'), { key: 'Enter', shiftKey: true });
-  assert.equal(calls.send.length, 0, 'Shift+Enter 换行不发送');
-  fireEvent.keyDown(screen.getByLabelText('消息草稿'), { key: 'Enter', keyCode: 229 });
-  assert.equal(calls.send.length, 0, '输入法候选确认不误发送');
-  assert.ok(screen.getByText('输入法候选确认不会误发送。'));
-
-  fireEvent.keyDown(screen.getByLabelText('消息草稿'), { key: 'Enter' });
-  await waitFor(() => assert.equal(calls.send.length, 1));
-  assert.equal(calls.send[0].audience, 'internal', '默认内部线程');
-
-  // 未接入工具明确禁用
-  assert.equal(screen.queryByRole('button', { name: '⋯ 更多' }), null, 'UI-R2 隐藏未接入工具菜单，不保留死入口');
-  cleanup();
+test('聊天：普通消息与@模型分流；草稿跨助手保留；输入法不误发；模型未知防重发', async t => {
+  t.after(cleanup); const {wb,calls}=makeScreen(); const observed=[];
+  wb.client.observeAssistant=async (...args)=>{observed.push(args); throw Object.assign(new Error('未发送'),{code:'FORBIDDEN'});};
+  render(React.createElement(TakeoffScreen,{wb,onBackToDirectory:()=>{},onLogout:()=>{}}));
+  const input=screen.getByLabelText('聊天消息');
+  fireEvent.change(input,{target:{value:'核对材料'}});
+  fireEvent.click(screen.getByRole('tab',{name:'资产'}));
+  assert.equal(input.value,'核对材料');
+  fireEvent.keyDown(input,{key:'Enter',shiftKey:true});
+  fireEvent.keyDown(input,{key:'Enter',keyCode:229});
+  fireEvent.keyDown(input,{key:'Enter',isComposing:true});
+  assert.equal(observed.length,0);
+  fireEvent.keyDown(input,{key:'Enter'});
+  await waitFor(()=>assert.equal(input.disabled,false));
+  assert.equal(calls.send.length,1);
+  assert.equal(calls.send[0].text,'核对材料');
+  assert.deepEqual(observed,[],'普通消息不触发真实模型');
+  assert.equal(input.value,'');
+  fireEvent.change(input,{target:{value:'@资产 核对材料'}});
+  fireEvent.keyDown(input,{key:'Enter'});
+  await waitFor(()=>assert.deepEqual(observed,[[wb.customerId,'asset','@资产 核对材料']]));
+  await waitFor(()=>assert.equal(input.disabled,false));
+  wb.client.observeAssistant=async (...args)=>{observed.push(args);return {model:{status:'unknown',sent:null}};};
+  fireEvent.change(input,{target:{value:'@资产 再次核对'}});
+  fireEvent.click(screen.getByRole('button',{name:'发送消息'}));
+  await screen.findByText(/结果未知，费用也可能未知/);
+  fireEvent.click(screen.getByRole('tab',{name:'信审'}));
+  assert.ok(input.disabled); assert.ok(screen.getByRole('button',{name:'发送消息'}).disabled);
+  fireEvent.keyDown(input,{key:'Enter'});
+  assert.equal(observed.length,2);
+  assert.equal(calls.send.length,1); assert.equal(calls.action.length,0);
 });
 
 test('结束对话框：状态门如实——candidate_ready 下正/附条件禁用（须先提交复核）；撤回可用', async (t) => {
@@ -379,13 +398,14 @@ test('admission 投影合并：到件数/失败卡点入格；requestedAmount/�
   cleanup();
 });
 
-test('助手工具栏上传入口打开材料面板（客户联系人门户分支保留在屏内）', async (t) => {
+test('材料页上传入口打开材料面板，导航不提交上传', async (t) => {
   t.after(() => cleanup());
   const { wb } = makeScreen({ currency: CURRENCY_PARTIAL });
   render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
   await waitFor(() => assert.ok(screen.getByRole('grid', { name: /二十格看板/ })));
-  fireEvent.click(screen.getByRole('button', { name: '上传' }));
-  await waitFor(() => assert.ok(screen.getByText(/已收到的材料/)), '工具栏上传→材料面板');
+  fireEvent.click(screen.getByRole('button', { name: '材料', exact: true }));
+  fireEvent.click(screen.getByRole('button', { name: '上传与补充材料' }));
+  await waitFor(() => assert.ok(screen.getByText(/已收到的材料/)), '材料页上传→材料面板');
   cleanup();
 });
 
@@ -400,9 +420,9 @@ test('顶部摘要：已有申请金额首屏直接展示，不以加载占位�
 
 test('常驻助手：四页同一实例，收起展开不丢草稿',async t=>{
  t.after(cleanup);const {wb}=makeScreen();render(React.createElement(TakeoffScreen,{wb,onBackToDirectory:()=>{},onLogout:()=>{}}));
- const draft=screen.getByLabelText('消息草稿');fireEvent.change(draft,{target:{value:'保留这条草稿'}});
- for(const name of ['材料','决策','流程','平台']) { fireEvent.click(screen.getByRole('button',{name,exact:true}));assert.equal(screen.getByLabelText('消息草稿'),draft);assert.equal(draft.value,'保留这条草稿');assert.ok(screen.getByRole('button',{name:'收起右侧助手'})); }
- fireEvent.click(screen.getByRole('button',{name:'收起右侧助手'}));assert.ok(screen.getByRole('button',{name:'展开右侧助手'}));fireEvent.click(screen.getByRole('button',{name:'展开右侧助手'}));assert.equal(screen.getByLabelText('消息草稿').value,'保留这条草稿');
+ const draft=screen.getByLabelText('聊天消息');fireEvent.change(draft,{target:{value:'保留这条草稿'}});
+ for(const name of ['材料','决策','流程','平台']) { fireEvent.click(screen.getByRole('button',{name,exact:true}));assert.equal(screen.getByLabelText('聊天消息'),draft);assert.equal(draft.value,'保留这条草稿');assert.ok(screen.getByRole('button',{name:'收起右侧助手'})); }
+ fireEvent.click(screen.getByRole('button',{name:'收起右侧助手'}));assert.ok(screen.getByRole('button',{name:'展开右侧助手'}));fireEvent.click(screen.getByRole('button',{name:'展开右侧助手'}));assert.equal(screen.getByLabelText('聊天消息').value,'保留这条草稿');
 });
 
 test('四页独立：仅决策页共用四阶段画布，返回平台恢复看板',async t=>{
@@ -411,4 +431,17 @@ test('四页独立：仅决策页共用四阶段画布，返回平台恢复看�
  fireEvent.click(screen.getByRole('button',{name:'决策',exact:true}));assert.ok(screen.getByLabelText('项目四阶段连续画布'));assert.equal(document.querySelectorAll('.tk-stage-band').length,4);
  fireEvent.click(screen.getByRole('button',{name:'材料',exact:true}));assert.ok(screen.getByLabelText('材料全景工作台'));assert.equal(screen.queryByLabelText('项目四阶段连续画布'),null);
  fireEvent.click(screen.getByRole('button',{name:'平台',exact:true}));assert.ok(screen.getByRole('grid'));assert.ok(screen.getByRole('button',{name:'收起右侧助手'}));
+});
+
+test('聊天草稿：客户和身份会话切换清理，不串入新作用域', async t => {
+ t.after(cleanup);const {wb}=makeScreen();
+ const props={onBackToDirectory:()=>{},onLogout:()=>{}};
+ const view=render(React.createElement(TakeoffScreen,{...props,wb}));
+ fireEvent.change(screen.getByLabelText('聊天消息'),{target:{value:'旧客户草稿'}});
+ const next={...wb,customerId:'customer-2'};
+ view.rerender(React.createElement(TakeoffScreen,{...props,wb:next}));
+ assert.equal(screen.getByLabelText('聊天消息').value,'');
+ fireEvent.change(screen.getByLabelText('聊天消息'),{target:{value:'旧身份草稿'}});
+ view.rerender(React.createElement(TakeoffScreen,{...props,wb:{...next,session:{...wb.session,sessionId:'s2',principalId:'biz-2'}}}));
+ assert.equal(screen.getByLabelText('聊天消息').value,'');
 });

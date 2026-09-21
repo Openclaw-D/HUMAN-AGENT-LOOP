@@ -38,6 +38,7 @@ export function modelConfigHash(t, maxQuestionChars, maxContextChars) {
   return digest({ mode: t.mode, endpoint, query,
     model: c.model ?? 'mock-glm-5.2', timeoutMs: c.timeoutMs ?? 20000, thinkingType: c.thinkingType ?? null,
     maxOutputTokens: c.maxOutputTokens ?? null, maxConcurrent: c.maxConcurrent ?? null,
+    ...(c.routing ? { routing: c.routing } : {}),
     limits: { maxRequestChars: c.limits?.maxRequestChars ?? null },
     outboundAllow: c.outboundAllow ?? null, temperature: 0.1,
     maxQuestionChars, maxContextChars, adapterVersion: 2 });

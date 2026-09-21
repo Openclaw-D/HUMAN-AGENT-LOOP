@@ -6,13 +6,13 @@ import { observationAnchor, takeoffError, verifiedObservationEvidence, type Assi
 
 type ObservationState = {
   anchor: string; assistant: ModelAssistant; question: string; at: string;
-  busy: boolean; unknown: boolean; note: string; result: AssistantObservation | null;
+  plain?: boolean; busy: boolean; unknown: boolean; note: string; result: AssistantObservation | null;
 };
 // 身份会话分区，客户切换/抽屉重新挂载不能解除 unknown 防重发锁。
 const observations = new WeakMap<WbClient, Map<string, ObservationState>>();
 const names: Record<ModelAssistant, string> = { business: '业务', policy: '政策', credit: '信审', commerce: '商务', asset: '资产', jianwei: '见微' };
 
-export function AssistantObservationPanel({ wb, assistant, chat = false }: { wb: WbApi; assistant: ModelAssistant; chat?: boolean }) {
+export function AssistantObservationPanel({ wb, assistant, chat = false, mention, onOpenMaterials }: { wb: WbApi; assistant: ModelAssistant; chat?: boolean; mention?: {id: ModelAssistant; nonce: number} | null; onOpenMaterials?: () => void }) {
   const client = wb.client;
   const customerId = wb.customerId ?? '';
   const key = `${wb.session?.sessionId}:${customerId}`;
@@ -20,6 +20,8 @@ export function AssistantObservationPanel({ wb, assistant, chat = false }: { wb:
   if (client && registry) observations.set(client, registry);
   const [state, setState] = useState<ObservationState | null>(() => registry?.get(key) ?? null);
   const [question, setQuestion] = useState('');
+  const [emojiOpen, setEmojiOpen] = useState(false);
+  useEffect(() => { if (mention) setQuestion(text => `@${names[mention.id]} ${text.replace(/^@(业务|政策|信审|商务|资产|见微)\s*/, '')}`); }, [mention]);
   const [history, setHistory] = useState<ObservationState[]>(() => registry?.get(key) ? [registry.get(key)!] : []);
   const messagesRef = useRef<HTMLDivElement>(null);
   const [validation, setValidation] = useState('');
@@ -47,11 +49,26 @@ export function AssistantObservationPanel({ wb, assistant, chat = false }: { wb:
     const text = question.trim();
     if (!text || text.length > 2000) { setValidation('请输入 1–2000 字的观察问题。'); return; }
     setValidation('');
-    const started: ObservationState = { anchor: currentAnchor, assistant, question: text, at: new Date().toISOString(), busy: true, unknown: false, note: '正在等待完整结果（非流式），通常需 10–60 秒。离开页面不会取消服务端调用。', result: null };
+    const targetName = chat ? text.match(/^@(业务|政策|信审|商务|资产|见微)(?:\s|$)/)?.[1] : null;
+    const target = (Object.keys(names) as ModelAssistant[]).find(id => names[id] === targetName) ?? assistant;
+    if (chat && !targetName) {
+      const pending: ObservationState = { anchor: currentAnchor, assistant, question:text, at:new Date().toISOString(), busy:true, unknown:false, note:'正在发送…', result:null, plain:true };
+      publish(pending); setQuestion('');
+      try {
+        const receipt = await client.sendMessage(customerId, {requestId:crypto.randomUUID(), audience:'internal', text, internalContent:true});
+        const delivery = receipt.delivery?.state;
+        publish({...pending,busy:false,unknown:!['delivered','sent','failed'].includes(delivery),note:delivery === 'delivered' || delivery === 'sent' ? '消息已送达' : delivery === 'failed' ? '消息发送失败' : '消息送达状态未知，请先核对记录。'});
+      } catch (error) {
+        const problem = takeoffError(error);
+        publish({...pending,busy:false,unknown:problem.unknown,note:problem.message});
+      }
+      return;
+    }
+    const started: ObservationState = { anchor: currentAnchor, assistant: target, question: text, at: new Date().toISOString(), busy: true, unknown: false, note: '正在等待完整结果（非流式），通常需 10–60 秒。离开页面不会取消服务端调用。', result: null };
     publish(started);
     if (chat) setQuestion('');
     try {
-      const result = await client.observeAssistant(customerId, assistant, text);
+      const result = await client.observeAssistant(customerId, target, text);
       const unknown = result.model.status === 'unknown' || result.model.sent === null;
       if (unknown) {
         publish({ ...started, busy: false, unknown: true, result, note: '结果未知，费用也可能未知。已停止再次触发；请由负责人核对服务端回执，不要改写问题或切换助手重发。' });
@@ -106,9 +123,9 @@ export function AssistantObservationPanel({ wb, assistant, chat = false }: { wb:
         const available = item.result && item.anchor === currentAnchor && !item.note && !item.unknown && item.result.model.status === 'succeeded';
         return <div className="tk-chat-turn" key={item.at}>
           <div className="tk-chat-bubble mine">{item.question}</div>
-          <div className="tk-chat-speaker">{names[item.assistant]}</div>
+          <div className="tk-chat-speaker">{item.plain ? "内部消息" : names[item.assistant]} <button type="button" className="tk-quote-message" aria-label="引用这条消息" onClick={() => setQuestion(`「${item.question.slice(0,500)}」\n`)}>引用</button></div>
           <div className="tk-chat-bubble">
-            {item.busy ? '正在思考…' : available ? <>
+            {item.plain ? item.note : item.busy ? '正在思考…' : available ? <>
               {item.result!.observations.map((value, index) => <p key={index}>{value.text}</p>)}
               {item.result!.questions.map((value, index) => <p key={`q-${index}`}>{value.text}</p>)}
               {verifiedObservationEvidence(item.result!).length > 0 && <details className="tk-chat-sources"><summary>查看依据</summary>
@@ -119,8 +136,18 @@ export function AssistantObservationPanel({ wb, assistant, chat = false }: { wb:
         </div>;
       })}
     </div>
+    <div className="tk-chat-tools" role="toolbar" aria-label="聊天工具">
+      <button type="button" aria-label="语音输入（尚未接通）" title="语音输入尚未接通" disabled>♩</button>
+      <button type="button" aria-label="表情" title="表情" aria-expanded={emojiOpen} onClick={() => setEmojiOpen(v => !v)}>☺</button>
+      <button type="button" aria-label="上传文件" title="上传文件" onClick={onOpenMaterials} disabled={!onOpenMaterials}>＋</button>
+      <button type="button" aria-label="电话（尚未接通）" title="电话尚未接通" disabled>☎</button>
+      <button type="button" aria-label="扫码（尚未接通）" title="扫码尚未接通" disabled>▦</button>
+      <button type="button" aria-label="引用最近消息" title="引用最近消息" disabled={!history.length} onClick={() => setQuestion(`「${history[history.length-1].question.slice(0,500)}」\n`)}>❞</button>
+      <button type="button" aria-label="点名当前助手" title={`@${names[assistant]}`} onClick={() => setQuestion(text => `@${names[assistant]} ${text.replace(/^@(业务|政策|信审|商务|资产|见微)\s*/, '')}`)}>＠</button>
+    </div>
+    {emojiOpen && <div className="tk-chat-emojis">{['😀','👍','🙏','✅','❤️','🤔'].map(emoji => <button type="button" key={emoji} onClick={() => {setQuestion(text => text + emoji);setEmojiOpen(false);}}>{emoji}</button>)}</div>}
     <form className="tk-chat-composer" onSubmit={e => void observe(e)}>
-      <textarea aria-label="聊天消息" placeholder={`发消息给${names[assistant]}…`} maxLength={2000} value={question}
+      <textarea aria-label="聊天消息" placeholder="发消息，@ 点名助手…" maxLength={2000} value={question}
         disabled={state?.busy || state?.unknown} onChange={e => setQuestion(e.target.value)}
         onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing && e.keyCode !== 229) { e.preventDefault(); e.currentTarget.form?.requestSubmit(); } }}/>
       <button type="submit" aria-label="发送消息" title="发送" disabled={!question.trim() || !client || !wb.snapshot || state?.busy || state?.unknown}>↑</button>

@@ -12,7 +12,9 @@ import { RoleLogo, ObjectIcon } from './ui-icons';
 const ROW_GLYPH: Record<TakeoffRowId, string> = { input: 'materials', analysis: 'analysis', human: 'verify', closure: 'closure' };
 const ROW_TEXT: Record<TakeoffRowId,string> = { input:'材料', analysis:'分析', human:'核验', closure:'办结' };
 
-export function TakeoffBoard({ cells, selected, onSelect }: {
+export function TakeoffBoard({ cells, selected, onSelect, activeDomain, readOnly = false }: {
+  activeDomain?: TakeoffDomainId;
+  readOnly?: boolean;
   cells: TakeoffCellView[];
   selected: { domain: TakeoffDomainId; row: TakeoffRowId } | null;
   onSelect: (c: TakeoffCellView) => void;
@@ -27,6 +29,8 @@ export function TakeoffBoard({ cells, selected, onSelect }: {
           <div
             key={d.id}
             role="columnheader"
+            aria-current={activeDomain===d.id ? 'true' : undefined}
+            data-active-column={activeDomain===d.id || undefined}
             className={`tk-hcell${hover?.domain === d.id ? ' tk-hi' : ''}`}
           >
             <RoleLogo role={d.id} size={42}/>
@@ -40,6 +44,7 @@ export function TakeoffBoard({ cells, selected, onSelect }: {
             hover={hover}
             selected={selected}
             byKey={byKey}
+            readOnly={readOnly}
             onSelect={onSelect}
             onHover={setHover}
           />
@@ -50,7 +55,8 @@ export function TakeoffBoard({ cells, selected, onSelect }: {
   );
 }
 
-function RowCells({ row, hover, selected, byKey, onSelect, onHover }: {
+function RowCells({ row, hover, selected, byKey, onSelect, onHover, readOnly }: {
+  readOnly?: boolean;
   row: (typeof TAKEOFF_ROWS)[number];
   hover: { domain: TakeoffDomainId; row: TakeoffRowId } | null;
   selected: { domain: TakeoffDomainId; row: TakeoffRowId } | null;
@@ -73,6 +79,7 @@ function RowCells({ row, hover, selected, byKey, onSelect, onHover }: {
         return (
           <TakeoffCell
             key={`${d.id}:${row.id}`}
+            readOnly={readOnly}
             cell={cell}
             cells={[...byKey.values()]}
             selected={isSelected}
