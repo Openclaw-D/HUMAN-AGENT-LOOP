@@ -1,0 +1,103 @@
+TAP version 13
+# Subtest: parallel arrow real HTTP lifecycle, existing commands and persisted versions
+    # Subtest: explicit case manifest maps stable fixture IDs to authorized customers, never inferred names or order
+    ok 1 - explicit case manifest maps stable fixture IDs to authorized customers, never inferred names or order
+      ---
+      duration_ms: 37.8013
+      type: 'test'
+      ...
+    # Subtest: five actual analyses execute in independent overlapping workers and await explicit human adoption
+    ok 2 - five actual analyses execute in independent overlapping workers and await explicit human adoption
+      ---
+      duration_ms: 1386.1277
+      type: 'test'
+      ...
+    # Subtest: same HTTP request replays no command; left history reads no extra result
+    ok 3 - same HTTP request replays no command; left history reads no extra result
+      ---
+      duration_ms: 269.3432
+      type: 'test'
+      ...
+    # Subtest: business mapping accepts only business; service cannot adopt and candidate authority cannot escalate
+    ok 4 - business mapping accepts only business; service cannot adopt and candidate authority cannot escalate
+      ---
+      duration_ms: 106.7127
+      type: 'test'
+      ...
+    # Subtest: explicit existing adoption commands produce stable selections and diamond only after five
+    ok 5 - explicit existing adoption commands produce stable selections and diamond only after five
+      ---
+      duration_ms: 2383.2315
+      type: 'test'
+      ...
+# [reject] POST /api/v2/customers/cust-muafsjsj-a993accda8bf/advance-rounds/column-muafsni5-710664891018/decision → 409 NOT_READY: 需先补证重评
+    # Subtest: medium evidence gap cannot be adopted; registered replacement drives real reevaluation
+    ok 6 - medium evidence gap cannot be adopted; registered replacement drives real reevaluation
+      ---
+      duration_ms: 5554.2197
+      type: 'test'
+      ...
+    # Subtest: risk comes from low coverage; explicit credit rejection archives and stops later success
+    ok 7 - risk comes from low coverage; explicit credit rejection archives and stops later success
+      ---
+      duration_ms: 1894.5035
+      type: 'test'
+      ...
+# [reject] GET /api/v2/customers/cust-muafsjnn-0277179d3e2a/advance-rounds → 404 NOT_FOUND: 资源不存在
+    # Subtest: read recovery on a new adapter preserves selection/events without launching workers
+    ok 8 - read recovery on a new adapter preserves selection/events without launching workers
+      ---
+      duration_ms: 111.3735
+      type: 'test'
+      ...
+    # Subtest: worker initialization/compute timeout terminates workers without retry
+    ok 9 - worker initialization/compute timeout terminates workers without retry
+      ---
+      duration_ms: 23.0151
+      type: 'test'
+      ...
+    # Subtest: active rule version invalidates every domain and unloaded policy never impersonates new rules
+    ok 10 - active rule version invalidates every domain and unloaded policy never impersonates new rules
+      ---
+      duration_ms: 2878.8185
+      type: 'test'
+      ...
+    # Subtest: credit rejection wins over a late policy result
+    ok 11 - credit rejection wins over a late policy result
+      ---
+      duration_ms: 1988.984
+      type: 'test'
+      ...
+# [kernel] internal error: Error: synthetic lost committed adoption response
+#     at r.kernel.v2.adoptDomainOpinion (file:///C:/Users/22673/Desktop/JW/Back/A/test/parallel-arrows-http.test.mjs:156:91)
+#     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+#     at async decide (file:///C:/Users/22673/Desktop/JW/Back/A/src/domain/advance-round.ts:479:18)
+#     at async handle (file:///C:/Users/22673/Desktop/JW/Back/A/src/http/server.ts:87:28)
+# [reject] POST /api/v2/customers/cust-muafswxe-42fb31af3f9a/advance-rounds/column-muafsxfk-b0ea96b5c5d7/decision → 409 NOT_READY: 没有可确认结果
+    # Subtest: committed human adoption then lost response stays unknown and no new ID bypasses it
+    ok 12 - committed human adoption then lost response stays unknown and no new ID bypasses it
+      ---
+      duration_ms: 2351.1043
+      type: 'test'
+      ...
+    # Subtest: actual Node process restart reads the same committed runs and replays without execution
+    ok 13 - actual Node process restart reads the same committed runs and replays without execution
+      ---
+      duration_ms: 4636.4455
+      type: 'test'
+      ...
+    1..13
+ok 1 - parallel arrow real HTTP lifecycle, existing commands and persisted versions
+  ---
+  duration_ms: 24233.5024
+  type: 'test'
+  ...
+1..1
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 24967.5708

@@ -1,0 +1,27 @@
+{
+  "customerId": "cust-muadypht-302e85644b7f",
+  "request": {
+    "requestId": "51bd6aac-4841-4031-87c4-104c57936d93",
+    "tenantId": "arrow-isolated-v1",
+    "kind": "financial_statement",
+    "factKey": "monthly_operating_cash_flow",
+    "grade": "confirmed",
+    "supersedes": "art-muadypki-3b28829580aa",
+    "content": {
+      "value": 200000,
+      "sourceMode": "synthetic",
+      "revision": 2,
+      "verificationDocument": "synthetic bank reconciliation"
+    },
+    "materialMeta": {
+      "unit": "CNY"
+    }
+  },
+  "status": 200,
+  "result": {
+    "ok": true,
+    "artifactId": "art-muaeo21y-2c49c0590cf9",
+    "duplicateOf": null,
+    "supersedes": "art-muadypki-3b28829580aa"
+  }
+}

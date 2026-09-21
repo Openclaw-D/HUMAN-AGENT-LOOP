@@ -1,0 +1,22 @@
+[
+  {
+    "Path": "C:\\Users\\22673\\Desktop\\JW\\Back\\A\\src\\domain\\advance-round.ts",
+    "Hash": "6EC535EFE3F811AA007DE4366D570E177E7EB7853C15D376AB80355DF0291B1C"
+  },
+  {
+    "Path": "C:\\Users\\22673\\Desktop\\JW\\Back\\B\\src\\worker\\column-runner.mjs",
+    "Hash": "71805071DC045DD56BC4DE06CC1E977380706A2787F3D46199CA1789E65342EB"
+  },
+  {
+    "Path": "C:\\Users\\22673\\Desktop\\JW\\Back\\B\\src\\worker\\column-dependencies.mjs",
+    "Hash": "7BB749DB7E9799CAF9A43933FD07511FF71D833A848E7F890030CAC88439449A"
+  },
+  {
+    "Path": "C:\\Users\\22673\\Desktop\\JW\\Back\\A\\scripts\\parallel-arrows-runtime.mjs",
+    "Hash": "3A56389F192A03E5655BD37E1634ED2F43CE8E7DB0162866B06662AA463B28CC"
+  },
+  {
+    "Path": "C:\\Users\\22673\\Desktop\\JW\\Back\\A\\scripts\\start-parallel-arrows.ps1",
+    "Hash": "1064690139768948472247876317C45E712F586400D3242625B6AA4F8E7D508D"
+  }
+]

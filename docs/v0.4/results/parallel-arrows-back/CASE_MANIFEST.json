@@ -1,0 +1,60 @@
+{
+  "ok": true,
+  "manifestVersion": "parallel-arrows-cases-v1",
+  "cases": [
+    {
+      "caseId": "parallel-v1-good",
+      "fixtureVersion": "parallel-case-v1",
+      "sourceMode": "synthetic",
+      "customerId": "cust-muadypcl-e8549024ae50",
+      "displayName": "隔离合成制造业-好例",
+      "scenarioKey": "good",
+      "scenarioLabel": "好",
+      "scenarioIsOutcome": false,
+      "industry": "制造业",
+      "annualRevenueCny": 22000000,
+      "transaction": {
+        "orgType": "commercial_leasing",
+        "product": "sale_leaseback",
+        "region": "新疆喀什",
+        "customerRange": "standard"
+      }
+    },
+    {
+      "caseId": "parallel-v1-medium",
+      "fixtureVersion": "parallel-case-v1",
+      "sourceMode": "synthetic",
+      "customerId": "cust-muadypht-302e85644b7f",
+      "displayName": "隔离合成制造业-补证例",
+      "scenarioKey": "medium",
+      "scenarioLabel": "中",
+      "scenarioIsOutcome": false,
+      "industry": "制造业",
+      "annualRevenueCny": 22000000,
+      "transaction": {
+        "orgType": "commercial_leasing",
+        "product": "sale_leaseback",
+        "region": "新疆喀什",
+        "customerRange": "standard"
+      }
+    },
+    {
+      "caseId": "parallel-v1-bad",
+      "fixtureVersion": "parallel-case-v1",
+      "sourceMode": "synthetic",
+      "customerId": "cust-muadypme-78cd067052a3",
+      "displayName": "隔离合成制造业-风险例",
+      "scenarioKey": "bad",
+      "scenarioLabel": "差",
+      "scenarioIsOutcome": false,
+      "industry": "制造业",
+      "annualRevenueCny": 22000000,
+      "transaction": {
+        "orgType": "commercial_leasing",
+        "product": "sale_leaseback",
+        "region": "新疆喀什",
+        "customerRange": "standard"
+      }
+    }
+  ]
+}

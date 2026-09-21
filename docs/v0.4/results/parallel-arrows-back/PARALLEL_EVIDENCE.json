@@ -1,0 +1,61 @@
+{
+  "processId": "process-muafsk9q-0432d9623f1e",
+  "source": "real C assessStage in worker_threads; explicit synthetic inputs",
+  "jobs": [
+    {
+      "domain": "asset",
+      "roundId": "column-muafskbv-717e6e4959ce",
+      "aRunId": "run-muafskgg-901f1593fc5f",
+      "execution": {
+        "actor": "arrow-local-service",
+        "threadId": 1,
+        "startedAt": "2026-09-20T23:17:49.238Z",
+        "finishedAt": "2026-09-20T23:17:49.249Z"
+      }
+    },
+    {
+      "domain": "business",
+      "roundId": "column-muafskbc-234cc40d7b1c",
+      "aRunId": "run-muafskh5-18f6af824ba8",
+      "execution": {
+        "actor": "arrow-local-service",
+        "threadId": 2,
+        "startedAt": "2026-09-20T23:17:49.238Z",
+        "finishedAt": "2026-09-20T23:17:49.250Z"
+      }
+    },
+    {
+      "domain": "commerce",
+      "roundId": "column-muafskbr-b97127bbc2f9",
+      "aRunId": "run-muafskhs-ada2d251465b",
+      "execution": {
+        "actor": "arrow-local-service",
+        "threadId": 3,
+        "startedAt": "2026-09-20T23:17:49.238Z",
+        "finishedAt": "2026-09-20T23:17:49.249Z"
+      }
+    },
+    {
+      "domain": "credit",
+      "roundId": "column-muafskbm-929d00983206",
+      "aRunId": "run-muafskif-40bacddf49d1",
+      "execution": {
+        "actor": "arrow-local-service",
+        "threadId": 4,
+        "startedAt": "2026-09-20T23:17:49.238Z",
+        "finishedAt": "2026-09-20T23:17:49.251Z"
+      }
+    },
+    {
+      "domain": "policy",
+      "roundId": "column-muafskbi-816ef54351f3",
+      "aRunId": "run-muafskj4-9f777e4bcb32",
+      "execution": {
+        "actor": "arrow-local-service",
+        "threadId": 5,
+        "startedAt": "2026-09-20T23:17:49.238Z",
+        "finishedAt": "2026-09-20T23:17:49.249Z"
+      }
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+f5b7b8bffc98ac23270179d0cc49c2765aace8b0f44298dd42ff0f1c3bc86e08 *Back/Edge/src/assistant-evidence-provider.mjs
+b6d3b8d7b745d8a4bdd5acc97dc3c34db3521c31fa9d550dd79448997891bc72 *Back/Edge/src/assistant-evidence.mjs
+9da6362de1b6408e30078e35c7a419881debee531feaa20d3916b76e524a92e4 *Back/Edge/src/assistant-evidence-scope.mjs
+3bb100b82c5956461dacfc699ed43ad944884f17f0f457e0218b2df982e0b562 *Back/Edge/test/v04-evidence-scope.test.mjs
+8fbb085e8aaa535c3f64fc960bc879e9e3631d4178023a449fc3fc8ac5edf6b1 *Back/Edge/test/v04-evidence-provider.test.mjs

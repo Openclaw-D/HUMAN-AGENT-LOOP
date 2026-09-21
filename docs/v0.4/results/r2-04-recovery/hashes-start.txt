@@ -1,0 +1,10 @@
+72fcb9a5c3cc85835473231df464e22f32986c28c25327bfb25f5de4451cdd94 *Back/Edge/src/message-store.mjs
+4b01f516ef81cee8ad230603f1bc697b7c054edc4ecdb2dfb4050310d1fe18f4 *Back/Edge/src/messages.mjs
+3177fb8d812037dbe690d08cb3e8cdcefeaa3239a92b30660e2a24b8e84bcb0b *Back/Edge/src/assistant-receipts.mjs
+de36c7ec3d2ac62506f4a3da013760321aa20638b0709877e2610267a222726f *Back/Edge/src/customer-activity.mjs
+8858a62d9898f7eeb2dc7580d9962d1150f714445347656a5eaaf4be795c4307 *Back/Edge/src/server.mjs
+3d8b6131d6f27dd4780a54f80c1e4ae58e9e3f3c36d3f2bde2e787c1b4ef2cee *Back/Edge/src/kernel-store.mjs
+eea9c23aef93cf421e792b8953d58bfd40b60d9eece77b73d4958d5672b213e7 *Back/Edge/src/session.mjs
+e8cc58337a4ab10d23de0b701c8bb408a57e9c1b60020a24ce49242765aad5ab *docs/v0.4/results/04-activity/CONTRACT.md
+614c06bdf064f40d1d747c0533835abe13f9a471edc71b1493a842a9b2325f4e *docs/v0.4/results/04-activity/REPORT.md
+bba1c209690f808697fb11012b9758523708696e86dc114e9103470ee8d9c4e8 *docs/V0.4_KANBAN.md

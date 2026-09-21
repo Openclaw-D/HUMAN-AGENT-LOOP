@@ -1,0 +1,136 @@
+{
+  "url": "http://127.0.0.1:62032",
+  "exerciseId": "dependency-v1-20260921",
+  "dependencyVersion": "column-deps-v1",
+  "links": [
+    {
+      "caseKey": "good",
+      "oldCustomerId": "cust-muadypcl-e8549024ae50",
+      "newCustomerId": "cust-muaftg7n-520bcc2d78f2",
+      "oldOutcome": {
+        "processId": "process-muaei0ww-b6d17764da77",
+        "status": "completed",
+        "version": 27,
+        "terminalEventId": "b197f409-d5fa-45e5-8074-8ef5a3a2dda1",
+        "archiveRef": null,
+        "ending": "diamond",
+        "sourceMode": "synthetic"
+      },
+      "oldDomains": [
+        {
+          "domain": "business",
+          "state": "completed",
+          "roundId": "column-muaei0xv-716b16b050a4"
+        },
+        {
+          "domain": "policy",
+          "state": "completed",
+          "roundId": "column-muaei0y3-8a2404012291"
+        },
+        {
+          "domain": "credit",
+          "state": "completed",
+          "roundId": "column-muaei0y7-2c1737ce11b6"
+        },
+        {
+          "domain": "commerce",
+          "state": "completed",
+          "roundId": "column-muaei0yb-36c19c162333"
+        },
+        {
+          "domain": "asset",
+          "state": "completed",
+          "roundId": "column-muaei0yg-e7dceb565d6d"
+        }
+      ],
+      "newFound": false,
+      "newState": "not_started"
+    },
+    {
+      "caseKey": "medium",
+      "oldCustomerId": "cust-muadypht-302e85644b7f",
+      "newCustomerId": "cust-muaftgca-f590b120bb9e",
+      "oldOutcome": {
+        "processId": "process-muaemrh3-fd6bda073f2c",
+        "status": "completed",
+        "version": 65,
+        "terminalEventId": "d6c5a481-aaa4-459c-8604-6f4bb69f9f45",
+        "archiveRef": null,
+        "ending": "diamond",
+        "sourceMode": "synthetic"
+      },
+      "oldDomains": [
+        {
+          "domain": "business",
+          "state": "completed",
+          "roundId": "column-muaewuhd-8903a1c6cc6d"
+        },
+        {
+          "domain": "policy",
+          "state": "completed",
+          "roundId": "column-muaewuhi-8c5fef6e7340"
+        },
+        {
+          "domain": "credit",
+          "state": "completed",
+          "roundId": "column-muaewuhm-7a259893872b"
+        },
+        {
+          "domain": "commerce",
+          "state": "completed",
+          "roundId": "column-muaewuhq-163e0de78862"
+        },
+        {
+          "domain": "asset",
+          "state": "completed",
+          "roundId": "column-muaewuhu-a430731aadab"
+        }
+      ],
+      "newFound": false,
+      "newState": "not_started"
+    },
+    {
+      "caseKey": "bad",
+      "oldCustomerId": "cust-muadypme-78cd067052a3",
+      "newCustomerId": "cust-muaftggr-70ea48dcb90e",
+      "oldOutcome": {
+        "processId": "process-muaez2hz-3d63fbd6a991",
+        "status": "rejected",
+        "version": 23,
+        "terminalEventId": "4a202ed7-f59a-4f7d-9c86-f0ce1cdac37e",
+        "archiveRef": "archive-muaezu9g-0b7453897cf5",
+        "ending": "rejection",
+        "sourceMode": "synthetic"
+      },
+      "oldDomains": [
+        {
+          "domain": "business",
+          "state": "completed",
+          "roundId": "column-muaez2iw-625ff2d6ed62"
+        },
+        {
+          "domain": "policy",
+          "state": "completed",
+          "roundId": "column-muaez2j1-9830d60e1169"
+        },
+        {
+          "domain": "credit",
+          "state": "rejected",
+          "roundId": "column-muaez2j5-868e652c5587"
+        },
+        {
+          "domain": "commerce",
+          "state": "stopped",
+          "roundId": "column-muaez2j9-af7c1a3ff8fc"
+        },
+        {
+          "domain": "asset",
+          "state": "stopped",
+          "roundId": "column-muaez2jd-42f1bdf91e0b"
+        }
+      ],
+      "newFound": false,
+      "newState": "not_started"
+    }
+  ]
+}

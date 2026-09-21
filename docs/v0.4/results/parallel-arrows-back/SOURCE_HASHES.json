@@ -1,0 +1,26 @@
+[
+  {
+    "Path": "C:\\Users\\22673\\Desktop\\JW\\Back\\A\\src\\domain\\advance-round.ts",
+    "Hash": "C894BADDFE63AE56570E9AA38CC58AE28F4FFC941D5D51757C3674DC06109C5D"
+  },
+  {
+    "Path": "C:\\Users\\22673\\Desktop\\JW\\Back\\A\\src\\domain\\package.ts",
+    "Hash": "BB9AAE4601C116A21B2ACAC520E8FF8820D41E7E1E3BEEDF3983D15594380C26"
+  },
+  {
+    "Path": "C:\\Users\\22673\\Desktop\\JW\\Back\\A\\src\\http\\server.ts",
+    "Hash": "A0A2FD6098FB61F0F0BFBBFE27086058B5F2FD009B94398BCBCC1273A6D6B708"
+  },
+  {
+    "Path": "C:\\Users\\22673\\Desktop\\JW\\Back\\B\\src\\worker\\column-runner.mjs",
+    "Hash": "D302AB46DACC8E962E53C2301271C566297034DD28C635D80935FB3869459A0C"
+  },
+  {
+    "Path": "C:\\Users\\22673\\Desktop\\JW\\Back\\Edge\\src\\advance-round.mjs",
+    "Hash": "9896166B94A1E3C0E593584361806A6DC028F5C5190B5868D7518FECE6F0986B"
+  },
+  {
+    "Path": "C:\\Users\\22673\\Desktop\\JW\\Back\\A\\scripts\\parallel-arrows-runtime.mjs",
+    "Hash": "40A702550C8FE8D1B00FD4AD44DE87F437B2A49657EF28C339202EC834636055"
+  }
+]

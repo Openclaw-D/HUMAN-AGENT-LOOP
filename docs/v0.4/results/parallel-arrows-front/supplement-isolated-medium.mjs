@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import {randomUUID} from 'node:crypto';
+const root='http://127.0.0.1:62032';
+const auth=await fetch(root+'/api/jw/v2/session',{method:'POST',headers:{'content-type':'application/json',origin:root},body:JSON.stringify({principalId:'arrow-reviewer'})}).then(r=>r.json());
+const headers={'content-type':'application/json',origin:root,'x-jw-session':auth.session.sessionId};
+const manifest=await fetch(root+'/api/jw/v2/arrow-cases',{headers}).then(r=>r.json());const customer=manifest.cases.find(c=>c.caseId==='parallel-v1-medium');
+const read=await fetch(root+`/api/jw/v2/customers/${customer.customerId}/advance-rounds?domain=credit`,{headers}).then(r=>r.json());
+const old=read.receipt.views.decisions.candidate.evidenceRefs.find(r=>r.location.field==='monthly_operating_cash_flow').materialId;
+const body={requestId:randomUUID(),tenantId:'arrow-isolated-v1',kind:'financial_statement',factKey:'monthly_operating_cash_flow',grade:'confirmed',supersedes:old,content:{value:200000,sourceMode:'synthetic',revision:2,verificationDocument:'synthetic bank reconciliation'},materialMeta:{unit:'CNY'}};
+const response=await fetch(root+`/api/jw/v2/actions/customers/${customer.customerId}/artifacts`,{method:'POST',headers,body:JSON.stringify(body)});const result=await response.json();
+fs.writeFileSync(new URL('./medium-supplement.json',import.meta.url),JSON.stringify({customerId:customer.customerId,request:body,status:response.status,result},null,2));console.log(JSON.stringify({status:response.status,result}));

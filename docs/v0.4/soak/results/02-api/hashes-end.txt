@@ -1,0 +1,11 @@
+# 02_API 包结束 hash（2026-09-21 收束）
+32d4771ff128e47d5d0c239ba41a8b96b51e81438c2c2cf550a7f8c0f7fb6aea *Back/Edge/src/kernel-store.mjs
+de36c7ec3d2ac62506f4a3da013760321aa20638b0709877e2610267a222726f *Back/Edge/src/customer-activity.mjs
+8858a62d9898f7eeb2dc7580d9962d1150f714445347656a5eaaf4be795c4307 *Back/Edge/src/server.mjs
+925de0a850d104919f3664075f929544ddb6ec230719c409f2042e9120903fa1 *Back/Edge/src/message-store.mjs
+783a45d0acf55776f21d8bd9b3beb0f9109615cd5f1fcb0f6c0512f6d9078d1a *Back/Edge/test/soak-v04-api/driver.mjs
+6179d050d15aa2cdbf8e9edf7b93e4be00b62c58b37ee6c2c2de0f6588a5909d *Back/Edge/test/soak-v04-api/edge-child.mjs
+720c0e4efb1fd47b7b3fa5a44e3009d07183a4546bd3f9d45739b314d005315d *Back/Edge/test/soak-v04-api/finalize.mjs
+62baf141a1467563a1f51a175caf0be039910f1dc830d62d10209b3bbe216617 *Back/Edge/test/soak-v04-api/matrix.test.mjs
+f550b4edfc42916b30e6d41e559ca1db0418db5a9ae2517bb5d2b0c3f9758605 *Back/Edge/test/soak-v04-api/probe-sse-replay.mjs
+32f84473e77ac9fbcb103befde3356c8ea994fbf299e43508e31bd3e02877677 *Back/Edge/test/soak-v04-api/standin-a.mjs

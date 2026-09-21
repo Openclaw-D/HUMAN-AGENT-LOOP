@@ -1,0 +1,65 @@
+{
+ "at": "2026-09-20T23:50:44.432Z",
+ "ok": true,
+ "mode": "post-mortem（进程提前终止后的补收对账）",
+ "totals": {
+  "stubHits": 3521,
+  "distinctStubRequestIds": 3521,
+  "duplicateStubRequestIds": 0,
+  "stubByForm": {
+   "ok": 1791,
+   "delay50": 237,
+   "no_usage": 144,
+   "status500": 175,
+   "error_json503": 137,
+   "destroy": 108,
+   "delay1000": 127,
+   "malformed": 127,
+   "delay200": 186,
+   "delay4000": 104,
+   "truncated": 108,
+   "status429": 277
+  },
+  "stubRestarts": 0,
+  "registryRecords": 3523,
+  "expectHitRecords": 3523,
+  "expectNoHitRecords": 0,
+  "reserveRequestIds": 3523,
+  "reserveSum": 35.23,
+  "actualCount": 2343,
+  "actualSum": 0,
+  "budgetRemaining": 164.77,
+  "customers": 12,
+  "receiptFiles": 7046,
+  "terminals": 3523,
+  "intents": 3523,
+  "intentOnly": 0,
+  "badReceipts": 0,
+  "phaseDist": {
+   "intent": 3523,
+   "terminal": 3523
+  },
+  "unknownTerminals": 320,
+  "regUnknown": 320,
+  "closureDelta": -2
+ },
+ "limitations": [
+  "替身逐 requestId 命中流随进程终止丢失（stub 内存态），H1/H3 以总计闭环+逐requestId可验子集替代；",
+  "运行期内每分钟对账（含全量命中 join，worker.mjs reconcile()）至终止前均无 RECONCILE 违规；",
+  "stub-counters 刷新间隔 5s，终止前最后 ≤5s 的命中可能未入快照（总计存在 ≤5s 窗口误差）。"
+ ],
+ "violations": [],
+ "checks": {
+  "overCustomerCaps": 0,
+  "badLines": 0,
+  "badReceipts": 0,
+  "fakeShapes": 0,
+  "expectHitWithoutReserve": 0,
+  "expectHitWithoutReceipt": 0
+ },
+ "p1Phase": {
+  "name": "P1-baseline-c1",
+  "ops": 8619,
+  "effectiveMs": 1800251
+ }
+}

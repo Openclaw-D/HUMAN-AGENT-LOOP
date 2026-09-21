@@ -1,0 +1,8 @@
+7ac68e2ae41e92b995e857806a203b95b3cc3384bf6be3abd192283c4b89cb91 *Back/A/src/domain/upload-authorization.ts
+c65bd514ff6c272a5fa13347cc0d725728759cbffb8af287e01f35222cdf078c *Back/A/src/http/server.ts
+8446d2a94acb56bf995547c72498fdbfa78830e149693ef2e6a559b78f60e0eb *Back/Edge/src/upload-context.mjs
+8858a62d9898f7eeb2dc7580d9962d1150f714445347656a5eaaf4be795c4307 *Back/Edge/src/server.mjs
+eea9c23aef93cf421e792b8953d58bfd40b60d9eece77b73d4958d5672b213e7 *Back/Edge/src/session.mjs
+65a5b153fa3a0426a4cbfb87edb3ac4c11fa3f4e61f9b4e47d3c496cbac2b839 *Back/Connectors/src/intake/upload-context.mjs
+a6172b27383e8dd99daf30fff8718e4cdfd0d8d026663d429900b517cadc00dd *Back/Connectors/src/intake/service.mjs
+e668eb0c7a613c7165efd23218949fc6eaf5020d2d13038aa6aac42192e38e75 *Back/Connectors/src/store/pg.mjs

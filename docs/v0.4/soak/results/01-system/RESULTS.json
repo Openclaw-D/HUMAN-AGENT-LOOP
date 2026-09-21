@@ -1,0 +1,273 @@
+{
+ "plan": "full",
+ "seed": 20260921,
+ "startISO": "2026-09-20T22:46:59.596Z",
+ "stoppedISO": "2026-09-20T23:50:00.816Z",
+ "stopReason": "用户指示提前收尾（长测进行中主动停止；t2 相位部分完成）",
+ "wallMinutes": 63,
+ "effectiveCompletedWindowsMin": 60,
+ "partialWindow": {
+  "name": "t2",
+  "partial": true,
+  "startedAt": "2026-09-20T23:47:00.794Z",
+  "stoppedAt": "2026-09-20T23:50:00.816Z",
+  "approxMinutes": 3
+ },
+ "inRunCrashCycles": 3,
+ "inRunUnexpectedErrors": 0,
+ "degradesTriggered": 41,
+ "phases": [
+  {
+   "name": "baseline",
+   "min": 30,
+   "conc": 1,
+   "startedAt": "2026-09-20T22:46:59.752Z",
+   "endedAt": "2026-09-20T23:17:00.178Z",
+   "counts": {
+    "sent": 4861,
+    "replay": 547
+   },
+   "latP": {
+    "sent": {
+     "n": 4861,
+     "p50": 18,
+     "p95": 19,
+     "p99": 21
+    },
+    "replay": {
+     "n": 547,
+     "p50": 1,
+     "p95": 1,
+     "p99": 1
+    }
+   }
+  },
+  {
+   "name": "t1",
+   "min": 30,
+   "conc": 2,
+   "startedAt": "2026-09-20T23:17:00.180Z",
+   "endedAt": "2026-09-20T23:47:00.791Z",
+   "counts": {
+    "sent": 3995,
+    "replay": 812,
+    "legacy_closed": 15,
+    "target_refused": 106,
+    "bad_request": 95,
+    "conflict": 440,
+    "legacy_evicted": 139
+   },
+   "latP": {
+    "sent": {
+     "n": 3995,
+     "p50": 51,
+     "p95": 116,
+     "p99": 128
+    },
+    "replay": {
+     "n": 812,
+     "p50": 1,
+     "p95": 1,
+     "p99": 1
+    },
+    "legacy_closed": {
+     "n": 15,
+     "p50": 1,
+     "p95": 4,
+     "p99": 4
+    },
+    "target_refused": {
+     "n": 106,
+     "p50": 1,
+     "p95": 1,
+     "p99": 2
+    },
+    "bad_request": {
+     "n": 95,
+     "p50": 1,
+     "p95": 1,
+     "p99": 2
+    },
+    "conflict": {
+     "n": 440,
+     "p50": 1,
+     "p95": 1,
+     "p99": 1
+    },
+    "legacy_evicted": {
+     "n": 139,
+     "p50": 1,
+     "p95": 110,
+     "p99": 125
+    }
+   }
+  }
+ ],
+ "cycles": [
+  {
+   "type": "crash_before",
+   "phase": "t1",
+   "requestId": "r-20260921-t1-4434",
+   "started": "2026-09-20T23:23:00.859Z",
+   "recoveredAt": "2026-09-20T23:23:10.897Z",
+   "inLease": {
+    "status": 409,
+    "error": "REQUEST_ID_IN_FLIGHT"
+   },
+   "sinkAfterCrash": 0,
+   "sinkFinal": 0,
+   "afterLease": {
+    "status": 200,
+    "replayed": true,
+    "state": "unknown"
+   },
+   "ok": true
+  },
+  {
+   "type": "error",
+   "phase": "t1",
+   "requestId": "r-20260921-t1-5447",
+   "started": "2026-09-20T23:32:00.490Z",
+   "recoveredAt": "2026-09-20T23:32:00.503Z",
+   "sinkFinal": 0,
+   "ok": true
+  },
+  {
+   "type": "crash_after",
+   "phase": "t1",
+   "requestId": "r-20260921-t1-6510",
+   "started": "2026-09-20T23:41:00.588Z",
+   "recoveredAt": "2026-09-20T23:41:10.737Z",
+   "inLease": {
+    "status": 409,
+    "error": "REQUEST_ID_IN_FLIGHT"
+   },
+   "sinkAfterCrash": 1,
+   "sinkFinal": 1,
+   "afterLease": {
+    "status": 200,
+    "replayed": true,
+    "state": "unknown"
+   },
+   "ok": true
+  }
+ ],
+ "resourceTrend": {
+  "samples": 63,
+  "childA_Rss_minMB": 67,
+  "childA_Rss_maxMB": 90,
+  "childA_Rss_firstLastMB": [
+   78,
+   73
+  ],
+  "eventLoopLag_maxMs": 15,
+  "driverRss_maxMB": 92,
+  "hostFreeMem_minGB": 0.3,
+  "sinkTotalFinal": 7194
+ },
+ "hardInvariants": {
+  "noDuplicateExternalSend": true,
+  "dupExamples": [],
+  "persistenceSpotCheck": {
+   "sampled": 40,
+   "joinOk": 36,
+   "joinBad": [
+    {
+     "requestId": "r-20260921-t1-3909",
+     "sink": "sink-3892",
+     "row": null
+    },
+    {
+     "requestId": "r-20260921-t1-4295",
+     "sink": "sink-4254",
+     "row": null
+    },
+    {
+     "requestId": "r-20260921-t1-4484",
+     "sink": "sink-4435",
+     "row": null
+    },
+    {
+     "requestId": "r-20260921-t1-4689",
+     "sink": "sink-4616",
+     "row": null
+    }
+   ]
+  },
+  "reverseSpotCheck": {
+   "sampled": 60,
+   "sinkCountEquals1": 60,
+   "bad": []
+  },
+  "dbCounts": {
+   "messages": 6899,
+   "receiptsTotal": 4096,
+   "receiptsPending": 0,
+   "receiptsUnknown": 3,
+   "receiptsSent": 0,
+   "legacyRows": 0,
+   "threads": 26,
+   "trimmedThreads": 1
+  },
+  "unknownReceiptsPreserved": [
+   {
+    "request_id": "r-20260921-t1-6510",
+    "deliver_state": "unknown"
+   },
+   {
+    "request_id": "r-20260921-t1-5447",
+    "deliver_state": "unknown"
+   },
+   {
+    "request_id": "r-20260921-t1-4434",
+    "deliver_state": "unknown"
+   }
+  ]
+ },
+ "childRestarts": [
+  {
+   "at": "2026-09-20T22:46:59.714Z",
+   "kind": "child-start",
+   "instance": "A",
+   "pid": 3920,
+   "port": 62635,
+   "attempt": 1
+  },
+  {
+   "at": "2026-09-20T23:23:00.871Z",
+   "kind": "child-exit",
+   "instance": "A",
+   "code": 70,
+   "sig": null,
+   "expected": true
+  },
+  {
+   "at": "2026-09-20T23:23:01.366Z",
+   "kind": "child-start",
+   "instance": "A",
+   "pid": 31252,
+   "port": 52652,
+   "attempt": 1
+  },
+  {
+   "at": "2026-09-20T23:41:00.720Z",
+   "kind": "child-exit",
+   "instance": "A",
+   "code": 70,
+   "sig": null,
+   "expected": true
+  },
+  {
+   "at": "2026-09-20T23:41:01.198Z",
+   "kind": "child-start",
+   "instance": "A",
+   "pid": 30540,
+   "port": 59476,
+   "attempt": 1
+  }
+ ],
+ "snapshotHashes": {
+  "messages.mjs": "7094b2886157d2a81df47fbcd24f21d9760bc8093652092565e0896b8d5f1ae7",
+  "message-store.mjs(F1修复后)": "925de0a850d104919f3664075f929544ddb6ec230719c409f2042e9120903fa1"
+ }
+}

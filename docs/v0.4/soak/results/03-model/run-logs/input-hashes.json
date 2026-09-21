@@ -1,0 +1,13 @@
+{
+ "at": "2026-09-20T22:59:19.062Z",
+ "snapshot": {
+  "glm": "3c2ac10880d25a43d43e1de24dd579768e822784aba016bae9219c6b7bff9084",
+  "receipts": "0a4be3043df04cb17ffda1ccc015fc5988dfa590079ac77f1c4f7bad53d909fc",
+  "assistantModel": "74d6a4a59fd10dc4a69d7e5dd866a8d3ddd790f5145d2ba61defa3a697ff31d3"
+ },
+ "live": {
+  "glm": "3c2ac10880d25a43d43e1de24dd579768e822784aba016bae9219c6b7bff9084",
+  "receipts": "0a4be3043df04cb17ffda1ccc015fc5988dfa590079ac77f1c4f7bad53d909fc",
+  "assistantModel": "74d6a4a59fd10dc4a69d7e5dd866a8d3ddd790f5145d2ba61defa3a697ff31d3"
+ }
+}

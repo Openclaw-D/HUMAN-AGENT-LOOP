@@ -1,0 +1,25 @@
+{
+  "owner": "parallel-arrows-back",
+  "pid": 23788,
+  "baseUrl": "http://127.0.0.1:62032",
+  "aUrl": "http://127.0.0.1:55996",
+  "sourceMode": "synthetic/deterministic",
+  "cases": [
+    {
+      "id": "good",
+      "customerId": "cust-muadypcl-e8549024ae50",
+      "displayName": "隔离合成制造业-好例"
+    },
+    {
+      "id": "medium",
+      "customerId": "cust-muadypht-302e85644b7f",
+      "displayName": "隔离合成制造业-补证例"
+    },
+    {
+      "id": "bad",
+      "customerId": "cust-muadypme-78cd067052a3",
+      "displayName": "隔离合成制造业-风险例"
+    }
+  ],
+  "startedAt": "2026-09-20T22:33:31.777Z"
+}

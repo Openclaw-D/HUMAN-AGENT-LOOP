@@ -1,0 +1,10 @@
+3177fb8d812037dbe690d08cb3e8cdcefeaa3239a92b30660e2a24b8e84bcb0b *Back/Edge/src/assistant-receipts.mjs
+59729456e611f8938a24f851f92be426305b3a76d55ae5f5630e3c5b2ff04bdf *Back/B/src/transport/glm.mjs
+41a7029d7177ef7c6e67fff563ca612bfb44c1fd5db98b6a9b3fa622af8b91b3 *Back/Edge/src/assistant-model.mjs
+31ca78085e0687db0b8ccef3264b0189670cda4b10e358f849b583f5d0cfca59 *Back/Edge/src/assistant-decisions.mjs
+3a2c357fd77b9bd22d622d08d8e4b0c5c7e7f96fec2474bbb58979116871f085 *Back/B/test/v04-transport-stub.mjs
+61570b0456335705635479b7e95606e17949b98e088decee446a304354d65b22 *Back/B/test/v04-transport-three-state.test.mjs
+03462c1cc1badaad050aeccfcb63ecda1f6c6b96074c300efa16547334a57d3c *Back/B/test/v04-transport-budget-ledger.test.mjs
+78e6091855e178846ea99c29b6d379cf72c572c5cf30ba90456c7204588afe3a *Back/Edge/test/v04-receipts-unknown-fence.test.mjs
+d708c889e40034d44446ac4ccc804089d7b871e9c8499ceb0bab9e601f559ab5 *Back/Edge/test/v04-receipts-operation-scope.test.mjs
+e6febc2a04108027609dbb4f7240aa5e8d72d9c2cdd2b99a58faaea8084edfaf *docs/v0.4/results/03-receipts/reconcile.mjs

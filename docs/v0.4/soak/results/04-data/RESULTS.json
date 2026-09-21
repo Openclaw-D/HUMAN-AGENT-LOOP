@@ -1,0 +1,122 @@
+{
+  "package": "V0.4 soak 04-DATA（材料处理、PostgreSQL与存储稳定性）",
+  "contract": "docs/v0.4/soak/04_DATA.md",
+  "generatedAt": "2026-09-20T23:55:00Z",
+  "verdict": {
+    "durationGate": "NOT_PASSED — 有效长测14.59分钟（用户于2026-09-21 07:46左右指示快速收尾，正式跑提前结束）；合同门槛为≥4小时有效长测，未达成，按合同如实报告为未通过，不以缩短标准冒充完成",
+    "functionalAndInvariantGate": "PASSED — 全部已执行路径上：非预期错误=0，不变量核查4/4 PASS（正式跑）+16/16 PASS（烟雾全矩阵演练），五大硬不变量未发现违例",
+    "overall": "PARTIAL — 交付可复跑harness与完整证据链；长时稳定性结论不成立，需按RUN.md复跑补足"
+  },
+  "window": {
+    "startedAt": "2026-09-20T23:31:20Z",
+    "endedAt": "2026-09-20T23:46:09Z",
+    "effectiveSoakMin": 14.59,
+    "phases": [
+      { "phase": "regression", "start": "2026-09-20T23:31:24Z", "end": "2026-09-20T23:31:34Z", "effectiveMin": 0.16 },
+      { "phase": "baseline", "start": "2026-09-20T23:31:34Z", "end": "2026-09-20T23:46:09Z", "effectiveMin": 14.59 },
+      { "phase": "ramp", "skipped": true, "reason": "用户指示快速收尾（control.json stop），4档并发与全部故障窗口未执行" },
+      { "phase": "closeout", "skipped": true, "reason": "同上，稳定窗未执行" }
+    ],
+    "smokeRehearsal": {
+      "scale": 0.002,
+      "effectiveMin": 11.94,
+      "note": "全场景/全故障类型/全部不变量路径的功能性演练（非时长证据）",
+      "taskTerminals": 110,
+      "unexpected": 0,
+      "invariantChecks": "16/16 PASS",
+      "aStandin": { "requests": 1150, "executed": 1150, "replays": 0, "errors": 0, "registerDistinctReq": 173, "registerArtifacts": 173 },
+      "fixtureClasses": ["bank", "declCsv", "declTxt", "hoarderDecl", "empty", "fakePdf", "truncatedCsv", "garbage", "hostileZip", "largeDecl", "dup_cross_customer", "canary_replay", "supersedes"],
+      "faults": ["PG clean stop 15s", "PG crash kill 20s", "worker SIGKILL×n", "A替身 slow(7s>5s超时)/down(ECONNREFUSED) 窗口"]
+    }
+  },
+  "formalRun": {
+    "materials": 21,
+    "uploads": { "total": 21, "ok": 21, "expectedReject": 0, "unexpectedError": 0, "infraFault": 0, "bytes": 3973 },
+    "tasks": { "done": 17, "skippedDuplicate": 2, "needsFollowupExpected": 2, "failedExpected": 0, "failedUnexpected": 0, "waiting": 0, "stillWaiting": 0 },
+    "latencyMs": { "n": 21, "p50": 1018, "p95": 3039, "p99": 3045, "max": 3045, "note": "上传→终态；负载受宿主内存压力降载(load-downgrade×1)影响，吞吐低于配置速率" },
+    "aStandin": { "requests": 244, "executed": 244, "replays": 0, "errors": 0, "registerDistinctReq": 36, "registerArtifacts": 36, "receipts": 244 },
+    "invariantChecks": [
+      { "tag": "baseline-end", "verdict": "PASS", "canary": { "parseRows": 1, "facts": 2, "observations": 1, "dupTasks": 2 }, "isolation": { "factCrossCustomer": 0, "aLinkCrossCustomer": 0, "parseCrossOk": true }, "orphans": 0, "missingObjects": 0 },
+      { "tag": "closeout-start", "verdict": "PASS" },
+      { "tag": "closeout-end", "verdict": "PASS" },
+      { "tag": "ramp-end(即时收口)", "verdict": "PASS" }
+    ],
+    "resourceTrend": {
+      "samples1min": 14,
+      "objectBytes": "874→3973（与材料1:1，21文件，无孤儿）",
+      "hostFreeMemGb": "0.3~1.9（宿主并行任务压力，触发本包自动降载1次，符合合同资源守护条款）",
+      "hostCpuBusyPct": "15.6~32.2",
+      "dbSidePerMinuteMetrics": "缺失 — 采样层harness缺陷F3（双.rows）导致本跑未采集；DB侧数值以不变量核查点为准（conns total=2，pool释放正常）"
+    }
+  },
+  "regressions": {
+    "runner": "Back/Connectors/test/soak-v04-data/run-regressions.mjs（env指向本包专用容器25511，不改被测文件）",
+    "results": [
+      { "file": "test/goal02-parsing.test.mjs", "pass": "4/5", "fail": "F3 text-PDF分流（见缺陷D1）" },
+      { "file": "test/goal02-blocked-recovery.test.mjs", "pass": "3/3" },
+      { "file": "test/upload-context.pg.test.mjs", "pass": "1/1" },
+      { "file": "test/v03-evidence-pg.test.mjs", "pass": "1/1" }
+    ],
+    "note": "驱动内回归复跑与独立runner结果一致（F3稳定复现=既有失败，非本包引入）"
+  },
+  "defects": [
+    {
+      "id": "D1",
+      "kind": "既有产品缺陷（白名单外，未修）",
+      "where": "Back/C/src/parse/*（文本PDF分流）",
+      "symptom": "可提取文本的PDF解析终态needs_followup，期望done/format=keyvalue_pdf（goal02-parsing F3）",
+      "repro": "稳定复现：独立runner与驱动内回归两轮一致",
+      "action": "白名单外（仅pg.mjs/fs.mjs/coordinator.mjs可修），如实上报，不修改"
+    },
+    {
+      "id": "D2",
+      "kind": "产品稳定性信号（调查项，未修）",
+      "where": "pg Pool connect/rejection 路径（pg-pool index.js:45 captureStackTrace）",
+      "symptom": "烟雾首跑中4个worker在PG故障窗同秒退出（exit 1，unhandledRejection: Connection terminated unexpectedly）；即CONN-001同类的残留崩溃路径（idle客户端已有error处理器，仍有路径可致进程退出）",
+      "repro": "后续定向复现（clean stop 15s / kill -9 带载）未能稳定复现；加仪表后烟雾×2与正式跑崩溃信号=0",
+      "action": "无最小复现不改产品（候选白名单修法：pg.mjs makeStore 在 pool connect 时为client挂error兜底监听）；已具备捕获仪表，复跑时可自动抓栈"
+    },
+    {
+      "id": "D3",
+      "kind": "产品语义行为（如实报告，非缺陷）",
+      "where": "coordinator.mjs reconcileUnknown/aOp",
+      "symptom": "A不可达且请求从未到达A（ECONNREFUSED）时，A恢复后任务保持blocked_unknown（诚实等待：不换ID重发、不假成功）；若请求已到达A（slow超时但A已处理），经回执对账自动恢复",
+      "action": "属设计权衡；留stillWaiting计数观察，需产品侧裁决是否为'对账确认未到达后可安全重执行'"
+    },
+    {
+      "id": "H3",
+      "kind": "harness缺陷（测试侧，已修）",
+      "symptom": "采样层taskStatusCounts双.rows致正式跑DB侧每分钟指标缺失",
+      "fix": "driver.mjs两处改为直接消费rows数组；已node --check通过；正式跑数据不可追溯，以不变量核查点DB数值替代"
+    }
+  ],
+  "hardInvariants": {
+    "越权泄漏": "0 — fact/a_link跨客户=0，parse键跨客户结构核对通过",
+    "丢失已确认持久数据": "0 — 故障恢复后快照核对（烟雾8窗口）+收尾复核；missingObjects=0",
+    "同一幂等命令重复副作用": "0 — 金丝雀重放→skipped_duplicate，parse_results=1/observations=1/facts恒定；A替身replay=0、登记请求=工件数",
+    "未知自动重发": "0 — A替身未观察到换ID重发；blocked_unknown恢复仅经回执对账",
+    "将请求或失败伪报成功": "0 — 负例全部落needs_followup/failed(ZIP_UNSAFE)终态，done均带完整阶段留痕"
+  },
+  "sourceHashes": {
+    "note": "开始/结束一致，产品源码零改动（本包全部改动在Back/Connectors/test/soak-v04-data/）",
+    "pg.mjs": "e668eb0c7a613c7165efd23218949fc6eaf5020d2d13038aa6aac42192e38e75",
+    "objectstore/fs.mjs": "280857ef558f485a9415c8522b186791fdcd324727c8de546e4535e315158f07",
+    "processing/coordinator.mjs": "06cb9c937067edf3031d63482547145bedcc30860fd99cdbbdb541b532930ccc",
+    "processing/assistant-evidence.mjs": "9ea5a18908475d06e220fd52b6f62bd2b83c92eadf1b6d244d68a0975e3cf3c9"
+  },
+  "untestedOrLeftover": [
+    "持续混合负载并发1→2→4→8（每档≥20分钟）未执行",
+    "≥4次PG短暂断连/恢复与≥4次worker重启（正式跑规模）未执行",
+    "A替身slow/down故障窗（正式跑规模）未执行",
+    "收尾连续60分钟无新非预期错误稳定窗未执行",
+    "长历史增长（目标≤1000材料/10000事件，实际21材料）与分析耗时增长趋势未测",
+    "解析每MB成本、队列积压/连接数/磁盘的长时间趋势未测（DB侧每分钟采样缺失）",
+    "以上均可按RUN.md一条命令复跑补足；harness缺陷H3已修，复跑即有完整DB侧采样"
+  ],
+  "retainedResources": {
+    "container": "jw-v04soak-data-pg 已停止（未删除；复跑前docker start即可，或docker rm后按RUN.md重建）",
+    "runDir": ".local/soak-v04-data/（results-summary.json、events/、metrics/、regression-results.json、end-hashes.txt、objects/21件、driver-console.log）",
+    "smokeRunDir": ".local/soak-v04-data-smoke/（烟雾演练证据）",
+    "deliverables": "docs/v0.4/soak/results/04-data/{RUN.md,RESULTS.json,REPORT.md}"
+  }
+}
