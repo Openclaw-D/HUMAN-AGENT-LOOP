@@ -12,8 +12,10 @@
 //     响应携带 truncated:true + retentionBase——历史裁剪显式提示，绝不静默漏消息。
 //   - 游标失效：after<base → 从 base 起读并标注 truncated（HTTP 拉取可续读，缺失区段明确告知；
 //     需要完整历史的客户端应整窗重取快照）。
-//   - 幂等回执：requestId → {fingerprint, response} 持久化；进程重启后重放仍返回原回执，
-//     同 ID 异载荷仍 409。有界（maxReceipts，超出按 created_at 裁最旧）。
+//   - 幂等回执（R2-01）：requestId → {fingerprint, response} 持久化，绑定可信作用域
+//     customer/principal/tenant；进程重启后重放仍返回原回执，同 ID 异载荷/异作用域仍 409，
+//     旧无作用域回执失败关闭。发送前原子 claim（pending intent，owner_token 校验），
+//     发送后异常落持久 unknown；pending 与 unknown 不参与 maxReceipts 裁剪。
 // 隔离：所有读写按 customerId 分桶；不跨客户返回任何记录。送达未知不标已读；只追加不撤回。
 import { randomUUID } from 'node:crypto';
 import { mkdirSync } from 'node:fs';
@@ -44,18 +46,45 @@ CREATE TABLE IF NOT EXISTS message_receipts (
   fingerprint TEXT NOT NULL,
   response_json TEXT NOT NULL,
   customer_id TEXT NOT NULL,
-  created_at TEXT NOT NULL
+  created_at TEXT NOT NULL,
+  principal_id TEXT NOT NULL DEFAULT '',
+  tenant_id TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'terminal',
+  deliver_state TEXT,
+  owner_token TEXT,
+  claimed_at TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_receipts_created ON message_receipts (created_at);
 `;
+
+// R2-01 兼容增量（仅限本 store）：旧库缺列时逐列补齐；旧行默认 terminal+无作用域
+// （principal_id=''）→ 路由侧按"旧无作用域回执"失败关闭。不删行、不清账、不重构存储。
+const RECEIPT_MIGRATIONS = [
+  ['principal_id', `ALTER TABLE message_receipts ADD COLUMN principal_id TEXT NOT NULL DEFAULT ''`],
+  ['tenant_id', `ALTER TABLE message_receipts ADD COLUMN tenant_id TEXT NOT NULL DEFAULT ''`],
+  ['status', `ALTER TABLE message_receipts ADD COLUMN status TEXT NOT NULL DEFAULT 'terminal'`],
+  ['deliver_state', `ALTER TABLE message_receipts ADD COLUMN deliver_state TEXT`],
+  ['owner_token', `ALTER TABLE message_receipts ADD COLUMN owner_token TEXT`],
+  ['claimed_at', `ALTER TABLE message_receipts ADD COLUMN claimed_at TEXT`],
+];
 
 export function createMessageStore({ file = null, maxPerCustomer = 500, maxReceipts = 4096 } = {}) {
   // file=null → :memory:（E0 语义自检兼容）；file 路径 → 重启可恢复。
   if (file) mkdirSync(path.dirname(file), { recursive: true });
   const db = new DatabaseSync(file ?? ':memory:');
   db.exec('PRAGMA journal_mode = WAL;');
+  // 跨进程写锁忙等上限：多进程共享同库文件时 BEGIN IMMEDIATE 须等待他人短写事务而非立即
+  // SQLITE_BUSY 抛错（soak F1：无此项时 160 笔并发写 77 例 "database is locked"→500）。
+  // 超时后仍如实抛错，不做全局串行化、不吞异常。
+  db.exec('PRAGMA busy_timeout = 5000;');
   db.exec('PRAGMA synchronous = FULL;');
   db.exec(SCHEMA);
+  {
+    const have = new Set(db.prepare('PRAGMA table_info(message_receipts)').all().map((c) => c.name));
+    for (const [name, ddl] of RECEIPT_MIGRATIONS) {
+      if (!have.has(name)) db.exec(ddl);
+    }
+  }
 
   const insertMsg = db.prepare(
     `INSERT INTO messages (customer_id, seq, message_id, audience, text, request_id, sender_principal_id, sender_roles, thread_id, at)
@@ -98,17 +127,50 @@ export function createMessageStore({ file = null, maxPerCustomer = 500, maxRecei
      VALUES (?, ?, ?, ?, ?)
      ON CONFLICT (request_id) DO NOTHING`,
   );
-  const getReceiptQ = db.prepare(`SELECT fingerprint, response_json FROM message_receipts WHERE request_id = ?`);
+  const getReceiptQ = db.prepare(`SELECT fingerprint, response_json, status FROM message_receipts WHERE request_id = ?`);
   const receiptCountQ = db.prepare(`SELECT COUNT(*) AS c FROM message_receipts`);
-  const oldestReceiptsQ = db.prepare(
-    `SELECT request_id FROM message_receipts ORDER BY created_at ASC, request_id ASC LIMIT ?`,
+  // 裁剪只针对已 terminal 且非 unknown 的回执：pending intent 与 unknown（结果未决/不明）
+  // 永不裁剪——不能因裁剪忘记"可能已发送"的请求（R2-01）。
+  const oldestTrimmableReceiptsQ = db.prepare(
+    `SELECT request_id FROM message_receipts
+     WHERE status = 'terminal' AND (deliver_state IS NULL OR deliver_state <> 'unknown')
+     ORDER BY created_at ASC, request_id ASC LIMIT ?`,
   );
   const delReceipt = db.prepare(`DELETE FROM message_receipts WHERE request_id = ?`);
+
+  // R2-01 幂等回执协议：原子 claim / owner 校验 finalize / 租约回收 pending→unknown。
+  const claimInsert = db.prepare(
+    `INSERT INTO message_receipts (request_id, fingerprint, response_json, customer_id, principal_id, tenant_id, status, owner_token, claimed_at, created_at)
+     VALUES (?, ?, '', ?, ?, ?, 'pending', ?, ?, ?)
+     ON CONFLICT (request_id) DO NOTHING`,
+  );
+  const getReceiptRecordQ = db.prepare(
+    `SELECT fingerprint, response_json, customer_id, principal_id, tenant_id, status, deliver_state, claimed_at
+     FROM message_receipts WHERE request_id = ?`,
+  );
+  const finalizeStmt = db.prepare(
+    `UPDATE message_receipts SET status = 'terminal', response_json = ?, deliver_state = ?, owner_token = NULL, claimed_at = NULL
+     WHERE request_id = ? AND owner_token = ? AND status = 'pending'`,
+  );
+  const expirePendingStmt = db.prepare(
+    `UPDATE message_receipts SET status = 'terminal', response_json = ?, deliver_state = 'unknown', owner_token = NULL, claimed_at = NULL
+     WHERE request_id = ? AND status = 'pending' AND claimed_at <= ?`,
+  );
+
+  const rowToReceiptRecord = (r) => ({
+    fingerprint: r.fingerprint,
+    status: r.status === 'pending' ? 'pending' : 'terminal',
+    scope: { customerId: r.customer_id ?? '', principalId: r.principal_id ?? '', tenantId: r.tenant_id ?? '' },
+    legacy: r.status !== 'pending' && (r.principal_id ?? '') === '',
+    result: r.status === 'pending' || !r.response_json ? null : JSON.parse(r.response_json),
+    state: r.deliver_state ?? null,
+    claimedAt: r.claimed_at ?? null,
+  });
 
   const trimReceipts = () => {
     const c = receiptCountQ.get().c;
     if (c <= maxReceipts) return;
-    for (const row of oldestReceiptsQ.all(c - maxReceipts)) delReceipt.run(row.request_id);
+    for (const row of oldestTrimmableReceiptsQ.all(c - maxReceipts)) delReceipt.run(row.request_id);
   };
 
   const rowToMsg = (r) => ({
@@ -180,15 +242,65 @@ export function createMessageStore({ file = null, maxPerCustomer = 500, maxRecei
       return out;
     },
 
-    /** 幂等回执（持久）：同 ID 同载荷重放由消息路由返回原响应；重启后仍有效。 */
+    /** 幂等回执（持久，兼容只读面）：仅 terminal 行返回 {fingerprint, result}；pending 在途返回 null。 */
     getReceipt(requestId) {
       const r = getReceiptQ.get(String(requestId));
-      if (!r) return null;
+      if (!r || r.status === 'pending') return null;
       return { fingerprint: r.fingerprint, result: JSON.parse(r.response_json) };
     },
+    /** 兼容直写 terminal 回执（测试/既有调用）：无作用域（principal_id=''），路由侧按旧回执失败关闭。 */
     putReceipt(requestId, fingerprint, result, { customerId = '' } = {}) {
       insertReceipt.run(String(requestId), fingerprint, JSON.stringify(result), String(customerId ?? ''), new Date().toISOString());
       trimReceipts();
+    },
+
+    /**
+     * R2-01 原子认领：BEGIN IMMEDIATE 事务内插入 pending intent（owner_token），
+     * changes=1 即胜者；否则返回既有记录（pending/terminal 均可能），调用方绝不进入发送。
+     * scope = { customerId, principalId, tenantId }（服务端可信来源）。
+     */
+    claimReceipt(requestId, fingerprint, scope, { ownerToken } = {}) {
+      const rid = String(requestId);
+      const now = new Date().toISOString();
+      db.exec('BEGIN IMMEDIATE');
+      try {
+        const ins = claimInsert.run(rid, String(fingerprint), String(scope?.customerId ?? ''),
+          String(scope?.principalId ?? ''), String(scope?.tenantId ?? ''), String(ownerToken ?? ''), now, now);
+        if (ins.changes === 1) {
+          db.exec('COMMIT');
+          return { claimed: true };
+        }
+        const existing = rowToReceiptRecord(getReceiptRecordQ.get(rid));
+        db.exec('COMMIT');
+        return { claimed: false, existing };
+      } catch (e) {
+        db.exec('ROLLBACK');
+        throw e;
+      }
+    },
+
+    /** intent→terminal 仅 owner 可为：owner 不匹配或已被租约回收 → 不覆盖，返回 false。 */
+    finalizeReceipt(requestId, ownerToken, result, { state = 'sent' } = {}) {
+      const upd = finalizeStmt.run(JSON.stringify(result), String(state ?? 'sent'), String(requestId), String(ownerToken ?? ''));
+      if (upd.changes !== 1) return false;
+      trimReceipts();
+      return true;
+    },
+
+    /**
+     * 租约回收：仅 status='pending' 且 claimed_at 早于 now-maxAgeMs 的行原子转 terminal unknown
+     * （响应体由调用方给定）。跨进程崩溃遗留的 intent 由此收敛；永不变为可重发。
+     */
+    expirePendingReceipt(requestId, maxAgeMs, unknownResult) {
+      const cutoff = new Date(Date.now() - Math.max(Number(maxAgeMs) || 0, 0)).toISOString();
+      const upd = expirePendingStmt.run(JSON.stringify(unknownResult), String(requestId), cutoff);
+      return upd.changes === 1;
+    },
+
+    /** 回执完整记录（路由协议面）：{fingerprint, status, scope, legacy, result, state, claimedAt} | null。 */
+    getReceiptRecord(requestId) {
+      const r = getReceiptRecordQ.get(String(requestId));
+      return r ? rowToReceiptRecord(r) : null;
     },
 
     /** 部署/测试探针：线程数与总条数（不回传内容）；持久化模式与文件路径（仅路径形态）。 */

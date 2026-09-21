@@ -22,7 +22,7 @@ const MAX_DOMAIN_DEPS = 16;
 /** A1.5/K04：域结果登记要求对应域目录角色（human/agent/service 皆可持域角色出具候选意见；authority 恒 none；
  *  正式采用仍仅人类）。载荷声明的域身份无效。 */
 const DOMAIN_RESULT_ROLES: Record<string, string[]> = {
-  policy: ['policy'], credit: ['credit'], commerce: ['commerce'], asset: ['asset'],
+  business: ['business'], policy: ['policy'], credit: ['credit'], commerce: ['commerce'], asset: ['asset'],
 };
 
 interface PackageRow extends Record<string, unknown> {

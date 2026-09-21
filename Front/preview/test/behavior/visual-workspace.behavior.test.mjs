@@ -45,7 +45,7 @@ test('工作区：窗口变化填满高度，不留居中空白',async(t)=>{
   window.innerWidth=2200;fireEvent(window,new window.Event('resize'));
   assert.equal(canvas.style.transform,'scale(1)');assert.equal(canvas.style.left,'0px');assert.equal(canvas.style.width,'2200px');
   window.innerWidth=960;window.innerHeight=540;fireEvent(window,new window.Event('resize'));
-  assert.equal(canvas.style.transform,'scale(0.75)');assert.equal(canvas.style.height,'720px');assert.equal(canvas.style.left,'0px');
+  assert.equal(canvas.style.transform,'scale(1)');assert.equal(canvas.style.width,'960px');assert.equal(canvas.style.height,'540px');assert.equal(canvas.style.left,'0px');
 });
 
 test('材料：按服务端清单搜索/筛选、空结果清楚、上传入口可达',async(t)=>{
@@ -109,7 +109,7 @@ test('统一决策画布：四阶段五专业同时存在，展开不切画布�
  const canvas=screen.getByLabelText('项目四阶段连续画布');assert.equal(view.container.querySelectorAll('.tk-stage-band').length,4);assert.equal(view.container.querySelectorAll('.tk-professional-branch').length,5);
  fireEvent.click(screen.getByRole('button',{name:'信审 · 材料'}));assert.equal(calls[0].domain,'credit');assert.equal(calls[0].row,'input');
  fireEvent.click(screen.getByRole('button',{name:'收起信审候选分支'}));assert.ok(screen.getByRole('button',{name:'展开信审候选分支'}));assert.equal(screen.getByLabelText('项目四阶段连续画布'),canvas);
- view.rerender(React.createElement(RoleFlow,{cells,top:{changedDomains:[],gateResult:null},onSelect:c=>calls.push(c),stage:'closure',navigation:1}));assert.equal(screen.getByLabelText('项目四阶段连续画布'),canvas);assert.ok(canvas.scrollLeft>0);
+ view.rerender(React.createElement(RoleFlow,{cells,top:{changedDomains:[],gateResult:null},onSelect:c=>calls.push(c),stage:'closure',navigation:1}));assert.equal(screen.getByLabelText('项目四阶段连续画布'),canvas);assert.equal(canvas.scrollLeft,0,'服务端/阶段更新不得自动平移画布');
  assert.equal(view.container.querySelectorAll('.tk-branch-choice').length,0,'没有返回候选时不伪造A/B/C');
  const world=view.container.querySelector('.tk-tree-world');assert.match(world.style.transform,/0\.7/);fireEvent.wheel(canvas,{deltaY:-120,clientX:220,clientY:160});assert.match(world.style.transform,/0\.8/);fireEvent.wheel(canvas,{deltaY:120,clientX:220,clientY:160});assert.match(world.style.transform,/0\.7/);assert.equal(screen.queryByRole('button',{name:'放大流程图'}),null);
 });
@@ -128,6 +128,16 @@ test('时间轴：真实Edge信封的occurredAt和大写事件名能正确呈现
   assert.equal(screen.queryByText('时间未知'),null);assert.ok(screen.getByText(/2026年9月20日/));
 });
 
+test('时间轴随工作台版本重读，保留同客户既有事件且不主动滚动',async t=>{
+ t.after(cleanup);let reads=0;
+ const client={eventsPage:async()=>({events:[{eventId:`e${++reads}`,payloadRef:{type:reads===1?'artifact_registered':'assessment_candidate_ready'},aggregateVersion:String(reads)}],hasMore:false,nextAfterSeq:String(reads)})};
+ const props=version=>({wb:{client,snapshotVersion:version},customerId:'c1'});
+ const view=render(React.createElement(WorkTimeline,props(1)));await screen.findByText('收到一份材料');
+ const list=view.container.querySelector('.tk-timeline-events');const parent=list.parentElement;parent.scrollTop=120;
+ view.rerender(React.createElement(WorkTimeline,props(2)));await screen.findByText('建议方案已生成');
+ assert.ok(screen.getByText('收到一份材料'));assert.equal(reads,2);assert.equal(parent.scrollTop,120);
+});
+
 test('时间轴：切客户后旧响应不能写回；失败支持明确重读',async(t)=>{
   t.after(cleanup);let release;const held=new Promise(resolve=>{release=resolve;});const wb={client:{eventsPage:async(id)=>id==='c1'?held:Promise.reject(new Error('当前记录不可读'))}};
   const view=render(React.createElement(WorkTimeline,{wb,customerId:'c1'}));view.rerender(React.createElement(WorkTimeline,{wb,customerId:'c2'}));await screen.findByText(/当前记录不可读/);
@@ -136,9 +146,20 @@ test('时间轴：切客户后旧响应不能写回；失败支持明确重读',
 
 test('角色入口：图标与角色配对、多身份显式选择，服务不可用不误报个人身份错误',async(t)=>{
   t.after(cleanup);const calls=[];const wb={identities:[{principalId:'b1',roles:['business'],label:'业务甲'},{principalId:'b2',roles:['business'],label:'业务乙'}],loginWithIdentity:async(id)=>{calls.push(id);throw Object.assign(new Error(),{code:'PRINCIPAL_UNTRUSTED'});}};
-  render(React.createElement(RoleEntry,{wb}));fireEvent.click(screen.getByRole('button',{name:/业务 了解客户/}));assert.equal(calls.length,0);fireEvent.click(screen.getByRole('button',{name:'业务乙'}));await screen.findByText(/办理服务或角色配置尚未就绪/);assert.deepEqual(calls,['b2']);
-  assert.ok(screen.getByRole('button',{name:/政策 核对准入/}).disabled);
+  render(React.createElement(RoleEntry,{wb}));fireEvent.click(screen.getByRole('button',{name:/业务：精准识客/}));assert.equal(calls.length,0);fireEvent.click(screen.getByRole('button',{name:'业务乙'}));await screen.findByText(/办理服务或角色配置尚未就绪/);assert.deepEqual(calls,['b2']);
+  assert.ok(screen.getByRole('button',{name:/政策：厘清准入/}).disabled);
+  assert.deepEqual([...document.querySelectorAll('.tk-role-value')].map((el)=>el.textContent),['精准识客高效成单','厘清准入守住边界','识别风险审慎决策','优化方案促成合作','核清资产守护价值']);
+  assert.equal(document.querySelector('.tk-entry-footer'),null);
   assert.deepEqual([...document.querySelectorAll('.tk-role-card .tk-role-logo img')].map((img)=>img.getAttribute('src')), ['business','policy','credit','commerce','asset'].map((role)=>`/objects/${role}-v1.png`));
+});
+
+test('政策岗位在可信身份目录存在时可直接进入，且只使用政策身份',async(t)=>{
+  t.after(cleanup);const calls=[];
+  const wb={identities:[{principalId:'policy1',roles:['policy'],label:'政策'}],loginWithIdentity:async(id)=>{calls.push(id);}};
+  render(React.createElement(RoleEntry,{wb}));
+  fireEvent.click(screen.getByRole('button',{name:'政策：厘清准入守住边界'}));
+  await waitFor(()=>assert.deepEqual(calls,['policy1']));
+  assert.ok(screen.getByRole('button',{name:/业务：精准识客/}).disabled);
 });
 
 test('材料：叠放成组，分离与撤销，不触发业务分析',async t=>{

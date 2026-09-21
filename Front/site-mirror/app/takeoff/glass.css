@@ -32,18 +32,19 @@
 .tk-entry-brand > span { font-size:13px; margin-left:4px; color:#8a9197; }
 .tk-entry { position:relative; }
 .tk-entry::before { content:''; position:absolute; left:460px; top:290px; width:920px; height:510px; background:radial-gradient(ellipse,#ffffffc9,transparent 72%); pointer-events:none; }
-.tk-role-content { position:relative; width:1420px; max-width:none; margin:140px auto 0; }
+.tk-role-content { position:relative; width:1560px; max-width:none; margin:180px auto 0; }
 .tk-role-content > .tk-eyebrow { font-size:13px; margin-bottom:20px; text-align:center; }
 .tk-role-content > h1 { font-size:48px; letter-spacing:-1.7px; line-height:1.3; font-weight:600; margin:0 0 18px; text-align:center; }
 .tk-role-content > p { text-align:center; color:#7b8389; font-size:17px; margin-bottom:56px; }
-.tk-role-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:22px; }
-.tk-role-card { min-height:320px; width:100%; display:flex; flex-direction:column; align-items:center; padding:38px 20px 27px; text-align:center; border-radius:30px; border:1px solid #ffffffdf; background:linear-gradient(155deg,#ffffffbd,#ffffff73); backdrop-filter:blur(28px) saturate(1.2); box-shadow:0 16px 40px #40516009,inset 0 1px 0 #fff; }
-.tk-role-card .tk-role-logo { width:90px; height:90px; border-radius:28px; margin-bottom:24px; }
-.tk-role-card strong { font-size:25px; font-weight:600; margin-bottom:12px; }
-.tk-role-card > span:not(.tk-role-logo) { font-size:14px; color:#747d84; }
-.tk-role-card small { font-size:13px; margin-top:auto; color:#626e77; padding-top:27px; }
-.tk-role-card:hover:not(:disabled) { transform:translateY(-7px); background:linear-gradient(155deg,#fff,#ffffffb0); box-shadow:0 24px 45px #40516012; }
-.tk-role-card:disabled { opacity:.48; background:#ffffff4d; }
+.tk-role-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:36px; margin-top:70px; }
+.tk-role-card { min-height:360px; width:100%; display:flex; flex-direction:column; align-items:center; gap:0; padding:0; text-align:center; border:0; border-radius:0; background:transparent; backdrop-filter:none; box-shadow:none; }
+.tk-role-card .tk-role-logo { width:270px; height:270px; border:0; border-radius:0; background:transparent; box-shadow:none; margin-bottom:26px; }
+.tk-role-card .tk-role-logo img { width:230px; height:230px; }
+.tk-role-card > span.tk-role-value { font-size:24px; color:#303941; font-weight:600; letter-spacing:1px; white-space:nowrap; }
+.tk-role-card small { font-size:13px; margin-top:8px; color:#626e77; padding:0; }
+.tk-role-card:hover:not(:disabled) { transform:translateY(-5px); background:transparent; box-shadow:none; }
+.tk-role-card:hover:not(:disabled) .tk-role-logo { transform:scale(1.04); }
+.tk-role-card:disabled { opacity:.48; background:transparent; }
 .tk-entry-footer { position:absolute; left:64px; right:64px; bottom:38px; display:flex; justify-content:space-between; padding:0; color:#929ba1; font-size:12px; }
 .tk-role-people { margin-top:10px; display:grid; gap:6px; }
 .tk-role-content > [role=alert] { margin-top:28px; color:#8a554d; }
@@ -291,35 +292,24 @@
 .tk-status-icon.red { color:#df383a; }
 .tk-status-legend .tk-status-icon { width:30px; height:30px; }
 .tk-object-icon { object-fit:contain; flex-shrink:0; pointer-events:none; }
-.tk-status-scene { position:relative; display:inline-flex; align-items:center; justify-content:center; flex:none; isolation:isolate; }
-.tk-status-scene > img { position:relative; z-index:1; object-fit:contain; pointer-events:none; }
+.tk-status-scene { position:relative; display:inline-flex; align-items:center; justify-content:center; flex:none; isolation:isolate; perspective:520px; }
+.tk-status-object { position:relative; z-index:1; width:100%; height:100%; object-fit:contain; pointer-events:none; }
 .tk-status-object.wrench { transform-origin:83% 20%; animation:tk-wrench-working 1.65s ease-in-out infinite; }
 .tk-status-bolt { position:absolute; left:74%; top:11%; width:18%; height:18%; background:linear-gradient(130deg,#ecf4f8,#738e9f); clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%); box-shadow:inset 0 0 0 2px #8499a6; }
 .tk-status-bolt::after { content:''; position:absolute; inset:30%; border:1px solid #627a8a; border-radius:50%; }
-.tk-status-scene.is-unlock > .tk-status-object, .tk-status-scene.is-unlock > .tk-status-bolt { opacity:0; animation:tk-tool-arrive .35s 1.4s ease-out forwards; }
-.tk-status-scene.is-unlock > .tk-status-object.wrench { animation:tk-tool-arrive .35s 1.4s ease-out forwards,tk-wrench-working 1.65s 1.8s ease-in-out infinite; }
-.tk-status-scene > .tk-unlock-closed,.tk-status-scene > .tk-unlock-open { position:absolute; inset:0; width:100%; height:100%; }
-.tk-unlock-closed { animation:tk-lock-release 1.5s both; }
-.tk-unlock-open { animation:tk-lock-open 1.65s both; }
-.tk-status-scene > .tk-unlock-key { position:absolute; width:78%; height:78%; left:48%; top:26%; z-index:3; transform-origin:7% 50%; animation:tk-key-insert 1.5s both; }
-.tk-status-scene.is-finish > .tk-status-object { animation:tk-check-arrive .65s cubic-bezier(.2,.8,.2,1) both; }
-.tk-status-scene.is-fail > .tk-status-object { animation:tk-cross-arrive .45s ease-out both; }
-.tk-status-scene > .tk-status-depart { position:absolute; inset:0; width:100%; height:100%; animation:tk-object-depart .3s ease-in both; }
-.tk-check-shine { position:absolute; z-index:2; inset:-8%; border:2px solid #77e77b; border-radius:50%; animation:tk-check-glow .75s ease-out both; }
-.tk-status-legend .tk-status-object.wrench,.tk-flow-legend .tk-status-object.wrench,.tk-status-scene.still > * { animation:none; }
+.tk-status-flipper { position:absolute; inset:0; transform-origin:50% 50%; transform-style:preserve-3d; animation:tk-status-flip 720ms cubic-bezier(.4,0,.2,1) both; }
+.tk-status-face { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+.tk-status-front { transform:rotateX(0deg); }
+.tk-status-back { transform:rotateX(180deg); }
+.tk-status-scene.is-flip .tk-status-object { animation:none; }
+.tk-status-legend .tk-status-object.wrench,.tk-flow-legend .tk-status-object.wrench,.tk-status-scene.still * { animation:none; }
+@keyframes tk-status-flip { from {transform:rotateX(0deg)} to {transform:rotateX(180deg)} }
 @keyframes tk-wrench-working { 0%,15%,100% {transform:rotate(0)} 58%,72% {transform:rotate(-24deg)} }
-@keyframes tk-key-insert { 0% {opacity:0;transform:translateX(55%) scale(.85)} 18% {opacity:1} 42% {opacity:1;transform:translateX(0) scale(1)} 63% {opacity:1;transform:rotateX(65deg)} 84%,100% {opacity:0;transform:translateX(10%) rotateX(65deg) scale(.7)} }
-@keyframes tk-lock-release { 0%,48% {opacity:1} 61%,100% {opacity:0} }
-@keyframes tk-lock-open { 0%,44% {opacity:0;transform:translateY(2%)} 60%,79% {opacity:1;transform:translateY(0)} 100% {opacity:0;transform:scale(.7) translateY(-5%)} }
-@keyframes tk-tool-arrive { from {opacity:0} to {opacity:1} }
-@keyframes tk-check-arrive { 0% {opacity:0;transform:scale(.65) rotate(-12deg)} 65% {opacity:1;transform:scale(1.12) rotate(2deg)} 100% {transform:scale(1) rotate(0)} }
-@keyframes tk-cross-arrive { from {opacity:0;transform:scale(.8)} to {opacity:1;transform:scale(1)} }
-@keyframes tk-object-depart { from {opacity:1;transform:scale(1)} to {opacity:0;transform:scale(.65)} }
-@keyframes tk-check-glow { from {opacity:.7;transform:scale(.55)} to {opacity:0;transform:scale(1.18)} }
 @media (prefers-reduced-motion:reduce) {
-  .tk-status-scene > * { animation:none!important; }
-  .tk-status-scene.is-unlock > .tk-status-object,.tk-status-scene.is-unlock > .tk-status-bolt { opacity:1; }
-  .tk-unlock-closed,.tk-unlock-open,.tk-unlock-key,.tk-check-shine,.tk-status-depart { display:none!important; }
+  .tk-status-scene * { animation:none!important; }
+  .tk-status-flipper { transform:none; }
+  .tk-status-front { display:none; }
+  .tk-status-back { transform:none; }
 }
 
 /* Shared tactile entry points; text remains for document names and consequential actions. */
@@ -333,3 +323,74 @@
 .tk-paper-head { margin-bottom:8px; }
 .tk-processing-details { margin-top:18px; border-top:1px solid #e1e7eb; padding-top:14px; }
 .tk-processing-details > summary { cursor:pointer; color:#596c79; margin-bottom:12px; }
+
+/* Three authorized customer choices; empty diagram is decorative, not business progress. */
+.tk-case-picker .tk-entry-brand{height:100px;min-height:100px}
+.tk-picker-role{margin-left:auto;display:grid;place-items:center;width:72px;height:72px;padding:0;border:0;background:transparent}
+.tk-picker-role .tk-role-logo{width:64px;height:64px;border:0;background:transparent;box-shadow:none}
+.tk-picker-content{width:calc(100% - 160px);max-width:1600px;margin:auto;position:relative;padding:24px 0 50px}
+.tk-picker-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px}
+.tk-picker-card{display:flex;flex-direction:column;align-items:center;gap:20px;min-width:0;min-height:480px;padding:30px 30px 26px;border:1px solid #ffffffa6;border-radius:30px;color:#274538;box-shadow:0 12px 32px #243f3c09;text-align:center}
+.tk-picker-card.good{background:#d5e9dc;color:#28533e}
+.tk-picker-card.middle{background:#f3e6b6;color:#75602d}
+.tk-picker-card.poor{background:#edd1cf;color:#794742}
+.tk-picker-card:hover:not(:disabled){transform:translateY(-5px);box-shadow:0 18px 40px #243f3c19}
+.tk-picker-card:disabled{cursor:default;opacity:.65}
+.tk-picker-grade{font-size:44px;font-weight:600;line-height:1.1}
+.tk-picker-flow{display:block;width:100%;max-width:380px;height:280px}
+.tk-picker-name{font-size:17px;line-height:1.5}
+.tk-picker-note{font-size:13px}
+.tk-picker-caption{display:block;margin-top:18px;text-align:center;font-size:12px;color:#89949b}
+.tk-picker-content>[role=alert]{text-align:center;margin-top:16px}
+
+.tk-picker-board{width:100%;min-height:295px;display:grid;align-items:center}
+.tk-picker-board .tk-board-wrap{width:100%;padding:8px;border-radius:16px;background:#ffffff58;box-shadow:none;pointer-events:none}
+.tk-picker-board .tk-board{grid-template-columns:38px repeat(5,minmax(0,1fr));grid-template-rows:58px repeat(4,54px);min-width:0;width:100%;flex:none}
+.tk-picker-board .tk-board .tk-hcell{font-size:10px;line-height:1.2;gap:5px;padding:0;flex-direction:column}
+.tk-picker-board .tk-board .tk-hcell:not(.rowh) .tk-role-logo{width:22px;height:22px;border:0;background:none;box-shadow:none}
+.tk-picker-board .tk-hcell img{width:22px;height:22px}
+.tk-picker-board .tk-corner{font-size:8px;padding:0}
+.tk-picker-board .tk-cell{padding:2px;min-height:0;min-width:0;cursor:inherit}
+.tk-picker-board .tk-cell>.tk-status-icon,.tk-picker-board .tk-cell .tk-status-scene{width:32px!important;height:32px!important}
+.tk-picker-board .tk-cell .tk-status-scene>img{width:100%;height:100%}
+.tk-picker-board .tk-status-legend{padding:12px 0 4px;gap:9px;font-size:8px;flex-wrap:wrap}
+.tk-picker-board .tk-status-legend>span{gap:2px}
+.tk-picker-board .tk-status-legend .tk-status-scene,.tk-picker-board .tk-status-legend .tk-status-icon{width:14px!important;height:14px!important}
+.tk-picker-board .tk-status-legend img{width:14px!important;height:14px!important}
+.tk-picker-card[aria-disabled=true]{cursor:default;opacity:.65}
+.tk-eye-mark{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:none;isolation:isolate}
+.tk-eye-mark img{width:100%;height:100%;object-fit:contain}
+.tk-entry-brand>.tk-eye-mark{width:86px!important;height:64px!important;filter:drop-shadow(0 4px 7px #aa7b4340);animation:tk-eye-breathe 5s ease-in-out infinite}
+.tk-entry-brand>.tk-eye-mark::before{content:'';position:absolute;inset:9px 0;border-radius:50%;background:radial-gradient(ellipse,#e8c57a75,transparent 72%);z-index:-1}
+.tk-entry-brand>.tk-eye-mark::after{content:'';position:absolute;width:7px;height:7px;border-radius:50%;background:#dab777;right:2px;top:11px;box-shadow:0 0 10px #dfb45580}
+.tk-entry-brand>.tk-eye-mark img{animation:tk-eye-blink 7s ease-in-out infinite}
+@keyframes tk-eye-breathe{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-3px) rotate(3deg)}}
+@keyframes tk-eye-blink{0%,44%,48%,100%{transform:scaleY(1)}46%{transform:scaleY(.12)}}
+@media(prefers-reduced-motion:reduce){.tk-entry-brand>.tk-eye-mark,.tk-entry-brand>.tk-eye-mark img{animation:none}}
+
+.tk-picker-card{padding:26px 20px;gap:24px}
+.tk-picker-board{min-height:320px}
+
+/* Entry art remains fully visible at 100% page zoom on smaller CSS viewports. */
+.tk-role-content{width:min(1560px,calc(100% - 64px));margin:clamp(48px,10vh,180px) auto 0}
+.tk-role-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(8px,1.8vw,36px);margin-top:clamp(20px,5vh,70px)}
+.tk-role-card{min-width:0;min-height:0}
+.tk-role-card .tk-role-logo{width:min(100%,270px);height:auto;aspect-ratio:1;margin-bottom:clamp(10px,2vh,26px)}
+.tk-role-card .tk-role-logo img{width:85%;height:85%;max-width:230px;max-height:230px}
+.tk-role-card>span.tk-role-value{font-size:clamp(11px,1.25vw,24px);letter-spacing:0;white-space:normal;line-height:1.35}
+@media(max-width:700px){.tk-role-content{width:calc(100% - 24px);margin-top:24px}.tk-role-content>h1{font-size:26px}.tk-role-grid{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:14px}.tk-entry-brand{padding:0 14px}.tk-role-card .tk-role-logo{margin-bottom:4px}}
+
+/* Subtle decorative movement only; it carries no business state. */
+.tk-entry .tk-role-card:not(:disabled) .tk-role-logo.business img{animation:tk-crown-glint 6s ease-in-out infinite}
+.tk-entry .tk-role-card:not(:disabled) .tk-role-logo.policy img{animation:tk-ruler-measure 5s ease-in-out infinite}
+.tk-entry .tk-role-card:not(:disabled) .tk-role-logo.credit img{animation:tk-shield-tap 6s ease-in-out infinite}
+.tk-entry .tk-role-card:not(:disabled) .tk-role-logo.commerce img{animation:tk-paper-write 5s ease-in-out infinite}
+.tk-entry .tk-role-card:not(:disabled) .tk-role-logo.asset img{animation:tk-diamond-spark 6s ease-in-out infinite}
+.tk-board-page .tk-hcell.rowh .tk-object-icon{animation:tk-material-scan 7s ease-in-out infinite}
+@keyframes tk-crown-glint{0%,85%,100%{filter:brightness(1)}90%{filter:brightness(1.15)}}
+@keyframes tk-ruler-measure{0%,75%,100%{transform:translateX(0)}85%{transform:translateX(5px)}}
+@keyframes tk-shield-tap{0%,84%,100%{transform:rotate(0)}87%,91%{transform:rotate(-2deg)}89%,93%{transform:rotate(2deg)}}
+@keyframes tk-paper-write{0%,80%,100%{transform:translateY(0)}88%{transform:translateY(3px)}}
+@keyframes tk-diamond-spark{0%,80%,100%{transform:rotate(0);filter:brightness(1)}90%{transform:rotate(3deg);filter:brightness(1.12)}}
+@keyframes tk-material-scan{0%,85%,100%{transform:rotateY(0)}92%{transform:rotateY(10deg)}}
+@media(prefers-reduced-motion:reduce){.tk-entry .tk-role-card .tk-role-logo img,.tk-board-page .tk-hcell.rowh .tk-object-icon{animation:none!important}}

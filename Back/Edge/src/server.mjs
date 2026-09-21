@@ -20,6 +20,7 @@ import { ASSISTANT_IDS } from './assistant-model.mjs';
 import { workspaceContext, contextHash } from './assistant-receipts.mjs';
 import { createDecisionHandler } from './assistant-decisions.mjs';
 import { createDecisionFeedbackStore } from './decision-feedback-store.mjs';
+import { createCustomerActivity, decodeActivityCursor } from './customer-activity.mjs';
 
 const SSE_HEARTBEAT_MS = 15000;
 
@@ -59,6 +60,8 @@ export function createEdgeServer({
   connectorsReadProxy = null, // goal-03d：处理通道读面代理（分段进度/任务回执/原件预览）
   messages = null,
   messageStore = null, // goal-03e：页内消息线程存储（GET 读端点；发送侧入栈在消息路由内）
+  modelReceiptsDir = null, // V0.4 任务04：模型回执落盘目录（activity 聚合只读扫描）
+  customerActivity = null, // V0.4 任务04：客户活动只读聚合（缺省由 store/messageStore/modelReceiptsDir 装配；可注入替身）
   auditSink = null,
   identityDirectory = null, // goal-03c：受控身份目录 {list:[{principalId,roles,label,demo}], byPrincipal:Map}（不含凭据明文于响应）
   staticHandler = null,
@@ -510,6 +513,62 @@ export function createEdgeServer({
     return sendJson(res, 200, { ok: true, customerId, audience: audience ?? 'all', messages: items, cursor });
   };
 
+  // 客户活动只读聚合（V0.4 任务04，契约：docs/v0.4/results/04-activity/CONTRACT.md）：
+  // 四页与聊天共用的最小事件读面（thread 线程 + kernel 业务事件 + model_receipt 模型回执，来源分列）。
+  // 鉴权链每次请求全量重验（含后续页/失效会话）：会话 → activity:read → A 逐请求裁决目标客户可读。
+  // 只读：GET 前后零业务写入，不触模型/上传/审批面；未装配显式 501 失败关闭。
+  const ACTIVITY_SOURCES = ['thread', 'kernel', 'model_receipt'];
+  const activity = customerActivity ?? createCustomerActivity({ store, messageStore, receiptsDir: modelReceiptsDir, log });
+  const handleActivity = async (req, res, customerId, urlObj) => {
+    const session = requireSession(req, res);
+    if (!session) return;
+    const verdict = await verify({ req, customerId, action: 'activity:read', session });
+    if (!verdict.ok) return sendJson(res, 403, { ok: false, error: verdict.reason || 'FORBIDDEN' });
+    if (!customerActivity && !messageStore && typeof store?.pageEvents !== 'function' && !modelReceiptsDir) {
+      return sendJson(res, 501, { ok: false, error: 'NOT_CONFIGURED', note: '活动聚合读面未配置（无线程存储/分页事件源/回执目录）' });
+    }
+    const customerOnly = (session.roles ?? []).length > 0 && (session.roles ?? []).every((r) => r === 'customer');
+    const audienceParam = urlObj.searchParams.get('audience');
+    if (audienceParam !== null && audienceParam !== 'customer' && audienceParam !== 'internal') {
+      return sendJson(res, 400, { ok: false, error: 'INVALID_AUDIENCE', note: 'audience 必须是 customer|internal' });
+    }
+    if (customerOnly && audienceParam === 'internal') {
+      return sendJson(res, 403, { ok: false, error: 'FORBIDDEN', note: '客户联系人身份不可读内部协作消息' });
+    }
+    const sourcesParam = urlObj.searchParams.get('sources');
+    let sources = null;
+    if (sourcesParam !== null) {
+      sources = sourcesParam.split(',').map((s) => s.trim()).filter(Boolean);
+      if (sources.length === 0 || sources.some((s) => !ACTIVITY_SOURCES.includes(s))) {
+        return sendJson(res, 400, { ok: false, error: 'INVALID_SOURCES', note: `sources 取值须为 ${ACTIVITY_SOURCES.join('|')} 的非空逗号组合` });
+      }
+    }
+    if (customerOnly && sources?.includes('model_receipt')) {
+      return sendJson(res, 403, { ok: false, error: 'ACTIVITY_SOURCE_FORBIDDEN', note: '模型回执属内部辅助观察面：客户联系人身份不可读（不以静默过滤掩盖越权）' });
+    }
+    const cursorParam = urlObj.searchParams.get('cursor');
+    if (cursorParam !== null && !decodeActivityCursor(cursorParam)) {
+      return sendJson(res, 400, { ok: false, error: 'INVALID_CURSOR', note: '游标非法（非本接口签发或版本不符）：不静默重置，请整窗重取' });
+    }
+    // 目标可读校验（与消息面同源）：live 用 store.checkCustomer（A 逐请求裁决，撤权即失败）；fixture 放行。
+    if (typeof store?.checkCustomer === 'function') {
+      const target = await store.checkCustomer(customerId, { credential: session.credential }).catch((e) => ({ ok: false, code: 'UPSTREAM_UNKNOWN', status: 502, reason: String(e?.message || e) }));
+      if (!target?.ok) {
+        const status = target?.status === 403 ? 403 : target?.status === 404 ? 404 : 502;
+        return sendJson(res, status, { ok: false, error: target?.code || 'TARGET_UNVERIFIED', note: '目标客户对本会话不可读或校验失败：不返回活动' });
+      }
+    }
+    const page = await activity.listPage(customerId, {
+      cursor: cursorParam,
+      limit: Number(urlObj.searchParams.get('limit')) || 50,
+      sources,
+      audience: audienceParam,
+      customerOnly,
+    }, { credential: session.credential, principalId: session.principalId });
+    if (page.error) return sendJson(res, page.error.status, page.error.body);
+    return sendJson(res, 200, { ok: true, customerId, ...page });
+  };
+
   return http.createServer(async (req, res) => {
     const urlObj = new URL(req.url, 'http://localhost');
       const pathname = urlObj.pathname;
@@ -527,7 +586,7 @@ export function createEdgeServer({
       }
       const customerId = parseCustomerId(urlObj);
       const knownRead = pathname === '/versionz' || pathname === '/healthz/live' || pathname === '/healthz/ready'
-        || (customerId && (pathname.endsWith('/workspace') || pathname.endsWith('/events')));
+        || (customerId && (pathname.endsWith('/workspace') || pathname.endsWith('/events') || pathname.endsWith('/activity')));
 
       if (req.method !== 'GET' && knownRead) {
         return sendJson(res, 405, { ok: false, error: 'METHOD_NOT_ALLOWED', allow: 'GET' });
@@ -562,6 +621,7 @@ export function createEdgeServer({
         if (pathname === '/api/jw/v2/auth/identities') return await handleIdentities(res);
         if (pathname === '/api/jw/v2/customers') return await handleDirectory(req, res, urlObj);
         if (customerId && pathname.endsWith('/messages')) return await handleMessagesRead(req, res, customerId, urlObj);
+        if (customerId && pathname.endsWith('/activity')) return await handleActivity(req, res, customerId, urlObj);
 
         if (pathname === '/api/jw/v2/audit') {
           const session = requireSession(req, res);
@@ -802,13 +862,14 @@ export async function main(argv) {
   let decisionRepository = null;
   const modelConfigPath = typeof args['model-config'] === 'string' && args['model-config'].length > 0 ? String(args['model-config']) : null;
   const modelRegistryPath = typeof args['model-profiles'] === 'string' ? args['model-profiles'] : null;
+  // 模型回执落盘目录（V0.4 任务04：activity 聚合只读扫描用；与 assistant-model 回执写入同源，不另造目录语义）。
+  const modelReceiptsDir = typeof args['model-receipts-dir'] === 'string' && args['model-receipts-dir'].length > 0
+    ? String(args['model-receipts-dir'])
+    : (typeof args['messages-file'] === 'string' && args['messages-file'].length > 0
+      ? path.join(path.dirname(String(args['messages-file'])), 'model-receipts')
+      : null);
   if (modelConfigPath || modelRegistryPath) {
     const { createAssistantModel } = await import('./assistant-model.mjs');
-    const modelReceiptsDir = typeof args['model-receipts-dir'] === 'string' && args['model-receipts-dir'].length > 0
-      ? String(args['model-receipts-dir'])
-      : (typeof args['messages-file'] === 'string' && args['messages-file'].length > 0
-        ? path.join(path.dirname(String(args['messages-file'])), 'model-receipts')
-        : null);
     const modelOptions = {
       requireEvidence: true,
       // TEC-CTX-1：总出站正文≤12000字符。默认6000会把证据策略上限压到2800字符，
@@ -1041,7 +1102,7 @@ export async function main(argv) {
   const started = await startEdgeServer({
     port, seal, probes, store,
     auth: scopeAuth,
-    sessionStore, verifyCredential, proxy, readProxy, connectorsProxy, connectorsReadProxy, identityDirectory, messages, messageStore, auditSink, staticHandler, frontHandler, assistantModel, assistantEvidence, decisionRepository,
+    sessionStore, verifyCredential, proxy, readProxy, connectorsProxy, connectorsReadProxy, identityDirectory, messages, messageStore, modelReceiptsDir, auditSink, staticHandler, frontHandler, assistantModel, assistantEvidence, decisionRepository,
     // CSRF 额外允许源：--allowed-origin 可重复，或 JW_EDGE_ALLOWED_ORIGINS 逗号分隔（staging 域名用）
     allowedOrigins: [
       ...argv.flatMap((a, i) => (a === '--allowed-origin' && argv[i + 1] && !argv[i + 1].startsWith('--') ? [argv[i + 1]] : [])),

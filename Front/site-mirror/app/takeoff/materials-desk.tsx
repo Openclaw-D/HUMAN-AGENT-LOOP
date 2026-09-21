@@ -1,3 +1,4 @@
+import type { ColumnReceipt } from '../../lib/workbench/advance-client';
 import { useEffect, useRef, useState } from 'react';
 import type { WbApi } from '../../lib/workbench/use-workbench';
 import type { WbClient } from '../../lib/workbench/wb-client';
@@ -7,7 +8,7 @@ import { PdfOriginal } from './pdf-original';
 import { materialKindName } from '../../lib/workbench/material-labels';
 
 type Point = { x: number; y: number };
-type Material = ArtifactRow & { name: string };
+type Material = ArtifactRow & { name: string; frozen?:Record<string,unknown> };
 const layouts = new WeakMap<WbClient, Map<string, Record<string, Point>>>();
 const originalNames = new WeakMap<WbClient, Map<string, Promise<string | null>>>();
 function registeredName(client: WbClient, customerId: string, artifactId: string): Promise<string | null> {
@@ -40,7 +41,7 @@ function materialName(item: Record<string, unknown>): string {
 const gridPoint = (index: number): Point => ({ x: 72 + (index % 4) * 310, y: 72 + Math.floor(index / 4) * 245 });
 
 /** 拖动只改变个人阅读摆放，不移动服务端原件、不改变核验或业务归属。 */
-export function MaterialsDesk({ wb, customerId, onUpload }: { wb: WbApi; customerId: string; onUpload: () => void }) {
+export function MaterialsDesk({ wb, customerId, onUpload, activeDomain, round }: { round?:ColumnReceipt; activeDomain?:string; wb: WbApi; customerId: string; onUpload: () => void }) {
   const client = wb.client;
   const [rows, setRows] = useState<Material[] | null>(null);
   const [error, setError] = useState('');
@@ -60,7 +61,7 @@ export function MaterialsDesk({ wb, customerId, onUpload }: { wb: WbApi; custome
   const positionsRef = useRef(positions); positionsRef.current = positions;
 
   useEffect(() => {
-    let alive = true; setRows(null); setError('');
+    let alive = true; setError('');
     if (!client) return;
     void client.read(`/api/jw/v2/customers/${encodeURIComponent(customerId)}/artifacts`).then((j) => {
       if (!alive) return;
@@ -72,7 +73,7 @@ export function MaterialsDesk({ wb, customerId, onUpload }: { wb: WbApi; custome
       void Promise.all(list.map(async (row) => row.name === materialKindName('document')
         ? { ...row, name: await registeredName(client, customerId, row.artifactId) ?? row.name }
         : row)).then((named) => { if (alive) setRows(named); });
-    }).catch(() => { if (alive) setError('暂时无法读取材料。请重试；此处不会用空清单替代读取失败。'); });
+    }).catch(() => { if (alive) { setRows(null); setError('暂时无法读取材料。请重试；此处不会用空清单替代读取失败。'); } });
     return () => { alive = false; };
   }, [client, customerId, reload, wb.snapshotVersion]);
   useEffect(() => {
@@ -80,8 +81,10 @@ export function MaterialsDesk({ wb, customerId, onUpload }: { wb: WbApi; custome
     const map = layouts.get(client) ?? new Map(); map.set(customerId, positions); layouts.set(client, map);
   }, [client, customerId, positions]);
   const isAnalysis = (row: Material) => row.kind.replace(/^material\./, '') === 'parse_extraction';
-  const originals = (rows ?? []).filter((row) => !isAnalysis(row));
-  const filtered = (rows ?? []).filter((row) => (filter === 'analysis' ? isAnalysis(row) : !isAnalysis(row) && (filter === 'all' || (filter === 'current' ? row.current : !row.current))) && `${row.name} ${row.period ?? ''}`.toLowerCase().includes(query.trim().toLowerCase()));
+  const roundItems=round?.views?.materials.items as Array<{artifactId:string;hash?:string;kind?:string;content?:unknown}>|undefined;
+  const scopedRows:Material[]=round?(roundItems??[]).map(ref=>{const live=rows?.find(row=>row.artifactId===ref.artifactId);return {...(live??summarizeArtifacts([{...ref,current:round.current}]).rows[0]),name:live?.name??materialName(ref),frozen:ref};}):(rows??[]);
+  const originals = scopedRows.filter((row) => !isAnalysis(row));
+  const filtered = scopedRows.filter((row) => (filter === 'analysis' ? isAnalysis(row) : !isAnalysis(row) && (filter === 'all' || (filter === 'current' ? row.current : !row.current))) && `${row.name} ${row.period ?? ''}`.toLowerCase().includes(query.trim().toLowerCase()));
   const groups: Material[][] = [];
   for (const row of filtered) {
     const point = positions[row.artifactId]; if (!point) continue;
@@ -107,7 +110,7 @@ export function MaterialsDesk({ wb, customerId, onUpload }: { wb: WbApi; custome
     if (el) { const x = (el.scrollLeft + el.clientWidth / 2) / zoom; const y = (el.scrollTop + el.clientHeight / 2) / zoom; requestAnimationFrame(() => { el.scrollLeft = Math.max(0, x * value - el.clientWidth / 2); el.scrollTop = Math.max(0, y * value - el.clientHeight / 2); }); }
     setZoom(value);
   }
-  return <section className={`tk-materials-desk${libraryCollapsed ? ' library-collapsed' : ''}`} aria-label="材料全景工作台">
+  return <section className={`tk-materials-desk${libraryCollapsed ? ' library-collapsed' : ''}`} aria-label="材料全景工作台" data-active-domain={activeDomain}>
     <div className="tk-library-container"><button className="tk-edge-toggle" aria-label={libraryCollapsed ? '展开材料清单' : '收起材料清单'} aria-expanded={!libraryCollapsed} onClick={() => setLibraryCollapsed(v => !v)}>{libraryCollapsed ? '›' : '‹'}</button><aside className="tk-material-library" hidden={libraryCollapsed}>
       <div className="tk-library-title"><span className="tk-section-kicker">客户资料</span><h2>材料原件<span>{rows ? originals.length : '—'}</span></h2></div>
       <label className="tk-field-search"><UiIcon name="search" size={20}/><input aria-label="搜索材料" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="搜索材料名称或期间"/></label>
@@ -123,7 +126,7 @@ export function MaterialsDesk({ wb, customerId, onUpload }: { wb: WbApi; custome
       <button className="tk-btn primary tk-upload-entry" onClick={onUpload}><ObjectIcon name="materials" size={34}/>上传与补充材料</button>
     </aside></div>
     <div className="tk-desk-main">
-      <header className="tk-desk-toolbar"><div><h2>把资料，放在一起看。</h2><p>拖动卡片自由整理 · 拖动空白处平移</p></div><div className="tk-canvas-controls">
+      <header className="tk-desk-toolbar"><div><h2>{activeDomain ? `${({opportunity:'业务',policy:'政策',credit:'信审',commerce:'商务',asset:'资产'} as Record<string,string>)[activeDomain]}列 · 客户原件` : '把资料，放在一起看。'}</h2><p>拖动卡片自由整理 · 拖动空白处平移</p></div><div className="tk-canvas-controls">
         <button aria-label="缩小材料" onClick={() => changeZoom(zoom - 0.1)}>−</button><output aria-label="材料缩放比例">{Math.round(zoom * 100)}%</output><button aria-label="放大材料" onClick={() => changeZoom(zoom + 0.1)}>＋</button>
         <span className="tk-control-divider"/><button onClick={() => { changeZoom(Math.min(1, (viewport.current?.clientWidth ?? 1300) / width, (viewport.current?.clientHeight ?? 700) / height)); }}>适合窗口</button>
         <button disabled={!undo.length} onClick={() => { const previous = undo[undo.length - 1]; if (previous) { setPositions(previous); setUndo((stack) => stack.slice(0, -1)); setNotice('已撤销上次摆放。'); } }}>撤销</button>
@@ -138,7 +141,7 @@ export function MaterialsDesk({ wb, customerId, onUpload }: { wb: WbApi; custome
         onPointerUp={() => { pan.current = null; }} onPointerCancel={() => { pan.current = null; }}>
         <div style={{ width: width * zoom, height: height * zoom, position: 'relative' }}><div className="tk-desk-world" style={{ width, height, transform: `scale(${zoom})` }}>
           {groups.filter(group => group.length > 1).map(group => { const points = group.map(row => positions[row.artifactId]); const x = Math.min(...points.map(p => p.x)) - 24, y = Math.min(...points.map(p => p.y)) - 24; return <div key={group.map(row => row.artifactId).sort().join(':')} className="tk-material-group" aria-label={`材料组合：${group.map(row => row.name).join('、')}`} style={{left:x,top:y,width:Math.max(...points.map(p => p.x)) - x + 310,height:Math.max(...points.map(p => p.y)) - y + 250}}><span>{group.length} 份材料</span></div>; })}
-          {filtered.map((row) => { const p = positions[row.artifactId] ?? gridPoint(0); return <article className={`tk-paper-card${selected === row.artifactId ? ' selected' : ''}`} style={{ left: p.x, top: p.y }} key={row.artifactId} tabIndex={0} aria-label={`材料卡片：${row.name}`} data-x={p.x} data-y={p.y}
+          {filtered.map((row,index) => { const p = positions[row.artifactId] ?? gridPoint(index); return <article className={`tk-paper-card${selected === row.artifactId ? ' selected' : ''}`} style={{ left: p.x, top: p.y }} key={row.artifactId} tabIndex={0} aria-label={`材料卡片：${row.name}`} data-x={p.x} data-y={p.y}
             onPointerDown={(e) => { if ((e.target as HTMLElement).closest('button') || e.button !== 0) return; e.stopPropagation(); e.currentTarget.setPointerCapture?.(e.pointerId); drag.current = { id: row.artifactId, start: { x: e.clientX, y: e.clientY }, point: p, before: positionsRef.current }; setSelected(row.artifactId); }}
             onPointerMove={(e) => { const d = drag.current; if (!d || d.id !== row.artifactId) return; move(d.id, { x: d.point.x + (e.clientX - d.start.x) / zoom / physicalScale(), y: d.point.y + (e.clientY - d.start.y) / zoom / physicalScale() }); }}
             onPointerUp={() => { const d = drag.current; if (d) { remember(d.before); setNotice('已摆放材料，原件及业务状态未改变。'); } drag.current = null; }}
@@ -146,12 +149,12 @@ export function MaterialsDesk({ wb, customerId, onUpload }: { wb: WbApi; custome
             onDoubleClick={() => setPreview(row)}
             onKeyDown={(e) => { if (e.target !== e.currentTarget) return; const delta: Record<string, Point> = { ArrowLeft: {x:-20,y:0}, ArrowRight: {x:20,y:0}, ArrowUp: {x:0,y:-20}, ArrowDown: {x:0,y:20} }; if (delta[e.key]) { e.preventDefault(); remember(); move(row.artifactId, { x: p.x + delta[e.key].x, y: p.y + delta[e.key].y }); } if (e.key === 'Enter') setPreview(row); }}>
             <div className="tk-paper-head"><MaterialObject kind={row.kind} name={row.name} size={48}/><span className={`tk-material-version${row.current ? '' : ' historical'}`}>{row.current ? '现行' : '历史'}</span><span className="tk-drag-handle" aria-hidden="true">⠿</span></div>
-            <h3>{row.name}</h3><p>{row.period ?? '期间未标注'}<br/>{row.grade === 'verified' ? '核验已记录' : '核验状态以办理记录为准'}</p>
+            <h3>{row.name}</h3>{roundItems&&<small title={roundItems.find(ref=>ref.artifactId===row.artifactId)?.hash}>本轮引用版本</small>}<p>{row.period ?? '期间未标注'}<br/>{row.grade === 'verified' ? '核验已记录' : '核验状态以办理记录为准'}</p>
             <footer><button onClick={() => setPreview(row)}>查看原件 <UiIcon name="arrow" size={16}/></button></footer>
           </article>; })}
         </div></div>
       </div>
-      <footer className="tk-desk-status"><span role="status">{notice}</span><span>个人阅读布局 · 不改变材料归属或业务状态</span></footer>
+      <footer className="tk-desk-status"><span role="status">{notice}</span><span>{round ? (roundItems ? `本轮引用 ${roundItems.length} 份 · v${round.version} · ${round.updatedAt??'时间未知'}${round.current?'':' · 历史依据'}` : '本轮材料视图尚未返回，不以当前材料代替。') : '尚无列回执，展示客户材料。'}</span></footer>
     </div>
     {preview && <MaterialPreview key={preview.artifactId} wb={wb} customerId={customerId} material={preview} onClose={() => setPreview(null)}/>}
   </section>;
@@ -165,7 +168,7 @@ function MaterialPreview({ wb, customerId, material, onClose }: { wb: WbApi; cus
   useEffect(() => {
     let alive = true; let objectUrl: string | null = null;
     const previous = document.activeElement as HTMLElement | null; close.current?.focus();
-    void wb.client?.artifactContent(customerId, material.artifactId).then(async (j) => {
+    void (material.frozen?Promise.resolve({artifact:material.frozen}):wb.client?.artifactContent(customerId, material.artifactId))?.then(async (j) => {
       if (!alive) return;
       const art = j.artifact as { materialFile?: { name?: string; mime?: string; data?: string }; content?: unknown } | undefined;
       if (!art) throw new Error('未返回原件。');
@@ -191,7 +194,7 @@ function MaterialPreview({ wb, customerId, material, onClose }: { wb: WbApi; cus
           const mime = sniffImageMime(result.bytes) ?? formatMime[String(preview.format)] ?? result.contentType.split(';')[0];
           objectUrl = URL.createObjectURL(new Blob([new Uint8Array(result.bytes).buffer], { type: mime }));
           setData({ name: material.name, url: objectUrl, mime, bytes: result.bytes, imageUrl: mime.startsWith('image/') ? `data:${mime};base64,${bytesToBase64(result.bytes)}` : undefined, ...(mime.startsWith('text/') || mime === 'application/json' ? { text: new TextDecoder().decode(result.bytes) } : {}) });
-        } else setData({ name: material.name, text: typeof content?.text === 'string' ? content.text : '此记录没有可预览的原件文件。' });
+        } else setData({ name: material.name, text: typeof content?.text === 'string' ? content.text : content ? JSON.stringify(content,null,2) : '此记录没有可预览的原件文件。' });
       }
     }).catch(() => { if (alive) setError('原件暂时不可读，请核对权限或稍后再试。'); });
     return () => { alive = false; if (objectUrl) URL.revokeObjectURL(objectUrl); previous?.focus(); };

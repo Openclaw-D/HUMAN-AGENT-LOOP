@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { WbApi } from '../../lib/workbench/use-workbench';
 import type { TakeoffSource } from '../../lib/workbench/takeoff-projection';
 import { AssistantObservationPanel } from './assistant-observation';
@@ -11,7 +11,7 @@ const ASSISTANTS = [
 ] as const;
 type AssistantId = (typeof ASSISTANTS)[number]['id'];
 
-export function TakeoffAssistants({ wb, customerId, focusAssistant }: {
+export function TakeoffAssistants({ wb, customerId, focusAssistant, onOpenMaterials }: {
   wb: WbApi; customerId: string; source: TakeoffSource;
   onOpenMaterials: () => void; cellContext: string | null; focusAssistant?: string;
 }) {
@@ -20,12 +20,16 @@ export function TakeoffAssistants({ wb, customerId, focusAssistant }: {
     const selected = ASSISTANTS.find(item => item.id === focusAssistant);
     if (selected) setAssistant(selected.id);
   }, [focusAssistant]);
+  const [mention, setMention] = useState<{id: AssistantId; nonce: number} | null>(null);
+  const hold = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cancelHold = () => { if (hold.current) clearTimeout(hold.current); hold.current = null; };
+  useEffect(() => cancelHold, []);
   return <div className="tk-right tk-chat-panel">
     <div className="tk-asst-tabs" role="tablist" aria-label="聊天助手">
       {ASSISTANTS.map(item => <button key={item.id} role="tab" aria-label={item.name}
         aria-selected={assistant === item.id} className="tk-asst-tab" title={`${item.name}助手`}
-        onClick={() => setAssistant(item.id)}><RoleLogo role={item.id} size={36}/></button>)}
+        onPointerDown={() => { cancelHold(); hold.current = setTimeout(() => setMention({id:item.id,nonce:Date.now()}), 500); }} onPointerUp={cancelHold} onPointerCancel={cancelHold} onPointerLeave={cancelHold} onContextMenu={e => { e.preventDefault(); setMention({id:item.id,nonce:Date.now()}); }} onClick={() => setAssistant(item.id)}><RoleLogo role={item.id} size={36}/></button>)}
     </div>
-    <AssistantObservationPanel key={`${wb.session?.sessionId}:${customerId}`} wb={wb} assistant={assistant} chat/>
+    <AssistantObservationPanel key={`${wb.session?.sessionId}:${customerId}`} wb={wb} assistant={assistant} chat mention={mention} onOpenMaterials={onOpenMaterials}/>
   </div>;
 }

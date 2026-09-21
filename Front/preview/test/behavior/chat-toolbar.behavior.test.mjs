@@ -1,0 +1,8 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {render,screen,fireEvent,waitFor,cleanup} from './harness.mjs';
+const React=await import('react');
+const {AssistantObservationPanel}=await import('../../../site-mirror/app/takeoff/assistant-observation.tsx');
+function fixture(){const calls=[];const wb={customerId:'demo',session:{sessionId:'test'},snapshot:{},client:{sendMessage:async(...args)=>{calls.push(args);return {delivery:{state:'delivered'}};},observeAssistant:async()=>{throw Error('Unexpected model call');}}};return {wb,calls};}
+test('普通消息通过内部消息接口发送，不调用模型；引用和表情进入草稿',async t=>{t.after(cleanup);const f=fixture();render(React.createElement(AssistantObservationPanel,{wb:f.wb,assistant:'business',chat:true}));fireEvent.change(screen.getByLabelText('聊天消息'),{target:{value:'测试消息'}});fireEvent.click(screen.getByLabelText('发送消息'));await screen.findByText('消息已送达');assert.equal(f.calls.length,1);assert.equal(f.calls[0][1].audience,'internal');fireEvent.click(screen.getByLabelText('引用最近消息'));assert.match(screen.getByLabelText('聊天消息').value,/测试消息/);fireEvent.click(screen.getByLabelText('表情'));fireEvent.click(screen.getByRole('button',{name:'👍',exact:true}));assert.match(screen.getByLabelText('聊天消息').value,/👍/);});
+test('点名当前助手写入@；未接通工具禁用；上传使用现有入口',t=>{t.after(cleanup);const f=fixture();let uploads=0;render(React.createElement(AssistantObservationPanel,{wb:f.wb,assistant:'policy',chat:true,onOpenMaterials:()=>uploads++}));fireEvent.click(screen.getByLabelText('点名当前助手'));assert.equal(screen.getByLabelText('聊天消息').value,'@政策 ');fireEvent.click(screen.getByLabelText('上传文件'));assert.equal(uploads,1);assert.equal(screen.getByLabelText('电话（尚未接通）').disabled,true);});

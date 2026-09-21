@@ -5,6 +5,7 @@ import { render, screen, fireEvent, waitFor, cleanup } from './harness.mjs';
 const React = (await import('react')).default;
 const { DecisionFeedbackPanel } = await import('../../../site-mirror/app/takeoff/decision-feedback-panel.tsx');
 const { createWbClient } = await import('../../../site-mirror/lib/workbench/wb-client.ts');
+const { RoleFlow } = await import('../../../site-mirror/app/takeoff/role-flow.tsx');
 
 async function fixture(t) {
   const snapshot = { customer: { customerId: 'c' }, admission: { inputVersion: 1 } };
@@ -41,6 +42,21 @@ async function fixture(t) {
   const component = () => React.createElement(DecisionFeedbackPanel, { wb, assistant: 'credit' });
   return { data, state, wb, snapshot, component };
 }
+
+test('决策分支按持久选择反色，版本刷新保留实际选择且不平移画布',async t=>{
+ const f=await fixture(t);let version=1;
+ const component=()=>React.createElement(RoleFlow,{wb:{...f.wb,snapshotVersion:version},cells:[],top:{changedDomains:[],gateResult:null}});
+ const view=render(component());
+ const choice=()=>Array.from(view.container.querySelectorAll('.tk-branch-choice')).find(el=>el.textContent.includes('先核对重复交易'));
+ await waitFor(()=>assert.ok(choice()));assert.equal(choice().classList.contains('recorded'),false);assert.equal(choice().querySelector('button').getAttribute('aria-pressed'),'false');
+ const canvas=screen.getByLabelText('项目四阶段连续画布');canvas.scrollTop=123;canvas.scrollLeft=456;
+ const transform=view.container.querySelector('.tk-tree-world').style.transform;
+ f.data.latest.feedback={action:'select',candidateId:'b',label:'先核对重复交易',reason:'人工选择',eventId:'feedback-1',at:'2026-09-21T00:00:00Z'};
+ f.data.latest.candidates[1].confidence=.1;version=2;view.rerender(component());
+ await waitFor(()=>assert.equal(choice()?.querySelector('button').getAttribute('aria-pressed'),'true'));
+ assert.ok(choice().classList.contains('recorded'));assert.equal(canvas.scrollTop,123);assert.equal(canvas.scrollLeft,456);assert.equal(view.container.querySelector('.tk-tree-world').style.transform,transform);
+ assert.equal(f.state.saves.length,0);assert.equal(f.state.analyses.length,0);
+});
 
 test('StrictMode mount replay still finishes reading suggestions without starting an analysis',async t=>{
   const f=await fixture(t);

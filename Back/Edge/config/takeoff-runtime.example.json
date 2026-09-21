@@ -5,7 +5,7 @@
   "dbUser": "jw",
   "dbPassword": "jw-takeoff-local",
   "dbName": "jw",
-  "principalTokens": "tk-biz1=tkbiz1:human:business:all:tt1,tk-cust1=tkcust1:human:customer:all:tt1,tk-cred1=tkcred1:human:credit:all:tt1,tk-comm1=tkcomm1:human:commerce:all:tt1,tk-asset1=tkasset1:human:asset:all:tt1,tk-app1=tkapp1:human:approver:all:tt1,tk-svc1=tksvc1:service:service:all:tt1,tk-adm1=tkadm1:human:admin:all:all,tk-out2=tkout2:human:customer:all:tt2",
+  "principalTokens": "tk-biz1=tkbiz1:human:business:all:tt1,tk-policy1=tkpolicy1:human:policy:all:tt1,tk-cust1=tkcust1:human:customer:all:tt1,tk-cred1=tkcred1:human:credit:all:tt1,tk-comm1=tkcomm1:human:commerce:all:tt1,tk-asset1=tkasset1:human:asset:all:tt1,tk-app1=tkapp1:human:approver:all:tt1,tk-svc1=tksvc1:service:service:all:tt1,tk-adm1=tkadm1:human:admin:all:all,tk-out2=tkout2:human:customer:all:tt2",
   "creditMatrix": "matrix-takeoff-synthetic",
   "creditConcentration": "conc-takeoff-synthetic",
   "matrixSeedSql": "-- 合成开发矩阵（非公司制度）：TAKEOFF 预评估链所需的权限位；正式动作仍需对应角色。最终内容以01路冻结契约核后为准。\nINSERT INTO permission_matrix (matrix_version, role, action, allowed, max_amount_minor) VALUES ('matrix-takeoff-synthetic','approver','facility.approve',true,1000000000),('matrix-takeoff-synthetic','approver','facility.activate',true,NULL),('matrix-takeoff-synthetic','business','fr.confirm-external',true,1000000000) ON CONFLICT (matrix_version, role, action) DO NOTHING;",
@@ -52,6 +52,13 @@
       "principalId": "biz1",
       "roles": [
         "business"
+      ]
+    },
+    {
+      "credential": "tk-policy1",
+      "principalId": "policy1",
+      "roles": [
+        "policy"
       ]
     },
     {

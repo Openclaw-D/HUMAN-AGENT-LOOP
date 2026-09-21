@@ -1,3 +1,4 @@
+import { readTakeoffSource } from '../../lib/workbench/takeoff-source';
 import { workRoleName } from './role-entry';
 // TAKEOFF-FA-1.0.0 · 主屏（02路）：顶部客户与同版候选方案摘要；左侧二十格看板（~80%）；
 // 右侧六助手（~20%）；两主体区向下铺满。流程/记录/材料/待办只做入口（抽屉内消费同源记录）。
@@ -6,7 +7,7 @@ import { workRoleName } from './role-entry';
 // 行政撤回走既有 decide withdraw_assessment；绝不调用 facility.approve（本轮默认路径无正式额度操作）。
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { WbApi } from '../../lib/workbench/use-workbench';
-import type { TakeoffCellView, TakeoffSource } from '../../lib/workbench/takeoff-projection';
+import type { TakeoffCellView, TakeoffSource, TakeoffDomainId } from '../../lib/workbench/takeoff-projection';
 import { CONFIRM_OUTCOME_LABEL, deriveTakeoffCells, deriveTakeoffTop, takeoffDomainName, takeoffRowName } from '../../lib/workbench/takeoff-projection';
 import { wbActionRequestId } from '../../lib/workbench/wb-logic';
 import { TakeoffBoard } from './takeoff-board';
@@ -16,6 +17,12 @@ import { AdmissionRequestPanel } from './admission-request-panel';
 import { MaterialsDesk } from './materials-desk';
 import { RoleFlow } from './role-flow';
 import { WorkTimeline } from './work-timeline';
+import { CaseEnding, readCaseTerminal, verifiedCaseEnding } from './case-ending';
+import { DEMO_CASES } from '../../lib/workbench/demo-cases';
+import type { ColumnReceipt } from '../../lib/workbench/advance-client';
+import { projectColumnReceipts } from './column-projection';
+import { RoundSupplement } from './round-supplement';
+import { ColumnAdvance } from './column-advance';
 import { blockingPredecessor } from './cell-status';
 import { RoleLogo, UiIcon, ObjectIcon } from './ui-icons';
 import { FlowView, MaterialsView, RecordsView, TodoView, type PanelKey } from './takeoff-aux';
@@ -60,6 +67,10 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
   const [assistantCollapsed, setAssistantCollapsed] = useState(false);
   const [endOpen, setEndOpen] = useState(false);
   const [page, setPage] = useState<'board'|'materials'|'flow'|'records'>('board');
+  const receiptScope=`${wb.session?.sessionId}:${customerId}`;
+  const [roundState,setRoundState]=useState<{scope:string;values:ColumnReceipt[]}>({scope:receiptScope,values:[]});
+  const rounds=roundState.scope===receiptScope?roundState.values:[];
+  const setRounds=useCallback((values:ColumnReceipt[])=>setRoundState({scope:receiptScope,values}),[receiptScope]);
   const [source, setSource] = useState<TakeoffSource>({ snapshot: null, packageDetail: null, channelTasks: [], currentMaterials: null, factConflicts: 0 });
   const act = useAction();
   const sourceSequence = useRef(0);
@@ -73,7 +84,7 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
     return () => { if (previous?.isConnected) previous.focus(); };
   }, [drawerOpen]);
 
-  useEffect(() => { setDrawer(null); setEndOpen(false); setPage('board'); }, [customerId]);
+  useEffect(() => { setDrawer(null); setEndOpen(false); setPage('board'); }, [customerId, wb.session?.sessionId]);
 
   // 真实读面装配：artifacts（现行件数/冲突）+ 处理通道任务 + 依据包详情（域结果/采用）。
   // 读取失败 → 对应计数=null/空，投影如实显示未知，不冒充 0。
@@ -82,39 +93,35 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
     if (!client || !customerId) return;
     const sequence = ++sourceSequence.current;
     // snapshot 经 cast 携带 Edge admission 投影（§13.3）；投影语义由 takeoff-projection 消费。
-    const next: TakeoffSource = { snapshot: (wb.snapshot ?? null) as unknown as TakeoffSource['snapshot'], packageDetail: null, channelTasks: [], currentMaterials: null, factConflicts: 0 };
-    await Promise.all([
-      (async () => {
-        try {
-          const j = await client.read(`/api/jw/v2/customers/${encodeURIComponent(customerId)}/artifacts`);
-          const arts = (Array.isArray(j.artifacts) ? j.artifacts : []) as Array<Record<string, unknown>>;
-          next.currentMaterials = arts.filter((a) => a.current === true).length;
-          const conflicts = j.factConflicts;
-          next.factConflicts = Array.isArray(conflicts) ? conflicts.length : 0;
-        } catch { /* 未知保持 null */ }
-      })(),
-      (async () => {
-        try {
-          const j = await client.channelStatus(customerId);
-          next.channelTasks = (Array.isArray(j.tasks) ? j.tasks : []) as Array<{ status?: string }>;
-        } catch { /* 通道未接入：任务=空，投影显示不可读 */ }
-      })(),
-      (async () => {
-        try {
-          const pkgId = (wb.snapshot?.decisionStatus?.basis?.packageId ?? null) as string | null;
-          if (pkgId) next.packageDetail = await client.packageDetail(pkgId) as TakeoffSource['packageDetail'];
-        } catch { /* 包详情读取失败：域结果=空 */ }
-      })(),
-    ]);
+    const next = await readTakeoffSource(client, customerId, wb.snapshot as TakeoffSource['snapshot']);
     if (sourceSequence.current === sequence) setSource(next);
   }, [wb.client, wb.snapshot, customerId]);
 
   useEffect(() => { void loadSource(); return () => { sourceSequence.current += 1; }; }, [loadSource, wb.snapshotVersion]);
 
   const currentSource = useMemo(() => source.snapshot?.customer?.customerId === customerId ? source : { snapshot: wb.snapshot as TakeoffSource['snapshot'], packageDetail: null, channelTasks: [], currentMaterials: null, factConflicts: 0 }, [source, customerId, wb.snapshot]);
-  const cells = useMemo(() => deriveTakeoffCells(currentSource), [currentSource]);
+  const cells = useMemo(() => projectColumnReceipts(deriveTakeoffCells(currentSource),rounds,customerId??''), [currentSource,rounds,customerId]);
   const top = useMemo(() => deriveTakeoffTop(currentSource), [currentSource]);
+  const demoCase = DEMO_CASES.find(item => item.name === top.customer.displayName);
+  const legacyTerminal = verifiedCaseEnding(
+    readCaseTerminal((wb.snapshot as unknown as Record<string, unknown> | null)?.caseTerminal),
+    customerId ?? '',
+    demoCase?.scenario === '好' || demoCase?.scenario === '中' || demoCase?.scenario === '差' ? demoCase.scenario : null,
+  );
+  const outcomeRound=rounds.filter(r=>r.customerId===customerId&&r.caseOutcome?.terminalEventId).sort((a,b)=>b.version-a.version)[0];
+  const outcome=outcomeRound?.caseOutcome;
+  const terminal=outcomeRound&&outcome?.sourceMode==='synthetic'&&outcome.terminalEventId&&((outcome.status==='completed'&&outcome.ending==='diamond')||(outcome.status==='rejected'&&outcome.ending==='rejection'&&outcome.archiveRef))?{
+    customerId:customerId!,kind:outcome.status as 'completed'|'rejected',roundCount:outcomeRound.roundNo,recordId:outcome.terminalEventId,occurredAt:outcomeRound.updatedAt??'',archived:!!outcome.archiveRef,archiveRef:outcome.archiveRef,
+  }:legacyTerminal;
   const todosSource = currentSource;
+  const columnScope = `${wb.session?.sessionId}:${customerId}`;
+  const [column, setColumn] = useState<{scope:string;domain:TakeoffDomainId}>({scope:columnScope,domain:'opportunity'});
+  const activeColumn = column.scope===columnScope ? column.domain : 'opportunity';
+  const activeRound=rounds.filter(r=>r.domain===(activeColumn==='opportunity'?'business':activeColumn)).sort((a,b)=>b.roundNo-a.roundNo||b.version-a.version)[0];
+  const onDomain=(domain:string)=>setColumn({scope:columnScope,domain:(domain==='business'?'opportunity':domain) as TakeoffDomainId});
+
+
+
 
   if (!customerId) return null;
   // 客户联系人身份（roles=['customer']）：受限客户门户（保留既有真实门户，不呈现内部看板）。
@@ -151,15 +158,18 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
         <details className="tk-work-actions tk-customer-summary"><summary>申请 <span>{top.requestedAmount.text}</span></summary><div>{[['建议额度',top.suggestedAmount],['建议期限',top.suggestedTerm],['参考价格',top.referencePrice]].map(([label,value]) => <p key={String(label)}>{String(label)} · <span>{(value as {text:string}).text}</span></p>)}</div></details>
         <button className="tk-btn small" onClick={() => openPanel('materials')}>补材料</button>
         <details className="tk-work-actions"><summary>办理</summary><div><button onClick={() => setDrawer({kind:'materialdesk'})}>整理材料</button><button onClick={() => setDrawer({kind:'timeline'})}>办理记录</button><button onClick={() => setDrawer({kind:'todos'})}>待办</button><button onClick={() => setDrawer({kind:'admission'})}>需求登记</button><button onClick={() => openPanel('proposal')}>建议方案</button><button onClick={() => setEndOpen(true)}>结束</button><span>{phaseText}</span></div></details>
+        <ColumnAdvance key={columnScope} wb={wb} customerId={customerId} domain={activeColumn==='opportunity'?'business':activeColumn} onDomain={onDomain} onReceipts={setRounds}/>
+
         <button className="tk-role-identity" onClick={onLogout} title="切换角色"><RoleLogo role={role} size={23}/><span>{workRoleName(wb.session?.roles)}</span></button>
       </header>
       <WbError error={wb.error} onDismiss={() => wb.setError(null)} />
+      {terminal && <CaseEnding key={terminal.recordId} record={terminal} onRecords={() => { setPage('records'); setDrawer(null); }}/>}
       <div className={`tk-unified-workspace${assistantCollapsed ? ' assistant-collapsed' : ''}`}>
         <main className="tk-page-content">
-          <div className="tk-board-page" hidden={page!=='board'}><TakeoffBoard key={customerId} cells={cells} selected={drawer?.kind==='cell'?{domain:drawer.cell.domain,row:drawer.cell.row}:null} onSelect={openCell}/></div>
-          {page==='materials'&&<MaterialsDesk key={`${wb.session?.sessionId}:${customerId}`} wb={wb} customerId={customerId} onUpload={()=>openPanel('materials')}/>}
-          {page==='flow'&&<RoleFlow key={`${wb.session?.sessionId}:${customerId}`} wb={wb} cells={cells} top={top} onSelect={openCell}/>}
-          {page==='records'&&<WorkTimeline key={customerId} wb={wb} customerId={customerId}/>}
+          <div className="tk-board-page" hidden={page!=='board'}><TakeoffBoard key={customerId} cells={cells} activeDomain={activeColumn} selected={drawer?.kind==='cell'?{domain:drawer.cell.domain,row:drawer.cell.row}:null} onSelect={openCell}/></div>
+          {page==='materials'&&<MaterialsDesk key={`${wb.session?.sessionId}:${customerId}`} wb={wb} customerId={customerId} activeDomain={activeColumn} round={activeRound} onUpload={()=>openPanel('materials')}/>}
+          {page==='flow'&&<RoleFlow key={`${wb.session?.sessionId}:${customerId}`} wb={wb} cells={cells} top={top} onSelect={openCell} activeDomain={activeColumn} round={activeRound}/>}
+          {page==='records'&&<WorkTimeline key={customerId} wb={wb} customerId={customerId} activeDomain={activeColumn} rounds={rounds}/>}
         </main>
         <aside className="tk-global-assistant" aria-label="常驻助手">
           <button className="tk-edge-toggle" aria-label={assistantCollapsed ? '展开右侧助手' : '收起右侧助手'} aria-expanded={!assistantCollapsed} onClick={() => setAssistantCollapsed(v => !v)}>{assistantCollapsed ? '‹' : '›'}</button>
@@ -204,7 +214,7 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
                 <TakeoffCellDetail wb={wb} cell={drawer.cell} onOpenPanel={openPanel}
                   onOpenAssistant={closeDrawer} onViewMaterials={() => setDrawer({kind:'materialdesk'})} />
               )}
-              {drawer.kind === 'panel' && drawer.panel === 'materials' && <MaterialsView wb={wb} customerId={customerId} />}
+              {drawer.kind === 'panel' && drawer.panel === 'materials' && <><RoundSupplement key={activeRound?.roundId} wb={wb} round={activeRound}/><MaterialsView wb={wb} customerId={customerId} /></>}
               {drawer.kind === 'panel' && drawer.panel === 'verify' && <VerifyPanel wb={wb} customerId={customerId} />}
               {drawer.kind === 'panel' && drawer.panel === 'qa' && <QaPanel wb={wb} customerId={customerId} />}
               {drawer.kind === 'panel' && drawer.panel === 'proposal' && <ProposalPanel wb={wb} customerId={customerId} />}

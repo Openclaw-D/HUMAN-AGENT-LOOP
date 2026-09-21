@@ -2,6 +2,8 @@
 // 错误映射按错误码表；响应统一 no-store；错误信息绝不回显凭据（旧 D-10 教训）。
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import { AppError } from '../domain/errors.ts';
+import { buildUploadAuthorization } from '../domain/upload-authorization.ts';
+import { buildAdvanceRounds } from '../domain/advance-round.ts';
 import type { Kernel } from '../domain/kernel.ts';
 
 const MAX_BODY = 1 << 20; // 1MB
@@ -19,7 +21,12 @@ interface RouteDef {
     handler: Handler;
 }
 
-export function startHttpServer(kernel: Kernel, port: number): Promise<Server> {
+export function startHttpServer(kernel: Kernel, port: number, options: { cases?: (credential: unknown) => Promise<unknown>; advance?: {
+    getPlan: (credential: unknown, cid: string, domain?: string) => Promise<any>;
+    read: (credential: unknown, cid: string, query?: any) => Promise<any>;
+    advance: (frame: Record<string, any>, cid: string) => Promise<any>;
+    decide?: (frame: Record<string, any>, cid: string, jobId: string) => Promise<unknown>;
+} } = {}): Promise<Server> {
     const routes: RouteDef[] = [];
     const route = (method: string, path: string, handler: Handler): void => {
         const keys: string[] = [];
@@ -107,6 +114,25 @@ export function startHttpServer(kernel: Kernel, port: number): Promise<Server> {
 
     // 路由注册
     const k = kernel;
+    const advance = options.advance ?? buildAdvanceRounds(k);
+    if(options.cases) route('GET','/api/v2/arrow-cases',async (_q,_s,_p,_sp,body)=>options.cases!(body.credential));
+    const decide = options.advance?.decide;
+    if (decide) route('POST', '/api/v2/customers/:customerId/advance-rounds/:roundId/decision',
+      async (_q, _s, p, _sp, body) => decide(body, p.customerId!, p.roundId!));
+    route('GET', '/api/v2/customers/:customerId/advance-plan', async (_q, _s, p, sp, body) =>
+      advance.getPlan(body.credential, p.customerId!, sp.get('domain') ?? 'business'));
+    route('GET', '/api/v2/customers/:customerId/advance-rounds', async (_q, _s, p, sp, body) =>
+      advance.read(body.credential, p.customerId!, { domain: sp.get('domain') ?? undefined }));
+    route('GET', '/api/v2/customers/:customerId/advance-rounds/active', async (_q, _s, p, _sp, body) =>
+      advance.read(body.credential, p.customerId!, { active: true }));
+    route('GET', '/api/v2/customers/:customerId/advance-rounds/by-request/:requestId', async (_q, _s, p, _sp, body) =>
+      advance.read(body.credential, p.customerId!, { requestId: p.requestId! }));
+    route('GET', '/api/v2/customers/:customerId/advance-rounds/:roundId', async (_q, _s, p, _sp, body) =>
+      advance.read(body.credential, p.customerId!, { roundId: p.roundId! }));
+    route('POST', '/api/v2/customers/:customerId/advance-rounds', async (_q, res, p, _sp, body) => {
+      const result = await advance.advance(body, p.customerId!);
+      writeJson(res, result.reused ? 200 : 202, result);
+    });
     const S = (v: string | undefined): string => v ?? '';
     const F = (body: Record<string, unknown>): Record<string, unknown> => body;
     /** 读端点身份：头优先，body.principalCredential 同义（GET 也可带查询凭据头）。 */
@@ -272,6 +298,21 @@ export function startHttpServer(kernel: Kernel, port: number): Promise<Server> {
     route('GET', '/api/v1/inspections/:sessionId/summary', async (_q, _s, p, sp, body) => {
       const revision = sp.get('revision');
       return IX.getSummaries(S(p.sessionId), sp.get('audience'), revision === null ? null : Number(revision), cred(body, _q));
+    });
+
+    // ---- V0.4 01 路：上传授权只读投影（契约 docs/v0.4/results/01-upload/CONTRACT.md）----
+    // 零写 GET：回答 canRead/canUpload/种类白名单；不新建邀请、不续期、不登记材料。
+    // 拒绝是结构化投影结果（200 + ok:false + reason）；凭据不可验证仍 403（与其他端点同语义）。
+    const uploadAuthz = buildUploadAuthorization(kernel);
+    route('GET', '/api/v2/customers/:customerId/upload-authorization', async (_q, _s, p, sp, body) => {
+      const kind = sp.get('kind');
+      const claim = sp.get('principalId');
+      return uploadAuthz.authorizeUpload({
+        credential: cred(body, _q),
+        customerId: S(p.customerId),
+        kind: kind === null ? undefined : kind,
+        principalId: claim === null ? undefined : claim,
+      });
     });
 
     return new Promise((resolve, reject) => {

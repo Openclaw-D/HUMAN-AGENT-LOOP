@@ -4,6 +4,7 @@
 import { createEdgeClient, EdgeHttpError, type EdgeClient, type EdgeSessionInfo } from '../v5-preview/edge/edge-client';
 import type { AdmissionRequest, AssistantObservation, ModelAssistant } from './takeoff-actions';
 import { validDecisionResponse, type DecisionResponse, type DecisionCommand, type FeedbackCommand } from './decision-feedback';
+import { createAdvanceClient } from './advance-client';
 
 export interface IdentityMeta { principalId: string; roles: string[]; label: string; demo: boolean }
 
@@ -286,6 +287,7 @@ export function createWbClient({ baseUrl, fetchImpl = fetch }: { baseUrl: string
       getJson(`/api/jw/v2/connectors/processing/receipts/${encodeURIComponent(requestId)}?tid=${encodeURIComponent(currentTenant())}`),
 
     action: <T = Record<string, unknown>>(path: string, body: Record<string, unknown>) => inner.action<T>(path, body),
+    advance: createAdvanceClient(root, authedHeaders, fetchImpl),
     sendMessage: (customerId: string, body: Parameters<EdgeClient['sendMessage']>[1]) => inner.sendMessage(customerId, body),
     /** 页内消息线程读（DEF-G04N-05 修复面）：?audience 过滤 + ?after 游标增量；受众边界由服务端裁决。 */
     listMessages: (customerId: string, opts?: { audience?: 'customer' | 'internal'; after?: string; limit?: number }) => {
