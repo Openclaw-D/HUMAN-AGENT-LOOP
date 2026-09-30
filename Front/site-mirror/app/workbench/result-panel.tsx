@@ -53,7 +53,7 @@ export function ResultPanel({ wb, customerId }: { wb: WbApi; customerId: string 
       async () => {
         await client.action(`/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/reports`, {
           requestId,
-          tenantId: 't1',
+          tenantId: wb.session?.tenantId ?? 't1',
           kind,
           subjectId,
         });

@@ -146,7 +146,7 @@ test('时间轴：切客户后旧响应不能写回；失败支持明确重读',
 
 test('角色入口：图标与角色配对、多身份显式选择，服务不可用不误报个人身份错误',async(t)=>{
   t.after(cleanup);const calls=[];const wb={identities:[{principalId:'b1',roles:['business'],label:'业务甲'},{principalId:'b2',roles:['business'],label:'业务乙'}],loginWithIdentity:async(id)=>{calls.push(id);throw Object.assign(new Error(),{code:'PRINCIPAL_UNTRUSTED'});}};
-  render(React.createElement(RoleEntry,{wb}));fireEvent.click(screen.getByRole('button',{name:/业务：精准识客/}));assert.equal(calls.length,0);fireEvent.click(screen.getByRole('button',{name:'业务乙'}));await screen.findByText(/办理服务或角色配置尚未就绪/);assert.deepEqual(calls,['b2']);
+  render(React.createElement(RoleEntry,{wb}));fireEvent.click(screen.getByRole('button',{name:/业务：精准识客/}));assert.equal(calls.length,0);fireEvent.click(screen.getByRole('button',{name:'业务乙'}));await screen.findByText(/角色配置未就绪/);assert.deepEqual(calls,['b2']);
   assert.ok(screen.getByRole('button',{name:/政策：厘清准入/}).disabled);
   assert.deepEqual([...document.querySelectorAll('.tk-role-value')].map((el)=>el.textContent),['精准识客高效成单','厘清准入守住边界','识别风险审慎决策','优化方案促成合作','核清资产守护价值']);
   assert.equal(document.querySelector('.tk-entry-footer'),null);

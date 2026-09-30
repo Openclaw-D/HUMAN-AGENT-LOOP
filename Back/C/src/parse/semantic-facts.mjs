@@ -9,7 +9,7 @@
 //   注意，不执行、不赋权、不改变 authority=none。
 // - 同输入字节+同 kind+同元数据 → 恒同输出（确定性；上游按此做解析缓存键）。
 
-export const SEMANTIC_FACTS_VERSION = 'semantic-facts@1';
+export const SEMANTIC_FACTS_VERSION = 'semantic-facts@2';
 
 import { parseDelimitedRows } from './adapters.mjs';
 
@@ -74,7 +74,9 @@ function projectFinancialStatement(parseResult) {
     if (c < 0) continue;
     let chosen = null;
     t.rows.forEach((row, i) => {
-      const v = Number(String(row[c] ?? '').replace(/[,,]/g, ''));
+      const cell = String(row[c] ?? '').trim().replace(/[,,]/g, '');
+      if (cell === '') return; // 空单元格=缺失：不得冒充 0（PROTOCOL §2 unknown≠0；DEF-ACC-01）
+      const v = Number(cell);
       if (!Number.isFinite(v)) return;
       const period = pIdx >= 0 ? String(row[pIdx] ?? '').trim() : null;
       chosen = { value: v, period, line: i + 2 };
@@ -93,7 +95,10 @@ function projectFinancialStatement(parseResult) {
     t.rows.forEach((row, i) => {
       const period = String(row[pIdx] ?? '').trim();
       if (!/^\d{4}$/.test(period)) return; // 跳过 2025H1 之类非年度行
-      const v = Number(String(row[rIdx] ?? '').replace(/[,,]/g, ''));
+      const cellV = String(row[rIdx] ?? '').trim().replace(/[,,]/g, '');
+      if (cellV === '') return; // 空单元格=缺失：不得冒充 0（DEF-ACC-01 同款）
+      const v = Number(cellV);
+      if (!Number.isFinite(v)) return;
       if (!Number.isFinite(v)) return;
       out.push({
         factKey: 'revenue_annual_declared', value: v, verificationLevel: 'declared', unit: 'wan',

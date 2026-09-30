@@ -9,16 +9,16 @@ test('waiting credit can explicitly reject without offering adoption or duplicat
  t.after(cleanup);localStorage.clear();let posts=0,finish;let history=[{...makeReceipt('waiting_evidence'),domain:'credit',views:{decisions:{requiredDecision:{roundId:'r1',resultId:'risk1',choices:['reject']}}}}];
  const api={active:async()=>null,history:async()=>history,decide:async(_c,_r,_d,decision)=>{assert.equal(decision,'reject');posts++;return new Promise(resolve=>finish=()=>{history=[{...history[0],state:'rejected',views:{decisions:{requiredDecision:null}},selection:{candidateId:'risk1',eventId:'rejection1',decision:'reject'}}];resolve(history[0]);});}};
  await act(async()=>render(React.createElement(ColumnAdvance,{wb:{client:{advance:api},session:{sessionId:'s1'},refresh:async()=>{}},customerId:'c1',domain:'credit',onDomain:()=>{},onReceipts:()=>{}})));
- assert.equal(screen.queryByRole('button',{name:'采用本列意见并继续'}),null);
+ assert.equal(screen.queryByRole('button',{name:'确认本次选择'}),null);
  const reject=screen.getByRole('button',{name:'拒绝本案'});fireEvent.click(reject);fireEvent.click(reject);
  await waitFor(()=>assert.equal(posts,1));await act(async()=>finish());assert.equal(localStorage.getItem('jw:column-advance:pending:c1'),null);
 });
-function setup(api){let refresh=0;let rows=[];let selected=[];const wb={client:{advance:api},session:{sessionId:'s1'},refresh:async()=>{refresh++}};render(React.createElement(ColumnAdvance,{wb,customerId:'c1',domain:'business',onDomain:d=>selected.push(d),onReceipts:r=>rows=r}));return {get refresh(){return refresh},get rows(){return rows},selected};}
-test('right submits once, auto publishes server receipt and refreshes without extra controls',async t=>{
+function setup(api,props={}){let refresh=0;let rows=[];let selected=[];const wb={client:{advance:api},session:{sessionId:'s1'},refresh:async()=>{refresh++}};render(React.createElement(ColumnAdvance,{wb,customerId:'c1',domain:'business',onDomain:d=>selected.push(d),onReceipts:r=>rows=r,...props}));return {get refresh(){return refresh},get rows(){return rows},selected};}
+test('explicit event submits once, auto publishes server receipt and refreshes without extra controls',async t=>{
  t.after(cleanup);localStorage.clear();let finish;let posts=0;let history=[];
  const api={active:async()=>null,history:async()=>history,plan:async()=>plan,advance:async(_c,_p,q)=>{posts++;return new Promise(resolve=>finish=()=>{history=[{...makeReceipt(),requestId:q}];resolve(history[0])})}};
  let state;await act(async()=>{state=setup(api)});
- const button=screen.getByRole('button',{name:'推进下一专业列'});
+ const button=screen.getByRole('button',{name:'提交材料并分析'});
  fireEvent.click(button);fireEvent.click(button);await waitFor(()=>assert.equal(posts,1));assert.equal(button.disabled,true);
  await act(async()=>finish());await waitFor(()=>assert.equal(state.rows[0]?.version,2));assert.ok(state.refresh>=2);
  assert.equal(screen.queryByText('执行本列计划'),null);assert.equal(screen.queryByText('刷新列结果'),null);
@@ -29,10 +29,10 @@ test('unknown remount recovers original request without POST or a user refresh',
  const api={active:async()=>null,history:async()=>[],recover:async(_c,q)=>{recovered.push(q);return makeReceipt()},advance:async()=>{posts++}};
  let state;await act(async()=>{state=setup(api)});await waitFor(()=>assert.equal(state.rows.length,1));assert.deepEqual(recovered,['q1']);assert.equal(posts,0);assert.equal(localStorage.getItem('jw:column-advance:pending:c1'),null);
 });
-test('right reuses already completed next column without executing again',async t=>{
+test('completed column routes the explicit button to the next domain without executing again',async t=>{
  t.after(cleanup);localStorage.clear();let posts=0;const history=[makeReceipt('completed'),{...makeReceipt('completed'),roundId:'r2',domain:'policy'}];
  const api={active:async()=>null,history:async()=>history,advance:async()=>{posts++}};let state;
- await act(async()=>{state=setup(api)});await act(async()=>fireEvent.click(screen.getByRole('button',{name:'推进下一专业列'})));
+ await act(async()=>{state=setup(api)});await act(async()=>fireEvent.click(screen.getByRole('button',{name:'前往政策办理'})));
  assert.deepEqual(state.selected,['policy']);assert.equal(posts,0);
 });
 
@@ -51,18 +51,19 @@ test('unknown POST is automatically reconciled with the same request and never r
   advance:async(_c,_p,q)=>{posts++;requestId=q;throw new Error('network result unknown')},
   recover:async(_c,q)=>{assert.equal(q,requestId);reads++;const r={...makeReceipt(reads===1?'unknown':'awaiting_confirmation'),requestId:q};if(reads>1)history=[r];return r;}};
  let state;await act(async()=>{state=setup(api)});
- await act(async()=>fireEvent.click(screen.getByRole('button',{name:'推进下一专业列'})));
+ await act(async()=>fireEvent.click(screen.getByRole('button',{name:'提交材料并分析'})));
  await waitFor(()=>assert.ok(reads>=2),{timeout:3500});
  assert.equal(posts,1);assert.equal(state.rows[0].state,'awaiting_confirmation');assert.equal(localStorage.getItem('jw:column-advance:pending:c1'),null);
 });
 
-test('processing still permits read-only previous recorded column',async t=>{
+test('processing keeps explicit event disabled without redundant browse arrows',async t=>{
  t.after(cleanup);localStorage.clear();let selected=[];let posts=0;
  const r={...makeReceipt('unknown'),domain:'policy',roundId:'r2'};
  const wb={client:{advance:{active:async()=>r,history:async()=>[makeReceipt(),r],advance:async()=>{posts++}}},session:{sessionId:'s1'},refresh:async()=>{}};
  await act(async()=>render(React.createElement(ColumnAdvance,{wb,customerId:'c1',domain:'policy',onDomain:d=>selected.push(d),onReceipts:()=>{}})));
- assert.equal(screen.getByRole('button',{name:'推进下一专业列'}).disabled,false);
- fireEvent.click(screen.getByRole('button',{name:'上一专业列'}));assert.deepEqual(selected,['business']);assert.equal(posts,0);
+ assert.equal(screen.queryByRole('button',{name:'下一专业列'}),null);
+ assert.equal(screen.getByRole('button',{name:'处理中：正在核对服务端结果…'}).disabled,true);
+ assert.equal(screen.queryByRole('button',{name:'上一专业列'}),null);assert.deepEqual(selected,[]);assert.equal(posts,0);
 });
 test('parallel non-current receipt updates publish without changing viewed domain',async t=>{
  t.after(cleanup);localStorage.clear();let reads=0;
@@ -85,17 +86,20 @@ test('late old-customer response cannot publish into the new customer',async t=>
  await act(async()=>resolveOld([makeReceipt()]));assert.deepEqual(oldRows,[]);assert.deepEqual(newRows,[]);
 });
 
-test('core right arrow explicitly adopts shown result, not just browsing past confirmation',async t=>{
+test('explicit confirmation alone adopts the shown result; no navigation commands',async t=>{
  t.after(cleanup);localStorage.clear();let commands=[];let history=[{...makeReceipt(),views:{decisions:{candidate:{summary:'本轮实际意见'},requiredDecision:{roundId:'r1',resultId:'result1',choices:['adopt','set_aside']}}}},{...makeReceipt(),domain:'policy',roundId:'r2'}];
  const api={active:async()=>null,history:async()=>history,decide:async(cid,r,required,decision,requestId)=>{commands.push({cid,round:r.roundId,required,decision});history=[{...makeReceipt('completed'),selection:{candidateId:'result1',eventId:'event1',decision:'adopt'}},history[1]];return history[0];}};
  let state;await act(async()=>{state=setup(api)});
- await act(async()=>fireEvent.click(screen.getByRole('button',{name:'采用本列意见并继续'})));
- assert.equal(commands.length,1);assert.equal(commands[0].decision,'adopt');assert.deepEqual(state.selected,['policy']);assert.equal(localStorage.getItem('jw:column-advance:pending:c1'),null);
+ // 浏览右箭头不隐式执行人工确认：只切列，不发命令
+ assert.equal(screen.queryByRole('button',{name:'下一专业列'}),null);
+ assert.equal(commands.length,0);assert.deepEqual(state.selected,[]);
+ await act(async()=>fireEvent.click(screen.getByRole('button',{name:'确认本次选择'})));
+ assert.equal(commands.length,1);assert.equal(commands[0].decision,'adopt');assert.ok(state.selected.includes('policy'));assert.equal(localStorage.getItem('jw:column-advance:pending:c1'),null);
 });
 test('ambiguous human selection stays fenced when recovery lacks selection event',async t=>{
  t.after(cleanup);localStorage.clear();localStorage.setItem('jw:column-advance:pending:c1','q1');localStorage.setItem('jw:column-advance:pending:c1:decision',JSON.stringify({resultId:'result1',decision:'adopt'}));
  const api={active:async()=>null,history:async()=>[makeReceipt()],recover:async()=>makeReceipt()};await act(async()=>setup(api));
- assert.equal(localStorage.getItem('jw:column-advance:pending:c1'),'q1');assert.ok(screen.getByText(/处理中/));localStorage.clear();
+ assert.equal(localStorage.getItem('jw:column-advance:pending:c1'),'q1');assert.ok(screen.getByText('处理中：正在核对服务端结果…'));localStorage.clear();
 });
 
 test('persisted reject selection distinguishes credit rejection from stopped downstream',async()=>{
@@ -116,11 +120,19 @@ test('server pending list routes back to affected policy and keeps evidence wait
  assert.equal(nextRequired([{...policy,current:false},credit],'credit'),undefined);
 });
 
-test('one adoption arrow starts only the next unstarted column without auto adopting its result',async t=>{
+test('one explicit adoption starts only the next unstarted column without auto adopting its result',async t=>{
  t.after(cleanup);localStorage.clear();let starts=[],choices=[];
  let history=[{...makeReceipt(),views:{decisions:{requiredDecision:{roundId:'r1',resultId:'result1',choices:['adopt']}}}}];
  const api={active:async()=>null,history:async()=>history,decide:async(_c,_r,_req,decision)=>{choices.push(decision);history=[{...makeReceipt('completed'),selection:{candidateId:'result1',eventId:'event1',decision}}];return history[0];},plan:async(_c,d)=>({...plan,domain:d}),advance:async(_c,p,q)=>{starts.push(p.domain);const r={...makeReceipt(),domain:p.domain,roundId:'r2',requestId:q};history.push(r);return r;}};
  let state;await act(async()=>{state=setup(api)});
- await act(async()=>fireEvent.click(screen.getByRole('button',{name:'采用本列意见并继续'})));
+ await act(async()=>fireEvent.click(screen.getByRole('button',{name:'确认本次选择'})));
  assert.deepEqual(choices,['adopt']);assert.deepEqual(starts,['policy']);assert.deepEqual(state.selected,['policy']);assert.equal(history[1].state,'awaiting_confirmation');
+});
+test('拒绝执行的计划在页面持续显示原因，不发送业务请求', async t => {
+ t.after(cleanup); localStorage.clear(); let posts=0;
+ const api={active:async()=>null,history:async()=>[],plan:async()=>({...plan,available:false,reason:'年收入超过准入红线'}),advance:async()=>{posts++}};
+ await act(async()=>setup(api));
+ await act(async()=>fireEvent.click(screen.getByRole('button',{name:'提交材料并分析'})));
+ assert.match(screen.getByRole('alert').textContent,/年收入超过准入红线/);
+ assert.equal(posts,0);
 });

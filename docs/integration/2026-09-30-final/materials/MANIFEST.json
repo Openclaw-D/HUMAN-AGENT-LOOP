@@ -1,0 +1,229 @@
+{
+  "generatedAt": "2026-09-30T03:16:51.291Z",
+  "sourceMode": "synthetic（合成演示材料，非真实客户数据）",
+  "transactionScope": {
+    "orgType": "commercial_leasing",
+    "product": "sale_leaseback",
+    "region": "新疆喀什",
+    "customerRange": "standard"
+  },
+  "files": {
+    "case-01/financial_summary.csv": {
+      "sha256": "374bc20b5479bef9d4d6d28d4a8b05e6e1d350668e28f1e92bcc2105537f2833",
+      "bytes": 891
+    },
+    "case-01/equipment_list.csv": {
+      "sha256": "8dab0e3667a9cb7f0351a923d168cad3f625681df2383b61b012e863b6eae7d7",
+      "bytes": 334
+    },
+    "case-02/financial_summary.csv": {
+      "sha256": "60b6d4dd7e3534dcae348924ea27040cc8d7b30d03c828cc5bb83dbf0620f696",
+      "bytes": 890
+    },
+    "case-02/equipment_list.csv": {
+      "sha256": "2fb3b4e80980743a8f3315adf03ed31b95e83152fb8f8d5dbad4c2b0e065340f",
+      "bytes": 341
+    },
+    "case-03/financial_summary.csv": {
+      "sha256": "b560eada3636db9ca94565c20649d71fc7b7961332c399ea84c2000057aecff0",
+      "bytes": 889
+    },
+    "case-03/equipment_list.csv": {
+      "sha256": "9ce4c8ed30322b9ddfaa169ffeffb886fd2b4df4acd24c46c1f40b16b45debcd",
+      "bytes": 334
+    },
+    "case-04/financial_summary.csv": {
+      "sha256": "f5aff099e6c8c2cd75f1ca145ee6d17fdf2564a564cb48c6ecf084a45998f987",
+      "bytes": 891
+    },
+    "case-04/equipment_list.csv": {
+      "sha256": "95d4f13d59db1c4f327c4fbc33ba17bff2dc53fac707bbeb14f6679e11238182",
+      "bytes": 334
+    },
+    "case-05/financial_summary.csv": {
+      "sha256": "9257a978c0e33860e6eeb437ddc93b58d16ff825f8f9b0ac263a63cd1873cdf5",
+      "bytes": 891
+    },
+    "case-05/equipment_list.csv": {
+      "sha256": "c56914d307286e61297dd38646c72755a86cceee13aef999b3aa1b32b1fd0473",
+      "bytes": 334
+    },
+    "case-05/purchase_invoice.csv": {
+      "sha256": "b4545edb8b058b026c8972cd66306a9043db3058d0d6ac3d9c4fa38b41124c37",
+      "bytes": 113
+    },
+    "case-06/financial_summary.csv": {
+      "sha256": "ea435f74f5039470bd1f0e2e45cd455f16b721d6132a07bbca2ba9954d02052b",
+      "bytes": 897
+    },
+    "case-06/equipment_list.csv": {
+      "sha256": "5f38018098d3661d56b808cae2ce105222f568e8a621928c3dd542efc89242ed",
+      "bytes": 341
+    },
+    "case-07/financial_summary.csv": {
+      "sha256": "7bfda2ba75ea18cb63da91cd1ade5b93d084fc8c8edc80f69e893b48513bed9b",
+      "bytes": 890
+    },
+    "case-07/equipment_list.csv": {
+      "sha256": "911db702965e9111d636d47591612aebc889beb66500fa55c625be53b528618c",
+      "bytes": 334
+    },
+    "case-08/financial_summary.csv": {
+      "sha256": "f4c4ab89855a8d1c376fc0a8ab086cd544ac20200f1baf933f6d69782b729a49",
+      "bytes": 891
+    },
+    "case-08/equipment_list.csv": {
+      "sha256": "f6fc2591458ae0b8915f29459f8e7163b7bb38fa1bcf1716242a81086ad51ccb",
+      "bytes": 334
+    },
+    "case-09/financial_summary.csv": {
+      "sha256": "27f512827d1f1ca9a415eb21e1717a02ea52d97d2990a353a492c4f0f3ac389c",
+      "bytes": 890
+    },
+    "case-09/equipment_list.csv": {
+      "sha256": "c07cf6659a9bb2a3952bdf9d3edeec54fea2f2fe689262fbc3aa8325b8aec0cc",
+      "bytes": 334
+    },
+    "case-10/financial_summary.csv": {
+      "sha256": "23b51efa5796a0e2e99ab642a172599c370bb41f935a465bf4c0fdc33a031ab2",
+      "bytes": 891
+    },
+    "case-10/equipment_list.csv": {
+      "sha256": "a236ea603110f84ef6da4ddbfd760147cd8161e6e1653e8447f5c338982febb5",
+      "bytes": 334
+    }
+  },
+  "cases": [
+    {
+      "caseId": "case-01",
+      "displayOrder": 1,
+      "category": "差",
+      "businessName": "喀什河谷新材料加工厂",
+      "summary": "年收入超5000万准入红线：推进被确定性红线检查阻断，不可强制通过",
+      "checkpointExpect": null,
+      "factCount": 17,
+      "files": [
+        "financial_summary.csv",
+        "equipment_list.csv"
+      ]
+    },
+    {
+      "caseId": "case-02",
+      "displayOrder": 2,
+      "category": "差",
+      "businessName": "天山南麓农机装备公司",
+      "summary": "资产权属冲突：申报称自有，核验登记不通过 → 不可豁免硬阻断，采用被拒并留痕",
+      "checkpointExpect": null,
+      "factCount": 17,
+      "files": [
+        "financial_summary.csv",
+        "equipment_list.csv"
+      ]
+    },
+    {
+      "caseId": "case-03",
+      "displayOrder": 3,
+      "category": "差",
+      "businessName": "准噶尔包装制品厂",
+      "summary": "偿债能力不足：覆盖率 55000/100000=0.55 低于演示阈值 1.0，风险意见待信审决定",
+      "checkpointExpect": null,
+      "factCount": 17,
+      "files": [
+        "financial_summary.csv",
+        "equipment_list.csv"
+      ]
+    },
+    {
+      "caseId": "case-04",
+      "displayOrder": 4,
+      "category": "中",
+      "businessName": "伊犁河谷食品加工合作社",
+      "summary": "现金流缺件：月经营现金流仅申报未核验（unknown），信审待补件；补件后仅相关域重算",
+      "checkpointExpect": null,
+      "factCount": 17,
+      "files": [
+        "financial_summary.csv",
+        "equipment_list.csv"
+      ]
+    },
+    {
+      "caseId": "case-05",
+      "displayOrder": 5,
+      "category": "中",
+      "businessName": "阿克苏果业冷链公司",
+      "summary": "金额口径冲突：设备对价两份来源 2,980,000 与 3,350,000 同级冲突，核实后按版本重算",
+      "checkpointExpect": null,
+      "factCount": 18,
+      "files": [
+        "financial_summary.csv",
+        "equipment_list.csv",
+        "purchase_invoice.csv"
+      ]
+    },
+    {
+      "caseId": "case-06",
+      "displayOrder": 6,
+      "category": "中",
+      "businessName": "吐鲁番纺织印染厂",
+      "summary": "核验未完成：收入·主体·权属仅申报未核验，人工核验待办（页面完成登记后重算）",
+      "checkpointExpect": null,
+      "factCount": 17,
+      "files": [
+        "financial_summary.csv",
+        "equipment_list.csv"
+      ]
+    },
+    {
+      "caseId": "case-07",
+      "displayOrder": 7,
+      "category": "中",
+      "businessName": "塔城农机维修连锁",
+      "summary": "新证据使旧结论复核：设备对价补证（280万→320万）晚于已采用结果，旧候选标陈旧",
+      "checkpointExpect": null,
+      "factCount": 17,
+      "files": [
+        "financial_summary.csv",
+        "equipment_list.csv"
+      ]
+    },
+    {
+      "caseId": "case-08",
+      "displayOrder": 8,
+      "category": "好",
+      "businessName": "昌吉精密模具制造",
+      "summary": "首次预评估收口：五区已协同并采用，预评估结论待最终人类确认（不批准正式额度）",
+      "checkpointExpect": null,
+      "factCount": 17,
+      "files": [
+        "financial_summary.csv",
+        "equipment_list.csv"
+      ]
+    },
+    {
+      "caseId": "case-09",
+      "displayOrder": 9,
+      "category": "好",
+      "businessName": "克拉玛依建材租赁",
+      "summary": "履约等待外部回执：内部义务完成后如实停靠；模拟回执来源明确，未确认不可结清",
+      "checkpointExpect": null,
+      "factCount": 17,
+      "files": [
+        "financial_summary.csv",
+        "equipment_list.csv"
+      ]
+    },
+    {
+      "caseId": "case-10",
+      "displayOrder": 10,
+      "category": "好",
+      "businessName": "博乐葡萄酒庄设备回租",
+      "summary": "已结清可返单：完整周期（履约→回执确认→结清→关闭）留痕；返单开启独立新周期",
+      "checkpointExpect": null,
+      "factCount": 17,
+      "files": [
+        "financial_summary.csv",
+        "equipment_list.csv"
+      ]
+    }
+  ]
+}

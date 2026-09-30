@@ -15,6 +15,11 @@ export interface AdmissionAssessment {
 }
 
 export type ModelAssistant = 'business' | 'policy' | 'credit' | 'commerce' | 'asset' | 'jianwei';
+export interface AssistantBriefing {
+  ok: true; mode: 'deterministic_briefing'; authority: 'none'; scope: 'preassessment_only';
+  customerId: string; assistant: ModelAssistant; sent: false; model: null;
+  answer: string; source: string; freeFormAvailable: false;
+}
 export interface AssistantObservation {
   ok: boolean; authority: 'none'; scope: 'preassessment_only'; customerId: string; assistant: ModelAssistant;
   model: {

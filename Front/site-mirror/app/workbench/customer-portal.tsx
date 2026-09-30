@@ -121,7 +121,7 @@ export function CustomerPortal({ wb, customerId, onLogout }: { wb: WbApi; custom
       },
       async () => {
         const r = await client.channelAction<{ invitationId?: string; bindingId?: string; existed?: boolean }>('intake/accept', {
-          requestId, tenantId: 't1', token: tokenInput.trim(), provider: 'portal',
+          requestId, tenantId: wb.session?.tenantId ?? 't1', token: tokenInput.trim(), provider: 'portal',
           providerUserId: `portal:${customerId}:${wb.session?.principalId ?? 'contact'}:${Date.now().toString(36)}`,
         });
         if (r.invitationId) setInvitationId(r.invitationId);
@@ -155,7 +155,7 @@ export function CustomerPortal({ wb, customerId, onLogout }: { wb: WbApi; custom
         },
         async () => {
           await client.channelAction('evidence/upload', {
-            requestId, tenantId: 't1', customerId, invitationId, kind,
+            requestId, tenantId: wb.session?.tenantId ?? 't1', customerId, invitationId, kind,
             contentBase64: bytesToBase64(bytes), contentType: f.type || 'application/octet-stream',
             periodFrom: null, periodTo: null,
           });

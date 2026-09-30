@@ -5,6 +5,7 @@
 import type { WbApi } from '../../lib/workbench/use-workbench';
 import type { TakeoffCellView } from '../../lib/workbench/takeoff-projection';
 import { takeoffDomainName, takeoffRowName } from '../../lib/workbench/takeoff-projection';
+import { HumanVerificationRegister, isVerificationRegisterCell } from './human-verification';
 import { ObjectIcon } from './ui-icons';
 
 
@@ -45,13 +46,17 @@ export function TakeoffCellDetail({ wb, cell, onOpenPanel, onOpenAssistant, onVi
         {chanFollowups.map((f, i) => (
           <div key={i} className="tk-item"><span className="tk-dot yellow" />转会后待办：{f.reason ?? '—'} → {f.nextAction ?? '待定'}</div>
         ))}
+        {/* DEF-03-05：收入/主体/权属人工核验登记的正式页面入口（核验行、未完成时）。 */}
+        {isVerificationRegisterCell(cell.domain, cell.row, cell.completed) && wb.customerId && (
+          <HumanVerificationRegister wb={wb} customerId={wb.customerId} domain={cell.domain as 'opportunity' | 'policy' | 'asset'} />
+        )}
         <div className="tk-toolbar">
           {cell.row === 'analysis' && onOpenAssistant && <button className="tk-btn primary" onClick={onOpenAssistant}><ObjectIcon name="analysis" size={30}/>查看{takeoffDomainName(cell.domain)}分析</button>}
           {cell.row === 'input' && onViewMaterials && <button className="tk-btn" onClick={onViewMaterials}><ObjectIcon name="materials" size={30}/>查看材料原件</button>}
           {cell.allowedActions.filter(() => cell.row !== 'analysis' || !onOpenAssistant).map((a) => (
             <button key={a.key} className="tk-btn small" onClick={() => onOpenPanel(a.key)}><ObjectIcon name={{materials:'materials',verify:'verify',qa:'analysis',proposal:'commerce',result:'closure'}[a.key]} size={28}/>{{materials:'补充材料',verify:'核验材料',qa:'问题与补证',proposal:'查看建议方案',result:'查看办理结果'}[a.key]}</button>
           ))}
-          {cell.allowedActions.length === 0 && !(cell.row === 'analysis' && onOpenAssistant) && <span className="tk-asst-note">暂无可办理动作。</span>}
+          {cell.allowedActions.length === 0 && !(cell.row === 'analysis' && onOpenAssistant) && !isVerificationRegisterCell(cell.domain, cell.row, cell.completed) && <span className="tk-asst-note">暂无可办理动作。</span>}
         </div>
       </div>
       <div className="tk-detail-sec">

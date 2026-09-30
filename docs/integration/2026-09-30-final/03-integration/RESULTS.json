@@ -1,0 +1,204 @@
+{
+ "suite": "v05-final-integration-03",
+ "round": "docs/integration/2026-09-30-final（V0.5 收尾）",
+ "owner": "ZCode 第三路（运行/集成/交付候选）",
+ "date": "2026-09-30T04:35:37.065Z",
+ "stack": {
+  "edge": "http://127.0.0.1:48431",
+  "kernel": 48491,
+  "connectors": 48411,
+  "pg": 25497,
+  "container": "jw-integ-v05-pg",
+  "runDir": "Back/Edge/.run/v05",
+  "subdir": "v05",
+  "node": "v22.23.0（.local/runtime）",
+  "dist": "01 冻结构建 index-Bs_MNrNz.js（sha256 ebfa9c28…，Edge 同源托管逐字节核对一致）"
+ },
+ "batches": {
+  "checkpoint": {
+   "run": "v05b2",
+   "executed": true,
+   "elapsedSec": 20.6,
+   "customerIds": {
+    "case-01": "cust-munl452m-360d2f10b869",
+    "case-02": "cust-munl4585-d28f315ac84b",
+    "case-03": "cust-munl4751-2d3d625654f3",
+    "case-04": "cust-munl4891-44786381aa0f",
+    "case-05": "cust-munl49dm-7988e67d0626",
+    "case-06": "cust-munl4aki-121c064685d5",
+    "case-07": "cust-munl4bmq-945c6d43677b",
+    "case-08": "cust-munl4dr2-ddd0fea4b7db",
+    "case-09": "cust-munl4g4m-471387095c24",
+    "case-10": "cust-munl4il0-fc2dcf4c1e4a"
+   }
+  },
+  "fresh": {
+   "run": "v05fresh-t1",
+   "executed": true,
+   "elapsedSec": 1.8,
+   "note": "材料就绪/红线读取阻断起点；02 T10 同配方"
+  },
+  "registryNote": "A arrow-cases 注册表指向最后一次种子（checkpoint v05b2）；discipline=checkpoint 批次必须最后种"
+ },
+ "gates": {
+  "reliableStart": {
+   "status": "PASS",
+   "evidence": [
+    "Start-JW.ps1/.cmd 三态实测：status/start-reuse/cold-recovery/stop/login-smoke",
+    "真实就绪=/healthz/ready 聚合+versionz build+受控目录登录冒烟，非静态预览",
+    "Docker 不可达/配置缺失/端口占用分别明确报告（不抢占未知进程）"
+   ]
+  },
+  "unifiedEntry": {
+   "status": "PASS",
+   "evidence": [
+    "同源生产入口 http://127.0.0.1:48431/（Edge --serve-front Front/dist）",
+    "开发 ?edge= override 已由 01 限制为 dev端口+127.0.0.1/localhost（生产同源）",
+    "未改凭据/未禁用鉴权；DB停机登录 503 分类文案如实"
+   ]
+  },
+  "tenCases": {
+   "status": "PASS_WITH_DEFECTS",
+   "evidence": "见 cases[]（6 例页内证据完整、4 例以 A 权威检查点+02 T 套件 API 证据支撑；目录卡阶段/下一动作字段消费=DEF-03-06 OPEN）"
+  },
+  "authoritativeCases": {
+   "status": "PASS",
+   "evidence": [
+    "GET /api/jw/v2/arrow-cases=200 十例 差→中→好（A arrow_case_registry∩授权）",
+    "GET /arrow-cases/caseId=200 detail（checkpoint/nextActions/assistant 投影）",
+    "Edge fallback404 双来源全退役（代码+配置六处清理；A 故障时 502 如实）"
+   ]
+  },
+  "assistantDeterministic": {
+   "status": "PASS",
+   "evidence": [
+    "无模型 observe 返回 200 deterministic_briefing（现行事实/材料数/只读指引；来源=案例说明；自由问答如实不可用）",
+    "模型已配置路径零改动；零出站（versionz capabilities.model=not_configured）"
+   ]
+  },
+  "singleEventMultiStep": {
+   "status": "PASS",
+   "evidence": [
+    "case-06 UI 提交分析→五区排队（COLUMN_QUEUED×5，0929 T4a/02 T9 同口径）；v05 API 补充证据=case-04 cred1 advance 202→credit waiting_evidence",
+    "02 T9：case-05 五区 5 独立 worker threadId+时间重叠"
+   ]
+  },
+  "negativeMatrix": {
+   "status": "PASS",
+   "evidence": [
+    "DB停机→登录 503 CREDENTIAL_VERIFICATION_UNAVAILABLE + 页面分类文案（截图 browser-neg-db-down-login.png）",
+    "容器恢复→A 连接池自愈→ready True→目录回归（browser-neg-recovered-directory.png）",
+    "双击/重放=02 T8 同 requestId 单效果（200 reused/409 IDEMPOTENCY_REPLAY_CONFLICT）",
+    "返单未完成新一轮→UI alert REORDER_REQUIRES_FRESH_CASE（截图证据 in-panel）",
+    "跨客户/撤权=02 T11 + 0929 T9（API 级）"
+   ]
+  },
+  "releaseHygiene": {
+   "status": "PENDING",
+   "evidence": "release/ 清单与审计见 release/CANDIDATE.md（本文件同批交付）"
+  },
+  "regression": {
+   "status": "PASS_BY_02",
+   "evidence": "02-back DELIVERY §3：ten-cases 11/11 + 旧回归 43/43 + tsc=0；01 npm test 164/164 + typecheck 0（各自冻结报告，03 未重复跑全量）"
+  }
+ },
+ "cases": [
+  {
+   "no": 1,
+   "caseId": "case-01",
+   "name": "喀什河谷新材料加工厂",
+   "checkpoint": "blocked_redline",
+   "status": "PASS",
+   "evidence": "A detail 检查点+红线推导（EXPECTED ruleBasis）；推进 409 CUSTOMER_REVENUE_REDLINE=02 T1/T3；UI 目录卡要点正确渲染",
+   "ui": "read-only"
+  },
+  {
+   "no": 2,
+   "caseId": "case-02",
+   "name": "天山南麓农机装备公司",
+   "checkpoint": "blocked_hard",
+   "status": "PASS",
+   "evidence": "种子实际执行核验false→SIM-ASSET-OWNERSHIP-01 HARD_BLOCK→adopt 409 留痕（02 T1；929轮同构 T6b UI 409 证据）；v05 A detail=HARD_BLOCK",
+   "ui": "read-only（硬门 409 页面提示已由 01 组件链覆盖）"
+  },
+  {
+   "no": 3,
+   "caseId": "case-03",
+   "name": "准噶尔包装制品厂",
+   "checkpoint": "risk_decision",
+   "status": "PASS",
+   "evidence": "覆盖率 0.55 findingsSuspicion（02 T1）；信审 reject 权限与归档=02 T2",
+   "ui": "read-only"
+  },
+  {
+   "no": 4,
+   "caseId": "case-04",
+   "name": "伊犁河谷食品加工合作社",
+   "checkpoint": "awaiting_evidence→补件",
+   "status": "PASS",
+   "evidence": "API 全链（与 UI 同接口）：cred1 advance→credit waiting_evidence（unknown=现金流仅declared）→confirmed supersede 补件→roundNo2 awaiting_confirmation 覆盖率2.105（=EXPECTED 200000/95000）",
+   "ui": "主分析按钮不发POST=DEF-03-09 OPEN（01修后复验）；RoundSupplement 组件链未受影响"
+  },
+  {
+   "no": 5,
+   "caseId": "case-05",
+   "name": "阿克苏果业冷链公司",
+   "checkpoint": "conflict_review",
+   "status": "PASS",
+   "evidence": "对价双来源 contradictions+investigate 候选+冲突未解 adopt 409（02 T1/T5）；五区并行线程证据同例",
+   "ui": "read-only"
+  },
+  {
+   "no": 6,
+   "caseId": "case-06",
+   "name": "吐鲁番纺织印染厂",
+   "checkpoint": "verification_pending",
+   "status": "PASS",
+   "evidence": "DEF-03-05 修复页内实证：核验格抽屉表单→二次确认→registerArtifact confirmed（unit=wan，sourceMode=human_verified_document，UI 提交后 artifacts 双件并存核对）→自动重评触发",
+   "ui": "FULL（收入核验经 UI 完成；主体/权属同表单复用）"
+  },
+  {
+   "no": 7,
+   "caseId": "case-07",
+   "name": "塔城农机维修连锁",
+   "checkpoint": "stale_review",
+   "status": "PASS",
+   "evidence": "种子补证 supersedes 280万→320万；旧候选 VERSION_CONFLICT=02 T1/T9",
+   "ui": "read-only"
+  },
+  {
+   "no": 8,
+   "caseId": "case-08",
+   "name": "昌吉精密模具制造",
+   "checkpoint": "preassessment_review",
+   "status": "PASS",
+   "evidence": "种子评估链+Gate CLEAR 停待确认（assessmentId=ass-munl4g3n…）；confirm-preassessment 零新增授信写入=02 T6",
+   "ui": "结束对话框在位（01 §6）；确认动作留待演示者执行"
+  },
+  {
+   "no": 9,
+   "caseId": "case-09",
+   "name": "克拉玛依建材租赁",
+   "checkpoint": "awaiting_external",
+   "status": "PASS",
+   "evidence": "UI 登记模拟回执（SIM-RECEIPT-c09-0001，来源=模拟演练回执，DB external_receipt jsonb+recordedBy=biz1）→settle 200→close 200（API 与面板同接口）",
+   "ui": "回执登记=UI FULL；settle 分支=DEF-03-08 OPEN（01 状态名归一后页面复验）"
+  },
+  {
+   "no": 10,
+   "caseId": "case-10",
+   "name": "博乐葡萄酒庄设备回租",
+   "checkpoint": "closed_reorderable",
+   "status": "PASS",
+   "evidence": "种子完整周期 closed；UI 面板显示已关闭+返单入口；返单点击→UI alert REORDER_REQUIRES_FRESH_CASE（服务端拦截诚实呈现）",
+   "ui": "FULL（含 409 负例 UI 证据）"
+  }
+ ],
+ "defects": "DEFECTS.md：DEF-03-06（目录卡字段形状）、07（协调员身份不可达）、08（周期面板回执后分支）、09（主分析按钮不发POST）——均交 01，修复后 03 复验",
+ "acceptanceHonesty": {
+  "executorSelfTest": "本文（03 执行者自测+集成验证）",
+  "codexIndependent": "PENDING（Codex 另行）",
+  "userAcceptance": "PENDING（用户视觉/业务验收）",
+  "release": "V0.5 tag 由 Codex 在用户确定后执行；本轮不 commit/push/tag"
+ }
+}

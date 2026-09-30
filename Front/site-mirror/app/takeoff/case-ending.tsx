@@ -33,6 +33,10 @@ export function CaseEnding({ record, onRecords }: { record: CaseTerminalRecord; 
   const [dismissed, setDismissed] = useState(false);
   if (dismissed) return null;
   const rejected = record.kind === 'rejected';
+  if (!rejected) return <aside className="tk-review-completed" role="status">
+    <strong>五区评审已完成</strong><span>预评估确认与履约周期分别办理，评审完成不等于额度批准或资金到账。</span>
+    <button onClick={() => {setDismissed(true);onRecords();}}>查看记录</button><button aria-label="收起评审完成提示" onClick={() => setDismissed(true)}>×</button>
+  </aside>;
   return <div className={`tk-case-ending${rejected ? ' rejected' : ''}`} role="dialog" aria-modal="true" aria-label={rejected ? '案例已拒绝归档' : '案例本次流程已办结'}>
     <div className="tk-case-ending-symbol" aria-hidden="true">{rejected ? '✕' : <img src="/objects/asset-v1.png" alt=""/>}</div>
     <h1>{rejected ? '信审拒绝 · 已归档' : '本次流程已办结'}</h1>

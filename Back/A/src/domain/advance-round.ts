@@ -233,9 +233,19 @@ export function buildAdvanceRounds(kernel: Kernel, options: {
   return { getPlan, advance, read };
 }
 
+/** Optional approved-model semantic pass over one deterministic candidate. authority=none by contract:
+ * results never alter deterministic state; receipts carry request identity, usage, cost, input digest. */
+type ZoneSemantic = {
+  describe: () => { configured: boolean; model?: string; note?: string };
+  run: (ctx: { tenantId: string; customerId: string; jobId: string; domain: string;
+    requestId: string; candidate: Data; feedback: Data[] }) => Promise<Data>;
+};
+
 /** Full synthetic process adapter, injected only by the isolated runtime with an explicit service identity. */
 export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCredential: string;
   progression?: 'column' | 'parallel';
+  maxConcurrency?: number;
+  semantic?: ZoneSemantic;
   runBatch: (inputs: Data[]) => Promise<Data[]> }) {
   const busy = new Set<string>();
   const pending = new Set<Promise<unknown>>();
@@ -269,7 +279,7 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
   async function processFor(cid: string,principal: string,q: any=kernel.pool) {
     return (await q.query('SELECT * FROM arrow_processes WHERE customer_id=$1 AND principal_id=$2 ORDER BY created_at DESC LIMIT 1',[cid,principal])).rows[0];
   }
-  async function emit(q: PoolClient,pid: string,type: string,domain: string|null,jobId: string|null,payload: Data,eventId?: string) {
+  async function emit(q: { query: (text: string, values?: readonly unknown[]) => Promise<any> },pid: string,type: string,domain: string|null,jobId: string|null,payload: Data,eventId?: string) {
     const p=(await q.query('UPDATE arrow_processes SET version=version+1,updated_at=clock_timestamp() WHERE process_id=$1 RETURNING *',[pid])).rows[0];
     const eid=eventId??randomUUID(); const at=p.updated_at.toISOString();
     const body={...payload,processId:pid,version:p.version,at,domain,jobId};
@@ -278,24 +288,65 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
     return eid;
   }
   const latestJobs=(rows: Data[])=>DOMAINS.map(d=>rows.find(r=>r.domain===d)).filter(Boolean) as Data[];
+  /** Optional approved-model semantic pass over one committed candidate. Deterministic state is never
+   * altered: receipt stored on the job, event emitted, failures recorded honestly as unknown/failed. */
+  async function semanticPass(job:Data,cid:string,pid:string):Promise<Data|null>{
+    if(!options.semantic||!options.semantic.describe().configured)return null;
+    const rev=Number((await kernel.pool.query("SELECT count(*) n FROM arrow_events WHERE process_id=$1 AND event_type='COLUMN_HUMAN_DECISION'",[pid])).rows[0].n);
+    const fb=await kernel.pool.query("SELECT DISTINCT ON (domain) domain,selection->>'decision' AS decision,selection->>'rationale' AS rationale FROM arrow_jobs WHERE process_id=$1 AND selection IS NOT NULL ORDER BY domain,attempt DESC",[pid]);
+    const requestId=`${job.job_id}:semantic:r${rev}`;
+    let receipt:Data;
+    try{
+      receipt=await options.semantic.run({tenantId:job.input?.tenantId??null,customerId:cid,jobId:job.job_id,domain:job.domain,
+        requestId,candidate:job.result,feedback:fb.rows});
+    }catch(e){receipt={status:'unknown',note:e instanceof Error?e.message.slice(0,200):'SEMANTIC_UNKNOWN'};}
+    const stored={...receipt,requestId,domain:job.domain,basisHash:job.basis_hash,feedbackRevision:rev,at:new Date().toISOString()};
+    await kernel.pool.query('UPDATE arrow_jobs SET semantic=$2 WHERE job_id=$1',[job.job_id,JSON.stringify(stored)]);
+    await emit(kernel.pool,pid,'COLUMN_SEMANTIC',job.domain,job.job_id,{requestId,status:receipt.status??'unknown',feedbackRevision:rev});
+    return stored;
+  }
   async function getPlan(credential: unknown,cid: string,domain='business') {
     if(!DOMAINS.includes(domain)) throw invalid('未知专业');
     const {p}=await auth(credential,cid);const b=await input(cid);const proc=await processFor(cid,p.principalId);
     const jobs=proc?latestJobs((await kernel.pool.query('SELECT * FROM arrow_jobs WHERE process_id=$1 ORDER BY attempt DESC',[proc.process_id])).rows):[];
-    const hit=jobs.find(j=>j.domain===domain);const unknown=jobs.some(j=>['unknown','running','queued'].includes(j.state));
-    const revenue=b.facts.filter((f:Data)=>f.fact_key==='revenue_annual_declared').map((f:Data)=>f.value?.value??f.value);
-    const reason=proc?.state==='rejected'?'CREDIT_REJECTED':proc?.state==='completed'?'CASE_COMPLETED':
-      revenue.some((v:unknown)=>typeof v==='number'&&v>50000000)?'CUSTOMER_REVENUE_REDLINE':
+    const hit=jobs.find(j=>j.domain===domain);
+    // 在途判定须结合本适配器的执行者登记：不在册的 running/queued 是死亡进程遗留，可对账恢复；
+    // 待人工决定的 unknown 只能以原请求ID重放确认，不可换ID绕过。
+    const alive=proc?busy.has(proc.process_id):false;
+    const inFlight=jobs.some(j=>['running','queued'].includes(j.state)&&alive);
+    const pendingDecision=jobs.some(j=>j.state==='unknown'&&j.reason==='HUMAN_DECISION_PENDING');
+    const priorCaseClosed=proc?.state==='completed';
+    // 已完结流程不阻塞新一轮（返单）；拒绝流程仍被 CREDIT_REJECTED 硬挡。
+    const effectiveJobs=priorCaseClosed?[]:jobs;const effectiveHit=priorCaseClosed?null:hit;
+    // 红线读取须穿透 01路 解析信封（declaredFactSummaries）并按单位归一（wan→CNY；DEF-ACC-03）。
+    const declaredScan=(f:Data):Data[]=>{const v=f?.value&&typeof f.value==='object'&&Object.hasOwn(f.value,'value')?f.value.value:f?.value;
+      if(v&&typeof v==='object'&&Array.isArray(v.declaredFactSummaries))return v.declaredFactSummaries.map((d:Data)=>({key:String(d.factKey),value:d.value,unit:d.unit??null}));
+      return [{key:String(f.fact_key??''),value:v,unit:(f.value&&typeof f.value==='object'&&f.value.unit!=null?String(f.value.unit):null)}];};
+    const overRedline=b.facts.flatMap(declaredScan).some((x:Data)=>{
+      if(x.key!=='revenue_annual_declared')return false;
+      const n=typeof x.value==='number'?x.value:Number(x.value);
+      if(!Number.isFinite(n))return false;
+      return n*(x.unit==='wan'?10000:1)>50000000;
+    });
+    const reason=proc?.state==='rejected'?'CREDIT_REJECTED':
+      overRedline?'CUSTOMER_REVENUE_REDLINE':
       !p.roles.includes(domain)?'ROLE_FORBIDDEN':!b.deps.rulePackVersion?'RULES_NOT_CONFIGURED':!b.materials.length?'MATERIALS_REQUIRED':
-      unknown?'ROUND_UNRESOLVED':hit&&hit.basis_hash===b.domains[domain].hash&&hit.state==='awaiting_confirmation'?'HUMAN_SELECTION_REQUIRED':null;
+      inFlight||pendingDecision?'ROUND_UNRESOLVED':effectiveHit&&effectiveHit.basis_hash===b.domains[domain].hash&&effectiveHit.state==='awaiting_confirmation'?'HUMAN_SELECTION_REQUIRED':null;
     const expectedVersion={processVersion:proc?.version??0,dependencyDigest:b.hash};
     const planHash=canonicalHash({policy,cid,principal:p.principalId,domain,expectedVersion});
-    return {ok:true,customerId:cid,processId:proc?.process_id??null,domain,available:!reason,reason,
-      state:hit?.state??'not_started',expectedVersion,planId:planHash,planHash,policyVersion:policy,
-      roundNo:(hit?.attempt??0)+1,actionIds:['columns.evaluate'],reused:Boolean(hit&&hit.basis_hash===b.domains[domain].hash&&hit.state==='completed'),
-      affectedDomains:DOMAINS.filter(d=>{const j=jobs.find(j=>j.domain===d);return !j||j.basis_hash!==b.domains[d].hash;}),
-      resultRef:hit?.job_id??null,allowedActions:[{actionId:'columns.evaluate',commandKind:'columns.evaluate',requiresHumanConfirmation:false,authority:'none'}],
-      requiredDecision:hit?.state==='awaiting_confirmation'?{roundId:hit.job_id,resultId:hit.result_id,choices:['adopt','set_aside',...(domain==='credit'?['reject']:[])]}:hit?.state==='waiting_evidence'&&domain==='credit'&&hit.result_id?{roundId:hit.job_id,resultId:hit.result_id,choices:['reject']}:null,
+    const {zoneManifest}=await import(new URL('../../../C/domains/zone-manifest.mjs',import.meta.url).href);
+    return {ok:true,customerId:cid,processId:priorCaseClosed?null:proc?.process_id??null,domain,available:!reason,reason,
+      ...(priorCaseClosed?{priorCase:{processId:proc!.process_id,state:'completed',ending:'diamond',terminalEventId:proc!.terminal_ref,reorder:'已完成案例可开启新一轮（返单）；新流程将建立独立依据与历史'}}:{}),
+      state:effectiveHit?.state??'not_started',expectedVersion,planId:planHash,planHash,policyVersion:policy,
+      roundNo:(effectiveHit?.attempt??0)+1,actionIds:['columns.evaluate'],
+      reused:Boolean(effectiveHit&&effectiveHit.basis_hash===b.domains[domain].hash&&effectiveHit.state==='completed'),
+      affectedDomains:DOMAINS.filter(d=>{const j=effectiveJobs.find(j=>j.domain===d);return !j||j.basis_hash!==b.domains[d].hash;}),
+      ...(pendingDecision?{recoveryHint:'存在待人工决定的未知命令，须以原请求ID重放确认，不可换ID绕过'}:
+        inFlight?{recoveryHint:'存在在途执行；若进程曾中断，重新推进将先对账为未知再以新请求重排'}:
+        jobs.some(j=>['running','queued','unknown'].includes(j.state)&&j.reason!=='HUMAN_DECISION_PENDING')?{recoveryHint:'检测到中断遗留：重新推进将先对账为未知，再以新请求ID重排为新尝试'}:{}),
+      zoneManifest:zoneManifest({concurrency:{maxParallelDomains:options.maxConcurrency??4,timeoutMs:15000},semantic:options.semantic?.describe()??{configured:false,note:'未注入语义执行器：五区确定性链路不受影响，模型辅助如实 not_configured'}}),
+      resultRef:effectiveHit?.job_id??null,allowedActions:[{actionId:'columns.evaluate',commandKind:'columns.evaluate',requiresHumanConfirmation:false,authority:'none'}],
+      requiredDecision:effectiveHit?.state==='awaiting_confirmation'?{roundId:effectiveHit.job_id,resultId:effectiveHit.result_id,choices:['adopt','set_aside',...(domain==='credit'?['reject']:[])]}:effectiveHit?.state==='waiting_evidence'&&domain==='credit'&&effectiveHit.result_id?{roundId:effectiveHit.job_id,resultId:effectiveHit.result_id,choices:['reject']}:null,
       materialRefs:b.materials.map((m:Data)=>({artifactId:m.artifact_id,hash:m.sha256})),
       summary:'按就绪依赖执行专业候选；已有有效结果复用，明确选择后调用人类采用命令'};
   }
@@ -308,7 +359,9 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
       const rows=(await q.query('SELECT * FROM arrow_jobs WHERE process_id=$1 ORDER BY attempt DESC,domain',[proc.process_id])).rows;
       const events=(await q.query('SELECT * FROM arrow_events WHERE process_id=$1 ORDER BY version',[proc.process_id])).rows;
       const request=query.requestId?(await q.query('SELECT * FROM arrow_requests WHERE process_id=$1 AND request_id=$2',[proc.process_id,query.requestId])).rows[0]:null;
-      return {proc,rows,events,request,basis:await input(cid,q)};
+      // 事件可追溯（ADDITIVE）：该 requestId 触发的全部步骤（跨 attempt）与各自绑定的材料版本集合。
+      const eventJobs=query.requestId?(await q.query(`SELECT job_id AS "jobId",domain,attempt,state,basis_hash AS "basisHash",input #>> ('{domains,'||domain||',version}')::text[] AS "dependencyVersion",input#>>'{deps,artifactIds}' AS "artifactIds" FROM arrow_jobs WHERE process_id=$1 AND input->>'requestId'=$2 ORDER BY domain,attempt`,[proc.process_id,query.requestId])).rows.map((j:Data)=>({...j,artifactIds:JSON.parse(j.artifactIds??'[]')})):[];
+      return {proc,rows,events,request,eventJobs,basis:await input(cid,q)};
     });
     if(!snapshot)return {ok:true,found:false,state:'not_started',receipt:null,receipts:[],domains:[]};
     const {proc,rows,events,request,basis}=snapshot;
@@ -337,6 +390,7 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
       const timeline=events.map(e=>({eventId:e.event_id,type:e.event_type,...e.payload}));
       return {...context,requestId:query.requestId??j.input.requestId??null,roundNo:j.attempt,state:currentState,updatedAt:proc.updated_at,
         actor:{principalId:j.result?.execution?.actor??proc.principal_id},requestedBy:proc.principal_id,columnResults:cells,businessCandidate:j.domain==='business'?j.result:null,candidate:j.result,
+        semantic:j.semantic??null,zoneCandidates:j.result?.zoneCandidates??null,
         selection:j.selection,materialRefs:materials,caseOutcome:outcome,domains,affectedDomains,needsReselection,dependencyChange,
         dependencyVersion:j.input.domains?.[j.domain]?.version??'legacy-all-inputs',
         changeReason:affectedDomains.includes(j.domain)?'本专业事实、来源等级、适用范围、规则或全局质量依据已变化':null,
@@ -345,13 +399,15 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
         actions:[{actionId:'columns.evaluate',state:j.result?'succeeded':currentState,result:{runId:j.analysis_run_id,resultId:j.result_id,packageId:j.package_id}}],
         views:{platform:{...context,state:currentState,cells,domains,caseOutcome:outcome,affectedDomains,needsReselection,dependencyChange},materials:{...context,items:materials},
           decisions:{...context,candidate,selection:j.selection,authority:'none',confidence:{value:null,calibration:'unknown'},
+            zoneCandidates:j.result?.zoneCandidates??null,semantic:j.semantic??null,
             requiredDecision:proc.state==='in_progress'&&context.current?(j.state==='awaiting_confirmation'?{roundId:j.job_id,resultId:j.result_id,choices:['adopt','set_aside',...(j.domain==='credit'?['reject']:[])]}:j.state==='waiting_evidence'&&j.domain==='credit'&&j.result_id?{roundId:j.job_id,resultId:j.result_id,choices:['reject']}:null):null},
           flow:{...context,events:timeline},history:{...context,events:timeline,startedAt:j.started_at,finishedAt:j.finished_at},
           chat:{...context,records:timeline.map(e=>({id:e.eventId,at:e.at,domain:e.domain,type:e.type,source:'server_event'}))}}};
     });
     await auth(credential,cid);
     return {ok:true,customerId:cid,processId:proc.process_id,version:proc.version,domain:query.domain??null,found:!!receipts.length,
-      state:receipts[0]?.state??'not_started',receipt:receipts[0]??null,receipts,domains,affectedDomains,needsReselection,dependencyChange,caseOutcome:outcome};
+      state:receipts[0]?.state??'not_started',receipt:receipts[0]??null,receipts,domains,affectedDomains,needsReselection,dependencyChange,caseOutcome:outcome,
+      ...(query.requestId&&request?{request:{requestId:query.requestId,domain:request.domain,jobId:request.job_id,commandState:request.command_state??null},eventJobs:snapshot.eventJobs}:{})};
   }
   async function run(pid:string,cid:string,credential:unknown) {
     try {
@@ -396,6 +452,11 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
             [j.jobId,state,JSON.stringify({...output.result,execution:{actor:svc.principal.principalId,startedAt:output.startedAt,finishedAt:output.finishedAt,threadId:output.threadId}}),record?.resultId??null,
               state==='waiting_evidence'?'EVIDENCE_GAP':state==='awaiting_confirmation'?'HUMAN_SELECTION_REQUIRED':state]);
           await emit(q,pid,'COLUMN_RESULT',j.domain,j.jobId,{state,actor:svc.principal.principalId,resultId:record?.resultId??null,execution:{startedAt:output.startedAt,finishedAt:output.finishedAt,threadId:output.threadId}});
+          return state;
+        }).then(state=>{
+          if(state!=='awaiting_confirmation')return null;
+          return semanticPass({job_id:j.jobId,domain:j.domain,basis_hash:j.basisHash,result:output.result,
+            input:{tenantId:proc.tenant_id}},cid,pid).catch(()=>null);
         });
       }
     }catch(e){
@@ -414,11 +475,20 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
       let proc=await processFor(cid,p.principalId,q);
       if(proc){const old=(await q.query('SELECT * FROM arrow_requests WHERE process_id=$1 AND request_id=$2',[proc.process_id,requestId])).rows[0];
         if(old){if(old.payload_hash!==hash)throw conflict('IDEMPOTENCY_REPLAY_CONFLICT','同ID载荷改变');return {proc,reused:true};}}
+      // 对账先行：本进程无在途执行者时，把遗留 queued/running 收敛为持久 unknown（outbox 留痕，
+      // 不推进流程版本——恢复路径的计划校验保持单趟可用）。之后的重排以新请求 ID 产生新尝试。
+      if(proc&&!busy.has(proc.process_id)){
+        const stuck=await q.query("UPDATE arrow_jobs SET state='unknown',reason='INTERRUPTED_EXECUTION_RECONCILED' WHERE process_id=$1 AND state IN ('queued','running') RETURNING job_id,domain,attempt",[proc.process_id]);
+        if(stuck.rows.length)await q.query('INSERT INTO outbox_events(event_id,event_type,customer_id,payload) VALUES($1,$2,$3,$4)',
+          [randomUUID(),'COLUMN_RECONCILED',cid,JSON.stringify({processId:proc.process_id,reason:'INTERRUPTED_EXECUTION_RECONCILED',
+            jobs:stuck.rows.map((r:Data)=>({jobId:r.job_id,domain:r.domain,attempt:r.attempt})),at:new Date().toISOString()})]);
+      }
       const plan=await getPlan(frame.credential,cid,domain);
       if(!plan.available)throw conflict('NOT_READY',plan.reason??'NOT_READY');
       if(frame.planId!==plan.planId||frame.planHash!==plan.planHash||canonicalHash(frame.expectedVersion)!==canonicalHash(plan.expectedVersion)||
         canonicalHash(frame.actionIds)!==canonicalHash(plan.actionIds)||frame.roundNo!==plan.roundNo)throw conflict('VERSION_CONFLICT','计划已改变');
-      if(!proc)proc=(await q.query('INSERT INTO arrow_processes(process_id,customer_id,tenant_id,principal_id) VALUES($1,$2,$3,$4) RETURNING *',[newId('process'),cid,customer.tenant_id,p.principalId])).rows[0];
+      if(!proc||proc.state!=='in_progress')
+        proc=(await q.query('INSERT INTO arrow_processes(process_id,customer_id,tenant_id,principal_id) VALUES($1,$2,$3,$4) RETURNING *',[newId('process'),cid,customer.tenant_id,p.principalId])).rows[0];
       const b=await input(cid,q);const rows=(await q.query('SELECT * FROM arrow_jobs WHERE process_id=$1 ORDER BY attempt DESC',[proc.process_id])).rows;
       const jobs=latestJobs(rows);let selected=jobs.find(j=>j.domain===domain)?.job_id;
       const affected=jobs.filter(j=>j.basis_hash!==b.domains[j.domain].hash).map(j=>j.domain);
@@ -428,11 +498,14 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
         previousResults:jobs.filter(j=>affected.includes(j.domain)).map(j=>({domain:j.domain,roundId:j.job_id,resultId:j.result_id,basisVersion:j.basis_hash}))});
       for(const d of DOMAINS.filter(d=>p.roles.includes(d)&&(options.progression!=='column'||d===domain||affected.includes(d)))){
         const prior=jobs.find(j=>j.domain===d);
-        if(prior?.basis_hash===b.domains[d].hash)continue;
+        const interruptedUnknown=prior?.state==='unknown'&&prior.reason!=='HUMAN_DECISION_PENDING';
+        // 基础未变且已有有效/待确认/拒绝结果 → 复用；仅“执行中断的未知”允许以新尝试重排（新运行标识）。
+        if(prior?.basis_hash===b.domains[d].hash&&!interruptedUnknown)continue;
         const jobId=newId('column');
         queuedCount++;
         await q.query("INSERT INTO arrow_jobs(job_id,process_id,domain,attempt,state,basis_hash,input) VALUES($1,$2,$3,$4,'queued',$5,$6)",[jobId,proc.process_id,d,(prior?.attempt??0)+1,b.domains[d].hash,JSON.stringify({...b,deps:b.domains[d].deps,requestId})]);
-        await emit(q,proc.process_id,'COLUMN_QUEUED',d,jobId,{actor:p.principalId,dependencies:b.domains[d].deps.artifactIds,dependencyVersion:b.domains[d].version});
+        await emit(q,proc.process_id,'COLUMN_QUEUED',d,jobId,{actor:p.principalId,dependencies:b.domains[d].deps.artifactIds,dependencyVersion:b.domains[d].version,
+          ...(prior&&interruptedUnknown?{reconcilesJobId:prior.job_id,reconcilesAttempt:prior.attempt}:{})});
         if(d===domain)selected=jobId;
       }
       await q.query('INSERT INTO arrow_requests(process_id,request_id,payload_hash,domain,job_id) VALUES($1,$2,$3,$4,$5)',[proc.process_id,requestId,hash,domain,selected]);
@@ -461,6 +534,7 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
       if(frame.expectedVersion!==locked.version||frame.resultId!==job.result_id||job.basis_hash!==(await input(cid,q)).domains[job.domain].hash)throw conflict('VERSION_CONFLICT','确认依据已改变');
       if(!['awaiting_confirmation','waiting_evidence'].includes(job.state)||!job.result_id)throw conflict('NOT_READY','没有可确认结果');
       if(decision==='adopt'&&job.state==='waiting_evidence')throw conflict('NOT_READY','需先补证重评');
+      if(decision==='adopt'&&job.result?.zoneCandidates?.hardBlock===true)throw conflict('NOT_READY','HARD_BLOCK_NOT_ADOPTABLE：不可豁免阻断只能事实纠正后重算或治理更新规则，任何置信度/排序分数/口头确认都不能覆盖');
       if(decision==='reject'&&job.domain!=='credit')throw forbidden('PERMISSION_DENIED','明确拒绝须信审角色');
       const unresolved=(await q.query("SELECT 1 FROM arrow_requests WHERE process_id=$1 AND command_state='unknown' LIMIT 1",[proc.process_id])).rows[0];
       if(unresolved)throw conflict('NOT_READY','未知确认不可换ID重发');
@@ -503,5 +577,22 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
     });
     return {...await read(frame.credential,cid,{roundId:jobId}),reused:false};
   }
-  return {getPlan,read,advance,decide,drain:()=>Promise.all([...pending])};
+  /** Explicit semantic re-run for one committed candidate (反馈触发正确范围的重新计算：
+   * 仅语义层，确定性结果与业务写入零变化；同一反馈版本下相同请求幂等复用回执，不重复出站）。 */
+  async function rerunSemantic(frame:Data,cid:string,jobId:string) {
+    field(frame.requestId,'requestId');
+    const {p}=await auth(frame.credential,cid);
+    const proc=await processFor(cid,p.principalId);if(!proc)throw notFound('流程不存在');
+    const job=(await kernel.pool.query('SELECT * FROM arrow_jobs WHERE process_id=$1 AND job_id=$2',[proc.process_id,jobId])).rows[0];
+    if(!job)throw notFound('专业结果不存在');await auth(frame.credential,cid,job.domain);
+    if(proc.state!=='in_progress')throw conflict('NOT_READY','流程已终止');
+    if(job.state!=='awaiting_confirmation'||!job.result)throw conflict('NOT_READY','仅完成且待确认候选可运行语义辅助');
+    if(job.basis_hash!==(await input(cid)).domains[job.domain].hash)throw conflict('VERSION_CONFLICT','候选依据已过期，请先补证重评');
+    if(!options.semantic||!options.semantic.describe().configured)throw conflict('MODEL_NOT_CONFIGURED','语义辅助未配置（如实状态，未发送）');
+    const receipt=await semanticPass(job,cid,proc.process_id);
+    return {ok:true,authority:'none',receipt};
+  }
+  return {getPlan,read,advance,decide,semantic:rerunSemantic,
+    describeSemantic:()=>options.semantic?.describe()??{configured:false,note:'未注入语义执行器'},
+    drain:()=>Promise.all([...pending])};
 }

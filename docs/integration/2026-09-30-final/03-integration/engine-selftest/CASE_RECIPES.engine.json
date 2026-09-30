@@ -1,0 +1,296 @@
+{
+ "batchId": "eng-selftest-b1",
+ "_note": "03路引擎自测配方（非十案例交付材料）：复用 2026-09-29 材料作夹具验证执行器全部 op；产物仅进 engine-selftest 记录",
+ "cases": [
+  {
+   "caseId": "ENGINE-GOOD",
+   "dir": "../../../2026-09-29/materials/cases/good-luoyang-jianxi",
+   "displayName": "引擎自测-好例夹具",
+   "scenarioKey": "good",
+   "scenarioLabel": "好",
+   "steps": [
+    {
+     "op": "upload",
+     "file": "年度报表.csv",
+     "kind": "financial_statement"
+    },
+    {
+     "op": "upload",
+     "file": "设备清单.csv",
+     "kind": "equipment_list"
+    },
+    {
+     "op": "upload",
+     "file": "订单说明.txt",
+     "kind": "order_contract"
+    },
+    {
+     "op": "upload",
+     "file": "涉诉说明.txt",
+     "kind": "litigation_document"
+    },
+    {
+     "op": "declare",
+     "factKey": "monthly_operating_cash_flow",
+     "value": 420000,
+     "unit": "CNY"
+    },
+    {
+     "op": "declare",
+     "factKey": "monthly_debt_service",
+     "value": 210000,
+     "unit": "CNY"
+    },
+    {
+     "op": "declare",
+     "factKey": "top1_customer_revenue_share",
+     "value": 32,
+     "unit": "%"
+    },
+    {
+     "op": "declare",
+     "factKey": "proposed_monthly_rent",
+     "value": 62000,
+     "unit": "CNY"
+    },
+    {
+     "op": "declare",
+     "factKey": "lease_term_months",
+     "value": 36
+    },
+    {
+     "op": "declare",
+     "factKey": "funding_cost_annual",
+     "value": 0.03
+    },
+    {
+     "op": "declare",
+     "factKey": "fees_known",
+     "value": true
+    },
+    {
+     "op": "declare",
+     "factKey": "equipment_exists_observed",
+     "value": true
+    },
+    {
+     "op": "declare",
+     "factKey": "equipment_deal_amount",
+     "value": 3500000,
+     "unit": "CNY"
+    },
+    {
+     "op": "declare",
+     "factKey": "nameplate_serial",
+     "value": "ENG-GOOD-VMC-0421"
+    },
+    {
+     "op": "advance"
+    },
+    {
+     "op": "waitSettled"
+    },
+    {
+     "op": "verify",
+     "factKey": "revenue_annual_declared",
+     "value": 2200,
+     "unit": "wan"
+    },
+    {
+     "op": "verify",
+     "factKey": "equipment_ownership_verified",
+     "value": true
+    },
+    {
+     "op": "verify",
+     "factKey": "entity_identity_verified",
+     "value": true
+    },
+    {
+     "op": "advance"
+    },
+    {
+     "op": "waitSettled"
+    },
+    {
+     "op": "adopt",
+     "domain": "business"
+    },
+    {
+     "op": "adopt",
+     "domain": "policy"
+    },
+    {
+     "op": "adopt",
+     "domain": "credit"
+    },
+    {
+     "op": "adopt",
+     "domain": "commerce"
+    },
+    {
+     "op": "adopt",
+     "domain": "asset"
+    },
+    {
+     "op": "waitSettled"
+    },
+    {
+     "op": "expect",
+     "domain": "credit",
+     "state": "completed"
+    },
+    {
+     "op": "cycle",
+     "action": "open"
+    },
+    {
+     "op": "cycle",
+     "action": "fulfill"
+    },
+    {
+     "op": "cycle",
+     "action": "receipt",
+     "ref": "SIM-WIRE-ENG-0001"
+    },
+    {
+     "op": "cycle",
+     "action": "settle"
+    },
+    {
+     "op": "cycle",
+     "action": "close"
+    },
+    {
+     "op": "cycle",
+     "action": "reorder"
+    }
+   ]
+  },
+  {
+   "caseId": "ENGINE-BAD",
+   "dir": "../../../2026-09-29/materials/cases/bad-zhengzhou-tuofeng",
+   "displayName": "引擎自测-差例夹具",
+   "scenarioKey": "bad",
+   "scenarioLabel": "差",
+   "steps": [
+    {
+     "op": "upload",
+     "file": "年度报表.csv",
+     "kind": "financial_statement"
+    },
+    {
+     "op": "upload",
+     "file": "设备清单.csv",
+     "kind": "equipment_list"
+    },
+    {
+     "op": "upload",
+     "file": "订单说明.txt",
+     "kind": "order_contract"
+    },
+    {
+     "op": "upload",
+     "file": "涉诉说明.txt",
+     "kind": "litigation_document"
+    },
+    {
+     "op": "declare",
+     "factKey": "monthly_operating_cash_flow",
+     "value": 260000,
+     "unit": "CNY"
+    },
+    {
+     "op": "declare",
+     "factKey": "monthly_debt_service",
+     "value": 240000,
+     "unit": "CNY"
+    },
+    {
+     "op": "declare",
+     "factKey": "top1_customer_revenue_share",
+     "value": 58,
+     "unit": "%"
+    },
+    {
+     "op": "declare",
+     "factKey": "proposed_monthly_rent",
+     "value": 45000,
+     "unit": "CNY"
+    },
+    {
+     "op": "declare",
+     "factKey": "lease_term_months",
+     "value": 36
+    },
+    {
+     "op": "declare",
+     "factKey": "funding_cost_annual",
+     "value": 0.04
+    },
+    {
+     "op": "declare",
+     "factKey": "fees_known",
+     "value": true
+    },
+    {
+     "op": "declare",
+     "factKey": "equipment_exists_observed",
+     "value": true
+    },
+    {
+     "op": "declare",
+     "factKey": "equipment_deal_amount",
+     "value": 2600000,
+     "unit": "CNY"
+    },
+    {
+     "op": "declare",
+     "factKey": "nameplate_serial",
+     "value": "ENG-BAD-VMC-0338"
+    },
+    {
+     "op": "advance"
+    },
+    {
+     "op": "waitSettled"
+    },
+    {
+     "op": "verify",
+     "factKey": "revenue_annual_declared",
+     "value": 1850,
+     "unit": "wan"
+    },
+    {
+     "op": "verify",
+     "factKey": "entity_identity_verified",
+     "value": true
+    },
+    {
+     "op": "verify",
+     "factKey": "equipment_ownership_verified",
+     "value": false
+    },
+    {
+     "op": "advance"
+    },
+    {
+     "op": "waitSettled"
+    },
+    {
+     "op": "expect",
+     "domain": "asset",
+     "state": "awaiting_confirmation"
+    },
+    {
+     "op": "reject",
+     "domain": "credit",
+     "rationale": "权属核验不通过且不可豁免，依据性拒绝（引擎自测·合成人工办理）"
+    },
+    {
+     "op": "waitSettled"
+    }
+   ]
+  }
+ ]
+}

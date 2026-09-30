@@ -305,7 +305,10 @@ test('P09 超时未知：A 材料登记超时 → blocked_unknown；回执对账
       return { ok: true, status: 200, json: async () => ({ ok: true, receiptId: 'gr-1', result: 'NEEDS_EVIDENCE', rulesetVersion: 'v' }) };
     }
     if (u.includes('/api/v2/receipts/')) {
-      if (aDown) return { ok: false, status: 404, json: async () => ({ ok: false, error: 'NOT_FOUND' }) };
+      // DEF-INTG-04 语义（01路冻结）：A 可达且明确 404=请求确定未达 → 同 ID 幂等重执行。
+      // 本用例要验证的是"A 不可达→保守 unknown 绝不重发"，故 aDown 期间让回执查询直接
+      // 抛错（网络不可达），而非返回 404（那是确定性未达，按契约会同 ID 重执行）。
+      if (aDown) throw new Error('simulated A unreachable during unknown window');
       return { ok: true, status: 200, json: async () => ({ ok: true, requestId: 'ptx-reconciled', artifactId: 'aart-mat-1', replayed: true }) };
     }
     return { ok: true, status: 404, json: async () => ({ ok: false, error: 'NOT_FOUND' }) };

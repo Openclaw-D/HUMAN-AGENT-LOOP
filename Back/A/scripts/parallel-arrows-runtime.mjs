@@ -7,6 +7,8 @@ import { tokenDirectoryVerifier } from '../src/domain/principal.ts';
 import { Kernel } from '../src/domain/kernel.ts';
 import { forbidden } from '../src/domain/errors.ts';
 import { buildParallelAdvanceRounds } from '../src/domain/advance-round.ts';
+import { buildArrowCycles } from '../src/domain/cycles.ts';
+import { buildZoneSemantic } from '../src/domain/zone-semantic.ts';
 import { migrate } from '../src/db/db.ts';
 import { startHttpServer } from '../src/http/server.ts';
 import { runReadyDomains } from '../../B/src/worker/column-runner.mjs';
@@ -55,7 +57,7 @@ export async function seedCases(kernel,{suffix='v1'}={}) {
   return cases;
 }
 
-export async function createIsolatedArrowRuntime({dbUrl,edgePort=0,aPort=0,seed=true,seedSuffix='v1',runBatch=runReadyDomains,progression='column'}={}) {
+export async function createIsolatedArrowRuntime({dbUrl,edgePort=0,aPort=0,seed=true,seedSuffix='v1',runBatch=runReadyDomains,maxConcurrency=4,progression='column',modelConfigPath=null,receiptsDir=null,casesOverride=null}={}) {
   const u=new URL(dbUrl);
   if(u.hostname!=='127.0.0.1'||u.username!=='arrow_test'||u.pathname!=='/arrow_test')throw new Error('Dedicated arrow_test loopback database required');
   const pool=new pg.Pool({connectionString:dbUrl,max:24});
@@ -66,6 +68,7 @@ export async function createIsolatedArrowRuntime({dbUrl,edgePort=0,aPort=0,seed=
       `${HUMAN}=arrow-reviewer:human:${DOMAINS.join('+')}:all:${TENANT}`,
       `${SERVICE}=arrow-local-service:service:${DOMAINS.join('+')}:all:${TENANT}`,
       ...DOMAINS.map(d=>`arrow-only-${d}=arrow-${d}:human:${d}:all:${TENANT}`),
+      `arrow-admin-admin=arrow-admin:human:admin:all:${TENANT}`,
       `arrow-cross=cross:human:business:all:other-tenant`,
     ].join(',')]);
     const verifier=tokenDirectoryVerifier(cfg.principals);const kernel=new Kernel(pool,{config:cfg,verifier});
@@ -73,8 +76,15 @@ export async function createIsolatedArrowRuntime({dbUrl,edgePort=0,aPort=0,seed=
     for(const d of DOMAINS)await pool.query('INSERT INTO domain_requirement_policies(policy_version,domain,required,min_independent_proofs,created_by) VALUES($1,$2,true,1,$3) ON CONFLICT DO NOTHING',['arrow-demo-required-v1',d,'isolated-seed']);
     await kernel.analysis.activateRulePack({credential:HUMAN,tenantId:TENANT,requestId:'arrow-isolated-rule-v1',version:'1.0.0'});
     const cases=seed?await seedCases(kernel,{suffix:seedSuffix}):[];
-    const advance=buildParallelAdvanceRounds(kernel,{serviceCredential:SERVICE,runBatch,progression});
-    a=await startHttpServer(kernel,aPort,{advance,cases:async credential=>{
+    const semantic=modelConfigPath?buildZoneSemantic({configPath:modelConfigPath,
+      receiptsDir:receiptsDir??path.join(repo,'.local','arrow-semantic','receipts')}):null;
+    const advance=buildParallelAdvanceRounds(kernel,{serviceCredential:SERVICE,
+      runBatch:runBatch===runReadyDomains?(inputs)=>runReadyDomains(inputs,{maxConcurrency}):runBatch,
+      maxConcurrency,progression,semantic:semantic??undefined});
+    const cycles=buildArrowCycles(kernel);
+    // casesOverride='directory' → 不传旧三例 closure，arrow-cases 走 A 权威案例目录（收尾02）；
+    // 默认保持 closure 行为（9/29 三例演示契约 parallel-arrows-cases-v1 不变）。
+    const casesHandler=casesOverride==='directory'?null:async credential=>{
       const identity=await verifier(credential);
       if(!identity||identity.kind!=='human'||!identity.roles.some(role=>DOMAINS.includes(role)))throw forbidden('PERMISSION_DENIED','Internal demo identity required');
       const visible=[];
@@ -84,7 +94,8 @@ export async function createIsolatedArrowRuntime({dbUrl,edgePort=0,aPort=0,seed=
           scenarioIsOutcome:false,industry:'制造业',annualRevenueCny:c.facts.revenue_annual_declared,
           transaction:c.transaction});}catch{/* Scope is checked per customer; no hidden customer identity leaks. */}}
       return {ok:true,manifestVersion:'parallel-arrows-cases-v1',exerciseId:seedSuffix,dependencyVersion:'column-deps-v1',cases:visible};
-    }});const base=`http://127.0.0.1:${a.address().port}`;
+    };
+    a=await startHttpServer(kernel,aPort,{advance,cycles,...(casesHandler?{cases:casesHandler}:{})});const base=`http://127.0.0.1:${a.address().port}`;
     const store=createKernelStore({baseUrl:base});
     const sessionStore=createSessionStore({});
     const entries=[{principalId:'arrow-reviewer',credential:HUMAN,roles:DOMAINS,label:'隔离演练 · 五专业审核员（测试身份）',demo:true},
@@ -96,14 +107,17 @@ export async function createIsolatedArrowRuntime({dbUrl,edgePort=0,aPort=0,seed=
       identityDirectory:{list:entries.filter(e=>e.principalId==='arrow-reviewer').map(({credential,...e})=>e),byPrincipal:new Map(entries.map(e=>[e.principalId,e]))},
       proxy:createUpstreamProxy({baseUrl:base,credentialFor:s=>s.credential}),readProxy:createReadProxy({baseUrl:base,credentialFor:s=>s.credential}),
       frontHandler:createStaticHandler({rootDir:path.join(repo,'Front/dist'),urlPrefix:''})});
-    return {pool,kernel,advance,cases,exerciseId:seedSuffix,baseUrl:`http://127.0.0.1:${edge.port}`,aUrl:base,ownership,
+    return {pool,kernel,advance,cycles,semantic,cases,exerciseId:seedSuffix,baseUrl:`http://127.0.0.1:${edge.port}`,aUrl:base,ownership,
       close:async()=>{await advance.drain();await edge.close();await new Promise(r=>a.close(r));await pool.end();}};
   }catch(error){if(edge)await edge.close();if(a)await new Promise(r=>a.close(r));await pool.end();throw error;}
 }
 
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const arg=k=>{const i=process.argv.indexOf(`--${k}`);return i<0?undefined:process.argv[i+1];};
-  const runtime=await createIsolatedArrowRuntime({dbUrl:arg('db'),edgePort:Number(arg('port')??0),seedSuffix:arg('seed-suffix')??'v1'});
+  const modelConfigPath=arg('model-config');
+  if(modelConfigPath){console.log(JSON.stringify({semanticModel:'configured-via-model-config',receipts:arg('receipts-dir')??'.local/arrow-semantic/receipts'}));}
+  const runtime=await createIsolatedArrowRuntime({dbUrl:arg('db'),edgePort:Number(arg('port')??0),seedSuffix:arg('seed-suffix')??'v1',
+    maxConcurrency:Number(arg('max-concurrency')??4),modelConfigPath});
   const folder=path.join(repo,'docs/v0.4/results/parallel-arrows-back');await mkdir(folder,{recursive:true});
   await writeFile(path.join(folder,'RUNTIME.json'),JSON.stringify({owner:ownership,pid:process.pid,baseUrl:runtime.baseUrl,aUrl:runtime.aUrl,
     sourceMode:'synthetic/deterministic',exerciseId:runtime.exerciseId,cases:runtime.cases.map(c=>({id:c.id,customerId:c.customerId,displayName:c.displayName})),

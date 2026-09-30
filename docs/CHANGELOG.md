@@ -112,3 +112,11 @@ V0.3-Jev释放assistant-decisions、decision-feedback-store、assistant-model、
 
 ## 2026-09-21 V0.4 integration
 Unified demo entry, native material/tree/timeline reuse, good/medium/bad click-driven progression, synchronized chat and confidence bars, per-stage branching, large presentation controls and Escape return. Includes independent regression and ZCode soak limitations report.
+
+## 2026-09-25 集成轮验收（04-acceptance）
+- 01/02/03 三路集成版本的严格输入→输出验收：盲测 50 组（双全新种子）+ M1–M3 变形全过；性能门全过（10并发读P95=34ms/写41ms、解析+登记P95=21.5s、提交回执329ms、五区完整2.8s、0非预期错误）；真实 glm-5.2 语义辅助 21 次成功×3 业务分支（P95=8.1s，成本8.05元，预算10元内）；4小时稳定窗+三故障注入（Connectors/A内核/PG 重启全部≤3.3s恢复）。
+- 验收发现并修复 3 项 P1 缺陷 + 1 项集成缺口：①语义事实投影空单元格静默记0（unknown≠0，semantic-facts@2）；②解析信封工件×评估适配断裂（财务事实未入五域评估、未知kind拒感知）；③收入红线单位口径失效（wan vs CNY）；④生产入口未接线五域并行引擎（--parallel-advance opt-in + 必需域政策/规则包播种 + policy/五域service/推进员身份配置）。Front/dist 按最新源码重建。详见 docs/integration/2026-09-25/04-acceptance/。
+
+## V0.5 · 2026-09-30 PC演示收敛与真实前后端联调
+
+十个合成案例覆盖红线、权属阻断、风险、补件、冲突、核验、重评、预评估、结清和独立返单。修复目录字段契约、跨专业演示身份入口、外部回执后的结清动作、核验依据与收入单位；主界面仅保留状态驱动主按钮，“更多”统一次级入口，五区完成不再以全屏页面阻断后续办理。健康启动复用，已核实自有缺失服务恢复，读取失败不重播数据。Front/dist 同步更新。独立验证范围和未验收项见 docs/codex-handoff/v05-acceptance/FINAL_ACCEPTANCE.md。仅更新 GitHub 并打 V0.5 tag，无部署；用户视觉验收与生产就绪分别记录。

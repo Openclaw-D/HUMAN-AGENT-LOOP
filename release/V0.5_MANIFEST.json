@@ -1,0 +1,50 @@
+{
+  "version": "V0.5",
+  "date": "2026-09-30",
+  "baseCommit": "009f7501b2402d6c5d723bdcbad7fd5caaa07d6e",
+  "deployment": "not_requested",
+  "tests": {
+    "front": 171,
+    "kernelTenCases": 11,
+    "parserC": 128,
+    "executionB": 110,
+    "edge": 261,
+    "connectors": 93
+  },
+  "typecheck": "PASS",
+  "build": "PASS",
+  "pcCssViewports": [
+    "1920x1080",
+    "approximately 1366x768"
+  ],
+  "userVisualAcceptance": "NOT_CONFIRMED",
+  "materials": "synthetic",
+  "modelCalls": "none in this acceptance",
+  "externalPayments": "not connected; explicit synthetic receipts",
+  "frontend": [
+    {
+      "path": "Front/dist/index.html",
+      "sha256": "745d6a04962172e9a0fa41fbf50f0f4b74a0f4ebb905a1bc36599e61f516fec2"
+    },
+    {
+      "path": "Front/dist/assets/index-FsuRYTLI.css",
+      "sha256": "a87dd3a59b9476b85f59577b26041b9bf1f228cc8e82f7eb57097e1232ca368e"
+    },
+    {
+      "path": "Front/dist/assets/index-XUKL5Joa.js",
+      "sha256": "08c86a8a94df0fb83efafcacc9d39b2563a2eef77f60fc559c7f2f891065182b"
+    },
+    {
+      "path": "Front/dist/assets/pdf-zzA0RzjF.js",
+      "sha256": "15d9aecf347d4ba33dea2c1af284cb42a74ef6ff0539cb97722906843e742209"
+    },
+    {
+      "path": "Front/dist/assets/pdf.worker.min-BiMwkZSR.js",
+      "sha256": "e3e2117ce0d1ae2f3c6d3f429a8cfbb03923f72143f2714f54702ee2a42662e8"
+    },
+    {
+      "path": "Front/dist/assets/pdf.worker.min-CK_pjWcW.js",
+      "sha256": "21cdf80e98776346a6c6165a6e26a2c004179a730a17bab250d2fd6a1616b0ea"
+    }
+  ]
+}

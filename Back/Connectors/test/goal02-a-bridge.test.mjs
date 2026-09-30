@@ -9,6 +9,7 @@ import { randomBytes } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
+import { makePdf } from './pdf-fixtures.mjs';
 import { TENANT, makeProcessingHarness, setupInvitation, uploadBytes, driveToEnd, bankCsvBytes, declTxtBytes, makeZip } from './processing-helpers.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -268,7 +269,7 @@ test('G-A3 ①G3 状态推进（received→needs_review→analyzed；service 身
 
   // ① 扫描件：received（A 登记）→ 解析转人工 needs_review（failureReason+nextAction，页面可解释下一动作）
   const inv = await setupInvitation(h.api, { role: 'customer_finance' });
-  const up = await uploadBytes(h.api, inv, { kind: 'document', bytes: Buffer.from('%PDF-1.4\n%%EOF\n', 'utf8') });
+  const up = await uploadBytes(h.api, inv, { kind: 'document', bytes: makePdf() });
   await driveToEnd(h.api, { maxRounds: 12 });
   const st0 = await h.api(`/api/connectors/processing/status?tid=${TENANT}&cid=${CUST}`, null, { method: 'GET' });
   const task0 = st0.tasks.find((x) => x.task_id === up.processing.taskId);
@@ -332,4 +333,3 @@ test('G-A3 ①G3 状态推进（received→needs_review→analyzed；service 身
   const runs2 = (await pgPool.query(`SELECT count(*)::int n FROM analysis_runs WHERE customer_id=$1`, [aCustomerId])).rows[0].n;
   assert.equal(runs2, 8, '重入零新增运行（两轮收口各 4）');
 });
-

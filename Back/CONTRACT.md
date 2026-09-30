@@ -313,3 +313,39 @@ TAKEOFF 五列 = 商机/政策/信审/商务/资产 ↔ `business/policy/credit/
 ### 13.5 首次回租需求登记（迁移 `014_admission_request.sql`；契约 §12）
 
 客户首次回租需求 = 评估级客户表述（产品/申请金额/用途/设备范围），**绝不写 financing_requests**。`credit_assessments` 加 `admission_request jsonb + admission_request_revision int`（存量行空 → 页面待补，未知≠0）。创建命令可选 `request`（严格 Schema，productType 本轮恒 `sale_leaseback`）；新命令 `POST /api/v2/assessments/:id/admission-request` 修正（人类 business|credit；绑定 `assessmentVersion` 乐观锁；整块快照式替换、revision+1、declaredAt 保留；结论确认后 409 NOT_READY）。读回：GET 评估/清单加 `request{...}` 与顶部镜像 `requestedAmountMinor`（Edge admission-projection 既有读取零改动）。全程账本零变化（PA-18 整表断言）。
+
+## 14｜v2.7 增量契约登记（2026-09-25，02-execution 五区真实执行链 writer）
+
+来源：`docs/integration/2026-09-25/02-execution/CONTRACT_INCREMENT.md`（全文）与同目录 `TASK3_INTERFACES.md`（任务三消费面）。基线 `main@009f750`（工作树优先）。§0–§13 语义除下述显式加法外不变；全部为加法（迁移 `017_execution_cycles.sql` 只新增表/列）。**任务一（01-foundation）本轮无交付痕迹，本节由 02 路按任务书授权（"必要共享接口由本任务统一修改并版本化交接"）登记。**
+
+### 14.1 五区执行清单与单区候选（C 加法，纯确定性）
+
+- `C/domains/zone-manifest.mjs`：`zoneManifest({concurrency,semantic})` → 版本化清单（`ZONE_MANIFEST_VERSION='zone-manifest-v1'`），逐区声明输入/依赖/执行身份/工具/输出/缺口处理/人工确认choices/下游触发；不含任何案例数据或结论。经 `GET /api/v2/customers/:id/advance-plan` 响应新增 `zoneManifest` 字段暴露。
+- `C/domains/zone-candidates.mjs`：`zoneCandidates({domain,entry,ruleEvaluation,transaction})` → 单区 3–5 项确定性候选（不足如实 `asManyAsAvailable`）。`scoreType='rule_rank'`（确定性排序位次，非概率/非校准置信度/非模型估计）；`gate.result='HARD_BLOCK'` 时首位候选 `blocking:true,score:0`，结构性不可被任何分数覆盖。随五区 worker 结果落 `arrow_jobs.result.zoneCandidates`，读面 `receipts[].zoneCandidates` 与 `views.decisions.zoneCandidates` 暴露。
+
+### 14.2 有界并发执行器（B 加法）
+
+- `runReadyDomains(inputs,{timeoutMs,signal,maxConcurrency=4})`：bounded slot pool——前 `maxConcurrency` 个 worker 全部初始化后同时起跑；每个完成的作业释放恰好一个槽位（Atomics.notify 单唤醒），超出部分排队（背压）；超时/取消/异常退出仍按 unknown 三分语义（`COLUMN_TIMEOUT_UNKNOWN/COLUMN_CANCELLED_UNKNOWN/COLUMN_EXIT_WITHOUT_RESULT`），计时自槽位授予（started）起算，另有初始化看门狗。并发上限经清单 `concurrency.maxParallelDomains` 声明。
+
+### 14.3 中断对账与重排（A 加法，advance-round.ts）
+
+- **对账**：`advance` claim 事务内，进程无在途执行者（`!busy`）时将遗留 `queued/running` 作业收敛为持久 `unknown`（`reason='INTERRUPTED_EXECUTION_RECONCILED'`），写 outbox `COLUMN_RECONCILED`（**不推进流程版本**，恢复路径计划校验单趟可用）。待人工决定的 unknown（`HUMAN_DECISION_PENDING`）不可换 ID 绕过（维持 §3 语义）。
+- **重排**：advance 对"basis 未变但 state=中断 unknown"的区以**新 attempt（新运行标识）**重排并真实执行；`COLUMN_QUEUED` 事件携带 `reconcilesJobId/reconcilesAttempt`。同 requestId 重放仍零执行。
+- **getPlan**：`running/queued` 且执行者在册 → `ROUND_UNRESOLVED`；不在册（死亡进程）→ 可用 + `recoveryHint`；`state='completed'` 的旧流程不再返回 `CASE_COMPLETED` 阻断，改返回 `priorCase` 并允许开启**新流程（返单）**；`state='rejected'` 维持 `CREDIT_REJECTED` 硬挡。
+
+### 14.4 硬阻断采用守卫（A 加法）
+
+- `decide(adopt)` 在 `job.result.zoneCandidates.hardBlock===true` 时 → 409 `NOT_READY`（`HARD_BLOCK_NOT_ADOPTABLE`）：不可豁免阻断只能事实纠正后重算或治理更新规则；任何置信度/排序分数/口头确认都不能覆盖（对齐 C gate.mjs 纪律）。
+
+### 14.5 可选语义辅助接点（A 加法；authority=none）
+
+- `A/src/domain/zone-semantic.ts`：`buildZoneSemantic({configPath,receiptsDir})`——复用 B glm transport（预算门 reserve/actual、出站允许门、三分发送、成本账本）；配置构建时同步读取（不可读即抛错失败关闭）；`describe()`/`run()` 注入 `buildParallelAdvanceRounds`。
+- 触发：确定性候选落为 `awaiting_confirmation` 后自动一次（requestId=`${jobId}:semantic:r${反馈版本}`，反馈版本=该流程 `COLUMN_HUMAN_DECISION` 事件数）；显式重跑 `POST /api/v2/customers/:id/advance-rounds/:roundId/semantic`（同反馈版本确定性 requestId → 回执复用零出站；反馈变化 → 新版本新调用）。回执落 `arrow_jobs.semantic`（加法列）+ 事件 `COLUMN_SEMANTIC` + JSONL（intent/terminal 两相；intent 无 terminal = 如实 unknown 不自动重发）。输出过 schema+证据闭合校验（`evidenceRefIds ⊆ 候选证据集`），非法如实 `model_output_invalid`；失败/未配置不污染确定性结果（无配置时该端点 409 `MODEL_NOT_CONFIGURED`）。**不做任何业务面写入。**
+
+### 14.6 同客户业务周期：履约/结清/返单（A 加法）
+
+- 迁移 `017_execution_cycles.sql`：新表 `arrow_cycles`（cycle_no 唯一、request_id 幂等、state: `active→awaiting_external_receipt→settled→closed`、`source_process_id` 指向已完结五区流程、`reorder_of_cycle_id`）+ `arrow_jobs.semantic` 列。
+- `A/src/domain/cycles.ts` → `buildArrowCycles(kernel)`；HTTP（Edge 白名单同步登记）：
+  - `GET/POST /api/v2/customers/:id/cycles`（开立须同客户五区全部采用；`reorderOf` 须引用 settled/closed 周期且存在更晚完结的新五区流程，否则 409 `REORDER_REQUIRES_FRESH_CASE`）；
+  - `POST .../cycles/:cycleId/{fulfill|external-receipt|settle|close}`：fulfill 后**如实停在 `awaiting_external_receipt`**（外部收付款未连接）；settle 必须先有 external-receipt（有权人类对真实回执的手工确认，`source='manual-attestation'`，身份+审计留痕）——系统绝不伪造实收、不自动结清。
+- 读面：`GET .../cycles` 返回周期、五区依据（adoptedRefs）、`externalIntegration.connected:false` 声明与合法 `next` 动作。

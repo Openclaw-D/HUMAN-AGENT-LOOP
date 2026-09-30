@@ -10,7 +10,7 @@ export function createAssistantEvidenceProvider({ baseUrl, token, policy }) {
     const response = await fetch(endpoint, { method: 'POST', redirect: 'error',
       signal: AbortSignal.timeout(15000), headers: { 'Content-Type': 'application/json', 'X-Service-Token': token },
       body: JSON.stringify({ tenantId, customerId, artifactIds: selection.artifactIds }) });
-    if (!response.ok) throw new Error('EVIDENCE_UPSTREAM_UNAVAILABLE');
+    if (!response.ok) { console.error(`[assistant-evidence] upstream ${response.status}: ${(await response.text()).slice(0, 200)}`); throw new Error('EVIDENCE_UPSTREAM_UNAVAILABLE'); }
     const data = await response.json();
     if (!data?.ok) throw new Error('EVIDENCE_MAPPING_INVALID');
     validateUpstreamMaterials({ selection, materials: data.materials });

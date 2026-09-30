@@ -1,0 +1,50 @@
+{
+  "version": "ten-case-expected-v1",
+  "writtenBy": "02-back（手工独立推导；对照 Back/C/rules/four-domain-rule-pack-v1.json@1.0.0 与引擎公开口径，非引擎输出复制）",
+  "ruleBasis": {
+    "redline": "年收入申报 ×单位归一 > 50,000,000 CNY → CUSTOMER_REVENUE_REDLINE 阻断推进（advance-round getPlan 读取检查）",
+    "cashCoverage": "sim_min_cash_coverage=1.0（演示阈值）：覆盖率=月经营现金流/月偿债 <1.0 → findingsSuspicion（SIM-CASH-COVERAGE-01，人工复核）；stressed 比率含声明新增债务",
+    "ownership": "equipment_ownership_verified 未达 verified 等级 → 资产区 unknowns（waiting_evidence）；核验结论=false（confirmed）→ SIM-ASSET-OWNERSHIP-01 不可豁免 HARD_BLOCK",
+    "conflict": "同一事实两份同级来源不同值 → assessment.contradictions 保留未合并，来源冲突候选（investigate），冲突未解该区不可采用",
+    "selectiveInvalidation": "补证/核验登记只重算受影响域（依赖图按 factKey 归属）；权属/主体同时进入政策区规则前提 → policy 与资产/商机一并受影响"
+  },
+  "cases": [
+    { "caseId": "case-01", "expectedCheckpointType": "blocked_redline",
+      "rationale": "56,000,000 > 50,000,000 → 红线阻断；推进 409 NOT_READY/CUSTOMER_REVENUE_REDLINE，不可强制通过",
+      "expectedPlanReason": "CUSTOMER_REVENUE_REDLINE" },
+    { "caseId": "case-02", "expectedCheckpointType": "blocked_hard",
+      "rationale": "申报 source_supported=true 与核验登记 confirmed=false 并存：核验级优先 → SIM-ASSET-OWNERSHIP-01 HARD_BLOCK；adopt → 409 HARD_BLOCK_NOT_ADOPTABLE",
+      "expectedGateResult": "HARD_BLOCK" },
+    { "caseId": "case-03", "expectedCheckpointType": "risk_decision",
+      "rationale": "覆盖率 = 55,000/100,000 = 0.55 < 1.0 → findingsSuspicion 非空；信审 awaiting_confirmation，可正式 reject（留痕归档）",
+      "expectedState": "awaiting_confirmation" },
+    { "caseId": "case-04", "expectedCheckpointType": "awaiting_evidence",
+      "rationale": "月经营现金流 grade=unverified → 覆盖率输入未达核验等级 → unknowns → credit waiting_evidence；补件（confirmed 核验件 supersedes）后仅 credit/policy 重算",
+      "expectedState": "waiting_evidence", "expectedAffectedAfterSupplement": ["credit", "policy"] },
+    { "caseId": "case-05", "expectedCheckpointType": "conflict_review",
+      "rationale": "equipment_deal_amount 两份 confirmed 来源（2,980,000 购置合同 vs 3,350,000 采购发票）→ contradictions；asset 区冲突未解 adopt → 409",
+      "expectedContradictionFact": "equipment_deal_amount", "expectAdoptBlocked": true },
+    { "caseId": "case-06", "expectedCheckpointType": "verification_pending",
+      "rationale": "收入/主体/权属 grade=source_supported（申报≠核验）→ business/asset/policy waiting_evidence；三类核验登记后 affectedDomains=[asset,business,policy]",
+      "expectedAffectedAfterVerification": ["asset", "business", "policy"] },
+    { "caseId": "case-07", "expectedCheckpointType": "stale_review",
+      "rationale": "四区采用后补证（设备对价 2,800,000→3,200,000 supersedes）：受影响 [asset,policy]；已采用的 policy 结果早于补证 → 旧候选标陈旧不可采用",
+      "expectedAffected": ["asset", "policy"] },
+    { "caseId": "case-08", "expectedCheckpointType": "preassessment_review",
+      "rationale": "五区全部采用（process completed）+ 评估 awaiting_human_review + Gate CLEAR（回执与快照证据集一致）→ 待 confirm-preassessment；确认后 preassessment_confirmed 且 credit_facilities/financing_requests/exposure_entries 零新增",
+      "expectedZeroLedger": true },
+    { "caseId": "case-09", "expectedCheckpointType": "awaiting_external",
+      "rationale": "五区采用 → 周期 open→fulfill → awaiting_external_receipt（externalIntegration.connected=false）；未确认回执 settle → 409 SETTLE_REQUIRES_EXTERNAL_RECEIPT；确认（manual-attestation，模拟回执标 SIM 前缀）后 settle → 200",
+      "expectedCycleState": "awaiting_external_receipt" },
+    { "caseId": "case-10", "expectedCheckpointType": "closed_reorderable",
+      "rationale": "完整周期 closed（履约→SIM-WIRE-c10-0001 manual-attestation→settled→closed）；返单须先完成新一轮五区流程，新周期 cycleNo=2、sourceProcessId 独立、历史不覆盖",
+      "expectedCycleState": "closed" }
+  ],
+  "crossCase": {
+    "authorization": "跨租户身份清单为空；客户身份 403；grant 撤销后清单即不可见",
+    "materialSensitivity": "任一案例关键值改变（如 case-01 收入降到线内）→ 检查点随确定性规则改变，不依赖案例标签",
+    "parallelism": "单次分析事件触发五区独立 worker 线程真实执行（时间重叠证据）；并发上限 4（第 5 区槽位等待）",
+    "idempotency": "同 requestId 同载荷重放零执行；异载荷 409 IDEMPOTENCY_REPLAY_CONFLICT；周期动作同 ID 单效果",
+    "honesty": "unknown 不补零；模拟回执以 SIM- 前缀+manual-attestation 标明出处；无模型不伪装模型回答"
+  }
+}

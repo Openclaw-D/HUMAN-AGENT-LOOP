@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
+import { buildBriefing } from '../../../../Back/Edge/src/assistant-briefing.mjs';
 import { render, screen, fireEvent, waitFor, cleanup, act } from './harness.mjs';
 const React = (await import('react')).default;
 const { createWbClient } = await import('../../../site-mirror/lib/workbench/wb-client.ts');
@@ -32,6 +33,7 @@ async function fixture(t, roles = ['business']) {
       if (config.hold) await config.hold;
       if (config.drop) return req.socket.destroy();
       if (config.modelHttp) return send(config.modelHttp[0], { ok: false, error: config.modelHttp[1] });
+      if (config.briefing) return send(200, buildBriefing({ snapshot: snapshot(), customerId: config.mismatch ? 'other-customer' : 'cust-test', assistant: body.assistant, question: body.question }));
       return send(200, { ok: true, authority: 'none', scope: 'preassessment_only', customerId: config.mismatch ? 'other-customer' : 'cust-test', assistant: body.assistant,
         model: { ...(config.legacy ? {} : { receiptVersion: 2, contextHash: 'a'.repeat(64), configHash: 'b'.repeat(64), current: config.current !== false }), ...(config.proof ?? {}), status: config.modelStatus, sent: config.sent, replayed: config.replayed, requestId: 'model-test', contextVersion: '3', source: { mode: 'mock', model: 'offline-test' }, error: config.modelError ? { code: config.modelError } : null },
         observations: [{ text: '合成观察：金额尚未明确。' }], questions: [{ text: '请核验设备范围。' }], evidenceRefs: config.refs ?? [] });
@@ -49,6 +51,27 @@ async function fixture(t, roles = ['business']) {
   return { a, wb, config, calls, snapshot, modelCalls: () => calls.filter((c) => c.url.endsWith('/assistant/observe')), saveCalls: () => calls.filter((c) => c.url.endsWith('/admission-request')) };
 }
 const form = (f) => React.createElement(AdmissionRequestPanel, { wb: f.wb, onOpenProposal() {} });
+test('助手：普通提问取得真实服务端无模型说明，不发送内部消息且可继续提问', async (t) => {
+  const f = await fixture(t); f.config.briefing = true;
+  render(React.createElement(AssistantObservationPanel, { wb: f.wb, assistant: 'business', chat: true, defaultToAssistant: true }));
+  fireEvent.change(screen.getByLabelText('聊天消息'), { target: { value: '客户现在是什么情况？' } });
+  fireEvent.click(screen.getByRole('button', { name: '发送消息' }));
+  await screen.findByText(/自由问答需要配置模型/);
+  assert.equal(f.modelCalls().length, 1); assert.equal(f.modelCalls()[0].body.assistant, 'business');
+  assert.equal(screen.getByLabelText('聊天消息').disabled, false);
+  assert.ok(!f.calls.some(c => c.url.endsWith('/messages')));
+  assert.ok(screen.getByText(/非模型回答，不构成审批意见/));
+});
+test('助手：其他客户的案例说明拒绝展示并保留未知结果防重发', async (t) => {
+  const f = await fixture(t); f.config.briefing = true; f.config.mismatch = true;
+  render(React.createElement(AssistantObservationPanel, { wb: f.wb, assistant: 'business', chat: true, defaultToAssistant: true }));
+  fireEvent.change(screen.getByLabelText('聊天消息'), { target: { value: '客户现在是什么情况？' } });
+  fireEvent.click(screen.getByRole('button', { name: '发送消息' }));
+  await screen.findByText(/连接中断或等待超时，发送与结果未知/);
+  assert.equal(screen.getByLabelText('聊天消息').disabled, true);
+  assert.equal(screen.queryByText(/自由问答需要配置模型/), null);
+  assert.equal(f.modelCalls().length, 1);
+});
 const model = (f, assistant = 'credit') => React.createElement(AssistantObservationPanel, { key: `${f.wb.session.sessionId}:${f.wb.customerId}`, wb: f.wb, assistant });
 async function readyForm() { await screen.findByText('已读取服务端当前登记；空白字段仍为待补。'); }
 function ask(text = '当前有哪些待补项？') { fireEvent.change(screen.getByLabelText('模型观察问题'), { target: { value: text } }); fireEvent.click(screen.getByRole('button', { name: '获取模型观察' })); }
@@ -190,7 +213,8 @@ test('模型：等待时证据/候选变化，成功回执也不能作为当前�
 test('页面入口：五区四行保留，需求抽屉与观察入口共存', async (t) => {
   const f = await fixture(t); render(React.createElement(TakeoffScreen, { wb: f.wb, onBackToDirectory() {}, onLogout() {} }));
   assert.ok(screen.getByRole('grid', { name: /二十格看板/ })); assert.equal(screen.getAllByRole('tab').length, 6);
-  fireEvent.click(screen.getByRole('button', { name: '需求登记' })); await readyForm(); assert.ok(screen.getByRole('dialog', { name: '首次回租需求登记' }));
+  fireEvent.click(screen.getByText('更多'));
+  fireEvent.click(screen.getByRole('button', { name: '需求与申请' })); await readyForm(); assert.ok(screen.getByRole('dialog', { name: '首次回租需求登记' }));
   assert.equal(f.modelCalls().length, 0);
 });
 

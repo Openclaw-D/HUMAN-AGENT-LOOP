@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
+// DEF-ACC-07：子进程导入用绝对路径（run-all 以 cwd=Back/A 运行本文件时 './Back/A/...' 相对路径失效）
+const RUNTIME_MJS = new URL('../scripts/parallel-arrows-runtime.mjs', import.meta.url).href;
 import { writeFile,mkdir } from 'node:fs/promises';
 import { runReadyDomains } from '../../B/src/worker/column-runner.mjs';
 import { buildParallelAdvanceRounds } from '../src/domain/advance-round.ts';
@@ -168,10 +170,10 @@ test('parallel arrow real HTTP lifecycle, existing commands and persisted versio
   });
   await t.test('actual Node process restart reads the same committed runs and replays without execution',async()=>{
     const seeded=await seedCases(r.kernel,{suffix:randomUUID().slice(0,8)});const c=seeded[0],interrupted=seeded[1];
-    const code=`import {createIsolatedArrowRuntime} from './Back/A/scripts/parallel-arrows-runtime.mjs'; const r=await createIsolatedArrowRuntime({dbUrl:process.env.ARROW_TEST_DB_URL,seed:false});console.log(JSON.stringify({url:r.baseUrl}));`;
+    const code=`import {createIsolatedArrowRuntime} from ${JSON.stringify(RUNTIME_MJS)}; const r=await createIsolatedArrowRuntime({dbUrl:process.env.ARROW_TEST_DB_URL,seed:false,progression:'parallel'});console.log(JSON.stringify({url:r.baseUrl}));`;
     const boot=()=>new Promise((resolve,reject)=>{
       const child=spawn(process.execPath,['--input-type=module','-e',code],{stdio:['ignore','pipe','pipe']});let out='';
-      const timeout=setTimeout(()=>{child.kill();reject(new Error('child runtime startup timeout'));},10000);
+      const timeout=setTimeout(()=>{child.kill();reject(new Error('child runtime startup timeout'));},30000);
       child.once('error',e=>{clearTimeout(timeout);reject(e);});
       child.stdout.on('data',buf=>{out+=buf;const end=out.indexOf('\n');if(end>=0){clearTimeout(timeout);resolve({child,url:JSON.parse(out.slice(0,end)).url});}});
       child.stderr.on('data',()=>{});

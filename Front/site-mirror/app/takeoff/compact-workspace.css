@@ -201,3 +201,50 @@
 .tk-round-decision{padding:12px;overflow:auto;overflow-wrap:anywhere;font-size:12px;line-height:1.6}.tk-round-decision dl{margin:8px 0}.tk-round-decision dt{font-weight:600}.tk-round-decision dd{margin:2px 0 8px 12px}.tk-round-selected{background:#343a40;color:#f5f6f7;font-weight:700;padding:10px;border-radius:12px}
 
 .tk-node-navigation{position:relative}.tk-column-choice{position:absolute;right:0;top:calc(100% + 10px);width:340px;max-height:45vh;overflow:auto;z-index:45;background:#f7f9fa;border:1px solid #cbd5dc;border-radius:16px;padding:16px;box-shadow:0 8px 24px #22313d20;font-size:13px;line-height:1.5}.tk-column-choice small{display:block;color:#687680}.tk-column-choice>div{display:flex;gap:6px;margin-top:12px}.tk-compact-top .tk-column-choice button{width:auto;height:auto;display:block;background:#e5ebee;padding:8px;color:#28343d;font-size:12px;border-radius:8px}.tk-compact-top .tk-column-choice button:first-child{background:#343a40;color:#fff}
+
+/* 2026-09-29 · 01-front：显式业务事件按钮 + 模拟标识 + 助手上下文/建议提问 */
+.tk-compact-top .tk-next-event { flex: 0 0 auto; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: #22282d; color: #fff; border-color: #22282d; font-weight: 550; }
+.tk-compact-top .tk-next-event:disabled { opacity: .45; }
+.tk-compact-top .tk-next-event[data-event-kind="disabled"] { background: #f0f2f3; color: #6d7a82; border-color: #e2e6e8; }
+.tk-compact-top .tk-demo-badge { flex: none; }
+.tk-asst-context { display: flex; flex-direction: column; gap: 2px; padding: 2px 4px 8px; border-bottom: 1px solid #e6eaec; }
+.tk-asst-context strong { font-size: 14px; }
+.tk-asst-context span { font-size: 11px; color: #7b868d; line-height: 1.4; }
+.tk-asst-suggest { display: flex; flex-direction: column; gap: 6px; padding: 8px 0 4px; }
+.tk-asst-suggest button { text-align: left; font-size: 12px; line-height: 1.45; padding: 7px 11px; border: 1px solid #dbe1e5; border-radius: 12px; background: #fff; color: #3d474e; }
+.tk-asst-suggest button:hover { background: #f2f5f6; }
+.tk-compact-top { flex-wrap: wrap; row-gap: 8px; }
+.tk-compact-top .tk-node-navigation { margin-left: auto; }
+.tk-compact-top .tk-node-navigation button.tk-next-event { width: auto; height: auto; min-height: 32px; padding: 8px 14px; display: inline-block; }
+/* DEF-03-05 核验登记表单：抽屉内竖排不溢出 */
+.tk-drawer .wb-card[aria-label*="人工核验登记"] label { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; font-size: 13px; }
+.tk-drawer .wb-card[aria-label*="人工核验登记"] input[type="number"], .tk-drawer .wb-card[aria-label*="人工核验登记"] textarea { width: 100%; box-sizing: border-box; }
+.tk-drawer .wb-card[aria-label*="人工核验登记"] [role="radiogroup"] label { flex-direction: row; align-items: center; gap: 6px; margin: 0; }
+.tk-drawer .wb-card[aria-label*="人工核验登记"] label[style] { flex-direction: row; align-items: flex-start; gap: 8px; }
+
+/* V0.5 final: select a profession on the board; keep one primary event. */
+.tk-domain-select{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:100%;padding:8px;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer;border-radius:10px}
+.tk-domain-select:focus-visible{outline:2px solid #566674;outline-offset:-3px}
+.tk-column-opinion>summary{padding:8px;cursor:pointer;font-size:12px;color:#64717a;white-space:nowrap}
+.tk-column-opinion:not([open]) .tk-column-choice{display:none}
+.tk-node-navigation{display:flex;align-items:center;gap:8px}
+.tk-coordinator-entry{text-align:center;margin:20px 0 0}
+.tk-coordinator-entry p{font-size:12px;color:#6d7880}
+.tk-request-amount{font-size:12px;white-space:nowrap;color:#687780}.tk-request-amount strong{color:#334049;font-weight:600}
+.tk-case-summary{display:flex;gap:22px;font-size:12px;color:#6e7b83;padding:0 12px 12px;flex-wrap:wrap}
+.tk-compact-top{flex-wrap:nowrap;gap:12px}
+.tk-compact-top .tk-mainnav{flex:0 0 280px;margin-right:auto}
+.tk-compact-top .tk-next-event{max-width:210px}
+.tk-compact-top .tk-node-navigation{flex-shrink:0}
+@media(max-width:1400px){.tk-compact-top{flex-wrap:wrap;gap:8px}.tk-compact-top .tk-node-navigation{order:5;width:100%;justify-content:flex-end}.tk-compact-top .tk-column-choice{top:100%;max-width:calc(100vw - 48px)}}
+.tk-work-actions>div button{display:block;width:100%;border:0;border-radius:9px;background:transparent;text-align:left;padding:10px 12px;font:inherit;color:#33414a;cursor:pointer}
+.tk-work-actions>div button:hover{background:#e9eef1}
+.tk-board-page .tk-board{min-height:440px;grid-template-rows:72px repeat(4,minmax(72px,1fr))}
+.tk-board-page .tk-cell{container-type:size;min-width:0;min-height:0;padding:8px}
+.tk-board-page .tk-cell>.tk-status-icon{width:min(86px,72cqh,80cqw);height:min(86px,72cqh,80cqw)}
+.tk-board-page .tk-cell .tk-status-scene{width:100%!important;height:100%!important}
+.tk-domain-select{white-space:nowrap;gap:6px}
+.tk-review-completed{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid #dce5e1;border-radius:12px;background:#f5f9f7;font-size:12px;margin:0 calc(var(--assistant-width) + 20px) 10px 0;color:#4f635b;flex-wrap:wrap}
+.tk-review-completed button{border:0;background:transparent;color:#40554a;cursor:pointer;font:inherit}.tk-review-completed strong{font-weight:600}
+@media(max-width:1200px){.tk-domain-select{font-size:12px}.tk-domain-select .tk-role-logo{width:30px;height:30px}.tk-workspace{--assistant-width:280px}.tk-board{grid-template-columns:48px repeat(5,minmax(0,1fr))}}
+.tk-action-error{max-width:280px;font-size:12px;color:#a7453b;line-height:1.4}

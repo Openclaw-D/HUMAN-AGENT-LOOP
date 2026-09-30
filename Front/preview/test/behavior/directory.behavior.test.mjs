@@ -7,56 +7,93 @@ const { RoleEntry } = await import('../../../site-mirror/app/takeoff/role-entry.
 function makeWb() {
   const calls = { create: [], directory: [] };
   const wb = { session: {...fakeSession('biz-1'), tenantId:'tenant-synthetic'}, error:null, setError(){}, logout(){}, client: {
-    async read(){throw Object.assign(new Error('not installed'),{status:404});},
+    // 演示目录未接通（404）→ 诚实回退完整客户目录（验收视图）；本组测试针对完整目录语义。
+    async read(){throw Object.assign(new Error('not installed'),{status:404,code:'NOT_FOUND'});},
     async directory(search, cursor) { calls.directory.push({search,cursor}); return {kind:'ok',customers:[{customerId:'cus_1',displayName:'青山机械（合成）'}]}; },
     async createCustomer(body) { calls.create.push(body); return {customerId:'cus_new_1'}; }
   }};
   return {wb,calls};
 }
-test('客户页只保留三个色板与角色图标，读取获准案例且不创建客户',async(t)=>{
-  t.after(cleanup);const {wb,calls}=makeWb();const opened=[];let logouts=0;wb.logout=()=>logouts++;
-  wb.client.directory=async(search)=>{calls.directory.push({search});return {kind:'ok',customers:[{customerId:search,displayName:search}]};};
+
+test('客户目录：读取服务端权威列表，点击打开真实客户',async(t)=>{
+  t.after(cleanup);const {wb,calls}=makeWb();const opened=[];
   render(React.createElement(CustomerDirectory,{wb,onOpen:id=>opened.push(id)}));
-  const good=await screen.findByRole('button',{name:'好客户：喀什示例塑料制品有限公司'});
-  await waitFor(()=>assert.equal(good.getAttribute('aria-disabled'),'false'));fireEvent.click(good);
-  assert.deepEqual(opened,['喀什示例塑料制品有限公司']);assert.equal(calls.directory.length,3);assert.deepEqual(calls.create,[]);
-  assert.equal(document.querySelectorAll('.tk-picker-card').length,3);
-  assert.deepEqual([...document.querySelectorAll('.tk-picker-card')].map(el=>el.className),['tk-picker-card good','tk-picker-card middle','tk-picker-card poor']);
-  assert.equal(document.querySelectorAll('.tk-picker-board').length,3);
-  assert.equal(screen.queryByRole('textbox'),null);assert.equal(screen.queryByText('其他客户'),null);assert.equal(screen.queryByText('＋ 新建客户'),null);
-  const role=screen.getByRole('button',{name:'切换角色'});assert.equal(role.textContent,'');fireEvent.click(role);assert.equal(logouts,1);
+  const row=await screen.findByRole('button',{name:/青山机械（合成）/});
+  fireEvent.click(row);assert.deepEqual(opened,['cus_1']);
+  assert.deepEqual(calls.directory,[{search:'',cursor:undefined}]);
+  assert.ok(screen.getByRole('button',{name:'搜索'}));
 });
 
-test('旧最近访问不越过服务端目录；读取失败不冒充空客户',async(t)=>{
-  t.after(cleanup); sessionStorage.setItem('jw-wb-recent:biz-1',JSON.stringify(['cus_private']));
-  const {wb}=makeWb(); wb.client.directory=async()=>({kind:'unknown',code:'UNAVAILABLE'});
+test('搜索提交以服务端结果为准；旧响应晚到不写回',async(t)=>{
+  t.after(cleanup);const {wb,calls}=makeWb();
+  let release;
+  const gate=new Promise(r=>{release=r;});
+  wb.client.directory=async(search)=>{
+    calls.directory.push({search});
+    if(search==='旧词'){await gate;return {kind:'ok',customers:[{customerId:'old',displayName:'旧词客户'}]};}
+    return {kind:'ok',customers:search?[{customerId:'new',displayName:`${search}客户`}]:[{customerId:'all',displayName:'全部客户'}]};
+  };
+  const {container}=render(React.createElement(CustomerDirectory,{wb,onOpen(){}}));
+  await screen.findByRole('button',{name:/全部客户/});
+  const form=container.querySelector('form');
+  fireEvent.change(screen.getByLabelText('搜索客户'),{target:{value:'旧词'}});
+  fireEvent.submit(form); // 慢请求在途（输入框不因加载禁用，用户可继续输入并回车）
+  fireEvent.change(screen.getByLabelText('搜索客户'),{target:{value:'新词'}});
+  fireEvent.submit(form);
+  await screen.findByRole('button',{name:/新词客户/});
+  release(); // 晚到的"旧词"响应此刻才返回，必须被丢弃
+  await new Promise(r=>setTimeout(r,10));
+  assert.ok(screen.getByRole('button',{name:/新词客户/}));
+  assert.equal(screen.queryByRole('button',{name:/旧词客户/}),null);
+});
+
+test('业务身份可新建客户，创建成功即进入工作台',async(t)=>{
+  t.after(cleanup);const {wb,calls}=makeWb();const opened=[];
+  render(React.createElement(CustomerDirectory,{wb,onOpen:id=>opened.push(id)}));
+  fireEvent.click(await screen.findByRole('button',{name:'＋ 新建客户'}));
+  fireEvent.change(screen.getByLabelText('客户全称'),{target:{value:'新客户甲'}});
+  fireEvent.change(screen.getByLabelText('统一社会信用代码'),{target:{value:'SYNTHETIC-TEST-0001'}});
+  fireEvent.click(screen.getByRole('button',{name:'创建并进入'}));
+  await waitFor(()=>assert.deepEqual(opened,['cus_new_1']));
+  assert.equal(calls.create.length,1);
+  assert.equal(calls.create[0].displayName,'新客户甲');
+  assert.equal(calls.create[0].legalEntityRef,'SYNTHETIC-TEST-0001');
+  assert.ok(calls.create[0].requestId);
+});
+
+test('创建失败如实报错可重试，不冒充成功也不清空输入',async(t)=>{
+  t.after(cleanup);const {wb}=makeWb();
+  wb.client.createCustomer=async()=>({}); // 无 customerId=失败
+  render(React.createElement(CustomerDirectory,{wb,onOpen(){}}));
+  fireEvent.click(await screen.findByRole('button',{name:'＋ 新建客户'}));
+  fireEvent.change(screen.getByLabelText('客户全称'),{target:{value:'新客户乙'}});
+  fireEvent.change(screen.getByLabelText('统一社会信用代码'),{target:{value:'SYNTHETIC-TEST-0002'}});
+  fireEvent.click(screen.getByRole('button',{name:'创建并进入'}));
+  await screen.findByRole('alert');
+  assert.equal(screen.getByLabelText('客户全称').value,'新客户乙');
+});
+
+test('无建档权限的角色不显示新建入口',async(t)=>{
+  t.after(cleanup);const {wb}=makeWb();
+  wb.session={...fakeSession('policy-1'),roles:['policy'],tenantId:'tenant-synthetic'};
+  render(React.createElement(CustomerDirectory,{wb,onOpen(){}}));
+  await screen.findByRole('button',{name:/青山机械（合成）/});
+  assert.equal(screen.queryByText('＋ 新建客户'),null);
+});
+
+test('目录读取失败不冒充空客户；重试重新读取',async(t)=>{
+  t.after(cleanup);const {wb,calls}=makeWb();
+  sessionStorage.setItem('jw-wb-recent:biz-1',JSON.stringify(['cus_private']));
+  wb.client.directory=async()=>({kind:'unknown',code:'UNAVAILABLE'});
   render(React.createElement(CustomerDirectory,{wb,onOpen(){}}));
   await screen.findByRole('alert'); assert.equal(screen.queryByText('cus_private'),null);
-  assert.equal(screen.queryByText('还没有客户'),null); sessionStorage.clear();
+  assert.equal(screen.queryByText('还没有客户'),null);
+  wb.client.directory=async()=>{calls.directory.push({search:'retry'});return {kind:'ok',customers:[{customerId:'cus_ok',displayName:'恢复客户'}]};};
+  fireEvent.click(screen.getByRole('button',{name:'重试'}));
+  await screen.findByRole('button',{name:/恢复客户/});
+  sessionStorage.clear();
 });
 
-test('三案例只打开授权目录唯一匹配；未建档或同名冲突不预造客户',async(t)=>{
-  t.after(cleanup);const {wb}=makeWb();const opened=[];
-  wb.client.directory=async(search)=>({kind:'ok',customers:search==='喀什示例塑料制品有限公司' ? [{customerId:'actual-good',displayName:search}] : search==='喀什示例金属加工有限公司' ? [{customerId:'duplicate-a',displayName:search},{customerId:'duplicate-b',displayName:search}] : []});
-  render(React.createElement(CustomerDirectory,{wb,onOpen:id=>opened.push(id)}));
-  const good=await screen.findByRole('button',{name:/好客户：喀什示例塑料制品有限公司/});
-  fireEvent.click(good);assert.deepEqual(opened,['actual-good']);
-  assert.equal(screen.getByRole('button',{name:/中.*客户记录需核对/}).getAttribute('aria-disabled'),'true');
-  assert.equal(screen.getByRole('button',{name:/差.*尚未接入/}).getAttribute('aria-disabled'),'true');
-  assert.equal(screen.queryByText('其他客户'),null);
-});
-test('三案例可匹配现行合成目录名，激光近名记录不被误选',async(t)=>{
-  t.after(cleanup);const {wb}=makeWb();const opened=[];
-  wb.client.directory=async(search)=>({kind:'ok',customers:search.includes('金属加工')
-    ? [{customerId:'old-laser',displayName:'喀什示例金属加工有限公司（激光·合成·冒烟）'},
-       {customerId:'laser',displayName:'喀什示例金属加工有限公司（激光场景·合成）'}]
-    : [{customerId:search.includes('塑料')?'injection':'textile',displayName:search.includes('塑料')
-      ? '喀什示例塑料制品有限公司（注塑场景·合成）':'喀什示例棉纺有限公司（棉纺场景·合成）'}]});
-  render(React.createElement(CustomerDirectory,{wb,onOpen:id=>opened.push(id)}));
-  const laser=await screen.findByRole('button',{name:'中客户：喀什示例金属加工有限公司'});
-  await waitFor(()=>assert.equal(laser.getAttribute('aria-disabled'),'false'));
-  fireEvent.click(laser);assert.deepEqual(opened,['laser']);
-});
 test('角色首屏只交换服务端提供的身份，无账号密码与登录前置页',async(t)=>{
   t.after(cleanup); const ids=[]; const wb={identities:[{principalId:'credit-real',label:'信审',roles:['credit']}],loginWithIdentity:async(id)=>ids.push(id)};
   render(React.createElement(RoleEntry,{wb}));
@@ -83,25 +120,4 @@ test('角色进入失败可重试，不伪装为已进入',async(t)=>{
   fireEvent.click(screen.getByRole('button',{name:/业务：精准识客/}));
   await screen.findByRole('alert'); assert.equal(tries,1);
   assert.equal(screen.getByRole('button',{name:/业务：精准识客/}).disabled,false);
-});
-
-test('首页三个缩略看板使用各自快照与补充读面，失败不伪造状态',async t=>{
- t.after(cleanup);const {wb,calls}=makeWb();
- wb.client.directory=async search=>({kind:'ok',customers:[{customerId:search,displayName:search}]});
- const reads=[];
- wb.client.workspace=async id=>{reads.push(id);if(id.includes('棉纺'))throw Error('offline');return {snapshot:{customer:{customerId:id,displayName:id},assessments:[],facilities:[]}};};
- wb.client.read=async path=>{if(path.endsWith('/arrow-cases'))throw Object.assign(new Error('not installed'),{status:404});return {artifacts:[],factConflicts:[]};};wb.client.channelStatus=async()=>({tasks:[]});
- render(React.createElement(CustomerDirectory,{wb,onOpen(){}}));
- await waitFor(()=>assert.equal(document.querySelectorAll('.tk-picker-board .tk-board').length,2));
- assert.equal(document.querySelectorAll('.tk-picker-board .tk-cell[role=img]').length,40);
- assert.equal(document.querySelectorAll('.tk-picker-board button').length,0);
- assert.ok(screen.getByText('进度暂时不可读'));assert.equal(new Set(reads).size,3);assert.deepEqual(calls.create,[]);
-});
-
-test('stable manifest binds IDs despite new names and shuffled case order',async t=>{
- t.after(cleanup);const {wb,calls}=makeWb();const opened=[];
- const cases=[{caseId:'parallel-v1-bad',customerId:'bad-id',displayName:'风险新名称',scenarioLabel:'差',sourceMode:'synthetic'},{caseId:'parallel-v1-good',customerId:'good-id',displayName:'好例新名称',scenarioLabel:'好',sourceMode:'synthetic'},{caseId:'parallel-v1-medium',customerId:'mid-id',displayName:'补证新名称',scenarioLabel:'中',sourceMode:'synthetic'}];
- wb.client.read=async path=>path.endsWith('/arrow-cases')?{cases}:{artifacts:[]};wb.client.workspace=async id=>({snapshot:{customer:{customerId:id}}});wb.client.channelStatus=async()=>({tasks:[]});wb.client.advance={history:async()=>[]};
- render(React.createElement(CustomerDirectory,{wb,onOpen:id=>opened.push(id)}));
- const good=await screen.findByRole('button',{name:'好客户：好例新名称'});fireEvent.click(good);assert.deepEqual(opened,['good-id']);assert.equal(calls.directory.length,0);
 });

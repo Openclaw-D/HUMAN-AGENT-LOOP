@@ -66,9 +66,9 @@ export function makeEvidenceService(store) {
          (evidence_id, tenant_id, customer_id, session_id, source_provider, provider_event_id, object_ref, sha256, kind,
           captured_at, media_start_ms, media_end_ms, track, frame_region, consent_ref, verification_state, completeness,
           source_group, derived_from, duplicate_of, same_source_flag, source_mode, trust, schema_version,
-          period_from, period_to, currency, unit, caliber, page_from, page_to, uploader_ref, upload_source, object_refs)
+          period_from, period_to, currency, unit, caliber, page_from, page_to, uploader_ref, upload_source, object_refs, original_name)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,1,
-               $24,$25,$26,$27,$28,$29,$30,$31,$32,$33)`,
+               $24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34)`,
       [
         evidenceId, a.tenantId, a.customerId, a.sessionId ?? null, a.sourceProvider, a.providerEventId ?? null,
         a.objectRef ?? null, a.sha256 ?? null, a.kind, a.capturedAt ?? null, a.mediaStartMs ?? null, a.mediaEndMs ?? null,
@@ -79,6 +79,7 @@ export function makeEvidenceService(store) {
         a.periodFrom ?? null, a.periodTo ?? null, a.currency ?? null, a.unit ?? null, a.caliber ?? null,
         a.pageFrom ?? null, a.pageTo ?? null, a.uploaderRef ?? null, a.uploadSource ?? null,
         JSON.stringify(Array.isArray(a.objectRefs) ? a.objectRefs : []),
+        a.originalName ?? null,
       ],
     );
     await audit(store, {

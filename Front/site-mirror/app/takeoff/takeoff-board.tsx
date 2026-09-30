@@ -12,8 +12,9 @@ import { RoleLogo, ObjectIcon } from './ui-icons';
 const ROW_GLYPH: Record<TakeoffRowId, string> = { input: 'materials', analysis: 'analysis', human: 'verify', closure: 'closure' };
 const ROW_TEXT: Record<TakeoffRowId,string> = { input:'材料', analysis:'分析', human:'核验', closure:'办结' };
 
-export function TakeoffBoard({ cells, selected, onSelect, activeDomain, readOnly = false }: {
+export function TakeoffBoard({ cells, selected, onSelect, activeDomain, onDomain, readOnly = false }: {
   activeDomain?: TakeoffDomainId;
+  onDomain?: (domain: TakeoffDomainId) => void;
   readOnly?: boolean;
   cells: TakeoffCellView[];
   selected: { domain: TakeoffDomainId; row: TakeoffRowId } | null;
@@ -33,8 +34,10 @@ export function TakeoffBoard({ cells, selected, onSelect, activeDomain, readOnly
             data-active-column={activeDomain===d.id || undefined}
             className={`tk-hcell${hover?.domain === d.id ? ' tk-hi' : ''}`}
           >
-            <RoleLogo role={d.id} size={42}/>
-            {d.name === '商机' ? '业务' : d.name}
+            <button className="tk-domain-select" disabled={readOnly || !onDomain} onClick={() => onDomain?.(d.id)} aria-pressed={activeDomain===d.id} aria-label={`查看${d.name === '商机' ? '业务' : d.name}专业`}>
+              <RoleLogo role={d.id} size={42}/>
+              {d.name === '商机' ? '业务' : d.name}
+            </button>
           </div>
         ))}
         {TAKEOFF_ROWS.map((r) => (

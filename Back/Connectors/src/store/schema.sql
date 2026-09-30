@@ -225,6 +225,7 @@ ALTER TABLE evidence_artifacts ADD COLUMN IF NOT EXISTS page_to INT;            
 ALTER TABLE evidence_artifacts ADD COLUMN IF NOT EXISTS uploader_ref TEXT;        -- 上传者（绑定/邀请/渠道）引用
 ALTER TABLE evidence_artifacts ADD COLUMN IF NOT EXISTS upload_source TEXT;       -- customer_upload|employee|channel_callback
 ALTER TABLE evidence_artifacts ADD COLUMN IF NOT EXISTS object_refs JSONB NOT NULL DEFAULT '[]'; -- 设备/场所锚定（W10）
+ALTER TABLE evidence_artifacts ADD COLUMN IF NOT EXISTS original_name TEXT;       -- 集成轮 2026-09-25：原件名保留（来源定位/追溯；仅元数据，判重恒按 sha256 内容寻址）
 
 -- 任务02 · B1/W01 分级邀请：商机触发后把客户主体、角色身份、上传范围、会话对应起来。
 -- 邀请令牌原文不落库（只存 sha256）；一次有效；接受 ≠ 验证（candidate，操作者核验后才 active）。

@@ -1,0 +1,52 @@
+{
+  "_note": "03路 demo03 演示栈配置模板（非敏感值）。复制到 Back/Edge/.run/demo03/config.runtime.json（.run/ 为 Git 排除目录）后按 integration-up 命令启动。无模型配置=确定性演示零出站：语义辅助如实 409 MODEL_NOT_CONFIGURED、助手如实未配置；如后续获准接真实模型，参照 04-acceptance/rebuild/REBUILD-RUNBOOK.md 的三件配置说明另行提供密钥（密钥不入 Git）。",
+  "ports": { "db": 25496, "kernel": 48490, "connectors": 48410, "edge": 48430, "dbContainer": "jw-integ-demo03-pg", "runSubdir": "demo03" },
+  "config": {
+    "_note": "合成演示值；authEntries.label 为角色展示中文名（Edge 身份目录只读暴露 /api/jw/v2/auth/identities，不含凭据）。权限保持服务端角色纪律：仅 adm1 为 admin，其余为各专业角色；adv1 为五专业评审协调（演示流程主操作员），未被提升为 admin。",
+    "dbUser": "jwdemo03",
+    "dbPassword": "demo03-local-demo",
+    "dbName": "jw",
+    "principalTokens": "tok-biz1=biz1:human:business:all:t1,tok-jw1=jw1:human:jianwei:all:t1,tok-cred1=cred1:human:credit:all:t1,tok-comm1=comm1:human:commerce:all:t1,tok-asset1=asset1:human:asset:all:t1,tok-app1=app1:human:approver:all:t1,tok-dir1=dir1:human:director:all:t1,tok-cust1=cust1:human:customer:all:t1,tok-svc1=svc1:service:service:all:t1,tok-adm1=adm1:human:admin:all:all,tok-pol1=pol1:human:policy:all:t1,tok-svcexec=svcexec:service:business+policy+credit+commerce+asset:all:t1,tok-adv1=adv1:human:business+policy+credit+commerce+asset:all:t1",
+    "creditMatrix": "matrix-delivery-synthetic",
+    "creditConcentration": "conc-delivery-synthetic",
+    "matrixSeedSql": "INSERT INTO permission_matrix (matrix_version, role, action, allowed, max_amount_minor) VALUES ('matrix-delivery-synthetic','approver','facility.approve',true,1000000000),('matrix-delivery-synthetic','approver','facility.activate',true,NULL),('matrix-delivery-synthetic','approver','facility.suspend',true,NULL),('matrix-delivery-synthetic','approver','facility.reduce',true,NULL),('matrix-delivery-synthetic','business','fr.confirm-external',true,1000000000) ON CONFLICT (matrix_version, role, action) DO NOTHING;",
+    "connectors": {
+      "tenantId": "t1",
+      "pg": { "database": "cnext" },
+      "wecom": { "callbackToken": "synthetic-acceptance-callback-token" },
+      "a": { "credentials": { "service": "tok-svc1", "registrar": "tok-biz1" }, "customerLinks": {} },
+      "driverIntervalMs": 500,
+      "outboundPolicy": "suggest_only",
+      "processing": { "concurrency": 8, "driverIntervalMs": 500 }
+    },
+    "authEntries": [
+      { "credential": "tok-biz1", "principalId": "biz1", "roles": ["business"], "tenantId": "t1", "label": "客户经理（演示）" },
+      { "credential": "tok-adv1", "principalId": "adv1", "roles": ["business", "policy", "credit", "commerce", "asset"], "tenantId": "t1", "label": "评审协调员（五专业·演示）" },
+      { "credential": "tok-cred1", "principalId": "cred1", "roles": ["credit"], "tenantId": "t1", "label": "信审专员（演示）" },
+      { "credential": "tok-comm1", "principalId": "comm1", "roles": ["commerce"], "tenantId": "t1", "label": "商务专员（演示）" },
+      { "credential": "tok-asset1", "principalId": "asset1", "roles": ["asset"], "tenantId": "t1", "label": "资产评估专员（演示）" },
+      { "credential": "tok-pol1", "principalId": "pol1", "roles": ["policy"], "tenantId": "t1", "label": "政策合规专员（演示）" },
+      { "credential": "tok-app1", "principalId": "app1", "roles": ["approver"], "tenantId": "t1", "label": "审批人（演示）" },
+      { "credential": "tok-jw1", "principalId": "jw1", "roles": ["jianwei"], "tenantId": "t1", "label": "见微管理员（演示）" },
+      { "credential": "tok-dir1", "principalId": "dir1", "roles": ["director"], "tenantId": "t1", "label": "总监（演示）" },
+      { "credential": "tok-cust1", "principalId": "cust1", "roles": ["customer"], "tenantId": "t1", "label": "客户角色（演示）" },
+      { "credential": "tok-adm1", "principalId": "adm1", "roles": ["admin"], "tenantId": "t1", "label": "系统管理员（演示）" }
+    ],
+    "rulePackActivation": {
+      "version": "1.0.0",
+      "annotation": "非公司制度（演示）：四域模拟规则包 v1.0.0（Back/C/rules/four-domain-rule-pack-v1.json；02-back轮冻结口径=并行推进引擎实际评估包）"
+    },
+    "parallelAdvance": true,
+    "advanceProgression": "parallel",
+    "advanceMaxConcurrency": 4,
+    "advanceServiceCredential": "tok-svcexec",
+    "requiredDomainsPolicy": {
+      "version": "demo03-required-v1",
+      "annotation": "非公司制度（演示）：三案例演示必需域政策（五域全必需，与 acc04-required-v1 同构）",
+      "seedSql": "INSERT INTO domain_requirement_policies(policy_version,domain,required,min_independent_proofs,created_by) VALUES ('demo03-required-v1','business',true,1,'demo03-isolated-seed'),('demo03-required-v1','policy',true,1,'demo03-isolated-seed'),('demo03-required-v1','credit',true,1,'demo03-isolated-seed'),('demo03-required-v1','commerce',true,1,'demo03-isolated-seed'),('demo03-required-v1','asset',true,1,'demo03-isolated-seed') ON CONFLICT DO NOTHING;"
+    },
+    "arrowCasesFallback": "C:/Users/22673/Desktop/JW/Back/Edge/.run/demo03/arrow-cases-manifest.json",
+    "_arrowCasesFallbackNote": "arrow-cases 的 A-404 回退清单（demo-init 产出）；02 落地 A 权威实现后此配置可移除（回退自动休眠）",
+    "edgeServeFront": "C:/Users/22673/Desktop/JW/Front/dist"
+  }
+}

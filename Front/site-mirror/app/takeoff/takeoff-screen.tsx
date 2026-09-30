@@ -23,6 +23,7 @@ import type { ColumnReceipt } from '../../lib/workbench/advance-client';
 import { projectColumnReceipts } from './column-projection';
 import { RoundSupplement } from './round-supplement';
 import { ColumnAdvance } from './column-advance';
+import { CyclesPanel } from './cycles-panel';
 import { blockingPredecessor } from './cell-status';
 import { RoleLogo, UiIcon, ObjectIcon } from './ui-icons';
 import { FlowView, MaterialsView, RecordsView, TodoView, type PanelKey } from './takeoff-aux';
@@ -46,6 +47,7 @@ type DrawerView =
   | { kind: 'admission' }
   | { kind: 'materialdesk' }
   | { kind: 'timeline' }
+  | { kind: 'cycles' }
   | null;
 
 const PANEL_TITLE: Record<PanelKey, string> = {
@@ -66,6 +68,7 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
   const [zoomed, setZoomed] = useState(false);
   const [assistantCollapsed, setAssistantCollapsed] = useState(false);
   const [endOpen, setEndOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [page, setPage] = useState<'board'|'materials'|'flow'|'records'>('board');
   const receiptScope=`${wb.session?.sessionId}:${customerId}`;
   const [roundState,setRoundState]=useState<{scope:string;values:ColumnReceipt[]}>({scope:receiptScope,values:[]});
@@ -115,8 +118,10 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
   }:legacyTerminal;
   const todosSource = currentSource;
   const columnScope = `${wb.session?.sessionId}:${customerId}`;
-  const [column, setColumn] = useState<{scope:string;domain:TakeoffDomainId}>({scope:columnScope,domain:'opportunity'});
-  const activeColumn = column.scope===columnScope ? column.domain : 'opportunity';
+  const initialRole = wb.session?.roles.find(r=>['business','policy','credit','commerce','asset'].includes(r)) ?? 'business';
+  const initialDomain = (initialRole==='business'?'opportunity':initialRole) as TakeoffDomainId;
+  const [column, setColumn] = useState<{scope:string;domain:TakeoffDomainId}>({scope:columnScope,domain:initialDomain});
+  const activeColumn = column.scope===columnScope ? column.domain : initialDomain;
   const activeRound=rounds.filter(r=>r.domain===(activeColumn==='opportunity'?'business':activeColumn)).sort((a,b)=>b.roundNo-a.roundNo||b.version-a.version)[0];
   const onDomain=(domain:string)=>setColumn({scope:columnScope,domain:(domain==='business'?'opportunity':domain) as TakeoffDomainId});
 
@@ -134,6 +139,13 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
   const openCell = (c: TakeoffCellView) => { setDrawer({ kind: 'cell', cell: c }); };
   const openPanel = (k: PanelKey) => { setDrawer({ kind: 'panel', panel: k }); };
   const closeDrawer = () => { setDrawer(null); setZoomed(false); };
+  const openFinished = async () => {
+    try {
+      const result = await wb.client!.listCycles(customerId);
+      if (Array.isArray(result.cycles) && result.cycles.length) setDrawer({kind:'cycles'});
+      else setEndOpen(true);
+    } catch { wb.setError('后续办理状态暂时无法读取，请稍后重试。'); }
+  };
   const role = wb.session?.roles.find((r) => ['business', 'policy', 'credit', 'commerce', 'asset'].includes(r)) ?? 'business';
 
   const drawerTitle = drawer === null ? ''
@@ -144,6 +156,7 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
     : drawer.kind === 'todos' ? '待办事项'
     : drawer.kind === 'materialdesk' ? '整理材料'
     : drawer.kind === 'timeline' ? '办理记录'
+    : drawer.kind === 'cycles' ? '履约·结清·返单'
     : drawer.kind === 'admission' ? '首次回租需求登记'
     : '客户主体信息';
   const predecessor = drawer?.kind === 'cell' ? blockingPredecessor(drawer.cell, cells) : null;
@@ -155,18 +168,19 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
         <span className="tk-appbrand"><UiIcon name="jianwei" size={26}/></span>
         <button className="tk-cust-name" onClick={() => setDrawer({ kind: 'customer' })} title={top.customer.displayName || '客户详情'}>{top.customer.displayName || '客户工作区'}</button>
         <nav className="tk-mainnav" aria-label="客户工作区">{([['board','平台','board'],['materials','材料','materials'],['flow','决策','flow'],['records','流程','timeline']] as const).map(([id,label,icon])=><button key={id} aria-current={page===id?'page':undefined} title={{board:'工作台',materials:'材料清单',flow:'角色流程／决策树',records:'时间轴'}[id]} onClick={()=>{setPage(id);closeDrawer();}}>{icon==='materials'?<ObjectIcon name="materials" size={25}/>:<UiIcon name={icon} size={22}/>}<span>{label}</span></button>)}</nav>
-        <details className="tk-work-actions tk-customer-summary"><summary>申请 <span>{top.requestedAmount.text}</span></summary><div>{[['建议额度',top.suggestedAmount],['建议期限',top.suggestedTerm],['参考价格',top.referencePrice]].map(([label,value]) => <p key={String(label)}>{String(label)} · <span>{(value as {text:string}).text}</span></p>)}</div></details>
-        <button className="tk-btn small" onClick={() => openPanel('materials')}>补材料</button>
-        <details className="tk-work-actions"><summary>办理</summary><div><button onClick={() => setDrawer({kind:'materialdesk'})}>整理材料</button><button onClick={() => setDrawer({kind:'timeline'})}>办理记录</button><button onClick={() => setDrawer({kind:'todos'})}>待办</button><button onClick={() => setDrawer({kind:'admission'})}>需求登记</button><button onClick={() => openPanel('proposal')}>建议方案</button><button onClick={() => setEndOpen(true)}>结束</button><span>{phaseText}</span></div></details>
-        <ColumnAdvance key={columnScope} wb={wb} customerId={customerId} domain={activeColumn==='opportunity'?'business':activeColumn} onDomain={onDomain} onReceipts={setRounds}/>
+        <span className="tk-request-amount" title="客户申请金额"><span>申请金额</span> <strong>{top.requestedAmount.text}</strong></span>
+        <details className="tk-work-actions" open={moreOpen} onClick={e => { const target=e.target as HTMLElement; if(target.closest('summary')){e.preventDefault();setMoreOpen(v=>!v);}else if(target.closest('button'))setMoreOpen(false); }}><summary aria-label="更多客户操作">更多</summary>{moreOpen&&<div><button onClick={() => setDrawer({kind:'admission'})}>需求与申请</button><button onClick={() => setDrawer({kind:'todos'})}>待办事项</button><button onClick={() => setDrawer({kind:'cycles'})}>履约·结清·返单</button><button onClick={() => openPanel('proposal')}>建议方案</button><button onClick={() => setEndOpen(true)}>确认预评估结论</button><span>{phaseText}</span></div>}</details>
+        <ColumnAdvance key={columnScope} wb={wb} customerId={customerId} domain={activeColumn==='opportunity'?'business':activeColumn} onDomain={onDomain} onReceipts={setRounds} onOpenMaterials={() => openPanel('materials')} onFinished={() => void openFinished()}/>
 
         <button className="tk-role-identity" onClick={onLogout} title="切换角色"><RoleLogo role={role} size={23}/><span>{workRoleName(wb.session?.roles)}</span></button>
+        {demoCase && <small className="tk-demo-badge" title="本客户为模拟案例：合成材料与受控外部事件；分析、规则与记录来自真实服务端。">模拟案例</small>}
       </header>
       <WbError error={wb.error} onDismiss={() => wb.setError(null)} />
+      <div className="tk-case-summary" aria-label="当前客户建议摘要">{[['建议额度',top.suggestedAmount],['建议期限',top.suggestedTerm],['参考价格',top.referencePrice]].map(([label,value]) => <span key={String(label)}>{String(label)} · <span>{(value as {text:string}).text}</span></span>)}</div>
       {terminal && <CaseEnding key={terminal.recordId} record={terminal} onRecords={() => { setPage('records'); setDrawer(null); }}/>}
       <div className={`tk-unified-workspace${assistantCollapsed ? ' assistant-collapsed' : ''}`}>
         <main className="tk-page-content">
-          <div className="tk-board-page" hidden={page!=='board'}><TakeoffBoard key={customerId} cells={cells} activeDomain={activeColumn} selected={drawer?.kind==='cell'?{domain:drawer.cell.domain,row:drawer.cell.row}:null} onSelect={openCell}/></div>
+          <div className="tk-board-page" hidden={page!=='board'}><TakeoffBoard key={customerId} cells={cells} activeDomain={activeColumn} onDomain={onDomain} selected={drawer?.kind==='cell'?{domain:drawer.cell.domain,row:drawer.cell.row}:null} onSelect={openCell}/></div>
           {page==='materials'&&<MaterialsDesk key={`${wb.session?.sessionId}:${customerId}`} wb={wb} customerId={customerId} activeDomain={activeColumn} round={activeRound} onUpload={()=>openPanel('materials')}/>}
           {page==='flow'&&<RoleFlow key={`${wb.session?.sessionId}:${customerId}`} wb={wb} cells={cells} top={top} onSelect={openCell} activeDomain={activeColumn} round={activeRound}/>}
           {page==='records'&&<WorkTimeline key={customerId} wb={wb} customerId={customerId} activeDomain={activeColumn} rounds={rounds}/>}
@@ -183,7 +197,7 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
           source={currentSource}
           onOpenMaterials={() => openPanel('materials')}
           cellContext={drawer?.kind === 'cell' ? `${takeoffDomainName(drawer.cell.domain)}·${takeoffRowName(drawer.cell.row)}` : null}
-          focusAssistant={drawer?.kind === 'cell' ? drawer.cell.domain === 'opportunity' ? 'business' : drawer.cell.domain : undefined}
+          focusAssistant={drawer?.kind === 'cell' ? drawer.cell.domain === 'opportunity' ? 'business' : drawer.cell.domain : activeColumn==='opportunity'?'business':activeColumn}
         />
             </div>
           </div>
@@ -231,6 +245,7 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
               )}
               {drawer.kind === 'materialdesk' && <MaterialsDesk key={customerId} wb={wb} customerId={customerId} onUpload={() => openPanel('materials')}/>}
               {drawer.kind === 'timeline' && <WorkTimeline wb={wb} customerId={customerId}/>}
+              {drawer.kind === 'cycles' && <CyclesPanel wb={wb} customerId={customerId}/>}
               {drawer.kind === 'customer' && <CustomerInfo wb={wb} />}
               {drawer.kind === 'admission' && <AdmissionRequestPanel wb={wb} onOpenProposal={() => openPanel('proposal')} />}
             </div>
@@ -364,7 +379,7 @@ function EndDialog({ wb, top, onClose, act }: {
       },
       async () => {
         await client.action(`/api/jw/v2/actions/assessments/${encodeURIComponent(a.id!)}/decide`, {
-          requestId, tenantId: 't1', decision: 'withdraw_assessment',
+          requestId, tenantId: wb.session?.tenantId ?? 't1', decision: 'withdraw_assessment',
         });
         await wb.refresh();
         onClose();

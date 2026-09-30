@@ -529,6 +529,9 @@ export function makeProcessingCoordinator(store, evidence, {
       }
       return { ok: true, aRef: out.aRef ?? null };
     } catch (e) {
+      // DEF-ACC-06：连接拒绝=确定性未发送（TCP 层即失败）。不落 failed 行（诚实：无登记发生），
+      // 返回 refused 标记；register_material 阶段据此转 blocked_a_unavailable 退避重入（不烧预算）。
+      if (e.code === 'ECONNREFUSED') return { ok: false, refused: true, error: e };
       const unknown = e.code === 'A_UNKNOWN' || e.name === 'AbortError' || e.code === 'ECONNRESET';
       const failDetail = JSON.stringify({ ...(detail), failCode: e.code ?? 'A_ERROR', failMsg: String(e.message).slice(0, 200) }).slice(0, 4000);
       if (unknown) {
@@ -727,6 +730,13 @@ export function makeProcessingCoordinator(store, evidence, {
       await finishTask(task, 'blocked_unknown', { failureCode: 'A_MATERIAL_UNKNOWN', keepCursor: true, note: 'A 材料登记已发出但结果未知：保持 unknown 先对账，不换 ID 重发；恢复后从本段续跑全链' });
       return null;
     }
+    if (out.refused) {
+      // DEF-ACC-06：连接拒绝=确定性未发送 → blocked_a_unavailable 退避重入（不烧 attempts 预算），
+      // 恢复后从本段续跑；不落 failed 行（无登记发生，绝不伪造 registered）。
+      await recordStage(task, 'register_material', 'blocked', { reason: 'A_UNREACHABLE', requestId: `ptx-${task.task_id}-mat` });
+      await finishTask(task, 'blocked_a_unavailable', { failureCode: 'A_UNREACHABLE', keepCursor: true, note: 'A 不可达（连接拒绝=确定性未发）：退避重入，不烧 attempts 预算' });
+      return null;
+    }
     await recordStage(task, 'register_material', 'failed', { code: out.error?.code ?? 'A_ERROR', message: String(out.error?.message ?? '').slice(0, 200) });
     await finishTask(task, 'failed', {
       failureCode: out.error?.code ?? 'A_MATERIAL_FAILED',
@@ -838,7 +848,8 @@ export function makeProcessingCoordinator(store, evidence, {
     }
     const bytes = art.object_ref ? await objectStore.get(art.object_ref) : Buffer.alloc(0);
     const meta = {
-      fileName: art.object_ref ?? '', contentType: '', periodFrom: art.period_from, periodTo: art.period_to,
+      // 集成轮 2026-09-25：优先保留原件名（来源定位；扩展名参与格式识别），缺省回退对象引用。
+      fileName: art.original_name ?? art.object_ref ?? '', contentType: '', periodFrom: art.period_from, periodTo: art.period_to,
       currency: art.currency, unit: art.unit, caliber: art.caliber,
     };
     const r = await parseArtifactBytesAsync(bytes, meta);
@@ -1719,9 +1730,11 @@ export function makeProcessingCoordinator(store, evidence, {
 
   async function claimDue(limit) {
     // 客户级窗口预算在认领 SQL 内强制：达上限的客户任务不被认领（排队不丢弃，不靠事后回收）
+    // DEF-ACC-06：客户/租户暂停（processing_flags，setPause 写入）必须在认领内强制——
+    // 暂停的任务留在队列不推进（治理面：争议/保护性暂停），恢复后照常认领。
     const rows = (await store.query(
-      `UPDATE processing_tasks SET status='running', attempts=attempts+1, leased_until=now() + ($3 || ' seconds')::interval, leased_by=$2, updated_at=now()
-       WHERE task_id IN (
+      `UPDATE processing_tasks pt SET status='running', attempts=attempts+1, leased_until=now() + ($3 || ' seconds')::interval, leased_by=$2, updated_at=now()
+       WHERE pt.task_id IN (
          SELECT pt.task_id FROM processing_tasks pt
          WHERE pt.status='queued' AND pt.attempts < pt.max_attempts AND (pt.leased_until IS NULL OR pt.leased_until < now())
            AND ($4::int IS NULL OR (
@@ -1750,7 +1763,6 @@ export function makeProcessingCoordinator(store, evidence, {
         `SELECT link_id, request_id, principal_id, entity_type, a_ref FROM a_links WHERE tenant_id=$1 AND task_id=$2 AND status='unknown' ORDER BY created_at`,
         [task.tenant_id, task.task_id],
       )).rows;
-      let allResolved = true;
       for (const row of pending) {
         const pid = String(row.principal_id);
         const principalToken = pid.startsWith('invite-role:') ? aBridge?.principalOf?.('upload', pid.slice('invite-role:'.length))
@@ -1764,15 +1776,29 @@ export function makeProcessingCoordinator(store, evidence, {
             [row.link_id, task.tenant_id, receipt.receipt?.[refField] ?? row.a_ref ?? null],
           );
           reconciled += 1;
-        } else {
-          allResolved = false;
+        } else if (receipt && receipt.found === false) {
+          // 集成轮 2026-09-25（DEF-INTG-04 收敛修复）：A 可达且明确回答无此回执=请求确定未达
+          // （如停机期连接拒绝；A 回执为持久行，不存在"稍后出现"）。同 requestId 重执行是
+          // 安全收敛路径：A 幂等表对同 ID 同载荷回放、异载荷 REQUEST_MISMATCH 确定性失败，
+          // 两种结果都可见、零重复登记。链接行转 failed → 任务重入后 aOp exec() 原路径续跑。
+          await store.query(
+            `UPDATE a_links SET status='failed', detail=a_links.detail || $3::jsonb, updated_at=now() WHERE link_id=$1 AND tenant_id=$2`,
+            [row.link_id, task.tenant_id, JSON.stringify({ reconcile: 'not_received_definitive', note: 'A 明确无此回执（请求未达）：同 ID 幂等重执行' }).slice(0, 4000)],
+          );
+          reconciled += 1;
+} else {
+          // A 不可达/网络层未知：保持 unknown（保守，不伪造）
         }
       }
-      if (allResolved && pending.length > 0) {
-        // 全部对账确认：任务从 blocked_unknown 回队，从游标续跑（已 registered 的步骤零重复；
-        // max_attempts+1——对账恢复≠失败重试，不占用失败预算，attempts 保持单调作尝试代数）
+      const stillUnknown = (await store.query(
+        `SELECT count(*)::int AS n FROM a_links WHERE tenant_id=$1 AND task_id=$2 AND status='unknown'`,
+        [task.tenant_id, task.task_id],
+      )).rows[0].n;
+      if (pending.length > 0 && stillUnknown === 0) {
+        // 无剩余 unknown：回执确认（registered）或确定未达（failed→同 ID 重执行）——从游标续跑
+        // （已 registered 的步骤零重复；max_attempts+1——对账恢复≠失败重试，不占用失败预算）
         await store.query(
-          `UPDATE processing_tasks SET status='queued', max_attempts=max_attempts+1, leased_until=NULL, leased_by=NULL, note='A 操作经回执对账确认（unknown→续跑，未换 ID）', updated_at=now()
+          `UPDATE processing_tasks SET status='queued', max_attempts=max_attempts+1, leased_until=NULL, leased_by=NULL, note='A 操作对账完成（unknown→续跑，未换 ID）', updated_at=now()
            WHERE task_id=$1 AND tenant_id=$2 AND status='blocked_unknown'`,
           [task.task_id, task.tenant_id],
         );

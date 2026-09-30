@@ -378,7 +378,7 @@ async function sessionOf(edge) {
   return j.session.sessionId;
 }
 
-test('路由:未配置模型 → 503 MODEL_NOT_CONFIGURED(确定未发送,不静默 mock)', async () => {
+test('路由:未配置模型提供明确标识的只读案例说明，不冒充模型回答', async () => {
   const edge = await buildEdgeWithModel({ withModel: false });
   try {
     const session = await sessionOf(edge);
@@ -386,10 +386,14 @@ test('路由:未配置模型 → 503 MODEL_NOT_CONFIGURED(确定未发送,不静
       method: 'POST', headers: { 'content-type': 'application/json', 'x-jw-session': session },
       body: JSON.stringify({ assistant: 'credit', question: 'q' }),
     });
-    assert.equal(r.status, 503);
+    assert.equal(r.status, 200);
     const j = await r.json();
-    assert.equal(j.error, 'MODEL_NOT_CONFIGURED');
-    assert.equal(j.status, 'not_configured');
+    assert.equal(j.mode, 'deterministic_briefing');
+    assert.equal(j.freeFormAvailable, false);
+    assert.equal(j.model, null);
+    assert.equal(j.authority, 'none');
+    assert.match(j.source, /非模型回答/);
+    assert.match(j.answer, /确定性案例说明/);
     assert.equal(j.sent, false);
   } finally { await edge.close(); }
 });

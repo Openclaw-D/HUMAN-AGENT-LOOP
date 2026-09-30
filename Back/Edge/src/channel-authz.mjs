@@ -54,7 +54,12 @@ export function createChannelAuthorizers({ store, log = () => { } }) {
     if (!customerId || typeof customerId !== 'string') {
       return { status: 400, body: { ok: false, error: 'CUSTOMER_REQUIRED', note: '本动作必须携带目标客户 customerId：逐资源授权失败关闭' } };
     }
-    return await checkCustomerOrReject(session, customerId);
+    // 集成轮 2026-09-25（读写授权分叉修复）：写面同样从 A 权威取租户——转发体 tenantId 一律
+    // 以 A 按客户行判定的租户覆写，浏览器自报租户无通道（与读面 readAuthorize 同口径）。
+    const tenantBox = {};
+    const verdict = await checkCustomerOrReject(session, customerId, { tenantOut: tenantBox });
+    if (verdict) return verdict;
+    return { ok: true, tenantId: tenantBox.tenantId ?? null };
   };
 
   const readAuthorize = async ({ route, m, urlObj, session, fetchImpl, baseUrl, headerName, credentialFor }) => {

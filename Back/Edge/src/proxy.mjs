@@ -56,6 +56,12 @@ export const ACTION_ROUTES = [
     pattern: /^\/api\/jw\/v2\/actions\/customers\/([^/]+)\/grants\/([^/]+)$/,
     upstream: (m) => `/api/v2/customers/${encodeURIComponent(m[1])}/grants/${encodeURIComponent(m[2])}`,
   },
+  // ---- 客户级授权登记（admin；grant 模式 principal 的可见客户；requestId 幂等/鉴权由 A 再验证） ----
+  {
+    method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/customers\/([^/]+)\/grants$/,
+    upstream: (m) => `/api/v2/customers/${encodeURIComponent(m[1])}/grants`,
+  },
   // ---- goal-03c 受限邀请（A CONTRACT §11 G2；code 明文仅创建响应一次，Edge 不落日志） ----
   {
     method: 'POST',
@@ -207,6 +213,13 @@ export const CONNECTORS_ACTION_ROUTES = [
   },
   {
     method: 'POST',
+    pattern: /^\/api\/jw\/v2\/actions\/connectors\/intake\/verify-binding$/,
+    upstream: () => `/api/connectors/intake/verify-binding`,
+    access: 'internal',
+    customerOf: (m, urlObj, body) => body?.customerId ?? null,
+  },
+  {
+    method: 'POST',
     pattern: /^\/api\/jw\/v2\/actions\/connectors\/processing\/pause$/,
     upstream: () => `/api/connectors/processing/pause`,
     access: 'internal',
@@ -334,13 +347,20 @@ export function createUpstreamProxy({
         return;
       }
       // 逐资源授权（任务04 §三）：先于任何上游转发；裁决拒绝不触达上游、不泄露上游存在性。
+      // 集成轮 2026-09-25：authorize 可返回 {ok:true, tenantId}——通过裁决并给出 A 权威租户，
+      // 转发体 tenantId 随之覆写（写面与读面同口径，前端自报租户无通道）。
+      let tenantFromA = null;
       if (authorize) {
         const verdict = await authorize({ route, m, urlObj, body, session });
         if (verdict) {
-          log(`[proxy] ${pathname} authorize-reject ${verdict.status} requestId=${requestId}`);
-          res.writeHead(verdict.status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
-          res.end(JSON.stringify(verdict.body));
-          return;
+          if (verdict.ok === true) {
+            tenantFromA = typeof verdict.tenantId === 'string' && verdict.tenantId ? verdict.tenantId : null;
+          } else {
+            log(`[proxy] ${pathname} authorize-reject ${verdict.status} requestId=${requestId}`);
+            res.writeHead(verdict.status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+            res.end(JSON.stringify(verdict.body));
+            return;
+          }
         }
       }
       // 转换型路由（如受限原件上传）：Edge 侧载荷重组，校验失败按 400 显式拒绝（不改写 requestId 语义）。
@@ -359,6 +379,12 @@ export function createUpstreamProxy({
       // actor 会被采信，故转发前必须以会话派生 principal 覆写，浏览器伪造值不得经网关流入审计。
       if (route.actorField && typeof session?.principalId === 'string' && session.principalId.length > 0) {
         outBody = { ...outBody, [route.actorField]: session.principalId };
+      }
+      // 租户归属覆写（集成轮 2026-09-25 读写授权分叉修复）：A 权威租户存在时一律覆写——
+      // 浏览器自报 tenantId 不得进入上游登记/审计（错报租户在上游 invitation 检查处会失败，
+      // 但正确租户下伪装他租户的语义噪音不应存在：身份事实来自服务端，不来自载荷）。
+      if (tenantFromA && outBody && typeof outBody === 'object' && !Array.isArray(outBody)) {
+        outBody = { ...outBody, tenantId: tenantFromA };
       }
 
       const upstreamUrl = baseUrl.replace(/\/$/, '') + route.upstream(m);

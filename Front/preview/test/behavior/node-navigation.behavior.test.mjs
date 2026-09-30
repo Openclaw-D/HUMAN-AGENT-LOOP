@@ -21,9 +21,19 @@ test('navigation: stable frontier, invalid ID, batched clicks, scope and reload'
  v.unmount();render(React.createElement(Probe,{scope:'s1:c1',nodes}));assert.equal(screen.getByRole('button').textContent,'credit:analysis');
  cleanup();render(React.createElement(Probe,{scope:'s1:c1',nodes:[]}));assert.equal(screen.getByRole('button').textContent,'empty');
 });
-test('unified root: direct role entry and same four-page column context without backend calls',async t=>{
+test('默认根入口＝真实链：连接服务端身份目录，服务不可达不落入本地虚拟演示',async t=>{
  t.after(cleanup);localStorage.clear();const original=globalThis.fetch;let calls=0;
- globalThis.fetch=async()=>{calls++;throw new Error('Virtual entry must not call backend')};t.after(()=>{globalThis.fetch=original});
+ globalThis.fetch=async()=>{calls++;throw new Error('offline')};t.after(()=>{globalThis.fetch=original});
+ render(React.createElement(RootApp));
+ await screen.findByText(/正在连接工作台/); // 真实身份目录不可达：如实提示，等待重试
+ assert.equal(screen.queryByText('虚拟交互演示'),null);
+ assert.equal(screen.queryByRole('button',{name:/好客户：/}),null);
+ assert.ok(calls>=1);
+});
+test('显式 ?demo=virtual 才进入隔离虚拟演示；零后端调用',async t=>{
+ t.after(cleanup);localStorage.clear();window.history.replaceState(null,'','?demo=virtual');
+ const original=globalThis.fetch;let calls=0;
+ globalThis.fetch=async()=>{calls++;throw new Error('Virtual entry must not call backend')};t.after(()=>{globalThis.fetch=original;window.history.replaceState(null,'','/')});
  render(React.createElement(RootApp));
  fireEvent.click(screen.getByRole('button',{name:'业务',exact:true}));
  fireEvent.click(screen.getByRole('button',{name:/好客户：/}));

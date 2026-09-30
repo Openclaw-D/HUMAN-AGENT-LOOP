@@ -1,60 +1,60 @@
 {
-  "processId": "process-muafsk9q-0432d9623f1e",
+  "processId": "process-mujfp6ce-4e7a15ae0fbe",
   "source": "real C assessStage in worker_threads; explicit synthetic inputs",
   "jobs": [
     {
       "domain": "asset",
-      "roundId": "column-muafskbv-717e6e4959ce",
-      "aRunId": "run-muafskgg-901f1593fc5f",
+      "roundId": "column-mujfp6e9-fd01e644f18f",
+      "aRunId": "run-mujfp6if-7acfce725885",
       "execution": {
         "actor": "arrow-local-service",
         "threadId": 1,
-        "startedAt": "2026-09-20T23:17:49.238Z",
-        "finishedAt": "2026-09-20T23:17:49.249Z"
+        "startedAt": "2026-09-27T06:25:06.772Z",
+        "finishedAt": "2026-09-27T06:25:06.781Z"
       }
     },
     {
       "domain": "business",
-      "roundId": "column-muafskbc-234cc40d7b1c",
-      "aRunId": "run-muafskh5-18f6af824ba8",
+      "roundId": "column-mujfp6ds-ae9bd7ef649e",
+      "aRunId": "run-mujfp6j2-06d5079ffbeb",
       "execution": {
         "actor": "arrow-local-service",
         "threadId": 2,
-        "startedAt": "2026-09-20T23:17:49.238Z",
-        "finishedAt": "2026-09-20T23:17:49.250Z"
+        "startedAt": "2026-09-27T06:25:06.772Z",
+        "finishedAt": "2026-09-27T06:25:06.781Z"
       }
     },
     {
       "domain": "commerce",
-      "roundId": "column-muafskbr-b97127bbc2f9",
-      "aRunId": "run-muafskhs-ada2d251465b",
+      "roundId": "column-mujfp6e5-6cb59adab108",
+      "aRunId": "run-mujfp6jr-baa81fe08f24",
       "execution": {
         "actor": "arrow-local-service",
         "threadId": 3,
-        "startedAt": "2026-09-20T23:17:49.238Z",
-        "finishedAt": "2026-09-20T23:17:49.249Z"
+        "startedAt": "2026-09-27T06:25:06.772Z",
+        "finishedAt": "2026-09-27T06:25:06.781Z"
       }
     },
     {
       "domain": "credit",
-      "roundId": "column-muafskbm-929d00983206",
-      "aRunId": "run-muafskif-40bacddf49d1",
+      "roundId": "column-mujfp6e2-a9d1b874e11f",
+      "aRunId": "run-mujfp6kd-70439510f565",
       "execution": {
         "actor": "arrow-local-service",
         "threadId": 4,
-        "startedAt": "2026-09-20T23:17:49.238Z",
-        "finishedAt": "2026-09-20T23:17:49.251Z"
+        "startedAt": "2026-09-27T06:25:06.781Z",
+        "finishedAt": "2026-09-27T06:25:06.791Z"
       }
     },
     {
       "domain": "policy",
-      "roundId": "column-muafskbi-816ef54351f3",
-      "aRunId": "run-muafskj4-9f777e4bcb32",
+      "roundId": "column-mujfp6dx-4619b86d1122",
+      "aRunId": "run-mujfp6l1-4e2a7d790ac5",
       "execution": {
         "actor": "arrow-local-service",
         "threadId": 5,
-        "startedAt": "2026-09-20T23:17:49.238Z",
-        "finishedAt": "2026-09-20T23:17:49.249Z"
+        "startedAt": "2026-09-27T06:25:06.772Z",
+        "finishedAt": "2026-09-27T06:25:06.780Z"
       }
     }
   ]

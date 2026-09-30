@@ -1,0 +1,5 @@
+fact_key,value,unit,grade,source_note
+equipment_ownership_verified,true,,source_supported,权属登记核验（合成）
+equipment_exists_observed,true,,confirmed,现场盘点（合成）
+nameplate_serial,SYNTHETIC-MACHINE-c06,,confirmed,铭牌照片编号（合成）
+equipment_deal_amount,2100000,CNY,confirmed,购置合同价（合成）

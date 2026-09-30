@@ -240,3 +240,12 @@ transport新增显式budget.unlimitedTotalCost=true，保留原账本、预占�
 
 ## 2026-09-21 — Unified presentation entry
 User requires one frontend preserving native materials/tree/timeline, driven by synthetic click events with synchronized chat. Every completed decision stage retains three candidates, one black and two white. 1920x1080 baseline fills viewport at 100%; large navigation and left/right buttons. Backend production integration remains separately validated. See v0.4/results/final-integration/REPORT.md.
+
+## 2026-09-25 集成验收三裁定（04-acceptance）
+1. 五域并行推进引擎经生产入口以 `--parallel-advance` 显式接线（opt-in，未启用=原单列行为不变）；必需域政策/规则包播种沿用既有"显式配置才播、恒标注非公司制度"机制。SYNTHETIC- 法人号前缀作为五区演练安全轨保留。
+2. 材料事实以解析信封（declaredFactSummaries）为01路→02路交接形状：评估适配器负责展开与保守 kind 映射（parse_extraction/未知kind→document，PROTOCOL §1 既有保守规则），不改冻结词表、不在感知层新增 kind。
+3. 金额口径：解析链事实以万元为语义单位（unit:'wan'）；业务红线等 CNY 比较须按单位归一（wan→CNY），禁止裸值比较。空单元格=缺失（unknown），不得冒充 0。
+
+## 2026-09-30 最终收敛与发布授权
+
+用户明确由 Codex 接手最后的前后端修复、联调和页面精简，替代本轮继续交给 ZCode 的整改安排；PC 响应式，主要1920×1080，不考虑手机。保留真实后台逻辑和合成好／中／差十案例，集中必要操作，禁止用页面点击假造办结。用户明确“先更新 GitHub”并补充“不需要部署”“推上去版本就可以”；本轮授权提交、推送现有仓库并打新版本 tag，不授权部署。运行凭据、数据库、原始运行日志和未审阅评测档案不纳入本次发布，原文件留存。

@@ -4,6 +4,7 @@ import { createServer, type IncomingMessage, type Server, type ServerResponse } 
 import { AppError } from '../domain/errors.ts';
 import { buildUploadAuthorization } from '../domain/upload-authorization.ts';
 import { buildAdvanceRounds } from '../domain/advance-round.ts';
+import { buildCaseDirectory } from '../domain/case-directory.ts';
 import type { Kernel } from '../domain/kernel.ts';
 
 const MAX_BODY = 1 << 20; // 1MB
@@ -26,6 +27,11 @@ export function startHttpServer(kernel: Kernel, port: number, options: { cases?:
     read: (credential: unknown, cid: string, query?: any) => Promise<any>;
     advance: (frame: Record<string, any>, cid: string) => Promise<any>;
     decide?: (frame: Record<string, any>, cid: string, jobId: string) => Promise<unknown>;
+    semantic?: (frame: Record<string, any>, cid: string, jobId: string) => Promise<unknown>;
+}; cycles?: {
+    list: (credential: unknown, cid: string) => Promise<any>;
+    open: (frame: Record<string, any>, cid: string) => Promise<any>;
+    transition: (frame: Record<string, any>, cid: string, cycleId: string, action: 'fulfill' | 'external-receipt' | 'settle' | 'close') => Promise<any>;
 } } = {}): Promise<Server> {
     const routes: RouteDef[] = [];
     const route = (method: string, path: string, handler: Handler): void => {
@@ -115,10 +121,31 @@ export function startHttpServer(kernel: Kernel, port: number, options: { cases?:
     // 路由注册
     const k = kernel;
     const advance = options.advance ?? buildAdvanceRounds(k);
-    if(options.cases) route('GET','/api/v2/arrow-cases',async (_q,_s,_p,_sp,body)=>options.cases!(body.credential));
+    // ---- 收尾02：A 正式案例目录（arrow-cases 权威面；DEF-03-01 关闭）----
+    // options.cases 仍可覆盖（隔离演示栈旧契约 parallel-arrows-cases-v1）；未覆盖时走 arrow_case_registry 权威实现。
+    const directory = buildCaseDirectory(k);
+    route('GET', '/api/v2/arrow-cases', async (_q, _s, _p, _sp, body) =>
+      options.cases ? options.cases(body.credential) : directory.list(body.credential));
+    route('GET', '/api/v2/arrow-cases/:caseId', async (_q, _s, p, _sp, body) => directory.detail(body.credential, p.caseId!));
+    route('POST', '/api/v2/arrow-case-registry', async (_q, _s, _p, _sp, body) => directory.register(body));
     const decide = options.advance?.decide;
     if (decide) route('POST', '/api/v2/customers/:customerId/advance-rounds/:roundId/decision',
       async (_q, _s, p, _sp, body) => decide(body, p.customerId!, p.roundId!));
+    const rerunSemantic = options.advance?.semantic;
+    if (rerunSemantic) route('POST', '/api/v2/customers/:customerId/advance-rounds/:roundId/semantic',
+      async (_q, _s, p, _sp, body) => rerunSemantic(body, p.customerId!, p.roundId!));
+    const cycles = options.cycles;
+    if (cycles) {
+      route('GET', '/api/v2/customers/:customerId/cycles', async (_q, _s, p, _sp, body) =>
+        cycles.list(body.credential, p.customerId!));
+      route('POST', '/api/v2/customers/:customerId/cycles', async (_q, _s, p, _sp, body) =>
+        cycles.open(body, p.customerId!));
+      route('POST', '/api/v2/customers/:customerId/cycles/:cycleId/:action', async (_q, res, p, _sp, body) => {
+        const actions = ['fulfill', 'external-receipt', 'settle', 'close'] as const;
+        if (!actions.includes(p.action as any)) return writeJson(res, 404, { ok: false, error: 'NOT_FOUND', message: '未知周期动作' });
+        return cycles.transition(body, p.customerId!, p.cycleId!, p.action as (typeof actions)[number]);
+      });
+    }
     route('GET', '/api/v2/customers/:customerId/advance-plan', async (_q, _s, p, sp, body) =>
       advance.getPlan(body.credential, p.customerId!, sp.get('domain') ?? 'business'));
     route('GET', '/api/v2/customers/:customerId/advance-rounds', async (_q, _s, p, sp, body) =>

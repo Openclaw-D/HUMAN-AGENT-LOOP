@@ -105,8 +105,11 @@ test('推进接口缺失不切页、不移动画布、不伪造业务',async t=>
  await act(async()=>{fireEvent.click(screen.getByRole('button',{name:'材料',exact:true}));});
  const canvas=screen.getByLabelText('可缩放的材料画布');canvas.scrollTop=137;canvas.scrollLeft=219;
  const before=canvas.innerHTML;const route=window.location.href;const focus=screen.getByLabelText('聊天消息');focus.focus();
- const button=screen.getByRole('button',{name:'推进下一专业列'});assert.equal(button.disabled,false);
+ const button=screen.getByRole('button',{name:'本列服务暂未接通'});assert.equal(button.disabled,true);
  fireEvent.click(button);fireEvent.click(button);
+ // 浏览箭头只读：切列往返不执行、不产生业务调用
+ assert.equal(screen.queryByRole('button',{name:'下一专业列'}),null);
+ assert.equal(screen.queryByRole('button',{name:'上一专业列'}),null);
  assert.equal(screen.getByLabelText('可缩放的材料画布'),canvas);assert.equal(canvas.scrollTop,137);assert.equal(canvas.scrollLeft,219);assert.equal(canvas.innerHTML,before);assert.equal(window.location.href,route);assert.equal(document.activeElement,focus);
  assert.equal(calls.action.length,0);assert.equal(calls.confirm.length,0);assert.equal(calls.send.length,0);
  assert.ok(screen.getByText(/1\/5 业务/));
@@ -228,7 +231,8 @@ test('辅助页：流程只读 SVG+缩放；记录消费服务端事件；待办
   await waitFor(() => assert.ok(screen.getByText('收到一份材料')), '记录页消费服务端事件类型');
   fireEvent.click(screen.getByRole('button', { name: '平台' }));
 
-  fireEvent.click(screen.getByRole('button', { name: '待办' }));
+  fireEvent.click(screen.getByText('更多'));
+  fireEvent.click(screen.getByRole('button', { name: '待办事项' }));
   await waitFor(() => assert.ok(screen.getByText(/补充 7 月流水/)));
   fireEvent.click(screen.getByRole('button', { name: /回原格子（信审·人工）/ }));
   assert.ok(await screen.findByRole('dialog', { name: /信审 · 核验/ }), '待办回原格子');
@@ -240,12 +244,12 @@ test('聊天助手：切换只更换接收助手，不发送或执行业务动�
   render(React.createElement(TakeoffScreen,{wb,onBackToDirectory:()=>{},onLogout:()=>{}}));
   fireEvent.click(screen.getByRole('tab',{name:'信审'}));
   assert.equal(screen.getByRole('tab',{name:'信审'}).getAttribute('aria-selected'),'true');
-  assert.equal(screen.getByLabelText('聊天消息').placeholder,'发消息，@ 点名助手…');
+  assert.equal(screen.getByLabelText('聊天消息').placeholder,'向信审助手提问…');
   assert.ok(screen.getByRole('button',{name:'发送消息'}).disabled);
   assert.equal(calls.send.length,0); assert.equal(calls.action.length,0);
 });
 
-test('聊天：普通消息与@模型分流；草稿跨助手保留；输入法不误发；模型未知防重发', async t => {
+test('聊天：普通提问与@指定助手；草稿跨助手保留；输入法不误发；模型未知防重发', async t => {
   t.after(cleanup); const {wb,calls}=makeScreen(); const observed=[];
   wb.client.observeAssistant=async (...args)=>{observed.push(args); throw Object.assign(new Error('未发送'),{code:'FORBIDDEN'});};
   render(React.createElement(TakeoffScreen,{wb,onBackToDirectory:()=>{},onLogout:()=>{}}));
@@ -259,13 +263,12 @@ test('聊天：普通消息与@模型分流；草稿跨助手保留；输入法�
   assert.equal(observed.length,0);
   fireEvent.keyDown(input,{key:'Enter'});
   await waitFor(()=>assert.equal(input.disabled,false));
-  assert.equal(calls.send.length,1);
-  assert.equal(calls.send[0].text,'核对材料');
-  assert.deepEqual(observed,[],'普通消息不触发真实模型');
+  assert.equal(calls.send.length,0);
+  assert.deepEqual(observed,[[wb.customerId,'asset','核对材料']],'普通提问绑定当前助手，不发送内部消息');
   assert.equal(input.value,'');
   fireEvent.change(input,{target:{value:'@资产 核对材料'}});
   fireEvent.keyDown(input,{key:'Enter'});
-  await waitFor(()=>assert.deepEqual(observed,[[wb.customerId,'asset','@资产 核对材料']]));
+  await waitFor(()=>assert.deepEqual(observed,[[wb.customerId,'asset','核对材料'],[wb.customerId,'asset','@资产 核对材料']]));
   await waitFor(()=>assert.equal(input.disabled,false));
   wb.client.observeAssistant=async (...args)=>{observed.push(args);return {model:{status:'unknown',sent:null}};};
   fireEvent.change(input,{target:{value:'@资产 再次核对'}});
@@ -274,15 +277,16 @@ test('聊天：普通消息与@模型分流；草稿跨助手保留；输入法�
   fireEvent.click(screen.getByRole('tab',{name:'信审'}));
   assert.ok(input.disabled); assert.ok(screen.getByRole('button',{name:'发送消息'}).disabled);
   fireEvent.keyDown(input,{key:'Enter'});
-  assert.equal(observed.length,2);
-  assert.equal(calls.send.length,1); assert.equal(calls.action.length,0);
+  assert.equal(observed.length,3);
+  assert.equal(calls.send.length,0); assert.equal(calls.action.length,0);
 });
 
 test('结束对话框：状态门如实——candidate_ready 下正/附条件禁用（须先提交复核）；撤回可用', async (t) => {
   t.after(() => cleanup());
   const { wb } = makeScreen({ currency: CURRENCY_PARTIAL, candidate: { tendency: 'do', supportableAmountMinor: 50_000_000, currency: 'CNY' }, assessmentStatus: 'candidate_ready' });
   render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
-  fireEvent.click(screen.getByRole('button', { name: '结束' }));
+  fireEvent.click(screen.getByText('更多'));
+  fireEvent.click(screen.getByRole('button', { name: '确认预评估结论' }));
   const dlg = await screen.findByRole('dialog', { name: /结束本次预评估/ });
   assert.match(dlg.textContent, /不批准正式额度/);
   const all = screen.getAllByRole('button', { name: '发起确认' });
@@ -300,7 +304,8 @@ test('结束对话框：awaiting_human_review 下三类可发起；not_support �
   t.after(() => cleanup());
   const { wb, calls } = makeScreen({ currency: [{ domain: 'credit', currency: 'current' }], candidate: { tendency: 'do_not', supportableAmountMinor: null, currency: 'CNY' }, assessmentStatus: 'awaiting_human_review' });
   render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
-  fireEvent.click(screen.getByRole('button', { name: '结束' }));
+  fireEvent.click(screen.getByText('更多'));
+  fireEvent.click(screen.getByRole('button', { name: '确认预评估结论' }));
   await screen.findByRole('dialog', { name: /结束本次预评估/ });
   const all = screen.getAllByRole('button', { name: '发起确认' });
   assert.ok(all.every((b) => !b.disabled), '状态门通过：三类均可发起');
@@ -328,7 +333,8 @@ test('结束对话框：附条件支持必须给条件（缺失本地拦截）�
     assessmentStatus: 'awaiting_human_review',
   });
   render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
-  fireEvent.click(screen.getByRole('button', { name: '结束' }));
+  fireEvent.click(screen.getByText('更多'));
+  fireEvent.click(screen.getByRole('button', { name: '确认预评估结论' }));
   await screen.findByRole('dialog', { name: /结束本次预评估/ });
   const all = screen.getAllByRole('button', { name: '发起确认' });
   fireEvent.click(all[1]); // support_with_conditions
@@ -354,7 +360,8 @@ test('结束对话框：已确认结论读回=终态（三类+撤回全禁用，
     confirmedAt: '2026-09-20T09:00:00Z',
   });
   render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
-  fireEvent.click(screen.getByRole('button', { name: '结束' }));
+  fireEvent.click(screen.getByText('更多'));
+  fireEvent.click(screen.getByRole('button', { name: '确认预评估结论' }));
   const dlg = await screen.findByRole('dialog', { name: /结束本次预评估/ });
   assert.match(dlg.textContent, /已确认结论/);
   assert.match(dlg.textContent, /需复核/);

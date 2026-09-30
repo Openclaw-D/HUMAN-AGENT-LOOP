@@ -69,6 +69,7 @@ export function createEdgeServer({
   assistantModel = null, // TAKEOFF：助手真实模型最小接线（authority=none；未配置时相应路由 503 失败关闭）
   assistantEvidence = null,
   decisionRepository = null,
+  uploadContext = null, // 集成轮 2026-09-25：上传恢复装配（R2-02 串行挂载；null 时路由 503 失败关闭）
   // CSRF 防护（D17）：额外允许的 Origin（如未来 staging 域名）；默认仅同源（Host 头比对）+ 无头非浏览器客户端
   allowedOrigins = [],
 }) {
@@ -380,12 +381,6 @@ export function createEdgeServer({
   const handleAssistantObserve = async (req, res, customerId) => {
     const session = requireSession(req, res);
     if (!session) return;
-    if (!assistantModel) {
-      return sendJson(res, 503, {
-        ok: false, error: 'MODEL_NOT_CONFIGURED', status: 'not_configured', sent: false,
-        note: '模型服务未配置（--model-config）：调用未发送（如实状态，不静默 mock）',
-      });
-    }
     const verdict = await verify({ req, customerId, action: 'workspace:read', session });
     if (!verdict.ok) return sendJson(res, 403, { ok: false, error: verdict.reason || 'FORBIDDEN' });
     let snapshot = null;
@@ -404,6 +399,12 @@ export function createEdgeServer({
     if (typeof body.question !== 'string' || body.question.trim().length < 1 || body.question.length > 2000) {
       return sendJson(res, 400, { ok: false, error: 'INVALID_QUESTION', note: 'question 须为 1..2000 字符' });
     }
+    // V0.5 收尾（03路）：模型未配置 → 确定性案例说明（非模型调用；来源显式标注，自由问答如实不可用）。
+    // 输入校验与授权先行；快照不可达仍 503 如实（不用说明掩盖故障）。
+    if (!assistantModel) {
+      const { buildBriefing } = await import('./assistant-briefing.mjs');
+      return sendJson(res, 200, buildBriefing({ snapshot, customerId, assistant: body.assistant, question: body.question }));
+    }
     // kernel 与 fixture 的 workspace 均为 {snapshot:{...}} 包装；admission/customer 在 snapshot 层。
     const snap = snapshot?.snapshot ?? snapshot;
     const admission = snap?.admission ?? null;
@@ -418,7 +419,7 @@ export function createEdgeServer({
       return target;
     };
     try { await attachEvidence(context, snapshot); }
-    catch { return sendJson(res, 422, { ok: false, error: 'EVIDENCE_UNAVAILABLE', sent: false, note: '获准原件、登记映射或现行解析不可用，模型未发送' }); }
+    catch (e) { console.error(`[assistant-evidence] FAIL ${e?.message ?? 'unknown'}`); return sendJson(res, 422, { ok: false, error: 'EVIDENCE_UNAVAILABLE', sent: false, note: '获准原件、登记映射或现行解析不可用，模型未发送' }); }
     const result = await assistantModel.observe({
       customerId, tenantId,
       assistant: body.assistant, question: body.question, context,
@@ -586,6 +587,7 @@ export function createEdgeServer({
       }
       const customerId = parseCustomerId(urlObj);
       const knownRead = pathname === '/versionz' || pathname === '/healthz/live' || pathname === '/healthz/ready'
+        || pathname === '/api/jw/v2/upload-context'
         || (customerId && (pathname.endsWith('/workspace') || pathname.endsWith('/events') || pathname.endsWith('/activity')));
 
       if (req.method !== 'GET' && knownRead) {
@@ -617,6 +619,16 @@ export function createEdgeServer({
 
         if (customerId && pathname.endsWith('/workspace')) return await handleWorkspace(req, res, customerId);
         if (customerId && pathname.endsWith('/events')) return await handleEvents(req, res, customerId, urlObj);
+
+        // 上传恢复上下文（R2-02 装配挂载；集成轮 2026-09-25）：会话必需；授权两次经 A 权威投影
+        // （读中撤权防护），恢复绑定经 Connectors 只读口；响应 allowlist 固定 9 字段（契约 §2.4）。
+        if (pathname === '/api/jw/v2/upload-context') {
+          if (!uploadContext) return sendJson(res, 503, { ok: false, error: 'UPLOAD_CONTEXT_UNAVAILABLE', note: '上传恢复装配未配置（需 --live + --connectors-url）' });
+          const targetCustomerId = urlObj.searchParams.get('customerId');
+          if (!targetCustomerId) return sendJson(res, 400, { ok: false, error: 'INVALID_INPUT', note: 'customerId 必填' });
+          const result = await uploadContext.reader({ req, customerId: targetCustomerId });
+          return sendJson(res, result.status, result.body);
+        }
 
         if (pathname === '/api/jw/v2/auth/identities') return await handleIdentities(res);
         if (pathname === '/api/jw/v2/customers') return await handleDirectory(req, res, urlObj);
@@ -1006,6 +1018,8 @@ export async function main(argv) {
     credentialFor: live ? (session) => session.credential : (session) => `session:${session.principalId}`,
   });
   // goal-03c 只读透传：仅 live 形态提供（fixture 无上游真实面，路由保持 404/501 如实拒绝）。
+  // 注：03路的 arrow-cases fallback404 双来源已退役（收尾02 落地 A 权威目录）；A 故障时
+  // readproxy 按既有语义 502 UPSTREAM_UNKNOWN 如实呈现，不再有第二份清单来源。
   const readProxy = live
     ? createReadProxy({ baseUrl: kernelBase, credentialFor: (session) => session.credential })
     : null;
@@ -1024,6 +1038,7 @@ export async function main(argv) {
   let connectorsProxy = null;
   let assistantEvidence = null;
   let connectorsReadProxy = null;
+  let uploadContextAssembly = null;
   const connectorsUrl = typeof args['connectors-url'] === 'string' ? args['connectors-url'] : null;
   if (live && connectorsUrl) {
     let token = process.env.JW_CONNECTORS_TOKEN || null;
@@ -1051,6 +1066,29 @@ export async function main(argv) {
       routes: CONNECTORS_READ_ROUTES,
       authorize: connectorsReadAuthorize,
     });
+    // 集成轮 2026-09-25：上传恢复装配挂载（R2-02 MOUNTING ①——决策 D1 取分进程形态：
+    // Connectors 只读恢复口 + 服务令牌；principalId 由 Edge 服务端会话解析，浏览器无自报通道）。
+    // A 授权投影走正式 HTTP 面（每请求两次，读中撤权防护）；装配构造失败 → 保持 null，
+    // 路由 503 失败关闭（不伪装可用）。
+    try {
+      const { createUploadContextAssembly } = await import('./upload-context-assembly.mjs');
+      // main 作用域与会话存储同源的会话解析（createEdgeServer 内的同名闭包不可达，语义一致）
+      const sessionOfMain = (req) => sessionStore?.resolve(req.headers['x-jw-session']);
+      uploadContextAssembly = await createUploadContextAssembly({
+        sessionOf: sessionOfMain,
+        aBaseUrl: kernelBase,
+        fetchContext: async ({ tenantId, customerId, principalId }) => {
+          const r = await fetch(`${connectorsUrl.replace(/\/+$/, '')}/api/connectors/intake/upload-context?tid=${encodeURIComponent(tenantId)}&cid=${encodeURIComponent(customerId)}&principalId=${encodeURIComponent(principalId)}`, {
+            headers: { 'X-Service-Token': token ?? '' },
+            signal: AbortSignal.timeout(5000),
+          });
+          if (!r.ok) throw new Error(`connectors upload-context HTTP ${r.status}`);
+          return await r.json();
+        },
+      });
+    } catch (e) {
+      console.error(`[edge] 上传恢复装配构造失败（路由将 503 失败关闭）: ${e.message}`);
+    }
   }
 
   // 任务04 §三·健康检查分项：处理通道进程（http）与通道鉴权前置（服务令牌 + 处理面可达）作为
@@ -1102,7 +1140,7 @@ export async function main(argv) {
   const started = await startEdgeServer({
     port, seal, probes, store,
     auth: scopeAuth,
-    sessionStore, verifyCredential, proxy, readProxy, connectorsProxy, connectorsReadProxy, identityDirectory, messages, messageStore, modelReceiptsDir, auditSink, staticHandler, frontHandler, assistantModel, assistantEvidence, decisionRepository,
+    sessionStore, verifyCredential, proxy, readProxy, connectorsProxy, connectorsReadProxy, identityDirectory, messages, messageStore, modelReceiptsDir, auditSink, staticHandler, frontHandler, assistantModel, assistantEvidence, decisionRepository, uploadContext: uploadContextAssembly,
     // CSRF 额外允许源：--allowed-origin 可重复，或 JW_EDGE_ALLOWED_ORIGINS 逗号分隔（staging 域名用）
     allowedOrigins: [
       ...argv.flatMap((a, i) => (a === '--allowed-origin' && argv[i + 1] && !argv[i + 1].startsWith('--') ? [argv[i + 1]] : [])),

@@ -2,6 +2,7 @@
 export interface RequiredDecision {roundId:string;resultId:string;choices:Array<'adopt'|'set_aside'|'reject'>}
 export interface CaseOutcome {processId:string;status:string;version:number;terminalEventId:string|null;archiveRef:string|null;ending:'diamond'|'rejection'|null;sourceMode:string}
 export interface AdvancePlan {
+  priorCase?: { processId: string; state: string };
   affectedDomains?:string[];
   requiredDecision?:RequiredDecision|null;
   customerId: string; available: boolean; reason?: string; domain: string; reused?: boolean; resultRef?: string;

@@ -7,13 +7,33 @@ export const valueOf=f=>f?.value&&typeof f.value==='object'&&Object.hasOwn(f.val
 export const loadColumnRules=()=>JSON.parse(readFileSync(new URL('../../../C/rules/four-domain-rule-pack-v1.json',import.meta.url),'utf8'));
 export function candidateMaterials(materials,facts){
   const levels={confirmed:'verified',source_supported:'source_supported',unverified:'declared',inference:'unknown',unknown:'unknown'};
+  // PROTOCOL §1 保守规则：分析侧未知 kind 一律按 document 保守处理（不拒绝、不猜测语义）
+  const knownKinds=new Set(['document','transcript','message','device_observation','image','video','audio',
+    'legal_document','financial_statement','equipment_list','ownership_document','order_contract','litigation_document']);
+  const scalarOf=f=>f?.value&&typeof f.value==='object'&&Object.hasOwn(f.value,'value')?f.value.value:f?.value;
+  // parse_extraction=01路处理链登记的衍生解析容器（PROTOCOL §1 词表之外）：其声明事实以
+  // declaredFactSummaries 信封形式归属在该工件上（DEF-ACC-02），评估时展开为独立声明事实并按
+  // document 载体映射（sourceRef 保留 artifactId 溯源），不当作独立材料来源。
+  const mapKind=(k)=>{const s=String(k).replace(/^material\./,'');return s==='parse_extraction'||!knownKinds.has(s)?'document':s;};
+  const expand=(f,a)=>{
+    const v=scalarOf(f);
+    if(v&&typeof v==='object'&&Array.isArray(v.declaredFactSummaries)){
+      return v.declaredFactSummaries.map(d=>({factKey:String(d.factKey),value:d.value,
+        verificationLevel:['verified','source_supported','declared','unknown'].includes(d.level)?d.level:'declared',
+        unit:d.unit??undefined,caliber:d.caliber??undefined,
+        sourceRef:{channel:'A.fact_assertions.parse_envelope',field:String(d.factKey)}}));
+    }
+    if(v&&typeof v==='object')return[]; // 登记元数据信封（material.*）：不是事实，不进感知
+    return [{factKey:f.fact_key,value:v,verificationLevel:levels[f.grade]??'unknown',
+      unit:a?.material_meta?.unit??undefined,caliber:a?.material_meta?.caliber??undefined}];
+  };
+  // a 在闭包内用于 material_meta 回填
   return materials.filter(a=>!a.superseded_by&&!a.duplicate_of).map(a=>({
-    materialId:a.artifact_id,kind:String(a.kind).replace(/^material\./,''),content:JSON.stringify(a.content),
+    materialId:a.artifact_id,kind:mapKind(a.kind),content:JSON.stringify(a.content),
     sourceRef:{channel:'A.evidence_artifacts',field:a.fact_key??'registered_fact_assertions',capturedAt:new Date(a.created_at).toISOString(),
       ...(a.material_meta?.page?{page:a.material_meta.page}:{}),...(a.material_meta?.timeSpan?{timeSpan:a.material_meta.timeSpan}:{})},
     quality:a.content?.quality??{},
-    declaredFacts:facts.filter(f=>f.artifact_id===a.artifact_id).map(f=>({factKey:f.fact_key,value:valueOf(f),verificationLevel:levels[f.grade]??'unknown',
-      unit:a.material_meta?.unit??undefined,caliber:a.material_meta?.caliber??undefined})),
+    declaredFacts:facts.filter(f=>f.artifact_id===a.artifact_id).flatMap(f=>expand(f,a)),
   }));
 }
 const KEYSETS={

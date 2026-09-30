@@ -86,7 +86,7 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
       '通道角色：实控人（customer_owner）', '用途：建立本客户与常驻处理链的一次性上传绑定（通道内授权面，与 A 档案权限分立）。'], requestId),
       async () => {
         const r = await client.channelAction<{ invitationId?: string; token?: string }>('intake/invitations', {
-          requestId, tenantId: 't1', customerId, role: 'customer_owner',
+          requestId, tenantId: wb.session?.tenantId ?? 't1', customerId, role: 'customer_owner',
           allowedEvidenceKinds: CHANNEL_KINDS.map((k) => k.v), ttlSec: 3600 * 24,
         });
         setInviteToken(r.token ?? null);
@@ -102,7 +102,7 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
         // providerUserId 标识外部联系人本人（客户侧），不以操作者身份冒充；令牌本身即客户主张的凭据。
         // 每次接受=一次新的联系人会话（绑定幂等键含会话序），避免"既有绑定使后续邀请永远无法 accepted"。
         const r = await client.channelAction<{ invitationId?: string; bindingId?: string; existed?: boolean }>('intake/accept', {
-          requestId, tenantId: 't1', token: tokenInput.trim(), provider: 'portal',
+          requestId, tenantId: wb.session?.tenantId ?? 't1', token: tokenInput.trim(), provider: 'portal',
           providerUserId: `portal:${customerId}:customer_owner:${Date.now().toString(36)}`,
         });
         if (r.invitationId) setInvitationId(r.invitationId);
@@ -130,7 +130,7 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
         '一次提交：字节进常驻处理链（解压→解析→事实→四域分析），A 档案登记与运行/Gate 回执由后台服务自动回写；无需选择链路、不复制内部 ID、不重复上传。传输完成≠解析完成。'], requestId),
         async () => {
           await client.channelAction('evidence/upload', {
-            requestId, tenantId: 't1', customerId, invitationId, kind: upKind,
+            requestId, tenantId: wb.session?.tenantId ?? 't1', customerId, invitationId, kind: upKind,
             contentBase64: bytesToBase64(bytes), contentType: f.type || 'application/octet-stream',
             periodFrom: upPeriodFrom || null, periodTo: upPeriodTo || null,
           });
@@ -145,7 +145,7 @@ export function ChannelCard({ wb, customerId, onChanged }: { wb: WbApi; customer
     const requestId = wbActionRequestId('wb-chpause', customerId, 'pause', String(Date.now()));
     act.open(buildConfirmPlan('channel.pause', '当前客户', [paused ? '恢复处理调度（按服务代际推进）。' : '暂停后零新外发；在途任务按代际收束。'], requestId),
       async () => {
-        await client.channelAction('processing/pause', { requestId, tenantId: 't1', customerId, paused: !paused });
+        await client.channelAction('processing/pause', { requestId, tenantId: wb.session?.tenantId ?? 't1', customerId, paused: !paused });
         await load();
       });
   };

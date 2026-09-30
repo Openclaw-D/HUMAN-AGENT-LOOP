@@ -1,0 +1,13 @@
+fact_key,value,unit,grade,source_note
+revenue_annual_declared,21000000,CNY,confirmed,企业年报摘要（合成）
+new_order_amount_declared,3000000,CNY,confirmed,在手订单台账（合成）
+litigation_pending_declared,false,,confirmed,涉诉查询（合成）
+total_assets_declared,14000000,CNY,confirmed,资产负债表（合成）
+total_liabilities_declared,5900000,CNY,confirmed,资产负债表（合成）
+monthly_operating_cash_flow,190000,CNY,confirmed,银行流水月均（合成）
+monthly_debt_service,96000,CNY,confirmed,还款计划表（合成）
+top1_customer_revenue_share,30,%,confirmed,收入构成明细（合成）
+proposed_monthly_rent,10000,CNY,confirmed,租金方案（合成）
+lease_term_months,36,月,confirmed,租赁方案（合成）
+funding_cost_annual,0.03,比率,confirmed,资金成本口径（合成）
+fees_known,true,,confirmed,费用清单（合成）

@@ -121,6 +121,7 @@ export function createDecisionHandler({ sessionOf, verify, store, model, evidenc
       }
       const pending = state.pending;
       const pendingKind = pending.taskKind ?? 'next_action';
+      // 发送结果未知必须保留原请求围栏；同 ID 核对，不能清锁后生成新请求盲目重发。
       let result;
       try {
         result = await model.observe({ customerId, tenantId: basis.scope.tenantId, assistant, question,

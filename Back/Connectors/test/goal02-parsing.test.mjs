@@ -4,6 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { deflateRawSync } from 'node:zlib';
+import { makePdf as makeTextPdf } from './pdf-fixtures.mjs';
 import { pgAvailable } from './helpers.mjs';
 import {
   TENANT, makeProcessingHarness, setupInvitation, uploadBytes, driveToEnd,
@@ -75,14 +76,6 @@ function makeXlsx(rows) {
     { name: 'xl/worksheets/sheet1.xml', data: Buffer.from(sheetXml, 'utf8'), deflate: true },
   ]);
 }
-function makeTextPdf(lines) {
-  const ops = ['BT', ...lines.map((l) => `/F1 12 Tf 72 700 Td (${l.replace(/([()\\])/g, '\\$1')}) Tj T*`), 'ET'].join('\n');
-  const content = deflateRawSync(Buffer.from(ops, 'latin1'));
-  const head = '%PDF-1.4\n'
-    + '1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n'
-    + `4 0 obj\n<< /Length ${content.length} /Filter /FlateDecode >>\nstream\n`;
-  return Buffer.concat([Buffer.from(head, 'latin1'), content, Buffer.from('\nendstream\nendobj\n%%EOF\n', 'latin1')]);
-}
 
 async function taskDetail(h, taskId) {
   const r = await fetch(`http://127.0.0.1:${PORT}/api/connectors/processing/tasks/${taskId}?tid=${TENANT}`, {
@@ -147,7 +140,7 @@ test('F3 text-PDF 与扫描 PDF 分流：可提取文本=declared 声明；扫�
     assert.equal(pdfParse.detail.format, 'keyvalue_pdf');
     assert.equal(pdfTask.stages.find((s) => s.stage === 'facts').detail.factsInserted, 2, 'PDF 文本声明进入事实候选');
 
-    const scanUp = await uploadBytes(h.api, inv, { kind: 'document', bytes: Buffer.from('%PDF-1.4\n%%EOF\n', 'utf8') });
+    const scanUp = await uploadBytes(h.api, inv, { kind: 'document', bytes: makeTextPdf() });
     await driveToEnd(h.api);
     const scanTask = await taskDetail(h, scanUp.processing.taskId);
     assert.equal(scanTask.status, 'needs_followup', '扫描 PDF：任务转人工');

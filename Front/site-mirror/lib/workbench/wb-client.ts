@@ -171,7 +171,7 @@ export function createWbClient({ baseUrl, fetchImpl = fetch }: { baseUrl: string
         `/api/jw/v2/actions/assessments/${encodeURIComponent(assessmentId)}/admission-request`, { tenantId: currentTenant(), ...body }),
 
     // 同源会话；单次非流式等待，无自动重试。浏览器断开不表示服务端取消。
-    async observeAssistant(customerId: string, assistant: ModelAssistant, question: string): Promise<AssistantObservation> {
+    async observeAssistant(customerId: string, assistant: ModelAssistant, question: string): Promise<AssistantObservation | import('./takeoff-actions').AssistantBriefing> {
       const headers = { 'content-type': 'application/json', ...authedHeaders() };
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 75_000);
@@ -181,6 +181,10 @@ export function createWbClient({ baseUrl, fetchImpl = fetch }: { baseUrl: string
         });
         const j = await r.json();
         if (!r.ok) throw new EdgeHttpError(r.status, String(j.error ?? 'REQUEST_FAILED'), String(j.note ?? j.message ?? '观察请求未完成'));
+        if (j.mode === 'deterministic_briefing' && j.ok === true && j.authority === 'none' &&
+          j.scope === 'preassessment_only' && j.customerId === customerId && j.assistant === assistant &&
+          j.sent === false && j.model === null && j.freeFormAvailable === false &&
+          typeof j.answer === 'string' && typeof j.source === 'string' && j.source.startsWith('server_state_briefing')) return j;
         if (!j.ok || j.authority !== 'none' || j.scope !== 'preassessment_only' || j.customerId !== customerId || j.assistant !== assistant ||
           !['succeeded', 'simulated', 'failed', 'unknown'].includes(j.model?.status) || ![true, false, null].includes(j.model?.sent) ||
           !Array.isArray(j.observations) || !Array.isArray(j.questions) || !Array.isArray(j.evidenceRefs) ||
@@ -285,6 +289,29 @@ export function createWbClient({ baseUrl, fetchImpl = fetch }: { baseUrl: string
      *  未登记/未配置时 404/503 原样上抛，调用方如实显示"对账口未接线"，不冒充查无回执。 */
     channelReceipt: (requestId: string) =>
       getJson(`/api/jw/v2/connectors/processing/receipts/${encodeURIComponent(requestId)}?tid=${encodeURIComponent(currentTenant())}`),
+
+    /** 客户履约周期清单（只读；STATE 见 TASK3_INTERFACES §6）。 */
+    listCycles: (customerId: string) => getJson(`/api/jw/v2/customers/${encodeURIComponent(customerId)}/cycles`),
+
+    /** 开启周期（返单=reorderOf 旧周期；历史不覆盖）。 */
+    createCycle: (customerId: string, body: { requestId: string; reorderOf?: string }) =>
+      inner.action<{ ok: boolean; cycleId?: string }>(`/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/cycles`, { tenantId: currentTenant(), ...body }),
+
+    /** 履约完成 → 待外部回执。 */
+    fulfillCycle: (customerId: string, cycleId: string, requestId: string) =>
+      inner.action<{ ok: boolean }>(`/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/cycles/${encodeURIComponent(cycleId)}/fulfill`, { requestId, tenantId: currentTenant() }),
+
+    /** 登记外部回执（模拟演练回执须来源明确；未确认回执不可结清，服务端亦拦截）。 */
+    recordExternalReceipt: (customerId: string, cycleId: string, body: { requestId: string; ref: string; source?: string }) =>
+      inner.action<{ ok: boolean }>(`/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/cycles/${encodeURIComponent(cycleId)}/external-receipt`, { tenantId: currentTenant(), ...body }),
+
+    /** 结清（未确认回执 → 409 服务端拦截）。 */
+    settleCycle: (customerId: string, cycleId: string, requestId: string) =>
+      inner.action<{ ok: boolean }>(`/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/cycles/${encodeURIComponent(cycleId)}/settle`, { requestId, tenantId: currentTenant() }),
+
+    /** 关闭周期。 */
+    closeCycle: (customerId: string, cycleId: string, requestId: string) =>
+      inner.action<{ ok: boolean }>(`/api/jw/v2/actions/customers/${encodeURIComponent(customerId)}/cycles/${encodeURIComponent(cycleId)}/close`, { requestId, tenantId: currentTenant() }),
 
     action: <T = Record<string, unknown>>(path: string, body: Record<string, unknown>) => inner.action<T>(path, body),
     advance: createAdvanceClient(root, authedHeaders, fetchImpl),

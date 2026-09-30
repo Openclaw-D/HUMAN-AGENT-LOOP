@@ -3,6 +3,7 @@ import { ConnError } from '../errors.mjs';
 import { newId, sha256Hex } from '../ids.mjs';
 import { detectFormat } from '../../../C/src/parse/adapters.mjs';
 import { readAssistantEvidence } from '../processing/assistant-evidence.mjs';
+import { makeUploadContextService } from '../intake/upload-context.mjs';
 import { verifyCallback, verifyUrlEcho } from '../wecom/crypto.mjs';
 import { verifyTrtcSignature, parseTrtcEvent } from '../rtc/trtc.mjs';
 
@@ -177,6 +178,17 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
         const b = JSON.parse(body);
         return json(res, 200, { ok: true, ...(await svc.intake.revokeInvitation(b)) });
       }
+      // ---- V0.4 R2-02 串行集成：上传恢复上下文只读口（集成轮 2026-09-25 挂载）----
+      // 服务令牌面（上方门已强制）；只读：不新建/续期/接受邀请，不触对象存储。
+      // 调用方=Edge 网关：principalId 由 Edge 从服务端会话解析后传入（浏览器只持不透明会话，
+      // 无自报通道）；tenantId/customerId 语义与 intake/upload-context.mjs read 逐字一致。
+      if (route === 'GET /api/connectors/intake/upload-context') {
+        const cid = url.searchParams.get('cid');
+        const principalId = url.searchParams.get('principalId');
+        if (!tid || !cid) throw new ConnError('INVALID_INPUT', 'upload-context: tid/cid 必填');
+        const context = await makeUploadContextService(svc.store).read({ tenantId: tid, customerId: cid, principalId });
+        return json(res, 200, { ok: true, ...context });
+      }
       if (route === 'POST /api/connectors/evidence/upload') {
         const b = JSON.parse(body);
         if (!svc.objectStore) throw new ConnError('INTERNAL', 'objectStore not wired');
@@ -214,6 +226,14 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
           throw new ConnError('INVALID_INPUT', 'upload: contentBase64 或 objectRef 必须提供其一');
         }
         // 3) 登记原件+口径元数据；不可读 → needs_followup（待补），绝不产生事实候选
+        //    （集成轮 2026-09-25：可选 name 原件名保留，1..200；判重/身份恒按 sha256 内容寻址）
+        let originalName = null;
+        if (b.name !== undefined && b.name !== null) {
+          if (typeof b.name !== 'string' || b.name.trim().length === 0 || b.name.length > 200) {
+            throw new ConnError('INVALID_INPUT', 'upload: name 必须是 1..200 字符 string');
+          }
+          originalName = b.name;
+        }
         const reg = await svc.evidence.registerArtifact({
           tenantId: b.tenantId, customerId: b.customerId, sessionId: b.sessionId ?? null,
           sourceProvider: 'customer_upload', kind: b.kind,
@@ -228,6 +248,7 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
           completeness: readable ? b.completeness ?? 'complete' : 'needs_followup',
           readable,
           sourceMode: b.sourceMode ?? 'real',
+          originalName,
         });
         // goal-02 · 修正原件：显式取代关系 → 旧件标 superseded_by（历史不改写；材料集只取现行件）
         if (b.supersedesEvidenceId) {
@@ -239,6 +260,10 @@ export async function startServer(svc, { port = 48100, wecomConfig, trtcCallback
         }
         return json(res, 200, {
           ok: true, ...reg,
+          // 集成轮 2026-09-25（additive）：贯穿关联标识——上传响应即可对账，无需查库。
+          // sha256=原件字节指纹（对象存储落库复核同源）；objectRef=受控对象存储引用；
+          // byteLength=原始字节数。taskId 见 processing.taskId（处理任务幂等键）。
+          ...(sha256 ? { sha256, objectRef, byteLength: objectRef && b.contentBase64 != null ? Buffer.from(b.contentBase64, 'base64').length : null } : {}),
           ...(svc.processing ? { processing: await svc.processing.enqueueArtifact({ tenantId: b.tenantId, customerId: b.customerId, evidenceId: reg.evidenceId, kind: b.kind }) } : {}),
           note: reg.completeness === 'needs_followup'
             ? '材料不可读/缺失：已登记待补，不产生任何事实候选'

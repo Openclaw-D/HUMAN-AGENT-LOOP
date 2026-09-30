@@ -15,4 +15,4 @@ test('五六次为演示目标，终态依赖服务端结果而不依赖固定�
  assert.equal(readCaseTerminal({...base,roundCount:5,archived:false}),null);
  assert.ok(verifiedCaseEnding(readCaseTerminal({...base,kind:'rejected',roundCount:2}),'c1','好'),'真实拒绝不被预设的好客户成功路径覆盖');
 });
-test('终态页面可返回、可查看记录，不改变服务端记录',t=>{t.after(cleanup);let views=0;render(React.createElement(CaseEnding,{record:{...base,roundCount:5},onRecords:()=>views++}));assert.ok(screen.getByRole('dialog',{name:'案例本次流程已办结'}));fireEvent.click(screen.getByRole('button',{name:'查看记录'}));assert.equal(views,1);assert.equal(screen.queryByRole('dialog'),null);});
+test('五区完成以非阻塞提示呈现，可查看记录，不改变服务端记录',t=>{t.after(cleanup);let views=0;render(React.createElement(CaseEnding,{record:{...base,roundCount:5},onRecords:()=>views++}));assert.ok(screen.getByRole('status'));assert.equal(screen.queryByRole('dialog'),null);fireEvent.click(screen.getByRole('button',{name:'查看记录'}));assert.equal(views,1);assert.equal(screen.queryByRole('status'),null);});

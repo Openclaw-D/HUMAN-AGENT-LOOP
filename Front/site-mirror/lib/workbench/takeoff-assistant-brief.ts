@@ -178,3 +178,79 @@ export function composeAssistantBriefError(kind: AssistantBriefKind, status: num
   const who = ASSISTANT_BRIEF_NAMES[kind];
   return `【${who} · 受控简报读取失败】状态 ${status ?? '未知'}${errCode ? ` ${errCode}` : ''}：服务端读面不可达或无权限——如实转达，不伪造分析结果；可稍后重试或改用材料面板核对原件。`;
 }
+
+// ---------------------------------------------------------------------------
+// 建议提问（2026-09-29 · 01-front）：2–3 条与当前状态相关的只读问题。
+// 只消费服务端读面结构字段（TakeoffSource 的最小形状，就地内联保持本模块零 import）；
+// 点击=填入输入框由用户发送，不自动执行、不推进任何业务状态（聊天文字不算审批）。
+// ---------------------------------------------------------------------------
+export interface SuggestionSource {
+  customerName?: string | null;
+  currentMaterials?: number | null;
+  factConflicts?: number;
+  snapshot?: {
+    assessments?: Array<{ status?: string | null; stale?: boolean | null }> | null;
+    admission?: {
+      request?: { requestedAmount?: number | null } | null;
+      candidate?: { tendency?: string | null; conditions?: string[] | null } | null;
+    } | null;
+    decisionStatus?: {
+      basis?: { gate?: { result?: string | null } | null; blockedActions?: string[] } | null;
+    } | null;
+  } | null;
+}
+
+const SUGGESTION_BY_KIND: Record<AssistantBriefKind, string[]> = {
+  business: ['这位客户的经营与订单情况怎么样？', '本次首次回租需求登记的金额和用途是什么？'],
+  policy: ['这位客户符合准入边界吗？有哪些政策限制？', '本次交易在区域和行业上有什么要求？'],
+  credit: ['信审现在最关注什么风险？', '现金流覆盖率是怎么算出来的？'],
+  commerce: ['建议额度和期限是怎么得出的？', '参考价格的口径是什么？'],
+  asset: ['设备权属与价值核验进展如何？', '资产核验还缺哪些材料？'],
+  jianwei: ['当前办理整体进展如何？', '下一步建议先处理什么？'],
+};
+
+export function composeAssistantSuggestions(kind: AssistantBriefKind, src: SuggestionSource): string[] {
+  const out: string[] = [];
+  const basis = src.snapshot?.decisionStatus?.basis ?? null;
+  if ((src.factConflicts ?? 0) > 0) out.push(`材料里有 ${src.factConflicts} 处内容互相矛盾，应该以哪份为准？`);
+  if (basis?.gate?.result === 'rejected') out.push('这次准入为什么被规则阻断？依据是哪些规则？');
+  if (Array.isArray(basis?.blockedActions) && basis!.blockedActions!.length > 0) out.push('目前有哪些办理动作被暂缓了？恢复需要什么？');
+  const conditions = src.snapshot?.admission?.candidate?.conditions ?? null;
+  if (Array.isArray(conditions) && conditions.length > 0) out.push(`待满足的条件（${conditions.slice(0, 2).join('、')}）目前进展如何？`);
+  if (src.currentMaterials === 0) out.push('还没有现行材料：第一步应该准备哪些材料？');
+  if (src.snapshot?.admission?.request?.requestedAmount == null) out.push('首次回租需求还没登记，需要客户补充哪些信息？');
+  for (const q of SUGGESTION_BY_KIND[kind]) {
+    if (out.length >= 3) break;
+    out.push(q);
+  }
+  return out.slice(0, 3);
+}
+
+const ASSESSMENT_STATUS_TEXT: Record<string, string> = {
+  collecting: '材料收集中', candidate_ready: '已有建议方案', awaiting_human_review: '待人工确认',
+  preassessment_confirmed: '结论已确认', rejected: '不支持', superseded: '已撤回',
+};
+
+/**
+ * 无模型时的确定性"案例说明"（2026-09-30-final）：从服务端读面投影回答"现在什么情况/为什么/能做什么"。
+ * 来源固定标注"案例说明（服务端读面，非真实模型）"；不编造数字，未知如实；不推进业务。
+ */
+export function composeCaseExplanation(kind: AssistantBriefKind, src: SuggestionSource): string {
+  const who = ASSISTANT_BRIEF_NAMES[kind];
+  const basis = src.snapshot?.decisionStatus?.basis ?? null;
+  const lines: string[] = [];
+  const latest = (src.snapshot?.assessments ?? []).length > 0 ? (src.snapshot?.assessments ?? [])[(src.snapshot?.assessments ?? []).length - 1]! : null;
+  lines.push(`当前客户：${src.customerName ?? '（名称未读到）'}${latest?.status ? `；评估状态：${ASSESSMENT_STATUS_TEXT[String(latest.status)] ?? String(latest.status)}${latest.stale === true ? '（依据已过时，需复核）' : ''}` : ''}`);
+  const materials = src.currentMaterials;
+  lines.push(materials == null ? '现行材料数暂时无法读取（未知≠零）。' : `现行材料 ${materials} 份${materials === 0 ? '：还没有可分析的原件，先上传材料。' : ''}。`);
+  const req = src.snapshot?.admission?.request?.requestedAmount ?? null;
+  lines.push(req != null ? `首次回租需求已登记（金额以需求登记为准）。` : '首次回租需求尚未登记（如实待补）。');
+  if (basis?.gate?.result) lines.push(`准入规则门：${basis.gate.result}${basis.gate.result === 'rejected' ? '——本次按规则不能通过，不能强制放行。' : ''}`);
+  if (Array.isArray(basis?.blockedActions) && basis!.blockedActions!.length > 0) lines.push(`暂缓动作：${basis!.blockedActions!.join('、')}（需先解除前置条件）。`);
+  const conditions = src.snapshot?.admission?.candidate?.conditions ?? null;
+  if (Array.isArray(conditions) && conditions.length > 0) lines.push(`候选待满足条件：${conditions.join('；')}。`);
+  if ((src.factConflicts ?? 0) > 0) lines.push(`有 ${src.factConflicts} 处材料内容互相矛盾：需人工复核后才能继续确认。`);
+  const suggestion = composeAssistantSuggestions(kind, src)[0];
+  if (suggestion) lines.push(`可继续的事：${suggestion}`);
+  return `【案例说明 · 服务端读面组答（非真实模型） · ${who}】\n${lines.map((l) => `· ${l}`).join('\n')}\n（自由模型问答未配置：以上为当前真实投影说明；可查看材料原件、按页面按钮办理，或请负责人接入模型。）`;
+}
