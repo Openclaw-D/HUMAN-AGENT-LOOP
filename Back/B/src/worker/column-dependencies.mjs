@@ -2,7 +2,8 @@
 import { readFileSync } from 'node:fs';
 import { stableHash } from '../../../C/domains/util.mjs';
 import { perceptionStage } from '../../../C/domains/pipeline.mjs';
-export const DEPENDENCY_VERSION='column-deps-v1';
+import { normalizeDeclaredValue } from '../../../C/domains/fact-values.mjs';
+export const DEPENDENCY_VERSION='column-deps-v2';
 export const valueOf=f=>f?.value&&typeof f.value==='object'&&Object.hasOwn(f.value,'value')?f.value.value:f?.value;
 export const loadColumnRules=()=>JSON.parse(readFileSync(new URL('../../../C/rules/four-domain-rule-pack-v1.json',import.meta.url),'utf8'));
 export function candidateMaterials(materials,facts){
@@ -18,14 +19,14 @@ export function candidateMaterials(materials,facts){
   const expand=(f,a)=>{
     const v=scalarOf(f);
     if(v&&typeof v==='object'&&Array.isArray(v.declaredFactSummaries)){
-      return v.declaredFactSummaries.map(d=>({factKey:String(d.factKey),value:d.value,
+      return v.declaredFactSummaries.map(d=>({factKey:String(d.factKey),value:normalizeDeclaredValue(String(d.factKey),d.value),
         verificationLevel:['verified','source_supported','declared','unknown'].includes(d.level)?d.level:'declared',
         unit:d.unit??undefined,caliber:d.caliber??undefined,
         sourceRef:{channel:'A.fact_assertions.parse_envelope',field:String(d.factKey)}}));
     }
     if(v&&typeof v==='object')return[]; // 登记元数据信封（material.*）：不是事实，不进感知
-    return [{factKey:f.fact_key,value:v,verificationLevel:levels[f.grade]??'unknown',
-      unit:a?.material_meta?.unit??undefined,caliber:a?.material_meta?.caliber??undefined}];
+    return [{factKey:f.fact_key,value:normalizeDeclaredValue(f.fact_key,v),verificationLevel:levels[f.grade]??'unknown',
+      unit:f.value?.unit??a?.material_meta?.unit??undefined,caliber:f.value?.caliber??a?.material_meta?.caliber??undefined}];
   };
   // a 在闭包内用于 material_meta 回填
   return materials.filter(a=>!a.superseded_by&&!a.duplicate_of).map(a=>({
@@ -61,11 +62,20 @@ export function describeColumnDependencies({customer,materials,facts,ruleVersion
   const global={unreadable,invalid:perception.ok?[]:perception.problems??[],loadedRules:stableHash(pack)};
   return Object.fromEntries(['business','policy','credit','commerce','asset'].map(domain=>{
     const factKeys=[...new Set([...(domain==='policy'?ruleKeys(pack):KEYSETS[domain]),'transaction_scope'])].sort();
-    const selected=facts.filter(f=>factKeys.includes(f.fact_key));
+    const selected=facts.filter(f=>{
+      const v=valueOf(f);
+      return factKeys.includes(f.fact_key)||(v&&typeof v==='object'&&Array.isArray(v.declaredFactSummaries)&&
+        v.declaredFactSummaries.some(d=>factKeys.includes(String(d.factKey))));
+    });
+    const present=new Set(selected.flatMap(f=>{
+      const v=valueOf(f);
+      return v&&typeof v==='object'&&Array.isArray(v.declaredFactSummaries)?v.declaredFactSummaries.map(d=>String(d.factKey)):[f.fact_key];
+    }));
     const artifactIds=[...new Set([...selected.map(f=>f.artifact_id),...unreadable.map(u=>u.materialId),...(domain==='policy'?stale:[])])].sort();
     const semantic={version:DEPENDENCY_VERSION,domain,ruleVersion,global,
-      facts:selected,materials:materials.filter(m=>artifactIds.includes(m.artifact_id)),missing:factKeys.filter(k=>!selected.some(f=>f.fact_key===k)),
+      facts:selected,materials:materials.filter(m=>artifactIds.includes(m.artifact_id)),missing:factKeys.filter(k=>!present.has(k)),
       ...(domain==='policy'?{asOf,freshness:{hasCapturedFacts:items.some(i=>i.capturedAt),staleMaterialIds:stale}}:{})};
-    return [domain,{version:DEPENDENCY_VERSION,deps:{artifactIds,factKeys,rulePackVersion:ruleVersion},semanticHash:stableHash(JSON.parse(JSON.stringify(semantic)))}];
+    const digestKeys=[...new Set([...factKeys,...selected.map(f=>f.fact_key)])].sort();
+    return [domain,{version:DEPENDENCY_VERSION,deps:{artifactIds,factKeys:digestKeys,rulePackVersion:ruleVersion},semanticHash:stableHash(JSON.parse(JSON.stringify(semantic)))}];
   }));
 }

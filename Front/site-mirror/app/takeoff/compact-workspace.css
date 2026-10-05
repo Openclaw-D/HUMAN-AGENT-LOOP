@@ -15,7 +15,9 @@
 .tk-page-content { flex:1; min-width:0; min-height:0; display:flex; flex-direction:column; }
 .tk-board-page { display:flex; flex:1; min-height:0; }
 .tk-board-page[hidden], .tk-assistant-shell[hidden] { display:none; }
-.tk-board-page .tk-board-wrap { width:100%; }
+/* NIGHT_GATE_0415：玻璃面 overflow:hidden 阻断用户滚轮/滚动条到达办结行（键盘焦点可达但鼠标不可达）。
+   最小候选：仅看板页把 wrap 垂直滚动还给用户；横向保持 hidden（画布语义不变），其余组件/布局零改动。 */
+.tk-board-page .tk-board-wrap { width:100%; overflow-y:auto; overflow-x:hidden; }
 .tk-global-assistant { position:absolute; top:12px; bottom:12px; right:12px; width:var(--assistant-width); }
 .tk-assistant-shell, .tk-assistant-shell > .tk-right { height:100%; width:100%; min-height:0; }
 .tk-edge-toggle { position:absolute; top:50%; left:-14px; transform:translateY(-50%); z-index:15; width:24px; height:56px; border:1px solid #d8e0e4; border-radius:12px; background:#fff; color:#526471; }
@@ -231,7 +233,10 @@
 .tk-coordinator-entry{text-align:center;margin:20px 0 0}
 .tk-coordinator-entry p{font-size:12px;color:#6d7880}
 .tk-request-amount{font-size:12px;white-space:nowrap;color:#687780}.tk-request-amount strong{color:#334049;font-weight:600}
-.tk-case-summary{display:flex;gap:22px;font-size:12px;color:#6e7b83;padding:0 12px 12px;flex-wrap:wrap}
+.tk-case-summary{display:flex;gap:22px;font-size:12px;color:#6e7b83;padding:0 calc(var(--assistant-width, 320px) + 20px) 12px 12px;flex-wrap:wrap}
+/* R3-02 缺陷修复：让位留白只属于工作台页（右侧有助手面板）；案例目录卡片同用此类，
+   必须恢复原始 12px 留白，否则卡片内容区被压成 1–2 字宽（目录要点竖排，R3 验收截图实测）。 */
+.tk-cases-strip .tk-case-summary{padding:0 12px 12px}
 .tk-compact-top{flex-wrap:nowrap;gap:12px}
 .tk-compact-top .tk-mainnav{flex:0 0 280px;margin-right:auto}
 .tk-compact-top .tk-next-event{max-width:210px}
@@ -248,3 +253,43 @@
 .tk-review-completed button{border:0;background:transparent;color:#40554a;cursor:pointer;font:inherit}.tk-review-completed strong{font-weight:600}
 @media(max-width:1200px){.tk-domain-select{font-size:12px}.tk-domain-select .tk-role-logo{width:30px;height:30px}.tk-workspace{--assistant-width:280px}.tk-board{grid-template-columns:48px repeat(5,minmax(0,1fr))}}
 .tk-action-error{max-width:280px;font-size:12px;color:#a7453b;line-height:1.4}
+
+/* ---- V0.6-02 · 四页统一业务简报条 ---- */
+/* R2-02：右侧助手为 absolute 悬浮（.tk-global-assistant right:12px width:var(--assistant-width)），
+   简报条/摘要行与 .tk-unified-workspace 同样让位，否则长文案滑入面板下方被遮（视觉验收 09/10 缺陷根因）。 */
+.tk-case-brief { display:flex; flex-direction:column; gap:2px; margin:0 calc(var(--assistant-width, 320px) + 20px) 8px 12px; padding:8px 12px; border:1px solid #e2e8ec; border-radius:12px; background:#fbfcfd; font-size:12.5px; line-height:1.6; color:#3f4c55; }
+.tk-case-brief.has-attention { border-color:#e7c98a; background:#fdf9f0; }
+.tk-brief-row { display:flex; align-items:baseline; gap:8px; margin:0; flex-wrap:wrap; }
+.tk-brief-label { flex:none; min-width:64px; font-weight:600; color:#64737d; }
+/* R2-02：裸文本在 flex 行内不折行会横向裁切（视觉验收 09/10 缺陷）——正文入可伸缩文本项，
+   行内正常折行，不截断不省略。 */
+.tk-brief-text { flex:1 1 320px; min-width:0; white-space:normal; overflow-wrap:anywhere; }
+.tk-brief-chip { margin-right:14px; }
+.tk-brief-chip b { font-weight:600; color:#526471; }
+.tk-brief-chip.attention { color:#9a6b12; }
+.tk-brief-chip.attention b { color:#b07b10; }
+.tk-brief-caution { color:#8a97a0; font-size:11.5px; }
+/* R3-02 顶部收敛：背景/完整原因/口径收进展开区；同字号不缩字，仅减少常驻行数。 */
+.tk-brief-more { margin:2px 0 0; }
+.tk-brief-more > summary { cursor:pointer; color:#64737d; font-weight:600; user-select:none; width:fit-content; }
+.tk-brief-more > summary:hover { color:#3f4c55; }
+.tk-brief-more[open] > summary { margin-bottom:2px; }
+.tk-brief-more .tk-brief-row { margin-top:2px; }
+.tk-plan-marks summary { cursor:pointer; color:#8a97a0; }
+.tk-plan-marks span { color:#8a97a0; word-break:break-all; }
+
+/* FINAL-02：决策页右侧技术明细默认折叠+业务可读（摘要前置、原始字段入折叠区，同字号）。 */
+.tk-round-brief { margin:6px 0; }
+.tk-round-brief p { margin:2px 0; }
+.tk-round-tech { margin:8px 0; }
+.tk-round-tech > summary { cursor:pointer; color:#64737d; font-weight:600; user-select:none; width:fit-content; }
+.tk-round-tech > summary:hover { color:#3f4c55; }
+.tk-round-tech[open] > summary { margin-bottom:4px; }
+/* FINAL-02：聊天历史回放标注（如实区分历史回执与新调用，同字号弱化色）。 */
+.tk-chat-replayed { color:#8a97a0; border-left:3px solid #d8dee2; padding-left:6px; }
+
+/* LONG-02：默认目录的"授权客户"区（复用既有搜索/清单类，仅加分隔与标题层级）。 */
+.tk-my-customers { margin-top: 16px; padding-top: 12px; border-top: 1px solid #e3e7ea; }
+.tk-my-customers .tk-directory-title h2 { margin: 0 0 2px; font-size: 17px; }
+.tk-my-customers .tk-directory-title { margin-bottom: 8px; }
+.tk-my-customers .tk-search { margin: 8px 0; }

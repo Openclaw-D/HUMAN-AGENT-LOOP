@@ -150,7 +150,9 @@ test('角色入口：图标与角色配对、多身份显式选择，服务不�
   assert.ok(screen.getByRole('button',{name:/政策：厘清准入/}).disabled);
   assert.deepEqual([...document.querySelectorAll('.tk-role-value')].map((el)=>el.textContent),['精准识客高效成单','厘清准入守住边界','识别风险审慎决策','优化方案促成合作','核清资产守护价值']);
   assert.equal(document.querySelector('.tk-entry-footer'),null);
-  assert.deepEqual([...document.querySelectorAll('.tk-role-card .tk-role-logo img')].map((img)=>img.getAttribute('src')), ['business','policy','credit','commerce','asset'].map((role)=>`/objects/${role}-v1.png`));
+  // 用户本轮要求线性符号与短标签：角色身份仍显式可辨，不依赖装饰位图文件名。
+  assert.deepEqual([...document.querySelectorAll('.tk-role-title')].map(el=>el.textContent), ['业务','政策','信审','商务','资产']);
+  assert.equal(document.querySelectorAll('.tk-role-card .tk-role-logo svg[aria-hidden="true"]').length, 5);
 });
 
 test('政策岗位在可信身份目录存在时可直接进入，且只使用政策身份',async(t)=>{

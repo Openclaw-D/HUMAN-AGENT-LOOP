@@ -72,6 +72,14 @@ export function buildBriefing({ snapshot, customerId, assistant, question }) {
     lines.push(`本专业暂无已登记的聚焦事实（未知不补数）。`);
   }
   lines.push(`现行材料 ${materials.length} 件；全部事实以"材料"页原件与解析记录为准。`);
+  // V0.6-01：arrow 面现行候选状态与决策页同快照透出（消除"平台与决策矛盾"的说明层不一致）。
+  const arrowCands = (snap.admission?.arrow?.candidateDomains ?? []);
+  if (arrowCands.length > 0) {
+    for (const d of arrowCands) lines.push(`· ${DOMAIN_TITLES[d.domain] ?? d.domain}：候选${d.state === 'awaiting_confirmation' ? '待人工确认' : `状态=${d.state}`}${d.summary ? `；${String(d.summary).slice(0, 120)}` : ''}（依据版本 ${d.basisVersion ?? '未知'}， authority=none）`);
+  } else if (snap.admission?.arrow?.domains?.length) {
+    const st = snap.admission.arrow.domains.map(d => `${DOMAIN_TITLES[d.domain] ?? d.domain}=${d.state ?? '未开始'}`).join('，');
+    lines.push(`五区当前状态：${st}。`);
+  }
   // 步骤解释：当前问题若命中事实键，指到对应事实；否则给通用只读指引
   const q = String(question ?? '');
   const hit = facts.find((f) => q.includes(f.factKey));

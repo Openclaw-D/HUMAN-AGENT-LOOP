@@ -355,6 +355,9 @@ export function createKernelStore({
     // 清单 limit=100；超过单页 → refsExhaustive=false + note（整页分页走读面路由）。
     const asList = await settle('assessmentList', `/api/v2/customers/${enc}/assessments?limit=100`, (r) => ({ items: r.assessments ?? [], nextCursor: r.nextCursor ?? null }));
     const frList = await settle('financingRequestList', `/api/v2/customers/${enc}/financing-requests?limit=100`, (r) => ({ items: r.financingRequests ?? [], nextCursor: r.nextCursor ?? null }));
+    // V0.6-01 四页一致性：同一快照内拉取 arrow/advance-rounds 权威读面（与决策/流程页同源），
+    // 供 admission 投影统一现行候选状态（best-effort；失败时投影回退 assessments 链并记 notes）。
+    const advance = await settle('advanceRounds', `/api/v2/customers/${enc}/advance-rounds`, (r) => r);
     let assessments;
     let financingRequests;
     let refsSource;
@@ -411,6 +414,7 @@ export function createKernelStore({
       artifacts: artifactList,
       findings,
       decisionStatus: decisionStatus ?? null,
+      advance,
       at: new Date().toISOString(),
     });
     const last = b.envelopes[b.envelopes.length - 1] || null;

@@ -204,7 +204,7 @@ test('execution chain 02: five zones real HTTP lifecycle with recovery, feedback
     const proc=await latestProc(c.customerId);
     const creditJob=(await r.pool.query("SELECT job_id,state,result,semantic,result_id FROM arrow_jobs WHERE process_id=$1 AND domain='credit' ORDER BY attempt DESC",[proc])).rows[0];
     assert.equal(creditJob.state,'awaiting_confirmation');
-    assert.ok(creditJob.semantic&&creditJob.semantic.requestId.endsWith(':semantic:r0'),JSON.stringify(creditJob.semantic));
+    assert.ok(creditJob.semantic&&creditJob.semantic.requestId.endsWith(':semantic-v3:r0'),JSON.stringify(creditJob.semantic));
     assert.equal(creditJob.semantic.status,'succeeded');
     assert.equal(creditJob.semantic.authority,'none');
     const beforeCalls=calls.length;const resultSnapshot=JSON.stringify(creditJob.result);
@@ -215,7 +215,7 @@ test('execution chain 02: five zones real HTTP lifecycle with recovery, feedback
       expectedVersion:procVersion,rationale:'采纳商机候选'},c.customerId,bizJob.job_id);
     const rr=await sem.semantic({credential:HUMAN,requestId:randomUUID()},c.customerId,creditJob.job_id);
     assert.equal(rr.ok,true,JSON.stringify(rr));
-    assert.ok(rr.receipt.requestId.endsWith(':semantic:r1'),JSON.stringify(rr.receipt));
+    assert.ok(rr.receipt.requestId.endsWith(':semantic-v3:r1'),JSON.stringify(rr.receipt));
     assert.ok(calls.at(-1).feedback.some(f=>f.domain==='business'&&f.decision==='adopt'),JSON.stringify(calls.at(-1)));
     assert.equal(calls.length,beforeCalls+1);
     // 同一反馈版本再次请求：确定性请求ID → 回执复用，零新调用
@@ -404,7 +404,7 @@ test('execution chain 02: five zones real HTTP lifecycle with recovery, feedback
     for(const j of byReq.body.eventJobs){
       assert.ok(j.jobId&&j.domain&&j.attempt===1,JSON.stringify(j));
       assert.ok(['awaiting_confirmation','waiting_evidence'].includes(j.state),JSON.stringify(j));
-      assert.ok(j.basisHash&&j.dependencyVersion==='column-deps-v1',JSON.stringify(j));
+      assert.ok(j.basisHash&&j.dependencyVersion==='column-deps-v2',JSON.stringify(j));
       assert.ok(Array.isArray(j.artifactIds)&&j.artifactIds.length>0,JSON.stringify(j));
     }
     const biz=byReq.body.eventJobs.find(j=>j.domain==='business');

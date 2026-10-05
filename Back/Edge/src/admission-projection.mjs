@@ -37,11 +37,40 @@ function cell(domain, row) {
   return { domain, row, workVersion: null, basisRefs: null, requiredItemCount: null, satisfiedItemCount: null, displayBucket: null, running: false, completed: false, needsReview: false, blockers: [], outcome: '未定', responsibleParty: null, allowedActions: [] };
 }
 
-export function deriveAdmission({ customerId, assessments = [], artifacts = [], findings = [], decisionStatus = null, at = new Date().toISOString() }) {
+// V0.6-01（2026-09-30）四页一致性根因修复：新增可选 advance 入参（A /advance-rounds 权威读面）。
+//   旧行为（不传 advance）逐字节不变；传入时，二十格智能/完成行与候选投影优先采用 arrow 面
+//   同一快照的现行状态（current=依据哈希仍现行），失效/待补证/待确认/已确认四态如实分列，
+//   不再出现"平台页无候选而决策页等待确认"的投影矛盾。分母未知仍=null，本投影不产生100%绿。
+
+const ARROW_STATE_OUTCOME = {
+  awaiting_confirmation: '候选待人工确认', completed: '已确认', waiting_evidence: '等待补证',
+  needs_reassessment: '待重评', stale: '依据已过期', rejected: '已拒绝', stopped: '已终止',
+  unknown: '结果核对中', running: '分析中', queued: '已受理', failed: '失败',
+};
+
+/** 从 advance-rounds 读面取每域最新一轮（receipts 已按 attempt DESC 排序，首见即最新）。 */
+function arrowByDomain(advance) {
+  const map = {};
+  if (!advance || advance.found !== true || !Array.isArray(advance.receipts)) return map;
+  for (const r of advance.receipts) {
+    if (r && r.domain && !map[r.domain]) {
+      map[r.domain] = {
+        state: r.state ?? null, current: r.current === true, roundId: r.roundId ?? null,
+        basisVersion: r.basisVersion ?? null, candidate: r.candidate ?? null,
+        zoneCandidates: r.zoneCandidates ?? null, semantic: r.semantic ?? null,
+        selection: r.selection ?? null,
+      };
+    }
+  }
+  return map;
+}
+
+export function deriveAdmission({ customerId, assessments = [], artifacts = [], findings = [], decisionStatus = null, advance = null, at = new Date().toISOString() }) {
   const list = Array.isArray(assessments) ? assessments : [];
   // 评估范围：取当前评估（服务端清单序；无则 null=尚未建立首次回租评估范围）。
   const assessment = list.find((a) => a && a.status !== 'superseded') ?? list[0] ?? null;
   const current = currentArtifacts(artifacts);
+  const arrowDomains = arrowByDomain(advance);
 
   const blockers = [];
   if (assessment?.stale === true) {
@@ -85,7 +114,28 @@ export function deriveAdmission({ customerId, assessments = [], artifacts = [], 
     const intel = cell(domain, 'intelligence');
     intel.basisRefs = null;
     intel.allowedActions = ['request_analysis', 'open_records'];
-    if (assessment) {
+    const arrow = arrowDomains[domain] ?? null;
+    if (arrow) {
+      // arrow 面为同快照现行状态：候选确认四态如实分列（current=依据哈希仍现行），不与 assessments 链混填。
+      intel.basisRefs = { roundId: arrow.roundId, basisVersion: arrow.basisVersion, current: arrow.current };
+      if (arrow.state === 'waiting_evidence') {
+        intel.needsReview = true;
+        intel.blockers.push({ scope: 'arrow', reason: 'EVIDENCE_GAP', detail: '等待补证', requiredAction: 'supplement_then_reanalyze', ref: arrow.roundId });
+      } else if (arrow.state === 'stale' || (arrow.candidate && !arrow.current)) {
+        intel.needsReview = true;
+        intel.blockers.push({ scope: 'arrow', reason: 'STALE_BASIS', detail: '候选依据已过期，需补证重评', requiredAction: 'reanalyze_affected', ref: arrow.roundId });
+      } else if (arrow.state === 'needs_reassessment') {
+        intel.needsReview = true;
+        intel.blockers.push({ scope: 'arrow', reason: 'NEEDS_REASSESSMENT', detail: '待重评', requiredAction: 'reanalyze_affected', ref: arrow.roundId });
+      }
+      if (['queued', 'running'].includes(arrow.state)) intel.running = true;
+      if (arrow.candidate && arrow.current) {
+        intel.outcome = ARROW_STATE_OUTCOME[arrow.state] ?? '未定';
+        intel.displayBucket = arrow.zoneCandidates?.options ? { kind: 'zoneCandidates', count: arrow.zoneCandidates.options.length, scoreType: arrow.zoneCandidates.scoreType ?? 'rule_rank' } : null;
+      } else if (arrow.state) {
+        intel.outcome = ARROW_STATE_OUTCOME[arrow.state] ?? '未定';
+      }
+    } else if (assessment) {
       const hasCandidate = assessment.candidateRevision != null || assessment.candidate != null;
       intel.displayBucket = null; // 无权威逐域完成分母 → 不硬补
       if (assessment.stale === true) {
@@ -111,6 +161,7 @@ export function deriveAdmission({ customerId, assessments = [], artifacts = [], 
     cells.push(input, intel, manual, done);
   }
 
+  const assessmentCandidateCurrent = assessment ? (assessment.stale !== true) : false;
   const candidate = assessment
     ? {
       version: assessment.candidateRevision ?? null,
@@ -123,9 +174,33 @@ export function deriveAdmission({ customerId, assessments = [], artifacts = [], 
       tendency: assessment.candidate?.tendency ?? null,
       basisRefs: assessment.candidate?.basisRefs ?? null,
       inputVersion: assessment.candidate?.inputVersion ?? assessment.inputVersion ?? null,
-      isCurrent: true,
+      isCurrent: assessmentCandidateCurrent,
     }
     : null;
+
+  // V0.6-01（additive）：arrow 面候选投影（同快照同版本）；assessments 链无候选时，五区现行候选
+  // 由此统一透出，消除"平台无候选/决策待确认"矛盾。不校准置信度、不改确定性结果。
+  const arrowCandidateDomains = Object.entries(arrowDomains)
+    .filter(([, a]) => a.candidate && a.current && ['awaiting_confirmation', 'completed'].includes(a.state))
+    .map(([domain, a]) => ({
+      domain, roundId: a.roundId, basisVersion: a.basisVersion, state: a.state,
+      tendency: a.candidate?.tendency ?? null,
+      summary: a.candidate?.summary ?? null,
+      zoneCandidateCount: Array.isArray(a.zoneCandidates?.options) ? a.zoneCandidates.options.length : null,
+      zoneCandidateScoreType: a.zoneCandidates?.scoreType ?? null,
+      selection: a.selection ?? null,
+      semantic: a.semantic ? { status: a.semantic.status ?? null, model: a.semantic.model ?? null, authority: 'none' } : null,
+    }));
+  const arrowProjection = advance && (advance.found === true || arrowCandidateDomains.length > 0) ? {
+    found: advance.found === true,
+    processId: advance.processId ?? null,
+    processStatus: advance.caseOutcome?.status ?? null,
+    domains: (Array.isArray(advance.domains) ? advance.domains : []).map((d) => ({ domain: d.domain, state: d.state ?? null, roundId: d.roundId ?? null })),
+    candidateDomains: arrowCandidateDomains,
+    needsReselection: advance.needsReselection ?? [],
+    affectedDomains: advance.affectedDomains ?? [],
+    note: '与决策/流程页同源（A advance-rounds 同快照）；state 为当前依据下的真实状态，未校准置信度不显示概率',
+  } : null;
 
   return {
     scope: {
@@ -147,6 +222,7 @@ export function deriveAdmission({ customerId, assessments = [], artifacts = [], 
     inputVersion: assessment?.inputVersion ?? null,
     candidateRevision: assessment?.candidateRevision ?? null,
     candidate,
+    arrow: arrowProjection,
     preassessment: pre ? {
       confirmationId: pre.confirmationId ?? null,
       outcome: pre.outcome ?? null,

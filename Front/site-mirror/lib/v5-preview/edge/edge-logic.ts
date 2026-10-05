@@ -209,7 +209,9 @@ const BLOCKER_LABEL: Record<string, string> = {
 /** 额度/报告区行（候选=评估候选，已批准=设施，可用=服务端推导 availableForNewDrawMinor）。 */
 export function deriveCreditLines(snap: EdgeSnapshotShapes): Array<{ label: string; value: string; tone: 'neutral' | 'warn' | 'info' }> {
   const lines: Array<{ label: string; value: string; tone: 'neutral' | 'warn' | 'info' }> = [];
-  const latestAssessment = snap.assessments?.[snap.assessments.length - 1];
+  // R2-02：当前评估=清单序首条非 superseded（A 清单按 assessment_id DESC 最新在前），不盲取末条。
+  const asList = snap.assessments ?? [];
+  const latestAssessment = (asList.find((a) => a && a.status !== 'superseded') ?? asList[0] ?? null) as (typeof asList)[number] | null;
   if (latestAssessment?.candidate) {
     const c = latestAssessment.candidate;
     lines.push({

@@ -26,6 +26,14 @@ test('limits select complete source spans and disclose omissions', () => {
   assert.ok(pack.snippets.every(s => s.text.length === 800 && s.locator.end - s.locator.start === 800));
   assert.equal(pack.omitted[0].reason, 'CONTEXT_LIMIT');
 });
+test('a long early source cannot hide a later short original under the snippet cap', () => {
+  const later={...material,evidenceId:'z-bank',artifactId:'z-bank-original',text:'关联方借款入账400000元，不是经营收入。'};
+  const pack=prepareEvidence(input({materials:[{...material,evidenceId:'a-long',text:'甲'.repeat(20000)},later]}));
+  assert.ok(pack.snippets.some(s=>s.evidenceId==='z-bank'));
+  assert.ok(pack.snippets.some(s=>s.evidenceId==='a-long'));
+  assert.equal(pack.snippets.length,8);
+  assert.ok(pack.omitted.some(o=>o.evidenceId==='a-long'&&o.reason==='CONTEXT_LIMIT'));
+});
 test('forged and missing citations become questions, never valid observations', () => {
   const pack = prepareEvidence(input());
   const result = validateCitations({ findings: [{ text: '有来源', evidenceRefIds: [pack.snippets[0].id] }, { text: '伪造', evidenceRefIds: ['fake'] }, { text: '无依据' }] }, pack);

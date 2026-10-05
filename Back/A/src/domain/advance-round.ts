@@ -294,16 +294,35 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
     if(!options.semantic||!options.semantic.describe().configured)return null;
     const rev=Number((await kernel.pool.query("SELECT count(*) n FROM arrow_events WHERE process_id=$1 AND event_type='COLUMN_HUMAN_DECISION'",[pid])).rows[0].n);
     const fb=await kernel.pool.query("SELECT DISTINCT ON (domain) domain,selection->>'decision' AS decision,selection->>'rationale' AS rationale FROM arrow_jobs WHERE process_id=$1 AND selection IS NOT NULL ORDER BY domain,attempt DESC",[pid]);
-    const requestId=`${job.job_id}:semantic:r${rev}`;
+    const requestId=`${job.job_id}:semantic-v3:r${rev}`;
     let receipt:Data;
     try{
       receipt=await options.semantic.run({tenantId:job.input?.tenantId??null,customerId:cid,jobId:job.job_id,domain:job.domain,
         requestId,candidate:job.result,feedback:fb.rows});
     }catch(e){receipt={status:'unknown',note:e instanceof Error?e.message.slice(0,200):'SEMANTIC_UNKNOWN'};}
     const stored={...receipt,requestId,domain:job.domain,basisHash:job.basis_hash,feedbackRevision:rev,at:new Date().toISOString()};
-    await kernel.pool.query('UPDATE arrow_jobs SET semantic=$2 WHERE job_id=$1',[job.job_id,JSON.stringify(stored)]);
-    await emit(kernel.pool,pid,'COLUMN_SEMANTIC',job.domain,job.job_id,{requestId,status:receipt.status??'unknown',feedbackRevision:rev});
-    return stored;
+    return tx(async q=>{
+      // The network call holds no DB lock. Recheck its basis, feedback and current attempt atomically.
+      await q.query('SELECT customer_id FROM customers WHERE customer_id=$1 FOR UPDATE',[cid]);
+      const fresh=await input(cid,q);
+      const proc=(await q.query('SELECT state FROM arrow_processes WHERE process_id=$1 FOR UPDATE',[pid])).rows[0];
+      const latest=(await q.query('SELECT * FROM arrow_jobs WHERE process_id=$1 AND domain=$2 ORDER BY attempt DESC LIMIT 1',[pid,job.domain])).rows[0];
+      const currentRev=Number((await q.query("SELECT count(*) n FROM arrow_events WHERE process_id=$1 AND event_type='COLUMN_HUMAN_DECISION'",[pid])).rows[0].n);
+      if(proc?.state!=='in_progress'||latest?.job_id!==job.job_id||!['awaiting_confirmation','waiting_evidence'].includes(latest.state)||
+        latest.basis_hash!==fresh.domains[job.domain].hash||currentRev!==rev)
+        return {...stored,current:false,disposition:'stale'};
+      if(latest.semantic?.requestId===requestId){
+        // A competing reader may have persisted unknown while the original owner was still running.
+        // Reconcile that same transport receipt once its terminal is available; never resend it or
+        // replace a known terminal with a delayed unknown response.
+        const reconciled=latest.semantic.status==='unknown'&&['succeeded','simulated','failed','model_output_invalid'].includes(receipt.status);
+        if(!reconciled)return {...latest.semantic,replayed:true};
+      }
+      const current={...stored,current:true};
+      await q.query('UPDATE arrow_jobs SET semantic=$2 WHERE job_id=$1',[job.job_id,JSON.stringify(current)]);
+      await emit(q,pid,'COLUMN_SEMANTIC',job.domain,job.job_id,{requestId,status:receipt.status??'unknown',feedbackRevision:rev});
+      return current;
+    });
   }
   async function getPlan(credential: unknown,cid: string,domain='business') {
     if(!DOMAINS.includes(domain)) throw invalid('未知专业');
@@ -433,6 +452,7 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
           runnable.push({...j.input,jobId:j.job_id,domain:j.domain,runId:started.runId,basisHash:j.basis_hash});});
       }
       const outputs=await options.runBatch(runnable);
+      const semanticJobs:Data[]=[];
       for(const output of outputs){
         const j=runnable.find(j=>j.jobId===output.jobId)!;
         await kernel.analysis.finishAnalysisRun({credential:options.serviceCredential,tenantId:proc.tenant_id,requestId:`${j.jobId}:finish`,executionStatus:output.result.ok?'completed':'failed'},j.runId);
@@ -443,22 +463,28 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
           record=await kernel.v2.recordDomainResult({credential:options.serviceCredential,tenantId:proc.tenant_id,
             requestId:`${j.jobId}:result`,domain:j.domain,deps:j.deps,analysisRun:{runId:j.runId},opinion:output.result.assessment},String(pkg.packageId));
         }
-        await tx(async q=>{
+        const state=await tx(async q=>{
+          await q.query('SELECT customer_id FROM customers WHERE customer_id=$1 FOR UPDATE',[cid]);
+          const freshTx=await input(cid,q);
           const p=(await q.query('SELECT * FROM arrow_processes WHERE process_id=$1 FOR UPDATE',[pid])).rows[0];
           const assessment=output.result.assessment;
           const missing=assessment?.unknowns?.length||assessment?.contradictions?.length||output.result.unreadable?.length;
-          const state=p.state!=='in_progress'?'stopped':fresh.domains[j.domain].hash!==j.basisHash?'stale':!output.result.ok?'failed':missing?'waiting_evidence':'awaiting_confirmation';
+          const state=p.state!=='in_progress'?'stopped':freshTx.domains[j.domain].hash!==j.basisHash?'stale':!output.result.ok?'failed':missing?'waiting_evidence':'awaiting_confirmation';
           await q.query('UPDATE arrow_jobs SET state=$2,result=$3,result_id=$4,finished_at=clock_timestamp(),reason=$5 WHERE job_id=$1',
             [j.jobId,state,JSON.stringify({...output.result,execution:{actor:svc.principal.principalId,startedAt:output.startedAt,finishedAt:output.finishedAt,threadId:output.threadId}}),record?.resultId??null,
               state==='waiting_evidence'?'EVIDENCE_GAP':state==='awaiting_confirmation'?'HUMAN_SELECTION_REQUIRED':state]);
           await emit(q,pid,'COLUMN_RESULT',j.domain,j.jobId,{state,actor:svc.principal.principalId,resultId:record?.resultId??null,execution:{startedAt:output.startedAt,finishedAt:output.finishedAt,threadId:output.threadId}});
           return state;
-        }).then(state=>{
-          if(state!=='awaiting_confirmation')return null;
-          return semanticPass({job_id:j.jobId,domain:j.domain,basis_hash:j.basisHash,result:output.result,
-            input:{tenantId:proc.tenant_id}},cid,pid).catch(()=>null);
         });
+        if(['awaiting_confirmation','waiting_evidence'].includes(state))semanticJobs.push({job_id:j.jobId,domain:j.domain,basis_hash:j.basisHash,
+          result:output.result,input:{tenantId:proc.tenant_id}});
       }
+      // Publish every deterministic result before bounded, independent network requests begin.
+      let nextSemantic=0;
+      const lanes=Math.min(semanticJobs.length,Math.max(1,Math.min(options.maxConcurrency??4,4)));
+      await Promise.all(Array.from({length:lanes},async()=>{
+        while(nextSemantic<semanticJobs.length){const job=semanticJobs[nextSemantic++]!;await semanticPass(job,cid,pid);}
+      }));
     }catch(e){
       await tx(async q=>{await q.query("UPDATE arrow_jobs SET state='unknown',reason=$2 WHERE process_id=$1 AND state IN ('queued','running')",[pid,e instanceof Error?e.message.slice(0,300):'EXECUTION_UNKNOWN']);
         await emit(q,pid,'COLUMN_UNKNOWN',null,null,{reason:e instanceof Error?e.message.slice(0,300):'EXECUTION_UNKNOWN'});});
@@ -494,13 +520,14 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
       const affected=jobs.filter(j=>j.basis_hash!==b.domains[j.domain].hash).map(j=>j.domain);
       let queuedCount=0;
       if(affected.length)await emit(q,proc.process_id,'COLUMN_DEPENDENCIES_CHANGED',null,null,{affectedDomains:affected,
-        reason:'材料事实、来源等级、规则、交易范围或全局质量发生变化；只重评受影响专业',dependencyVersion:'column-deps-v1',
+        reason:'材料事实、来源等级、规则、交易范围或全局质量发生变化；只重评受影响专业',dependencyVersion:b.domains[domain].version,
         previousResults:jobs.filter(j=>affected.includes(j.domain)).map(j=>({domain:j.domain,roundId:j.job_id,resultId:j.result_id,basisVersion:j.basis_hash}))});
       for(const d of DOMAINS.filter(d=>p.roles.includes(d)&&(options.progression!=='column'||d===domain||affected.includes(d)))){
         const prior=jobs.find(j=>j.domain===d);
         const interruptedUnknown=prior?.state==='unknown'&&prior.reason!=='HUMAN_DECISION_PENDING';
+        const explicitlySetAside=d===domain&&prior?.reason==='HUMAN_SET_ASIDE'&&prior.selection?.decision==='set_aside';
         // 基础未变且已有有效/待确认/拒绝结果 → 复用；仅“执行中断的未知”允许以新尝试重排（新运行标识）。
-        if(prior?.basis_hash===b.domains[d].hash&&!interruptedUnknown)continue;
+        if(prior?.basis_hash===b.domains[d].hash&&!interruptedUnknown&&!explicitlySetAside)continue;
         const jobId=newId('column');
         queuedCount++;
         await q.query("INSERT INTO arrow_jobs(job_id,process_id,domain,attempt,state,basis_hash,input) VALUES($1,$2,$3,$4,'queued',$5,$6)",[jobId,proc.process_id,d,(prior?.attempt??0)+1,b.domains[d].hash,JSON.stringify({...b,deps:b.domains[d].deps,requestId})]);
@@ -529,7 +556,14 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
     const claim=await tx(async q=>{
       const locked=(await q.query('SELECT * FROM arrow_processes WHERE process_id=$1 FOR UPDATE',[proc.process_id])).rows[0];
       const old=(await q.query('SELECT * FROM arrow_requests WHERE process_id=$1 AND request_id=$2',[proc.process_id,requestId])).rows[0];
-      if(old){if(old.payload_hash!==payloadHash)throw conflict('IDEMPOTENCY_REPLAY_CONFLICT','同ID确认不同');return false;}
+      if(old){
+        if(old.payload_hash!==payloadHash)throw conflict('IDEMPOTENCY_REPLAY_CONFLICT','同ID确认不同');
+        // NIGHT-01（2026-10-02）：command_state='unknown'=响应丢失后命令未完成。同ID重放必须续执行
+        // （adopt/reject 子命令以 `${requestId}:*` 命令幂等，效果恰一次），否则"重放只读+换ID被拒"使该域
+        // 永久卡死，与计划面 recoveryHint（以原请求ID重放确认）矛盾。completed 才是纯只读重放。
+        if((old as Data).command_state==='unknown')return 'resume';
+        return false;
+      }
       if(locked.state!=='in_progress')throw conflict('NOT_READY','流程已终止');
       if(frame.expectedVersion!==locked.version||frame.resultId!==job.result_id||job.basis_hash!==(await input(cid,q)).domains[job.domain].hash)throw conflict('VERSION_CONFLICT','确认依据已改变');
       if(!['awaiting_confirmation','waiting_evidence'].includes(job.state)||!job.result_id)throw conflict('NOT_READY','没有可确认结果');
@@ -543,7 +577,7 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
       await emit(q,proc.process_id,'COLUMN_DECISION_PENDING',job.domain,jobId,{actor:p.principalId,requestId});
       return true;
     });
-    if(!claim)return {...await read(frame.credential,cid,{roundId:jobId}),reused:true};
+    if(claim===false)return {...await read(frame.credential,cid,{roundId:jobId}),reused:true};// 纯重放（命令已 completed）只读；'resume' 落到执行（幂等）
     const human={credential:frame.credential,tenantId:customer.tenant_id};
     let result:Data;
     if(decision==='reject'){
@@ -552,8 +586,14 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
       await kernel.v2.submitForReview({...human,requestId:`${requestId}:review`},String(ass.assessmentId));
       result=await kernel.v2.decideAssessment({...human,requestId:`${requestId}:reject`,decision:'reject_assessment',rationale:String(frame.rationale??'')},String(ass.assessmentId));
     }else result=await kernel.v2.adoptDomainOpinion({...human,requestId:`${requestId}:adopt`,domain:job.domain,decision,rationale:String(frame.rationale??''),basisRefs:job.input.deps.artifactIds},job.package_id);
+    let alreadyDone=false;
     await tx(async q=>{
       const locked=(await q.query('SELECT * FROM arrow_processes WHERE process_id=$1 FOR UPDATE',[proc.process_id])).rows[0];
+      // NIGHT_GATE_0145 签发幂等守卫：持锁后复查同命令——并发执行者已收口（completed）时，
+      // 本执行者跳过全部收口写面（job/selection/命令账/emit(version++/events/outbox)/拒绝归档/办结支线），
+      // 只读返回；首次完成仍走原路径。修复 LT01-D6：并发同 ID 决定的事件/记录面双记。
+      const done=(await q.query("SELECT 1 FROM arrow_requests WHERE process_id=$1 AND request_id=$2 AND command_state='completed'",[proc.process_id,requestId])).rows[0];
+      if(done){alreadyDone=true;return;}
       const selectionEventId=randomUUID();
       const selection={decision,candidateId:job.result_id,eventId:selectionEventId,by:p.principalId,actor:p.principalId,
         at:new Date().toISOString(),rationale:frame.rationale??'',result};
@@ -575,6 +615,7 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
         }
       }
     });
+    if(alreadyDone)return {...await read(frame.credential,cid,{roundId:jobId}),reused:true};// 并发完成者已收口：本执行者零收口写面，只读复用
     return {...await read(frame.credential,cid,{roundId:jobId}),reused:false};
   }
   /** Explicit semantic re-run for one committed candidate (反馈触发正确范围的重新计算：
@@ -586,7 +627,7 @@ export function buildParallelAdvanceRounds(kernel: Kernel, options: { serviceCre
     const job=(await kernel.pool.query('SELECT * FROM arrow_jobs WHERE process_id=$1 AND job_id=$2',[proc.process_id,jobId])).rows[0];
     if(!job)throw notFound('专业结果不存在');await auth(frame.credential,cid,job.domain);
     if(proc.state!=='in_progress')throw conflict('NOT_READY','流程已终止');
-    if(job.state!=='awaiting_confirmation'||!job.result)throw conflict('NOT_READY','仅完成且待确认候选可运行语义辅助');
+    if(!['awaiting_confirmation','waiting_evidence'].includes(job.state)||!job.result)throw conflict('NOT_READY','仅已完成分析的待确认或待补证候选可运行只读语义辅助');
     if(job.basis_hash!==(await input(cid)).domains[job.domain].hash)throw conflict('VERSION_CONFLICT','候选依据已过期，请先补证重评');
     if(!options.semantic||!options.semantic.describe().configured)throw conflict('MODEL_NOT_CONFIGURED','语义辅助未配置（如实状态，未发送）');
     const receipt=await semanticPass(job,cid,proc.process_id);

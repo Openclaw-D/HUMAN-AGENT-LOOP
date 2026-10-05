@@ -39,7 +39,9 @@ export function ProposalPanel({ wb, customerId }: { wb: WbApi; customerId: strin
   const client = wb.client;
   const snap = wb.snapshot;
   const customerName = snap?.customer?.displayName || '当前客户';
-  const latest = snap?.assessments?.at(-1);
+  // R2-02：当前评估=清单序首条非 superseded（A 清单按 assessment_id DESC 最新在前），不盲取末条。
+  const asList = snap?.assessments ?? [];
+  const latest = (asList.find((a) => a && a.status !== 'superseded') ?? asList[0] ?? null) as (typeof asList)[number] | null;
   const gateResult = snap?.decisionStatus?.basis?.gate?.result;
   const roles = wb.session?.roles ?? [];
   const assessments = snap?.assessments ?? [];

@@ -5,7 +5,7 @@ import type { WbClient } from '../../lib/workbench/wb-client';
 import { base64ToBytes, bytesToBase64, sniffImageMime, summarizeArtifacts, type ArtifactRow } from '../../lib/workbench/wb-logic';
 import { UiIcon, ObjectIcon, MaterialObject } from './ui-icons';
 import { PdfOriginal } from './pdf-original';
-import { materialKindName } from '../../lib/workbench/material-labels';
+import { materialKindName, factKeyLabel } from '../../lib/workbench/material-labels';
 
 type Point = { x: number; y: number };
 type Material = ArtifactRow & { name: string; frozen?:Record<string,unknown> };
@@ -36,7 +36,12 @@ function registeredName(client: WbClient, customerId: string, artifactId: string
 function materialName(item: Record<string, unknown>): string {
   const meta = item.materialFileMeta as { name?: string } | null;
   const kind = String(item.kind ?? '').replace(/^material\./, '');
-  return meta?.name || (typeof item.displayName === 'string' ? item.displayName : '') || materialKindName(kind);
+  if (meta?.name) return meta.name;
+  if (typeof item.displayName === 'string' && item.displayName) return item.displayName;
+  // LT-02 UI-A：登记名缺失时用“类名·事实名”可区分（factKey 来自服务端断言，不猜日期不改原件）。
+  const fact = factKeyLabel(item.factKey == null ? null : String(item.factKey));
+  const kindName = materialKindName(kind);
+  return fact ? `${kindName}·${fact}` : kindName;
 }
 const gridPoint = (index: number): Point => ({ x: 72 + (index % 4) * 310, y: 72 + Math.floor(index / 4) * 245 });
 
@@ -120,7 +125,7 @@ export function MaterialsDesk({ wb, customerId, onUpload, activeDomain, round }:
         {!rows && !error && <p className="tk-empty">正在读取材料…</p>}
         {rows && !filtered.length && <p className="tk-empty">{rows.length ? '没有符合条件的材料' : '还没有材料。上传第一份资料，开始办理。'}</p>}
         {filtered.map((row) => <button className="tk-material-listitem" aria-pressed={selected === row.artifactId} key={row.artifactId} draggable onDragStart={(e) => { e.dataTransfer.setData('application/x-jw-artifact', row.artifactId); e.dataTransfer.effectAllowed = 'move'; }} onClick={() => focusMaterial(row.artifactId)}>
-          <span className="tk-file-icon"><MaterialObject kind={row.kind} name={row.name} size={44}/></span><span><strong>{row.name}</strong><small>{row.period ?? '期间未标注'} · {row.current ? '现行材料' : '历史材料'}</small></span><UiIcon name="arrow" size={17}/>
+          <span className="tk-file-icon"><MaterialObject kind={row.kind} name={row.name} size={44}/></span><span><strong>{row.name}</strong><small>{row.period ?? '期间未标注'} · {row.current ? '现行材料' : '历史材料'} · 编号 {row.artifactId.slice(-6)}</small></span><UiIcon name="arrow" size={17}/>
         </button>)}
       </div>
       <button className="tk-btn primary tk-upload-entry" onClick={onUpload}><ObjectIcon name="materials" size={34}/>上传与补充材料</button>
@@ -149,7 +154,7 @@ export function MaterialsDesk({ wb, customerId, onUpload, activeDomain, round }:
             onDoubleClick={() => setPreview(row)}
             onKeyDown={(e) => { if (e.target !== e.currentTarget) return; const delta: Record<string, Point> = { ArrowLeft: {x:-20,y:0}, ArrowRight: {x:20,y:0}, ArrowUp: {x:0,y:-20}, ArrowDown: {x:0,y:20} }; if (delta[e.key]) { e.preventDefault(); remember(); move(row.artifactId, { x: p.x + delta[e.key].x, y: p.y + delta[e.key].y }); } if (e.key === 'Enter') setPreview(row); }}>
             <div className="tk-paper-head"><MaterialObject kind={row.kind} name={row.name} size={48}/><span className={`tk-material-version${row.current ? '' : ' historical'}`}>{row.current ? '现行' : '历史'}</span><span className="tk-drag-handle" aria-hidden="true">⠿</span></div>
-            <h3>{row.name}</h3>{roundItems&&<small title={roundItems.find(ref=>ref.artifactId===row.artifactId)?.hash}>本轮引用版本</small>}<p>{row.period ?? '期间未标注'}<br/>{row.grade === 'verified' ? '核验已记录' : '核验状态以办理记录为准'}</p>
+            <h3>{row.name}</h3>{roundItems&&<small title={roundItems.find(ref=>ref.artifactId===row.artifactId)?.hash}>本轮引用版本</small>}<p>{row.period ?? '期间未标注'} · 编号 {row.artifactId.slice(-6)}<br/>{row.grade === 'verified' ? '核验已记录' : '核验状态以办理记录为准'}</p>
             <footer><button onClick={() => setPreview(row)}>查看原件 <UiIcon name="arrow" size={16}/></button></footer>
           </article>; })}
         </div></div>

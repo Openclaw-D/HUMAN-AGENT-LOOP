@@ -17,8 +17,9 @@
 
 import { inflateSync, inflateRawSync } from 'node:zlib';
 import { stableHash } from '../../domains/util.mjs';
+import { normalizeDeclaredValue } from '../../domains/fact-values.mjs';
 
-export const PARSE_ADAPTERS_VERSION = 'parse-adapters@2.1';
+export const PARSE_ADAPTERS_VERSION = 'parse-adapters@2.2';
 
 /** 银行流水聚合强制口径注记（C/intake CALIBER_NOTES 同源）。 */
 const BANK_CALIBER_NOTE = '银行流水口径：全部入账不直接当经营收入；与申报收入的口径差属待核验差异，不是自动欺诈结论';
@@ -286,7 +287,7 @@ function extractKvCsvFacts(text) {
         const unit = unitCol >= 0 ? String(rows[i]?.[unitCol] ?? '').trim() : '';
         const caliber = caliberCol >= 0 ? String(rows[i]?.[caliberCol] ?? '').trim() : '';
         facts.push({
-          factKey: k, value: num != null ? num : rawVal, verificationLevel: 'declared',
+          factKey: k, value: normalizeDeclaredValue(k, num != null ? num : rawVal), verificationLevel: 'declared',
           unit: unit || null, caliber: caliber || null, sourceRefs: [i + 1],
         });
       }
@@ -311,7 +312,7 @@ function extractKeyValueFacts(text) {
     const num = parseAmountCell(rawVal);
     facts.push({
       factKey: key,
-      value: num != null ? num : rawVal,
+      value: normalizeDeclaredValue(key, num != null ? num : rawVal),
       verificationLevel: 'declared',
       line: i + 1,
     });
@@ -843,7 +844,7 @@ function extractKvTable(rows) {
     if (k === '' || rawVal === '') { problems.push({ line: i + 1, detail: '空键或空值' }); continue; }
     const num = parseAmountCell(rawVal);
     facts.push({
-      factKey: k, value: num != null ? num : rawVal, verificationLevel: 'declared', sourceRefs: [i + 1],
+      factKey: k, value: normalizeDeclaredValue(k, num != null ? num : rawVal), verificationLevel: 'declared', sourceRefs: [i + 1],
       ...(unitCol >= 0 ? { unit: String(rows[i]?.[unitCol] ?? '').trim() || null } : {}),
       ...(caliberCol >= 0 ? { caliber: String(rows[i]?.[caliberCol] ?? '').trim() || null } : {}),
     });

@@ -23,6 +23,7 @@ export function TakeoffAssistants({ wb, customerId, source, focusAssistant, onOp
   }, [focusAssistant]);
   const [mention, setMention] = useState<{id: AssistantId; nonce: number} | null>(null);
   const hold = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tabs = useRef<HTMLDivElement>(null);
   const cancelHold = () => { if (hold.current) clearTimeout(hold.current); hold.current = null; };
   useEffect(() => cancelHold, []);
   // 助手上下文与建议提问：只读；点击建议=填入输入框，由用户确认发送，不推进业务。
@@ -30,14 +31,22 @@ export function TakeoffAssistants({ wb, customerId, source, focusAssistant, onOp
   const assistantName = ASSISTANTS.find(item => item.id === assistant)?.name ?? '助手';
   const suggestions = composeAssistantSuggestions(assistant, source);
   return <div className="tk-right tk-chat-panel">
-    <div className="tk-asst-tabs" role="tablist" aria-label="聊天助手">
+    <div ref={tabs} className="tk-asst-tabs" role="tablist" aria-label="聊天助手">
       {ASSISTANTS.map(item => <button key={item.id} role="tab" aria-label={item.name}
-        aria-selected={assistant === item.id} className="tk-asst-tab" title={`${item.name}助手`}
-        onPointerDown={() => { cancelHold(); hold.current = setTimeout(() => setMention({id:item.id,nonce:Date.now()}), 500); }} onPointerUp={cancelHold} onPointerCancel={cancelHold} onPointerLeave={cancelHold} onContextMenu={e => { e.preventDefault(); setMention({id:item.id,nonce:Date.now()}); }} onClick={() => setAssistant(item.id)}><RoleLogo role={item.id} size={36}/></button>)}
+        aria-selected={assistant === item.id} tabIndex={assistant === item.id ? 0 : -1} className="tk-asst-tab" title={`${item.name}助手`}
+        onKeyDown={e => {
+          if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+          e.preventDefault();
+          const index = ASSISTANTS.findIndex(value => value.id === item.id);
+          const next = e.key === 'Home' ? 0 : e.key === 'End' ? ASSISTANTS.length - 1 : (index + (e.key === 'ArrowRight' ? 1 : -1) + ASSISTANTS.length) % ASSISTANTS.length;
+          setAssistant(ASSISTANTS[next].id);
+          tabs.current?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus();
+        }}
+        onPointerDown={() => { cancelHold(); hold.current = setTimeout(() => setMention({id:item.id,nonce:Date.now()}), 500); }} onPointerUp={cancelHold} onPointerCancel={cancelHold} onPointerLeave={cancelHold} onContextMenu={e => { e.preventDefault(); setMention({id:item.id,nonce:Date.now()}); }} onClick={() => setAssistant(item.id)}><RoleLogo role={item.id} size={22}/><span>{item.name}</span></button>)}
     </div>
     <div className="tk-asst-context" aria-label="助手上下文">
       <strong>{customerName}</strong>
-      <span>{assistantName}助手 · 绑定当前客户与专业 · 回答只读，不代替人工确认</span>
+      <span>{assistantName}助手 · 仅供参考，待人工核验</span>
     </div>
     <AssistantObservationPanel key={`${wb.session?.sessionId}:${customerId}`} wb={wb} assistant={assistant} chat defaultToAssistant mention={mention} onOpenMaterials={onOpenMaterials} suggestions={suggestions}
       explainCase={(target) => composeCaseExplanation(target, { ...source, customerName })}/>

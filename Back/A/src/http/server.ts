@@ -73,7 +73,13 @@ export function startHttpServer(kernel: Kernel, port: number, options: { cases?:
         const path = url.pathname;
         // 健康检查不走错误包装
         if (req.method === 'GET' && (path === '/healthz' || path === '/api/v1/health')) {
-            return writeJson(res, 200, await kernel.health());
+            // V0.6-01：真实模型状态如实披露——semantic=五区语义辅助（DeepSeek）当前配置；
+            // model 字段保留 legacy modelTransport 语义不变（历史消费者兼容）。
+            const health = await kernel.health() as Record<string, unknown>;
+            health.semantic = options.advance && 'describeSemantic' in options.advance
+              ? (options.advance as { describeSemantic?: () => unknown }).describeSemantic?.() ?? { configured: false }
+              : { configured: false };
+            return writeJson(res, 200, health);
         }
         for (const r of routes) {
             if (r.method !== req.method) continue;

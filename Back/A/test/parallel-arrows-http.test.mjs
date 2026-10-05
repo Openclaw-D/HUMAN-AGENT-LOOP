@@ -151,21 +151,22 @@ test('parallel arrow real HTTP lifecycle, existing commands and persisted versio
       assert.equal(v.receipt.actions[0].result.resultId,null);assert.equal(v.receipt.views.platform.cells.at(-1).state,'rejected');
     }finally{release();r.kernel.analysis.finishAnalysisRun=original;}
   });
-  await t.test('committed human adoption then lost response stays unknown and no new ID bypasses it',async()=>{
+  await t.test('committed adoption with one lost response resumes same ID without duplicating effects',async()=>{
     const c=(await seedCases(r.kernel,{suffix:randomUUID().slice(0,8)}))[0];await start(c);
     const j=(await get(c,'business')).receipt;const original=r.kernel.v2.adoptDomainOpinion;let calls=0;
     const body={requestId:randomUUID(),decision:'adopt',resultId:j.actions[0].result.resultId,expectedVersion:j.version};
-    r.kernel.v2.adoptDomainOpinion=async(...args)=>{calls++;await original(...args);throw new Error('synthetic lost committed adoption response');};
+    r.kernel.v2.adoptDomainOpinion=async(...args)=>{calls++;const result=await original(...args);if(calls===1)throw new Error('synthetic lost committed adoption response');return result;};
     try{
       const url=`/actions/customers/${c.customerId}/advance-rounds/${j.roundId}/decision`;
       assert.equal((await call('POST',url,body)).status,500);
       assert.equal((await call('POST',url,body)).status,200);
-      const v=await get(c,'business');assert.equal(v.receipt.state,'unknown');
+      const v=await get(c,'business');assert.equal(v.receipt.state,'completed');
       assert.equal((await call('POST',url,{...body,requestId:randomUUID(),expectedVersion:v.version})).status,409);
-      assert.equal(calls,1);
-      assert.equal((await call('GET',`/customers/${c.customerId}/advance-plan?domain=business`)).body.reason,'ROUND_UNRESOLVED');
+      assert.equal(calls,2);
+      const events=await r.pool.query("SELECT count(*) n FROM arrow_events WHERE job_id=$1 AND event_type='COLUMN_HUMAN_DECISION'",[j.roundId]);
+      assert.equal(Number(events.rows[0].n),1);
       const recovered=buildParallelAdvanceRounds(r.kernel,{serviceCredential:SERVICE,runBatch:runReadyDomains});
-      assert.equal((await recovered.read(HUMAN,c.customerId,{domain:'business'})).receipt.state,'unknown');
+      assert.equal((await recovered.read(HUMAN,c.customerId,{domain:'business'})).receipt.state,'completed');
     }finally{r.kernel.v2.adoptDomainOpinion=original;}
   });
   await t.test('actual Node process restart reads the same committed runs and replays without execution',async()=>{

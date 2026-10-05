@@ -120,3 +120,11 @@ Unified demo entry, native material/tree/timeline reuse, good/medium/bad click-d
 ## V0.5 · 2026-09-30 PC演示收敛与真实前后端联调
 
 十个合成案例覆盖红线、权属阻断、风险、补件、冲突、核验、重评、预评估、结清和独立返单。修复目录字段契约、跨专业演示身份入口、外部回执后的结清动作、核验依据与收入单位；主界面仅保留状态驱动主按钮，“更多”统一次级入口，五区完成不再以全屏页面阻断后续办理。健康启动复用，已核实自有缺失服务恢复，读取失败不重播数据。Front/dist 同步更新。独立验证范围和未验收项见 docs/codex-handoff/v05-acceptance/FINAL_ACCEPTANCE.md。仅更新 GitHub 并打 V0.5 tag，无部署；用户视觉验收与生产就绪分别记录。
+
+## 2026-10-04 本地D9修复（未发布新版本）
+
+advance-round收口在customer锁内重读依据，再锁process并判定stale，避免材料更正在复查与收口之间提交后仍写awaiting_confirmation。实际源D9 EXPECT_FIX、D6重复/并发必要回归、A typecheck通过；只重载本轮专属A，真实API新增0。整体锁路径覆盖仍PARTIAL；证据见docs/codex-handoff/v06-real-load/01-back/repair-20261004-r1/CODEX_R1_ACCEPTANCE.md。
+
+## V0.6.0 · 2026-10-05
+
+真实 API 修复原件布尔值、租金单位、解析依赖、反馈重算、语义去重与过期回执；确定性结果先提交，语义建议限四路并发。前端简化为短导航、专业符号与状态/金额卡片，助手按发现/待核验分组，详情按需展开。Front 265 项、typecheck/build 和相关后端测试通过；最新 19 次真实回执、三例五区约 5.8–6.0 秒。原夜间结论与未决商务门保留，不称全部缺陷关闭。详见 [本次验收](evals/API_REPAIR_20261005_ACCEPTANCE.md)。本轮更新 Git 与 dist，不部署共享栈。

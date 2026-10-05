@@ -63,7 +63,7 @@ async function main(): Promise<void> {
   const server = await startHttpServer(kernel, config.httpPort, { advance: advanceEngine as never, cycles: argv.includes('--parallel-advance') ? buildArrowCycles(kernel) as never : undefined });
   console.log(`[kernel] listening http://127.0.0.1:${config.httpPort}  db=${config.dbUrl.replace(/:[^:@/]+@/, ':***@')}`);
   console.log(`[kernel] principalVerifier=${effectiveVerifier === null ? 'NOT_CONFIGURED(敏感写失败关闭)' : `token-directory(${config.principals.length} principals)${faulty ? '+FAULTY(测试注入)' : ''}`}`);
-  console.log(`[kernel] modelTransport=not_configured（GLM-5.2 仅预留，0 真实调用）`);
+  console.log(`[kernel] modelTransport=${config.modelTransport === null ? 'not_configured（未注入显式 transport）' : 'configured'}；五区语义辅助=${advanceEngine && typeof (advanceEngine as { describeSemantic?: unknown }).describeSemantic === 'function' ? JSON.stringify((advanceEngine as { describeSemantic: () => unknown }).describeSemantic()) : 'not_configured'}`);
   let dispatcher: OutboxDispatcher | null = null;
   if (config.withDispatcher) {
     dispatcher = new OutboxDispatcher(pool, config);

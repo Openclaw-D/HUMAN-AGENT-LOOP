@@ -140,7 +140,7 @@ export interface TakeoffAdmissionView {
     reviewReason?: string | null;
   } | null;
   frozen?: { active?: boolean; reasons?: string[]; scope?: string[] };
-  cells?: Array<{ domain?: string; row?: string; satisfiedItemCount?: number | null; running?: boolean; blockers?: Array<{ scope?: string; reason?: string; detail?: string | null }> }>;
+  cells?: Array<{ domain?: string; row?: string; satisfiedItemCount?: number | null; running?: boolean; outcome?: string | null; basisRefs?: { roundId?: string | null; basisVersion?: string | null; current?: boolean | null } | null; blockers?: Array<{ scope?: string; reason?: string; detail?: string | null }> }>;
   blockers?: Array<{ scope?: string; reason?: string; detail?: string | null }>;
 }
 
@@ -212,6 +212,10 @@ export interface TakeoffSource {
   currentMaterials: number | null;
   /** 事实冲突数（factConflicts）。 */
   factConflicts: number;
+  /** 冲突事实键列表（FINAL-02：用于按事实所属专业分派核对角色；键未知时为空数组）。 */
+  factConflictKeys?: string[];
+  /** 材料清单读取失败的 HTTP 状态（403=无权读取；null=未失败；缺省=旧调用方）。 */
+  materialsReadError?: number | null;
 }
 
 const DOMAIN_NAME: Record<TakeoffDomainId, string> = {
@@ -229,6 +233,14 @@ export function fmtMinor(minor: number | undefined | null, currency?: string): s
     ? `${(minor / WAN).toLocaleString('zh-CN', { maximumFractionDigits: 2 })} 万元`
     : `${(minor / 100).toLocaleString('zh-CN', { maximumFractionDigits: 2 })} 元`;
   return currency && currency !== 'CNY' ? `${s}（${currency}）` : s;
+}
+
+/** 当前评估=清单序首条非 superseded（A 清单按 assessment_id DESC 最新在前；与 Edge
+ * admission-projection 选取规则一致；R2-02 整改：不再盲取末条=最旧评估）。 */
+export function currentAssessmentOf<T extends { status?: string | null }>(list: Array<T | null | undefined> | null | undefined): T | null {
+  const arr = Array.isArray(list) ? list : [];
+  const firstUsable = arr.find((a) => a && a.status !== 'superseded');
+  return (firstUsable ?? arr[0] ?? null) as T | null;
 }
 
 const TENDENCY_LABEL: Record<string, string> = {
@@ -292,7 +304,7 @@ export function deriveTakeoffCells(src: TakeoffSource): TakeoffCellView[] {
   const facts = collectFacts(src);
   const chan = channelRunState(src.channelTasks);
   const changedSet = new Set(BACKEND_DOMAINS.filter((d) => facts[d].currency === 'changed'));
-  const latest = (snap.assessments ?? []).length > 0 ? (snap.assessments ?? [])[(snap.assessments ?? []).length - 1] : null;
+  const latest = currentAssessmentOf(snap.assessments);
   const gate = basis?.gate ?? null;
   const cells: TakeoffCellView[] = [];
 
@@ -401,7 +413,18 @@ export function deriveTakeoffCells(src: TakeoffSource): TakeoffCellView[] {
     let frozen = false;
     let needsReview = false;
     if (!isBackend) {
-      closureItems.push({ key: 'nc', label: '业务办理尚未完成', tone: 'gray' });
+      // LT-02 FF-1：商机列结构化分析视图仍待接入，但 A 依据包 business 域结论现行时，
+      // 办结格如实收口（与简报“业务已有现行专业结论”同源同词汇，≠正式批准）；
+      // 其余情形保持原“尚未完成”文案，不编造进度。
+      const bizCurrent = (Array.isArray(basis?.currency) ? basis!.currency! : [])
+        .some((x) => x?.domain === 'business' && x.currency === 'current');
+      if (bizCurrent) {
+        completed = true;
+        bucket = 100;
+        closureItems.push({ key: 'cur', label: '本专业办理已完成', tone: 'green', detail: '绿=该格工作完成，≠支持融资；负面结论同样可完成' });
+      } else {
+        closureItems.push({ key: 'nc', label: '业务办理尚未完成', tone: 'gray' });
+      }
     } else if (f!.currency === 'current') {
       completed = true;
       bucket = 100;
@@ -422,7 +445,7 @@ export function deriveTakeoffCells(src: TakeoffSource): TakeoffCellView[] {
     if ((d.id === 'credit' || d.id === 'commerce') && latest?.candidate) {
       closureItems.push({ key: 'cand', label: `建议：${tendencyLabel(latest.candidate.tendency)}`, tone: latest.candidate.tendency === 'do_not' ? 'red' : 'blue', detail: latest.candidate.supportableAmountMinor != null ? `候选支撑金额 ${fmtMinor(latest.candidate.supportableAmountMinor, latest.candidate.currency)}` : '候选金额未知（未知≠0）' });
     }
-    if ((snap.assessments ?? []).some((a) => a.stale === true) && d.id === 'credit') {
+    if ((currentAssessmentOf(snap.assessments)?.stale === true) && d.id === 'credit') {
       needsReview = true;
       closureItems.push({ key: 'stale', label: '材料已变化，需要重新核对', tone: 'yellow' });
     }
@@ -456,7 +479,22 @@ export function deriveTakeoffCells(src: TakeoffSource): TakeoffCellView[] {
         c.items.unshift({ key: 'adm-cnt', label: `按域可推导到件 ${ac.satisfiedItemCount} 件（03协议 kind→域映射）`, tone: 'green' });
       }
       if (ac.running === true) c.running = true;
+      // V0.6-R2-02：智能行透出 arrow 面现行状态与卡点（与决策/流程页同快照同源；
+      // 候选待人工确认≠已确认≠依据过期≠等待补证，不合并不冒充完成）。
+      if (r === 'analysis' && typeof ac.outcome === 'string' && ac.outcome && ac.outcome !== '未定') {
+        c.items.unshift({
+          key: 'adm-arrow-outcome',
+          label: `五区现行：${ac.outcome}`,
+          tone: ARROW_OUTCOME_TONE[ac.outcome] ?? 'gray',
+          detail: '依据：A advance-rounds 同快照现行状态；待人工确认≠已确认，过期/待补证不冒充完成',
+        });
+        if (ac.outcome === '候选待人工确认' || ac.outcome === '等待补证' || ac.outcome === '依据已过期' || ac.outcome === '待重评') c.needsReview = true;
+      }
       for (const b of ac.blockers ?? []) {
+        if (b?.scope === 'arrow') {
+          c.items.push({ key: `adm-arrow-${String(b.reason ?? 'ARROW')}`, label: `五区卡点：${b.detail ?? '依据变化，需重新分析'}`, tone: 'yellow', detail: '解除须按当前证据补证/重评；确认前旧候选不作为现行依据' });
+          c.needsReview = true;
+        }
         if (b?.reason === 'PROCESSING_FAILED') {
           c.items.push({ key: `adm-pb-${String(b.detail ?? '').slice(0, 16)}`, label: '处理失败（材料页可见逐件回执）', tone: 'red', detail: b.detail ?? undefined });
           c.needsReview = true;
@@ -469,11 +507,11 @@ export function deriveTakeoffCells(src: TakeoffSource): TakeoffCellView[] {
       for (const c of cells.filter((x) => x.row === 'closure')) {
         c.items.unshift({
           key: 'pac',
-          label: `预评估结论：${label}（scope=preassessment_only${pre.confirmationId ? ` · ${pre.confirmationId}` : ''}）`,
+          label: `预评估结论：${label}（预评估结论，不等于正式批准）`,
           tone: pre.outcome === 'not_support' ? 'red' : 'green',
           detail: pre.needsReview
-            ? `需复核（不重开）：${pre.reviewReason ?? '确认依据被取代'}`
-            : `确认人 ${pre.confirmedBy ?? '有权人'}；结论≠正式批准`,
+            ? `需复核（不重开）：${pre.reviewReason ?? '确认依据被取代'}${pre.confirmationId ? `（确认记录 ${pre.confirmationId}）` : ''}`
+            : `确认人 ${pre.confirmedBy ?? '有权人'}${pre.confirmationId ? ` · 确认记录 ${pre.confirmationId}` : ''}；结论≠正式批准`,
         });
       }
       if (pre.needsReview === true) {
@@ -498,7 +536,7 @@ export function deriveTakeoffTop(src: TakeoffSource): TakeoffTopSummary {
   const adm = snap.admission ?? null;
   const basis = snap.decisionStatus?.basis ?? null;
   const assessments = snap.assessments ?? [];
-  const latest = assessments.length > 0 ? assessments[assessments.length - 1] : null;
+  const latest = currentAssessmentOf(assessments);
   const facts = collectFacts(src);
   const changedDomains = BACKEND_DOMAINS.filter((d) => facts[d].currency === 'changed');
   const cand = adm?.candidate ?? null;
@@ -506,9 +544,9 @@ export function deriveTakeoffTop(src: TakeoffSource): TakeoffTopSummary {
   const marks: string[] = [];
   const tendency = cand?.tendency ?? latest?.candidate?.tendency ?? null;
   if (tendency != null || latest?.candidate) {
-    marks.push(`候选倾向：${tendencyLabel(tendency)}（authority=none）`);
-    if (latest?.ruleVersion) marks.push(`规则 ${latest.ruleVersion}`);
-    if (latest?.status) marks.push(`评估 ${latest.status}`);
+    marks.push(`候选倾向：${tendencyLabel(tendency)}（仅供参考，不等于正式审批）`);
+    if (latest?.ruleVersion) marks.push(`规则版本 ${latest.ruleVersion}`);
+    if (latest?.status) marks.push(`评估进度 ${ASSESSMENT_PROGRESS_CN[latest.status] ?? latest.status}`);
     if (latest?.stale === true) marks.push('评估依据已过时');
   } else {
     marks.push('尚无候选方案（待评估，不是 0）');
@@ -587,6 +625,32 @@ export const CONFIRM_OUTCOME_LABEL: Record<string, string> = {
   not_support: '不支持（负面预评估结论）',
 };
 
+/** arrow 面 outcome（Edge ARROW_STATE_OUTCOME 中文）→ 格子色：
+ * 绿=已确认；黄=需人工/依据变化；红=拒绝/失败；灰/蓝=在途与未知。未知值落灰，不冒充完成。 */
+const ARROW_OUTCOME_TONE: Record<string, TakeoffTone> = {
+  '已确认': 'green',
+  '候选待人工确认': 'yellow',
+  '等待补证': 'yellow',
+  '待重评': 'yellow',
+  '依据已过期': 'yellow',
+  '已拒绝': 'red',
+  '失败': 'red',
+  '结果核对中': 'gray',
+  '分析中': 'blue',
+  '已受理': 'blue',
+  '已终止': 'gray',
+};
+
+/** 评估状态中文（顶部摘要/简报共用；未知值原样保留，不冒充已知）。 */
+export const ASSESSMENT_PROGRESS_CN: Record<string, string> = {
+  collecting: '正在收集材料',
+  candidate_ready: '已有建议方案',
+  awaiting_human_review: '等待人工确认',
+  preassessment_confirmed: '结论已确认',
+  rejected: '不支持',
+  superseded: '已撤回',
+};
+
 function fmtWhenIso(at: string): string {
   const d = new Date(at);
   return Number.isNaN(d.getTime()) ? at : d.toLocaleString('zh-CN', { hour12: false });
@@ -641,8 +705,22 @@ export function deriveTakeoffTodos(src: TakeoffSource): TakeoffTodoRow[] {
     });
   }
   if (src.factConflicts > 0) {
+    // FINAL-02 建立冲突行 who 按事实所属专业显示；CLOSE-02 修订：按后端权威域键集
+    // （Back/B/src/worker/column-dependencies.mjs KEYSETS）对齐，与 advance-plan.affectedDomains
+    // 同语义（FINAL_BACK_CONTRACT §3 实证 equipment_deal_amount 仅属 asset 键集）；
+    // transaction_scope=全局共享键→五区；键未知如实兜底。
+    const cKeys = src.factConflictKeys ?? [];
+    const ROLE_CN: Record<string, string> = { business: '客户经理（业务）', policy: '政策合规专员', credit: '信审专员', commerce: '商务专员', asset: '资产评估专员' };
+    const KEYSETS: Record<string, string[]> = {
+      business: ['revenue_annual_declared', 'new_order_amount_declared', 'litigation_pending_declared', 'total_assets_declared', 'total_liabilities_declared'],
+      credit: ['monthly_operating_cash_flow', 'monthly_debt_service', 'new_debt_monthly_payment', 'top1_customer_revenue_share', 'video_liveliness', 'material_page_count'],
+      commerce: ['lease_term_months', 'proposed_monthly_rent', 'funding_cost_annual', 'fees_known'],
+      asset: ['equipment_ownership_verified', 'equipment_exists_observed', 'equipment_deal_amount', 'nameplate_serial', 'equipment_model'],
+      policy: ['entity_identity_verified'],
+    };
+    const domains = [...new Set(cKeys.flatMap((k) => k === 'transaction_scope' ? ['business', 'policy', 'credit', 'commerce', 'asset'] : Object.keys(KEYSETS).filter((d) => KEYSETS[d].includes(k))))];
     rows.push({
-      key: 'conf', who: 'business/credit', what: `复核事实冲突 ${src.factConflicts} 处（同键多现行断言）`,
+      key: 'conf', who: domains.length > 0 ? [...new Set(domains.map((d) => ROLE_CN[d] ?? d))].join('、') : '具备该事实核验权限的专业岗位', what: `复核事实冲突 ${src.factConflicts} 处（同键多现行断言；人工核对登记或显式更正收口，不按最后上传自动采用）`,
       doneWhen: '冲突断言经更正/复核收口（不以最后上传覆盖）', action: '打开材料面板', cell: null, entry: 'materials',
     });
   }

@@ -103,6 +103,26 @@ if (-not (Test-Path $cfgPath)) {
 }
 Write-Host "[Start-JW] ✓ 运行配置: $cfgPath"
 
+# 3.5) 真实模型密钥环境变量（V0.6-01）：栈目录存在 model-config.json 时，从用户 DPAPI 密钥文件
+# 解出 JW_DEEPSEEK_API_KEY 注入子进程（内核语义辅助与 Edge 助手同一引用；密钥不打印、不落盘）。
+# 密钥缺失 = 失败关闭并给出恢复指引（模型配置不会静默降级为 mock 或 not_configured 假绿）。
+$modelCfgPath = Join-Path (Split-Path $cfgPath) "model-config.json"
+if (Test-Path $modelCfgPath) {
+  $secretDir = Join-Path $env:LOCALAPPDATA "JW\secrets"
+  $keyFile = Get-ChildItem -LiteralPath $secretDir -Filter 'deepseek-api-key-*.dpapi' -ErrorAction SilentlyContinue |
+    Sort-Object LastWriteTime -Descending | Select-Object -First 1
+  if (-not $keyFile) {
+    Write-Host "[Start-JW] ✗ 模型配置 $modelCfgPath 存在但找不到 DPAPI 密钥文件（$secretDir\deepseek-api-key-*.dpapi）" -ForegroundColor Red
+    Write-Host "    恢复：放回用户 DeepSeek 密钥 DPAPI 文件，或暂移走 model-config.json 以未配置模式启动（模型如实 not_configured）"
+    exit 2
+  }
+  $secure = ConvertTo-SecureString ([System.IO.File]::ReadAllText($keyFile.FullName))
+  $ptr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
+  try { $env:JW_DEEPSEEK_API_KEY = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr) } finally {
+    [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ptr); $secure.Dispose() }
+  Write-Host "[Start-JW] ✓ 真实模型密钥已注入环境（DPAPI；不回显）；模型配置: $modelCfgPath"
+}
+
 # 4) 复用或启动
 $ready = Get-EdgeReady -Port $S.EdgePort
 if ($ready -and $ready.ok) {

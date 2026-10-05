@@ -60,6 +60,7 @@ export function RoleEntry({ wb }: { wb: WbApi }) {
             <button className="tk-role-card" aria-label={`${role.name}：${role.description}${matches.length ? '' : '，暂未开放'}`} disabled={busy !== null || matches.length === 0}
               onClick={() => auto ? void enter(auto.principalId) : matches.length === 1 ? void enter(matches[0].principalId) : setChoosing(role.id)}>
               <RoleLogo role={role.id} size={144}/>
+              <strong className="tk-role-title">{role.name}</strong>
               <span className="tk-role-value">{role.description}</span>
               {busy && matches.some((m) => m.principalId === busy) && <small>正在进入…</small>}
             </button>

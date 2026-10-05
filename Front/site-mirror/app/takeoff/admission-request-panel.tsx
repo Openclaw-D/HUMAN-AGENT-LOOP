@@ -10,7 +10,9 @@ const empty = { amount: '', term: '', purpose: '', equipment: '', note: '' };
 
 export function AdmissionRequestPanel({ wb, onOpenProposal }: { wb: WbApi; onOpenProposal: () => void }) {
   const list = wb.snapshot?.assessments ?? [];
-  const assessmentId = list[list.length - 1]?.assessmentId ?? null;
+  // R2-02：当前评估=清单序首条非 superseded（A 清单按 assessment_id DESC 最新在前），不盲取末条。
+  const current = list.find((a) => a && a.status !== 'superseded') ?? list[0] ?? null;
+  const assessmentId = current?.assessmentId ?? null;
   return <AdmissionForm key={`${wb.session?.sessionId}:${wb.customerId}:${assessmentId}`} wb={wb} assessmentId={assessmentId} onOpenProposal={onOpenProposal} />;
 }
 

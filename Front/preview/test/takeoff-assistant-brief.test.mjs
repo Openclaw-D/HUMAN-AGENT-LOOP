@@ -46,7 +46,7 @@ test('简报：确定性标记恒真；引用可追（finId/inputHash/artifactId
 
 test('business 简报：客户/需求登记态/评估状态；未知需求如实待补', () => {
   const b = composeAssistantBrief('business', SRC, null);
-  assert.ok(b.text.includes('恒锐精密（合成）') && b.text.includes('awaiting_human_review'));
+  assert.ok(b.text.includes('恒锐精密（合成）') && b.text.includes('待人工确认'));
   assert.ok(b.text.includes('首次回租需求已登记') && b.text.includes('¥5000'), '需求金额读回（分→元）');
   const noReq = composeAssistantBrief('business', { ...SRC, admission: { ...SRC.admission, request: { requestedAmount: null } }, assessment: { ...SRC.assessment, requestedAmountMinor: null } }, null);
   assert.ok(noReq.text.includes('未录入'), '未登记如实展示');
@@ -74,7 +74,7 @@ test('credit/policy/asset 简报：当前性/预评估态/Gate/冻结各自成�
     ...SRC,
     finalization: { ...FIN, gate: { result: 'HARD_BLOCK', reasons: ['涉诉未决'], ruleIds: ['R9'] } },
   }, null);
-  assert.ok(policy.text.includes('HARD_BLOCK') && policy.text.includes('R9'));
+  assert.ok(policy.text.includes('HARD_BLOCK') && policy.text.includes('涉诉未决'));
 });
 
 test('去重：同 finId 第二次询问=短答不重复推理；不同 finId=全量组答', () => {
@@ -99,4 +99,36 @@ test('读取失败回执：带状态与错误码，不伪造成分析结果', ()
 
 test('名称表六助手齐全', () => {
   assert.deepEqual(Object.keys(ASSISTANT_BRIEF_NAMES).sort(), ['asset', 'business', 'commerce', 'credit', 'jianwei', 'policy']);
+});
+
+// --- R3-02 案例说明收敛：短结论 + 可展开明细，不常驻整份说明/免责长文 ---
+import { composeCaseExplanation } from '../../site-mirror/lib/workbench/takeoff-assistant-brief.ts';
+
+test('案例说明收敛：结论一句带客户名与材料数；明细含依据；来源标注短注', () => {
+  const exp = composeCaseExplanation('business', {
+    customerName: '恒锐精密（合成）',
+    currentMaterials: 4,
+    factConflicts: 0,
+    snapshot: {
+      assessments: [{ status: 'candidate_ready', stale: false }],
+      admission: { request: { requestedAmount: 5_000_00 } },
+      decisionStatus: { basis: { gate: { result: 'pass' }, blockedActions: [] } },
+    },
+  });
+  assert.equal(typeof exp.conclusion, 'string');
+  assert.ok(exp.conclusion.includes('恒锐精密（合成）'), '短结论带客户名');
+  assert.ok(exp.conclusion.includes('已有建议方案'), '短结论带当前状态');
+  assert.ok(exp.conclusion.includes('现行材料 4 份'), '短结论带材料数');
+  assert.ok(Array.isArray(exp.details) && exp.details.some((d) => d.includes('首次回租需求已登记')), '需求依据在明细');
+  assert.ok(exp.details.some((d) => d.includes('可继续的事')), '下一步建议在明细');
+  assert.ok(!JSON.stringify(exp).includes('以上为当前真实投影说明'), '不再常驻整段免责长文');
+  assert.ok(exp.sourceNote.includes('非真实模型'), '来源标注保留（短注）');
+  // 冲突/阻断进明细不丢失
+  const expBlocked = composeCaseExplanation('credit', {
+    customerName: '某厂', currentMaterials: 2, factConflicts: 2,
+    snapshot: { assessments: [], decisionStatus: { basis: { gate: { result: 'rejected' }, blockedActions: ['facility_approve'] } } },
+  });
+  assert.ok(expBlocked.details.some((d) => d.includes('2 处') && d.includes('矛盾')), '冲突进明细');
+  assert.ok(expBlocked.details.some((d) => d.includes('不能通过')), '红线阻断进明细');
+  assert.ok(expBlocked.details.some((d) => d.includes('暂缓动作')), '暂缓动作进明细');
 });

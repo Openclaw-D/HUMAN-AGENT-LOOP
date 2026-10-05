@@ -196,7 +196,7 @@ test('点格→真实事项分层详情；允许动作打开复用面板；关�
   const drawer = await screen.findByRole('dialog', { name: /信审 · 材料/ });
   assert.equal(document.activeElement, drawer, '打开抽屉后焦点进入详情');
   assert.ok(screen.getByText('待处理'));
-  assert.ok(screen.getByText('下一步'));
+  assert.ok(screen.getAllByText('下一步').length > 0);
   assert.ok(screen.getByText('已取得的结果'));
   assert.ok(within(drawer).getByRole('button', { name: '查看材料原件' }), '依据可以直接打开原件');
   assert.ok(!drawer.textContent.includes('evidence_artifacts'), '不展示内部表名');

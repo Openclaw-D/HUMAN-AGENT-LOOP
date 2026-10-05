@@ -146,7 +146,7 @@ test('顶部摘要：候选金额来自同一方案；未配置=待评估/待补
   assert.equal(top.suggestedTerm.text, '待评估');
   assert.equal(top.referencePrice.text, '口径未配置');
   assert.equal(top.expect.text, '待估');
-  assert.ok(top.planMarks.some((m) => m.includes('可做（支持）') && m.includes('authority=none')));
+  assert.ok(top.planMarks.some((m) => m.includes('可做（支持）') && m.includes('不等于正式审批')));
   assert.ok(top.planMarks.some((m) => m.includes('≠ 正式批准')));
   const empty = deriveTakeoffTop(src());
   assert.equal(empty.suggestedAmount.text, '待评估', '无候选=待评估，绝不显示 0');
@@ -205,4 +205,59 @@ test('展示小工具：金额分→万元串；未知倾向原样保守展示',
   assert.equal(tendencyLabel('do_not'), '不做（负面）');
   assert.equal(tendencyLabel('weird_state'), '未知倾向：weird_state');
   assert.equal(tendencyLabel(null), '未登记');
+});
+
+// ---- V0.6-R2-02：评估排序 + arrow 面合并（ACCEPTANCE_REVIEW 阻断项1 回归） ----
+
+test('R2-02 评估排序：当前评估=清单序首条非 superseded（A 清单最新在前），不盲取末条', () => {
+  // deriveTakeoffTop：首条 candidate_ready（最新）生效，末条 awaiting_human_review 不覆盖
+  const top = deriveTakeoffTop(src({
+    snapshot: {
+      assessments: [
+        { assessmentId: 'a_new', status: 'candidate_ready', stale: false, candidate: { tendency: 'do', supportableAmountMinor: 50_000_000, currency: 'CNY' } },
+        { assessmentId: 'a_old', status: 'awaiting_human_review', stale: true },
+      ],
+    },
+  }));
+  assert.equal(top.assessment.id, 'a_new', '顶部摘要绑定首条（最新）评估');
+  assert.equal(top.assessment.stale, false, '不拿末条旧评估的 stale 冒充当前');
+  assert.ok(top.planMarks.some((m) => m.includes('已有建议方案')), '评估进度按首条显示');
+  // 顶部 stale 标记跟随首条（此处首条未过时→无“评估依据已过时”标记）
+  assert.ok(!top.planMarks.some((m) => m.includes('评估依据已过时')));
+  // 首条 superseded → 跳过取下一条
+  const skipped = deriveTakeoffTop(src({
+    snapshot: { assessments: [{ assessmentId: 'a_dead', status: 'superseded' }, { assessmentId: 'a_live', status: 'candidate_ready' }] },
+  }));
+  assert.equal(skipped.assessment.id, 'a_live');
+  // credit 完成行 stale 卡点跟随当前评估（旧 superseded 评估 stale=true 不再误染格子）
+  const cells = deriveTakeoffCells(src({
+    snapshot: { assessments: [{ assessmentId: 'a_old', status: 'superseded', stale: true }, { assessmentId: 'a_new', status: 'candidate_ready', stale: false }] },
+  }));
+  const creditClosure = cells.find((c) => c.domain === 'credit' && c.row === 'closure');
+  assert.ok(!creditClosure.items.some((i) => i.key === 'stale'), '已撤回旧评估的 stale 不冒充当前卡点');
+});
+
+test('R2-02 arrow 合并：平台格智能行透出五区现行状态与卡点（与决策页同源）', () => {
+  const cells = deriveTakeoffCells(src({
+    snapshot: {
+      customer: { customerId: 'cus_1' },
+      admission: {
+        cells: [
+          { domain: 'credit', row: 'intelligence', outcome: '候选待人工确认', basisRefs: { roundId: 'r1', basisVersion: 'bs1', current: true } },
+          { domain: 'asset', row: 'intelligence', outcome: '依据已过期', blockers: [{ scope: 'arrow', reason: 'STALE_BASIS', detail: '候选依据已过期，需补证重评' }] },
+          { domain: 'policy', row: 'intelligence', outcome: '已确认' },
+        ],
+      },
+    },
+  }));
+  const credit = cells.find((c) => c.domain === 'credit' && c.row === 'analysis');
+  const creditOutcome = credit.items.find((i) => i.key === 'adm-arrow-outcome');
+  assert.ok(creditOutcome && creditOutcome.label.includes('候选待人工确认'), '五区现行状态入格');
+  assert.equal(credit.needsReview, true, '待人工确认=卡点');
+  const asset = cells.find((c) => c.domain === 'asset' && c.row === 'analysis');
+  assert.ok(asset.items.some((i) => i.label.includes('五区卡点') && i.label.includes('补证重评')), 'arrow 卡点明细入格');
+  assert.equal(asset.needsReview, true);
+  const policy = cells.find((c) => c.domain === 'policy' && c.row === 'analysis');
+  assert.ok(policy.items.some((i) => i.label.includes('已确认')), '已确认态入格');
+  assert.equal(policy.needsReview, false, '已确认不再标记卡点');
 });

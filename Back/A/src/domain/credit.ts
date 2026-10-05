@@ -492,6 +492,15 @@ export function buildCreditCommands(kernel: Kernel): CreditV2Api {
           if (o.customer_id !== customerId) throw notFound('被取代工件不属于该客户');
           if (o.superseded_by !== null) throw conflict('ARTIFACT_SUPERSEDED', `工件已被 ${o.superseded_by} 取代`);
           if (o.sha256 === contentSha) throw invalid('更正版内容与原件相同：不构成取代（请用重复提交）');
+          // FINAL-01（2026-10-01）：更正版内容与该客户任一"其他"既有件逐字节相同（如与并列冲突源同值同信封）
+          // 会在 uq_artifacts_content 上裸 23505→500；先诚实拒绝（409），由人工决定以该既有件为取代对象或改登口径。
+          const clash = await tx.query(
+            `SELECT artifact_id FROM evidence_artifacts WHERE customer_id=$1 AND sha256=$2 AND artifact_id<>$3 LIMIT 1`,
+            [customerId, contentSha, supersedes],
+          );
+          if (clash.rows.length > 0) {
+            throw conflict('ARTIFACT_CONTENT_EXISTS', `更正版内容与既有工件 ${(clash.rows[0] as { artifact_id: string }).artifact_id} 逐字节相同：请核对该件口径后以其为取代对象，或修改登记口径（caliber/原件引用）后再登记更正`);
+          }
         } else {
           // 同客户同内容重复提交（A04）：指向首件，不产生新证明力；提交痕迹保留
           const dup = await tx.query(

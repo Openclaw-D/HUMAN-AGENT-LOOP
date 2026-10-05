@@ -195,40 +195,51 @@ export function assessCommerce({ snapshot, projection, thresholds, now = () => n
   const fundCost = topFact(projection, 'funding_cost_annual');
   const feeKnown = topFact(projection, 'fees_known');
   const plans = projection.items.filter((it) => it.factKey === 'proposed_monthly_rent');
+  const moneyUnits = { CNY: { label: '元', factor: 1 }, '元': { label: '元', factor: 1 },
+    '人民币': { label: '元', factor: 1 }, wan: { label: '万元', factor: 10000 }, '万元': { label: '万元', factor: 10000 } };
+  const termValid = Number.isInteger(term?.value) && term.value > 0;
 
   const rows = plans.map((p, i) => ({
     planId: `plan-${i + 1}`,
     monthlyRent: p.value,
-    unit: p.unit ?? '万元',
+    unit: moneyUnits[p.unit]?.label ?? '（单位未知）',
+    comparableCny: typeof p.value === 'number' && Number.isFinite(p.value) && p.value > 0 && moneyUnits[p.unit]
+      ? p.value * moneyUnits[p.unit].factor : null,
     termMonths: term?.value ?? null,
     caliber: p.caliber,
     source: p.materialId,
-    totalRent: (typeof p.value === 'number' && typeof term?.value === 'number') ? Number((p.value * term.value).toFixed(6)) : null,
+    totalRent: (typeof p.value === 'number' && Number.isFinite(p.value) && p.value > 0 && moneyUnits[p.unit] && termValid)
+      ? Number((p.value * term.value).toFixed(6)) : null,
     netIncome: null, // 结构性：缺成本时绝不编净收益
     costUnknownItems: [],
   }));
+  for (const r of rows) {
+    if (r.comparableCny === null) a.unknowns.push(`方案 ${r.planId}：月租金数值或货币单位未知，不计算总额、不跨单位排序`);
+    if (!termValid) a.unknowns.push(`方案 ${r.planId}：期限缺失或不是正整数月数，不计算总额`);
+  }
   if (fundCost === null || fundCost.verificationLevel === 'unknown') {
     for (const r of rows) r.costUnknownItems.push('资金成本（unknown：不编净收益）');
   }
-  if (feeKnown === null || feeKnown.value !== true) {
+  if (feeKnown === null || feeKnown.value !== true || feeKnown.verificationLevel === 'unknown') {
     for (const r of rows) r.costUnknownItems.push('费用结构（未知项：未确认）');
   }
-  a.knownFacts = rows.map((r) => `方案 ${r.planId}：月租金 ${r.monthlyRent}${r.unit} × 期限 ${r.termMonths ?? '未知'} 月 → 租金总额 ${r.totalRent ?? '不可计算（缺期限）'}（来源 ${r.source}）`);
+  a.knownFacts = rows.map((r) => `方案 ${r.planId}：月租金 ${r.monthlyRent}${r.unit} × 期限 ${r.termMonths ?? '未知'} 月 → 租金总额 ${r.totalRent === null ? '不可计算（数值、单位或期限缺失）' : `${r.totalRent}${r.unit}`}（来源 ${r.source}）`);
   for (const r of rows) {
     if (r.costUnknownItems.length > 0) a.unknowns.push(`方案 ${r.planId}：${r.costUnknownItems.join('；')}——净收益不可计算，不产出数值`);
   }
   // 结构边界：本域输出没有“提高价格对冲风险”的字段；对高定价方案仅提示成本核验
-  const maxRow = rows.length > 0 ? rows.reduce((x, y) => ((y.monthlyRent ?? -Infinity) > (x.monthlyRent ?? -Infinity) ? y : x)) : null;
-  if (maxRow && typeof maxRow.monthlyRent === 'number') {
+  const maxRow = rows.length > 1 && rows.every(r => r.comparableCny !== null) && new Set(rows.map(r=>r.comparableCny)).size > 1
+    ? rows.reduce((x, y) => y.comparableCny > x.comparableCny ? y : x) : null;
+  if (maxRow) {
     a.knownFacts.push(`方案 ${maxRow.planId} 为最高定价方案：定价差异须以成本核验解释；不得以高收益对冲真实性/欺诈风险（用户约束 high_interest_not_risk_coverage）`);
   }
   a.summary = rows.length > 0
-    ? `商务多方案比较（候选）：${rows.length} 个方案；成本未知项已逐方案标注，净收益仅在成本齐全后可算`
+    ? `商务交易条件（候选）：${rows.length} 条租金记录；多份声明不等于独立报价方案，成本未知项按来源标注；尚未完成净收益测算`
     : '商务：未提供租金/期限等交易条件事实，无可比较方案（不编造）';
   if (rows.length === 0) {
     a.unknowns.push('缺少租赁交易条件（月租金/期限）：等待商务条件材料');
   }
-  a.evidenceRefs = [rent, term, fundCost, feeKnown].filter(Boolean).map(factRef);
+  a.evidenceRefs = [...plans, term, fundCost, feeKnown].filter(Boolean).map(factRef);
   const run = baseRun({ domain: 'commerce', snapshot, rulesetVersion: thresholds.versions.business, now });
   const v = validateDomainAnalysis({ analysisRun: run, assessment: a }, snapshot);
   if (!v.ok) return { ok: false, reasons: v.reasons };
@@ -247,7 +258,7 @@ export function assessAsset({ snapshot, projection, ruleEvaluation, now = () => 
 
   // 看见设备 ≠ 所有权（C04）：存在性观察只进存在性事实
   if (existsObserved) {
-    a.knownFacts.push(`远程画面观察到设备存在（等级 ${existsObserved.verificationLevel}，来源 ${existsObserved.materialId}）：仅证明存在性，不证明权属`);
+    a.knownFacts.push(`设备存在性记录：${existsObserved.value}（等级 ${existsObserved.verificationLevel}，来源 ${existsObserved.materialId}）：按原来源记录，不推定为远程画面或已核实，不证明权属`);
   }
   if (ownership) {
     a.knownFacts.push(`权属事实：${ownership.value}（等级 ${ownership.verificationLevel}，来源 ${ownership.materialId}）`);

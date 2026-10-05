@@ -13,22 +13,47 @@ const names:Record<string,string>={business:'业务',policy:'政策',credit:'信
 export const receiptLabels:Record<string,string>={accepted:'已受理',running:'处理中',completed:'本列完成',waiting_evidence:'等待补证',awaiting_confirmation:'等待人工确认',needs_reassessment:'待重评',rejected:'已拒绝',failed:'失败',unknown:'结果核对中'};
 export function columnComplete(r:ColumnReceipt|undefined){return !!r&&r.current===true&&r.state==='completed'&&['materials','analysis','verification','completion'].every(id=>r.columnResults.some(x=>x.itemId===id&&x.state==='completed'));}
 function message(e:unknown){const p=e as {status?:number;message?:string};return [404,405,501,503].includes(p.status??0)?'本列服务暂未接通：请确认办理服务已启动后重试':p.status===403?'当前身份无本列办理权限：请在右上角切换到对应专业角色后重试（不借用其他身份）':p.message||'暂时无法核对服务端结果';}
+// LONG-02：计划面（advance-plan available:false）原因的业务可读映射。红线=确定性阻断，
+// 补件不能放行；唯一解除路径=人工核验原件后显式登记更正版事实（更正留痕），文字声明不解除。
+// NIGHT-FF2：升为 {text,next,short} 单一来源并导出——text=完整规则句（原有），
+// next=下一步完整句，short=简报条顶部短句；takeoff-screen 静态投影复用本表，不改门禁。
+export const PLAN_REASON_CN:Record<string,{text:string;next:string;short:string}>={
+ CUSTOMER_REVENUE_REDLINE:{
+  text:'客户年收入超过5000万元准入红线：本次按规则不能推进，补件不能放行；仅人工核验原件后在材料页显式登记更正版收入事实（更正留痕，不覆盖历史），才能重新评估解除',
+  next:'按准入规则本次不能推进：人工核验原件后，在材料页显式登记更正版收入事实（更正留痕，不覆盖历史），才能重新评估解除',
+  short:'收入超5000万红线：本次不能推进，需登记更正版收入事实',
+ },
+};
+// NIGHT-GATE-FF2：从计划读面结果提取静态阻断（纯函数供测试）。
+// available:false 且原因在共享映射内→阻断块；available:true/未知原因/读不到→null（不冒充可用，
+// 按钮保持既有路径，错误在点击时由既有服务错误路径如实显示）。
+export function planBlockOf(p:{available:boolean;reason?:string|null}|null|undefined, domain:string){
+ if(!p||p.available!==false||!p.reason)return null;
+ const mapped=PLAN_REASON_CN[p.reason];
+ return mapped?{domain,reason:p.reason,...mapped}:null;
+}
+function planUnavailableText(domain:string,reason:string|null){const cn=reason?PLAN_REASON_CN[reason]:undefined;return cn?cn.text:`${names[domain]}：${reason||'尚未具备办理条件，请先完成前序事项'}`;}
 
 // 2026-09-29 契约：左右箭头=纯浏览（不执行任何业务）；每次业务执行由一个明确命名的按钮提交。
 type EventView =
  | {kind:'disabled';label:string;title:string}
+ | {kind:'blocked';label:string;title:string}
  | {kind:'adopt';label:string;title:string}
  | {kind:'advance';label:string;title:string}
  | {kind:'goto';label:string;title:string;target:string}
  | {kind:'materials';label:string;title:string}
  | {kind:'finish';label:string;title:string};
 
-function eventView(args:{
+export function eventView(args:{
   api: AdvanceClient | undefined;
   working: boolean; domain: string; rows: ColumnReceipt[]; canFinish?: boolean;
+  planBlock?: {domain?:string|null;reason?:string|null;text:string;next:string;short:string}|null;
 }):EventView{
- const {api,working,domain,rows}=args;
+ const {api,working,domain,rows,planBlock}=args;
  if(!api)return {kind:'disabled',label:'本列服务暂未接通',title:'推进服务未连接，只读浏览不受影响'};
+ // NIGHT-GATE-FF2：已获计划面确定性阻断→按钮不再引导“提交材料并分析”，与简报同原因同下一步
+ // （完整规则句在 title）。未知原因/读取失败不到达此分支（planBlock=null），保持既有路径不冒充可用。
+ if(planBlock&&(planBlock.domain??'business')===domain)return {kind:'blocked',label:'按办理规则暂不能推进',title:planBlock.text};
  if(working)return {kind:'disabled',label:'处理中：正在核对服务端结果…',title:'上一事件尚未收敛；先查回执，不盲目重发'};
  const rejected=rows.find(r=>r.current===true&&r.state==='rejected');
  if(rejected)return {kind:'disabled',label:'办理已拒绝，后续推进已停止',title:`${names[rejected.domain]??rejected.domain}列有明确拒绝结果`};
@@ -63,7 +88,7 @@ function eventView(args:{
 }
 
 /** One explicit event, one server plan. Arrows only browse. Recovery only reads the persisted request. */
-export function ColumnAdvance({wb,customerId,domain,onDomain,onReceipts,onOpenMaterials,onFinished}:{wb:WbApi;customerId:string;domain:string;onDomain:(domain:string)=>void;onReceipts:(receipts:ColumnReceipt[])=>void;onOpenMaterials?:()=>void;onFinished?:()=>void}){
+export function ColumnAdvance({wb,customerId,domain,onDomain,onReceipts,onOpenMaterials,onFinished,planBlock}:{wb:WbApi;customerId:string;domain:string;onDomain:(domain:string)=>void;onReceipts:(receipts:ColumnReceipt[])=>void;onOpenMaterials?:()=>void;onFinished?:()=>void;planBlock?:{domain?:string|null;reason?:string|null;text:string;next:string;short:string}|null}){
  const api=wb.client?.advance;
  const scope=`${wb.session?.sessionId}:${customerId}`;
  const key=`jw:column-advance:pending:${customerId}`;
@@ -127,7 +152,7 @@ export function ColumnAdvance({wb,customerId,domain,onDomain,onReceipts,onOpenMa
    await publish(history);if(!active())return;
    if(history.some(r=>r.current===true&&r.state==='rejected')){setNote('已有明确拒绝结果，后续推进已停止');return;}
    const plan=await api.plan(customerId,domain);if(!active())return;
-   if(!plan.available){setActionError(`${names[domain]}：${plan.reason||'尚未具备办理条件'}`);return;}
+   if(!plan.available){setActionError(planUnavailableText(domain,plan.reason??null));return;}
    if(plan.allowedActions.some(a=>a.requiresHumanConfirmation)){setActionError(`${names[domain]}：请先完成有权人员确认`);return;}
    const requestId=crypto.randomUUID();localStorage.setItem(key,requestId);
    setNote(`${names[domain]}：正在办理…`);
@@ -160,7 +185,8 @@ export function ColumnAdvance({wb,customerId,domain,onDomain,onReceipts,onOpenMa
     const nextReceipt=history.filter(x=>x.domain===next).sort((a,b)=>b.roundNo-a.roundNo)[0];
     if(!nextReceipt||!nextReceipt.current){
      const plan=await api.plan(customerId,next);if(!active())return;
-     if(!plan.available||plan.allowedActions.some(a=>a.requiresHumanConfirmation)){setActionError(`${names[next]}：${plan.reason||'请先完成有权人员确认'}`);return;}
+     if(!plan.available){setActionError(planUnavailableText(next,plan.reason??null));return;}
+     if(plan.allowedActions.some(a=>a.requiresHumanConfirmation)){setActionError(`${names[next]}：请先完成有权人员确认`);return;}
      const nextRequestId=crypto.randomUUID();localStorage.setItem(key,nextRequestId);
      const receipt=await api.advance(customerId,plan,nextRequestId);
      if(!unsettled(receipt)&&localStorage.getItem(key)===nextRequestId)localStorage.removeItem(key);
@@ -174,7 +200,7 @@ export function ColumnAdvance({wb,customerId,domain,onDomain,onReceipts,onOpenMa
  const required=current?.views?.decisions.requiredDecision as RequiredDecision|null|undefined;
  const candidate=current?.views?.decisions.candidate as {summary?:string}|null|undefined;
  const index=domains.indexOf(domain);
- const ev=eventView({api,working:working||!loaded,domain,rows:rows.current,canFinish:!!onFinished});
+ const ev=eventView({api,working:working||!loaded,domain,rows:rows.current,canFinish:!!onFinished,planBlock});
  const statusText=working?'处理中':current?.current&&required?.choices.includes('adopt')?'等待人工确认':current?receiptLabels[current.state]??current.state:note.startsWith(`${names[domain]}：`)?note.slice(names[domain].length+1):'待办理';
  const onEvent=()=>{
   if(ev.kind==='disabled'||busy.current)return;
@@ -186,10 +212,10 @@ export function ColumnAdvance({wb,customerId,domain,onDomain,onReceipts,onOpenMa
  };
  return <nav className="tk-node-navigation" aria-label="专业列办理">
   <span className="tk-column-position" title={note} aria-live="polite">{ev.kind==='finish'?'五区评审完成':`${index+1}/5 ${names[domain]} · ${statusText}`}</span>
-  <button className="tk-btn small tk-next-event" data-event-kind={ev.kind} disabled={ev.kind==='disabled'||busy.current} onClick={onEvent} title={ev.title}>{ev.label}</button>
+  <button className="tk-btn small tk-next-event" data-event-kind={ev.kind} disabled={ev.kind==='disabled'||ev.kind==='blocked'||busy.current} onClick={onEvent} title={ev.title}>{ev.label}</button>
   {actionError&&<span role="alert" className="tk-action-error">{actionError}</span>}
  {current?.current&&required&&<details className="tk-column-opinion"><summary>查看专业意见</summary><div className="tk-column-choice" data-round-id={current.roundId} data-version={current.version}>
-   <strong>{names[domain]}意见 · {required.choices.includes('adopt')?'点上方按钮确认采用并继续':'请补证重评，或明确拒绝本案'}</strong><p>{businessCopy(candidate?.summary??'请结合本轮材料与专业意见选择。')}</p><small>模拟案例 · 确定性分析 · 采用不等于正式融资批准</small>
+   <strong>{names[domain]}意见 · {required.choices.includes('adopt')?'点上方按钮确认采用并继续':'请补证重评，或明确拒绝本案'}</strong><p>{businessCopy(candidate?.summary??'请结合本轮材料与专业意见选择。')}</p><small>分析供参考 · 采用不等于正式融资批准</small>
    {required.choices.includes('reject')&&!(wb.session?.roles??[]).includes('credit')&&<small>「拒绝本案」需信审角色：请切换角色后办理（页面不代借其他身份）。</small>}
    <div>{required.choices.filter(choice=>choice!=='adopt').map(choice=><button key={choice} disabled={busy.current||!!localStorage.getItem(key)} onClick={()=>void choose(choice)}>{choice==='reject'?'拒绝本案':'暂不采用'}</button>)}</div>
  </div></details>}

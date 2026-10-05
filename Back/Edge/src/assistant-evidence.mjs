@@ -7,28 +7,37 @@ export function prepareEvidence({ tenantId, customerId, revision, materials, all
   const snippets = [], facts = [], omitted = [];
   const cap = Math.min(12000, maxChars);
   const base = { tenantId, customerId, revision, snippets, facts, omitted, authority: 'none' };
-  for (const m of [...materials].sort((a,b) => String(a.evidenceId).localeCompare(String(b.evidenceId)))) {
+  const ordered=[...materials].sort((a,b) => String(a.evidenceId).localeCompare(String(b.evidenceId)));
+  function* chunks(m,pages){
+    for (const p of pages) for (let start=0;start<p.text.length;start+=800){
+      const text=p.text.slice(start,start+800);if(!text.trim())continue;
+      const locator={kind:Number.isInteger(p.page)&&p.page>0?'page_text':'extracted_text',
+        ...(Number.isInteger(p.page)&&p.page>0?{page:p.page}:{}),start,end:start+text.length};
+      const ref={artifactId:m.artifactId,evidenceId:m.evidenceId,hash:m.hash,parserVersion:m.parserVersion,
+        locator,text,limitations:m.limitations??[]};
+      yield {id:digest(ref),...ref};
+    }
+  }
+  const queues=[];
+  for (const m of ordered) {
     if (m.tenantId !== tenantId || m.customerId !== customerId || !sha.test(m.hash ?? '') ||
         !allowed.has(m.hash) || !m.artifactId || !m.parserVersion || m.current !== true)
       throw new Error('EVIDENCE_NOT_AUTHORIZED');
     const pages = Array.isArray(m.pages) && m.pages.length ? m.pages : [{ text: m.text, page: null }];
-    for (const p of pages) {
-      if (typeof p.text !== 'string') throw new Error('EVIDENCE_TEXT_INVALID');
-      for (let start = 0; start < p.text.length; start += 800) {
-        const text = p.text.slice(start, start + 800);
-        if (!text.trim()) continue;
-        const locator = { kind: Number.isInteger(p.page) && p.page > 0 ? 'page_text' : 'extracted_text',
-          ...(Number.isInteger(p.page) && p.page > 0 ? { page: p.page } : {}), start, end: start + text.length };
-        const ref = { artifactId: m.artifactId, evidenceId: m.evidenceId, hash: m.hash,
-          parserVersion: m.parserVersion, locator, text, limitations: m.limitations ?? [] };
-        const item = { id: digest(ref), ...ref };
-        if (snippets.length >= 8 || stable({ ...base, snippets: [...snippets, item] }).length > cap - 512) {
-          if (!omitted.some(o => o.evidenceId === m.evidenceId)) omitted.push({ evidenceId: m.evidenceId, reason: 'CONTEXT_LIMIT' });
-          break;
-        }
-        snippets.push(item);
-      }
+    if(pages.some(p=>typeof p.text!=='string'))throw new Error('EVIDENCE_TEXT_INVALID');
+    queues.push({m,iterator:chunks(m,pages),done:false});
+  }
+  // Take one complete span per original before taking a second from any source.
+  while(queues.some(q=>!q.done))for(const q of queues){
+    if(q.done)continue;
+    const next=q.iterator.next();if(next.done){q.done=true;continue;}
+    const item=next.value;
+    if(snippets.length>=8||stable({...base,snippets:[...snippets,item]}).length>cap-512){
+      omitted.push({evidenceId:q.m.evidenceId,reason:'CONTEXT_LIMIT'});q.done=true;continue;
     }
+    snippets.push(item);
+  }
+  for(const m of ordered){
     // Declared facts are not verified facts; only retain those with a literal source span.
     let omittedFacts = 0;
     for (const f of m.facts ?? []) {

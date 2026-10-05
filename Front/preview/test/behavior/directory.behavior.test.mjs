@@ -94,6 +94,45 @@ test('目录读取失败不冒充空客户；重试重新读取',async(t)=>{
   sessionStorage.clear();
 });
 
+
+// ---- LONG-02：默认演示目录同屏展示"授权客户"（服务端按身份/租户/grant 过滤；不硬编码评测ID）----
+function demoOkWb(directoryImpl) {
+  const calls = { directory: [] };
+  const wb = { session: {...fakeSession('biz-1'), tenantId:'t1'}, error:null, setError(){}, logout(){}, client: {
+    // 演示目录可用（arrow-cases 形状）→ 默认演示视图；advance.history 缺省=进度读取跳过。
+    async read(path){ if(path==='/api/jw/v2/arrow-cases') return { ok:true, manifestVersion:'m1', cases:[{caseId:'case-01',customerId:'cus_demo_1',displayName:'演示案例甲',scenarioLabel:'差',displayOrder:1}] }; throw Object.assign(new Error('404'),{status:404}); },
+    async directory(search, cursor){ calls.directory.push({search,cursor}); return directoryImpl(search, cursor); },
+  }};
+  return {wb,calls};
+}
+
+test('LONG-02 默认目录同屏列出授权客户：服务端权威过滤结果直接可达，点击进入工作台',async(t)=>{
+  t.after(cleanup);const {wb,calls}=demoOkWb(()=>({kind:'ok',customers:[{customerId:'cus_real_9f2a',displayName:'评测合成客户甲'}],nextCursor:null}));
+  const opened=[];
+  render(React.createElement(CustomerDirectory,{wb,onOpen:id=>opened.push(id)}));
+  await screen.findByRole('button',{name:/演示案例甲/});          // 演示案例仍在
+  const row=await screen.findByRole('button',{name:/评测合成客户甲/}); // 授权客户同屏可见（无需 acceptance=1）
+  fireEvent.click(row); assert.deepEqual(opened,['cus_real_9f2a']);
+  assert.deepEqual(calls.directory,[{search:'',cursor:undefined}]);  // 仅一次首屏读取
+  assert.ok(screen.getByRole('region',{name:'授权客户'}));
+  assert.ok(screen.getByText(/仅列出当前身份有权办理的客户/),'授权口径如实说明');
+});
+
+test('LONG-02 授权客户空态如实：暂无授权≠没有客户，演示案例仍可进',async(t)=>{
+  t.after(cleanup);const {wb}=demoOkWb(()=>({kind:'ok',customers:[],nextCursor:null}));
+  render(React.createElement(CustomerDirectory,{wb,onOpen(){}}));
+  await screen.findByRole('button',{name:/演示案例甲/});
+  await screen.findByText('当前身份暂无授权客户');
+  assert.ok(screen.getByText(/新建客户或获得授权后/));
+});
+
+test('LONG-02 客户联系人身份（403）如实说明走客户门户，不冒充网络错误',async(t)=>{
+  t.after(cleanup);const {wb}=demoOkWb(()=>{throw Object.assign(new Error('forbidden'),{status:403});});
+  render(React.createElement(CustomerDirectory,{wb,onOpen(){}}));
+  await screen.findByText(/客户联系人身份不使用内部客户目录/);
+  assert.ok(screen.getByRole('button',{name:'重试'}));
+});
+
 test('角色首屏只交换服务端提供的身份，无账号密码与登录前置页',async(t)=>{
   t.after(cleanup); const ids=[]; const wb={identities:[{principalId:'credit-real',label:'信审',roles:['credit']}],loginWithIdentity:async(id)=>ids.push(id)};
   render(React.createElement(RoleEntry,{wb}));

@@ -1,0 +1,411 @@
+{
+  "version": "V0.6.0",
+  "date": "2026-10-05",
+  "authority": "none",
+  "provider": "https://api.deepseek.com",
+  "model": "deepseek-flash",
+  "sample": "known synthetic regression, not blind holdout",
+  "plan": "API_REPAIR_20261005_PLAN.json",
+  "promptVersions": {
+    "assistant": "assistant-observe-flash-json-v3",
+    "semantic": "zone-semantic-v3",
+    "parser": "parse-adapters@2.2",
+    "dependency": "column-deps-v2"
+  },
+  "sourceHashes": [
+    "2bb85878c9e9f143282ebf83dff48cf149df0678b17fcbcd3150ed7cebbc39bc",
+    "4c17a93d4ef6915b9e5afbcddc5b1c05c053be1b5062167fba4fe7714a780948",
+    "a0f55ed946879d2a8dd84c49a49846cc64c5c0ec676e7d5aa75f39f327c04136",
+    "2a1346eb65825a5cac6d08b87565ba097447aa8a2de4db93baaac752024403b3"
+  ],
+  "calls": {
+    "latestVersion": 19,
+    "latestAssistant": 3,
+    "latestSemantic": 16,
+    "allPersonalRepair": 56,
+    "ledgers": {
+      "assistant": {
+        "reserve": 6,
+        "actual": 6
+      },
+      "semantic": {
+        "reserve": 50,
+        "actual": 50
+      }
+    },
+    "pending": 0,
+    "duplicateActual": 0,
+    "fees": "UNKNOWN"
+  },
+  "latencyMs": {
+    "assistant": {
+      "n": 3,
+      "min": 2161,
+      "median": 2417,
+      "p95": 2672,
+      "max": 2672,
+      "mean": 2417
+    },
+    "semantic": {
+      "n": 16,
+      "min": 2121,
+      "median": 2604,
+      "p95": 3543,
+      "max": 3543,
+      "mean": 2727
+    },
+    "assistantBefore": {
+      "n": 3,
+      "min": 1412,
+      "median": 1617,
+      "p95": 2190,
+      "max": 2190,
+      "mean": 1740
+    }
+  },
+  "cases": [
+    {
+      "caseId": "lt3-I07",
+      "sourceHashes": [
+        "2bb85878c9e9f143282ebf83dff48cf149df0678b17fcbcd3150ed7cebbc39bc",
+        "4c17a93d4ef6915b9e5afbcddc5b1c05c053be1b5062167fba4fe7714a780948"
+      ],
+      "deterministicReadyMs": 1307,
+      "elapsedMs": 6030,
+      "checks": {
+        "concurrentAdvanceReplay": true,
+        "concurrentSemanticReplay": true
+      }
+    },
+    {
+      "caseId": "lt3-I12",
+      "sourceHashes": [
+        "a0f55ed946879d2a8dd84c49a49846cc64c5c0ec676e7d5aa75f39f327c04136"
+      ],
+      "deterministicReadyMs": 1145,
+      "elapsedMs": 5975,
+      "checks": {
+        "concurrentAdvanceReplay": true,
+        "concurrentSemanticReplay": true
+      }
+    },
+    {
+      "caseId": "lt3-I16",
+      "sourceHashes": [
+        "2a1346eb65825a5cac6d08b87565ba097447aa8a2de4db93baaac752024403b3"
+      ],
+      "deterministicReadyMs": 1155,
+      "elapsedMs": 5756,
+      "checks": {
+        "concurrentAdvanceReplay": true,
+        "concurrentSemanticReplay": true,
+        "feedbackReselection": true
+      }
+    }
+  ],
+  "assistant": [
+    {
+      "caseId": "lt3-I07",
+      "requestId": "amq:api-regression-lt3-I07:v2-4134093bbc2d172398f37f3a7ee6cb356cc30edd0b4500ec5f2601647daa8868::obs:credit:8d11c984fe2b::a1",
+      "latencyMs": 2672,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "observationCount": 3,
+      "allObservationsSourceBound": true,
+      "observations": [
+        "申报月经营现金流205000元、月还债132000元，若叠加拟月租金98000元，合计月支出230000元，超出现金流25000元，存在偿付缺口。",
+        "流水2026-01-08收入400000元摘要注明“关联方借款（入账非营业收入）”，与申报年收入3600000元口径不同，该笔不应计入经营收入。",
+        "设备成交额2900000元、年收入3600000元、总资产10200000元、总负债4100000元均为申报值，未见原始凭证核实。"
+      ]
+    },
+    {
+      "caseId": "lt3-I12",
+      "requestId": "amq:api-regression-lt3-I12:v2-02d8212178dddd46da5823ae6b6d040716e82c7811552e7d8515535127174082::obs:credit:8d11c984fe2b::a1",
+      "latencyMs": 2417,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "observationCount": 3,
+      "allObservationsSourceBound": true,
+      "observations": [
+        "申报月经营现金流90000 CNY低于月偿债106000 CNY，缺口16000 CNY；拟月租金98000 CNY亦高于经营现金流，为申报口径下的偿付压力。",
+        "设备成交额2700000 CNY、年营收11300000 CNY、总资产10200000 CNY、总负债4100000 CNY均为申报值，来源标注合成申报且declarations_not_verified，未核实。",
+        "申报字段单位列统一标为CNY，但top1_customer_revenue_share为0.24、funding_cost_annual为0.058，属比例口径却标CNY，单位与口径存在矛盾。"
+      ]
+    },
+    {
+      "caseId": "lt3-I16",
+      "requestId": "amq:api-regression-lt3-I16:v2-44e465acf8d3b17ef43986e6e15ce3442333f4f51c71c6cd6b06ec5cc243ba8a::obs:credit:8d11c984fe2b::a1",
+      "latencyMs": 2161,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "observationCount": 3,
+      "allObservationsSourceBound": true,
+      "observations": [
+        "全部指标口径均为“申报值”，来源为合成申报，未提供任何经核实的原始凭证或第三方数据。",
+        "申报月经营现金流241000 CNY、月偿债116000 CNY，若同口径，拟增月租98000 CNY后合计月支出214000 CNY，覆盖倍数约1.13，缓冲有限。",
+        "申报设备成交额3400000 CNY、年收入13800000 CNY、总资产10200000 CNY、总负债4100000 CNY，均为申报值，未见对应审计或银行流水。"
+      ]
+    }
+  ],
+  "semantic": [
+    {
+      "caseId": "lt3-I07",
+      "domain": "business",
+      "requestId": "column-muuqk0uh-947228d76184:semantic-v3:r0",
+      "latencyMs": 2489,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "promptVersion": "zone-semantic-v3",
+      "decisionCount": 5,
+      "evidenceRefIds": [
+        "art-muuqk0og-c689b56f35fe"
+      ]
+    },
+    {
+      "caseId": "lt3-I07",
+      "domain": "asset",
+      "requestId": "column-muuqk0uz-f6093b3e0ff5:semantic-v3:r0",
+      "latencyMs": 3420,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "promptVersion": "zone-semantic-v3",
+      "decisionCount": 5,
+      "evidenceRefIds": [
+        "art-muuqk0og-c689b56f35fe"
+      ]
+    },
+    {
+      "caseId": "lt3-I07",
+      "domain": "commerce",
+      "requestId": "column-muuqk0uv-0a9ca31e43b6:semantic-v3:r0",
+      "latencyMs": 3426,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "promptVersion": "zone-semantic-v3",
+      "decisionCount": 5,
+      "evidenceRefIds": [
+        "art-muuqk0og-c689b56f35fe"
+      ]
+    },
+    {
+      "caseId": "lt3-I07",
+      "domain": "credit",
+      "requestId": "column-muuqk0ur-7edeaa71e9fc:semantic-v3:r0",
+      "latencyMs": 3543,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "promptVersion": "zone-semantic-v3",
+      "decisionCount": 5,
+      "evidenceRefIds": [
+        "art-muuqk0og-c689b56f35fe"
+      ]
+    },
+    {
+      "caseId": "lt3-I07",
+      "domain": "policy",
+      "requestId": "column-muuqk0un-a9dcaa36f1d4:semantic-v3:r0",
+      "latencyMs": 2121,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "promptVersion": "zone-semantic-v3",
+      "decisionCount": 4,
+      "evidenceRefIds": [
+        "art-muuqk0og-c689b56f35fe",
+        "derived:materials_freshness_ok"
+      ]
+    },
+    {
+      "caseId": "lt3-I12",
+      "domain": "credit",
+      "requestId": "column-muuqk5y5-174086775876:semantic-v3:r0",
+      "latencyMs": 2568,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "promptVersion": "zone-semantic-v3",
+      "decisionCount": 5,
+      "evidenceRefIds": [
+        "art-muuqk5tc-c8a93842b26e"
+      ]
+    },
+    {
+      "caseId": "lt3-I12",
+      "domain": "asset",
+      "requestId": "column-muuqk5yc-ff76c7f49e02:semantic-v3:r0",
+      "latencyMs": 2604,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "promptVersion": "zone-semantic-v3",
+      "decisionCount": 5,
+      "evidenceRefIds": [
+        "art-muuqk5tc-c8a93842b26e"
+      ]
+    },
+    {
+      "caseId": "lt3-I12",
+      "domain": "commerce",
+      "requestId": "column-muuqk5y9-002e248cf32e:semantic-v3:r0",
+      "latencyMs": 2645,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "promptVersion": "zone-semantic-v3",
+      "decisionCount": 5,
+      "evidenceRefIds": [
+        "art-muuqk5tc-c8a93842b26e"
+      ]
+    },
+    {
+      "caseId": "lt3-I12",
+      "domain": "business",
+      "requestId": "column-muuqk5xx-b8e832a9b3c6:semantic-v3:r0",
+      "latencyMs": 2908,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "promptVersion": "zone-semantic-v3",
+      "decisionCount": 5,
+      "evidenceRefIds": [
+        "art-muuqk5tc-c8a93842b26e"
+      ]
+    },
+    {
+      "caseId": "lt3-I12",
+      "domain": "policy",
+      "requestId": "column-muuqk5y1-8af55c09fcbe:semantic-v3:r0",
+      "latencyMs": 2156,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "promptVersion": "zone-semantic-v3",
+      "decisionCount": 4,
+      "evidenceRefIds": [
+        "art-muuqk5tc-c8a93842b26e",
+        "derived:materials_freshness_ok"
+      ]
+    },
+    {
+      "caseId": "lt3-I16",
+      "domain": "business",
+      "requestId": "column-muuqkazj-4de60f2f102e:semantic-v3:r0",
+      "latencyMs": 2221,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "promptVersion": "zone-semantic-v3",
+      "decisionCount": 5,
+      "evidenceRefIds": [
+        "art-muuqkavb-1a9b98fcc961"
+      ]
+    },
+    {
+      "caseId": "lt3-I16",
+      "domain": "credit",
+      "requestId": "column-muuqkazr-22353e0e8910:semantic-v3:r0",
+      "latencyMs": 2525,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "promptVersion": "zone-semantic-v3",
+      "decisionCount": 5,
+      "evidenceRefIds": [
+        "art-muuqkavb-1a9b98fcc961"
+      ]
+    },
+    {
+      "caseId": "lt3-I16",
+      "domain": "commerce",
+      "requestId": "column-muuqkazx-bd4fcfb07dcd:semantic-v3:r0",
+      "latencyMs": 2753,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "promptVersion": "zone-semantic-v3",
+      "decisionCount": 4,
+      "evidenceRefIds": [
+        "art-muuqkavb-1a9b98fcc961"
+      ]
+    },
+    {
+      "caseId": "lt3-I16",
+      "domain": "asset",
+      "requestId": "column-muuqkb01-e7e3c3699b6c:semantic-v3:r0",
+      "latencyMs": 3364,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "promptVersion": "zone-semantic-v3",
+      "decisionCount": 5,
+      "evidenceRefIds": [
+        "art-muuqkavb-1a9b98fcc961"
+      ]
+    },
+    {
+      "caseId": "lt3-I16",
+      "domain": "policy",
+      "requestId": "column-muuqkazn-3baec8f44c51:semantic-v3:r0",
+      "latencyMs": 2297,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "promptVersion": "zone-semantic-v3",
+      "decisionCount": 4,
+      "evidenceRefIds": [
+        "art-muuqkavb-1a9b98fcc961",
+        "derived:materials_freshness_ok"
+      ]
+    },
+    {
+      "caseId": "lt3-I16",
+      "domain": "business",
+      "requestId": "column-muuqkg79-bb7f8ddd7c56:semantic-v3:r1",
+      "latencyMs": 2594,
+      "status": "succeeded",
+      "sent": true,
+      "authority": "none",
+      "model": "deepseek-flash",
+      "promptVersion": "zone-semantic-v3",
+      "decisionCount": 5,
+      "evidenceRefIds": [
+        "art-muuqkavb-1a9b98fcc961"
+      ]
+    }
+  ],
+  "acceptance": {
+    "targetedImplementation": "PASS",
+    "threeKnownRegressionCases": "PASS",
+    "broaderSemanticAccuracy": "PARTIAL, human verification required",
+    "overallD9": "OPEN",
+    "D6": "previous accepted limited scope only",
+    "businessPolicy": "HUMAN_SELECTION_REQUIRED/L1/L2/shared roles BLOCKED",
+    "installedInSharedServices": false,
+    "userVisualAcceptance": "NOT_REQUESTED"
+  }
+}

@@ -1,0 +1,342 @@
+{
+  "generatedAt": "2026-10-02T07:08:38.578Z",
+  "revision": 1,
+  "round": "V0.6-LT3 batch1（新材料独立集；校准3+独立13）",
+  "disclosure": "全部材料为标记合成材料（非真实客户、无真实个人信息）。独立集纪律：manifest 先封 → gold 独立封存 → 离线基线一次性运行 → 运行后零修订（差异=发现，如实报告）。gold 期望依据=设计语义+已封存规则口径+已知产品行为（C1 F-C1-1 千分位解析层归一、C05 更正不豁免、superseding 限数值、扫描/加密PDF诚实边界）。行为层期望（I14/I16 集成与真实API段）同批封存，窗口内核验。",
+  "legalEntityRefPattern": "SYNTHETIC-LT3-BATCH1-<caseId>",
+  "calibrationCases": [
+    "lt3-C01",
+    "lt3-C02",
+    "lt3-C03"
+  ],
+  "independentCases": [
+    "lt3-I04",
+    "lt3-I05",
+    "lt3-I06",
+    "lt3-I07",
+    "lt3-I08",
+    "lt3-I09",
+    "lt3-I10",
+    "lt3-I11",
+    "lt3-I12",
+    "lt3-I13",
+    "lt3-I14",
+    "lt3-I15",
+    "lt3-I16"
+  ],
+  "formats": [
+    "csv",
+    "tsv",
+    "xlsx",
+    "txt",
+    "text-pdf",
+    "scanned-pdf",
+    "encrypted-pdf",
+    "bank-csv"
+  ],
+  "holdoutStatus": "PENDING（首跑零修订；差异=发现）",
+  "cases": [
+    {
+      "caseId": "lt3-C01",
+      "set": "calibration",
+      "businessName": "LT3合成-德州食品加工公司",
+      "industry": "食品加工",
+      "region": "山东德州",
+      "riskTag": "calib-good-dual-source",
+      "files": [
+        {
+          "name": "企业申报基础表.csv",
+          "sha256": "eaa773a9bebe3d46123753376f90025f5531cb2ebbaa4e81442e08792434d0c5",
+          "bytes": 2031
+        },
+        {
+          "name": "设备购置发票.xlsx",
+          "sha256": "66b911363163877a1d7900ede4fb00b169e22a2d4f03481218861d7a7b3013e9",
+          "bytes": 2555
+        }
+      ]
+    },
+    {
+      "caseId": "lt3-C02",
+      "set": "calibration",
+      "businessName": "LT3合成-佛山纺织印染厂",
+      "industry": "纺织印染",
+      "region": "广东佛山",
+      "riskTag": "calib-redline",
+      "files": [
+        {
+          "name": "企业申报基础表.csv",
+          "sha256": "974a64d1bab987eba37b88c388d69627ed801d4987779727c9475bbda20c20d0",
+          "bytes": 2031
+        }
+      ]
+    },
+    {
+      "caseId": "lt3-C03",
+      "set": "calibration",
+      "businessName": "LT3合成-宁波精密模具公司",
+      "industry": "精密模具",
+      "region": "浙江宁波",
+      "riskTag": "calib-two-source-conflict",
+      "files": [
+        {
+          "name": "企业申报基础表.csv",
+          "sha256": "925ec78fcfecabb055cd8f4377a49711f4d1951252c2cdb35568a214875f2fe4",
+          "bytes": 2031
+        },
+        {
+          "name": "设备发票.xlsx",
+          "sha256": "e18ebac6b836b3cc2ec3fed2f53cf56e186de5c8c4efb3c7dacf90d8e6683bc3",
+          "bytes": 2555
+        }
+      ]
+    },
+    {
+      "caseId": "lt3-I04",
+      "set": "independent",
+      "businessName": "LT3合成-厦门电子元件厂",
+      "industry": "电子元件",
+      "region": "福建厦门",
+      "riskTag": "tsv-format",
+      "files": [
+        {
+          "name": "企业申报基础表.tsv",
+          "sha256": "8125283ad1a2536dd07be31c1df1063450b0744eb64f5b8fcc3f093bc3cafc8d",
+          "bytes": 1861
+        }
+      ]
+    },
+    {
+      "caseId": "lt3-I05",
+      "set": "independent",
+      "businessName": "LT3合成-邯郸农副加工厂",
+      "industry": "农副加工",
+      "region": "河北邯郸",
+      "riskTag": "scanned-pdf-honest-boundary",
+      "files": [
+        {
+          "name": "扫描件申报表.pdf",
+          "sha256": "dd6918532eda97ad85a8a5fd03e41a08795a3b0856b94e8d5a807d0c186cef84",
+          "bytes": 567,
+          "probe": "扫描/图片型PDF无文本层→解析层如实拒绝转人工（不OCR不编数）"
+        }
+      ]
+    },
+    {
+      "caseId": "lt3-I06",
+      "set": "independent",
+      "businessName": "LT3合成-无锡通用设备公司",
+      "industry": "通用设备",
+      "region": "江苏无锡",
+      "riskTag": "thousand-sep-xlsx",
+      "files": [
+        {
+          "name": "企业申报基础表.csv",
+          "sha256": "90a264373186bb586ea7438a4c8f6d626995e5f795c5fd1051a3f0fcc46e8edc",
+          "bytes": 2031
+        },
+        {
+          "name": "审计营收证明.xlsx",
+          "sha256": "9efa211d60b09116b751d5d1510fe4b4be090c502af66aea2c7179466a5b005b",
+          "bytes": 2616
+        }
+      ]
+    },
+    {
+      "caseId": "lt3-I07",
+      "set": "independent",
+      "businessName": "LT3合成-沧州金属制品公司",
+      "industry": "金属制品",
+      "region": "河北沧州",
+      "riskTag": "bank-inflow-not-revenue",
+      "files": [
+        {
+          "name": "企业申报基础表.csv",
+          "sha256": "2bb85878c9e9f143282ebf83dff48cf149df0678b17fcbcd3150ed7cebbc39bc",
+          "bytes": 2030
+        },
+        {
+          "name": "银行流水.csv",
+          "sha256": "4c17a93d4ef6915b9e5afbcddc5b1c05c053be1b5062167fba4fe7714a780948",
+          "bytes": 186,
+          "probe": "模型层探针：借款入账不应视为经营收入（规则层仅聚合）"
+        }
+      ]
+    },
+    {
+      "caseId": "lt3-I08",
+      "set": "independent",
+      "businessName": "LT3合成-重庆汽配制造公司",
+      "industry": "汽配制造",
+      "region": "重庆",
+      "riskTag": "triple-source-conflict",
+      "files": [
+        {
+          "name": "企业申报基础表.csv",
+          "sha256": "49033f65d2265d28a9dafcb3b7f1563a6a156a333b735781314620a1adb21547",
+          "bytes": 2031
+        },
+        {
+          "name": "设备发票.xlsx",
+          "sha256": "e18ebac6b836b3cc2ec3fed2f53cf56e186de5c8c4efb3c7dacf90d8e6683bc3",
+          "bytes": 2555
+        },
+        {
+          "name": "补充协议.txt",
+          "sha256": "d73449828f88576ea7506afb27d7f7c2ddaa0a4377ab2a738e9d1692a1250fb2",
+          "bytes": 31,
+          "probe": "第三源（无更正口径）→ 三值冲突"
+        }
+      ]
+    },
+    {
+      "caseId": "lt3-I09",
+      "set": "independent",
+      "businessName": "LT3合成-杭州包装制造公司",
+      "industry": "包装制造",
+      "region": "浙江杭州",
+      "riskTag": "correction-superseding-revenue",
+      "files": [
+        {
+          "name": "企业申报基础表.csv",
+          "sha256": "78922b1345c82a9f5b9de74a5b5bc58e8acec25d37d06ea2a4353a6ed7178d67",
+          "bytes": 2031
+        },
+        {
+          "name": "更正声明.txt",
+          "sha256": "02f7ebf6de2477ab1f6c0592957b5199571780dee00d111745decc24080b5757",
+          "bytes": 34,
+          "metaCaliber": "更正版审计报告（替代原申报表所载营业收入）",
+          "probe": "更正口径不豁免冲突(C05)+superseding 记录新值"
+        }
+      ]
+    },
+    {
+      "caseId": "lt3-I10",
+      "set": "independent",
+      "businessName": "LT3合成-台州塑胶制品公司",
+      "industry": "塑胶制品",
+      "region": "浙江台州",
+      "riskTag": "injection-in-correction",
+      "files": [
+        {
+          "name": "企业申报基础表.csv",
+          "sha256": "79efc9890191a150e0cc42a3d980ada129b0af5532f206bfcd4094a5cbccb825",
+          "bytes": 2031
+        },
+        {
+          "name": "恶意更正.txt",
+          "sha256": "37029184be1880f7ea7e975a039d94dc854f6b04dd539aed1e2b8842247e0976",
+          "bytes": 76,
+          "metaCaliber": "更正协议（替代原合同金额）",
+          "probe": "注入文本在更正载体：injection 检出+不执行+superseding 因非数值排除+字符串冲突"
+        }
+      ]
+    },
+    {
+      "caseId": "lt3-I11",
+      "set": "independent",
+      "businessName": "LT3合成-赣州家具制造厂",
+      "industry": "家具制造",
+      "region": "江西赣州",
+      "riskTag": "multi-missing-pdf",
+      "files": [
+        {
+          "name": "企业申报基础表.pdf",
+          "sha256": "6bfbf82052dd852b08b6618e5f7836cad2c08cfa061fcca0ae2d2a09bbce60e9",
+          "bytes": 1488
+        }
+      ]
+    },
+    {
+      "caseId": "lt3-I12",
+      "set": "independent",
+      "businessName": "LT3合成-盐城纺织机械公司",
+      "industry": "纺织机械",
+      "region": "江苏盐城",
+      "riskTag": "coverage-below-one",
+      "files": [
+        {
+          "name": "企业申报基础表.csv",
+          "sha256": "a0f55ed946879d2a8dd84c49a49846cc64c5c0ec676e7d5aa75f39f327c04136",
+          "bytes": 2030,
+          "probe": "coverage<1 差例（模型层应显著承接；规则层仅计算）"
+        }
+      ]
+    },
+    {
+      "caseId": "lt3-I13",
+      "set": "independent",
+      "businessName": "LT3合成-中山印刷包装公司",
+      "industry": "印刷包装",
+      "region": "广东中山",
+      "riskTag": "encrypted-pdf-boundary",
+      "files": [
+        {
+          "name": "加密申报表.pdf",
+          "sha256": "4bac04dd1eae535a89fcddfb269e81fcb1fb5d4f4531ab67b2382f6d5971a626",
+          "bytes": 517,
+          "probe": "加密PDF→解析层如实 PARSE_FAILED 转人工"
+        }
+      ]
+    },
+    {
+      "caseId": "lt3-I14",
+      "set": "independent",
+      "businessName": "LT3合成-温州阀门制造公司",
+      "industry": "阀门制造",
+      "region": "浙江温州",
+      "riskTag": "duplicate-material",
+      "files": [
+        {
+          "name": "企业申报基础表.csv",
+          "sha256": "fbbe550996ae9b15e9cf7ed1f50c6309edeb80d4069b8b0513525cb1d9f7b27d",
+          "bytes": 2031
+        },
+        {
+          "name": "企业申报基础表-副本.csv",
+          "sha256": "fbbe550996ae9b15e9cf7ed1f50c6309edeb80d4069b8b0513525cb1d9f7b27d",
+          "bytes": 2031,
+          "probe": "同字节重复件：规则层同值无冲突；集成层工件判重（集成段核验）"
+        }
+      ]
+    },
+    {
+      "caseId": "lt3-I15",
+      "set": "independent",
+      "businessName": "LT3合成-长沙五金冲压厂",
+      "industry": "五金冲压",
+      "region": "湖南长沙",
+      "riskTag": "bad-bank-rows",
+      "files": [
+        {
+          "name": "企业申报基础表.csv",
+          "sha256": "c1772585475e43a70776081da01d6eea8bb0e0e1be3cbae288a45affeb9c182c",
+          "bytes": 2031
+        },
+        {
+          "name": "银行流水.csv",
+          "sha256": "cd278279d003b2f61eea54a6dbe0d422f72166cf18dd3e9585df092778bfab84",
+          "bytes": 304,
+          "probe": "坏行×2+合计行×1：聚合只含好行 88000/21000"
+        }
+      ]
+    },
+    {
+      "caseId": "lt3-I16",
+      "set": "independent",
+      "businessName": "LT3合成-苏州传感器公司",
+      "industry": "电子元件",
+      "region": "江苏苏州",
+      "riskTag": "behavior-negative-vehicle",
+      "files": [
+        {
+          "name": "企业申报基础表.csv",
+          "sha256": "2a1346eb65825a5cac6d08b87565ba097447aa8a2de4db93baaac752024403b3",
+          "bytes": 2031,
+          "probe": "行为层载体：越权403/跨客户403/重复判重/更正链/反馈重选/unknown观察（集成与真实API段核验）"
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import { materialObjectName } from '../../lib/workbench/material-labels';
 
-export type IconName = 'business' | 'opportunity' | 'policy' | 'credit' | 'commerce' | 'asset' | 'jianwei' | 'board' | 'materials' | 'flow' | 'timeline' | 'search' | 'plus' | 'back' | 'arrow' | 'close' | 'expand' | 'file' | 'check' | 'upload' | 'lock' | 'wrench';
+export type IconName = 'business' | 'opportunity' | 'policy' | 'credit' | 'commerce' | 'asset' | 'jianwei' | 'board' | 'materials' | 'flow' | 'timeline' | 'search' | 'plus' | 'back' | 'arrow' | 'close' | 'expand' | 'file' | 'check' | 'upload' | 'lock' | 'wrench' | 'info' | 'alert' | 'sparkle' | 'more';
 const paths: Record<IconName, React.ReactNode> = {
   business: <><rect x="4" y="7" width="24" height="20" rx="5"/><path d="M11 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M4 15c7 4 17 4 24 0M13 17h6"/></>,
   opportunity: <><rect x="4" y="7" width="24" height="20" rx="5"/><path d="M11 7V5h10v2M4 15c7 4 17 4 24 0M13 17h6"/></>,
@@ -22,16 +22,19 @@ const paths: Record<IconName, React.ReactNode> = {
   check: <path d="m5 16 7 7L27 8"/>, upload: <><path d="M16 22V3m-7 7 7-7 7 7M4 21v7h24v-7"/></>,
   lock: <><rect x="7" y="14" width="18" height="15" rx="4"/><path d="M11 14V9a5 5 0 0 1 10 0v5M16 20v3"/></>,
   wrench: <path d="M28 5a9 9 0 0 1-11 12L8 27a3 3 0 0 1-4-4l10-9A9 9 0 0 1 26 3l-6 6 3 3Z"/>,
+  info: <><circle cx="16" cy="16" r="12"/><path d="M16 15v8M16 9v1"/></>,
+  alert: <><path d="m14 5-12 21h28L18 5a2.3 2.3 0 0 0-4 0Z"/><path d="M16 12v7M16 23v1"/></>,
+  sparkle: <><path d="m16 3 3.5 9.5L29 16l-9.5 3.5L16 29l-3.5-9.5L3 16l9.5-3.5Z"/></>,
+  more: <><circle cx="6" cy="16" r="1.5"/><circle cx="16" cy="16" r="1.5"/><circle cx="26" cy="16" r="1.5"/></>,
 };
 export function UiIcon({ name, size = 24, style }: { name: IconName; size?: number; style?: CSSProperties }) {
-  if (name === 'board' || name === 'flow' || name === 'timeline') return <img className="tk-object-icon" src={`/objects/${name === 'board' ? 'desk' : name === 'flow' ? 'branch' : 'timeline'}-v1.png`} width={size} height={size} style={style} alt="" aria-hidden="true" draggable={false}/>;
   if (name === 'jianwei') return <span className="tk-eye-mark" style={{width:size,height:size,...style}} aria-hidden="true"><img className="tk-object-icon tk-eye-icon" src="/objects/eye-v3.png" width={size} height={size} alt="" draggable={false}/></span>;
   return <svg className="tk-ui-icon" width={size} height={size} viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={style}>{paths[name]}</svg>;
 }
 
 export function RoleLogo({ role, size = 32 }: { role: string; size?: number }) {
   const name = (Object.hasOwn(paths, role) ? role : 'business') as IconName;
-  return <span className={`tk-role-logo ${role}`}>{name === 'jianwei' ? <UiIcon name={name} size={size}/> : <ObjectIcon name={name === 'opportunity' ? 'business' : name} size={size}/>}</span>;
+  return <span className={`tk-role-logo ${role}`}><UiIcon name={name} size={size}/></span>;
 }
 
 export function ObjectIcon({ name, size = 36 }: { name: string; size?: number }) {

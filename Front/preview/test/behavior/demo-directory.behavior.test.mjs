@@ -65,12 +65,19 @@ test('十案例目录：差→中→好横向展列，显示要点/阶段/下一
   // 打开案例：真实 customerId
   fireEvent.click(items[0].querySelector('[role="button"]'));
   assert.deepEqual(opened, ['cust-001']);
-  // 业务入口无验收视图/搜索/新建/内部编号/夹具开关
-  assert.equal(screen.queryByText(/验收视图：查看全部客户/), null);
-  assert.equal(screen.queryByLabelText('搜索客户'), null);
-  assert.equal(screen.queryByRole('button', { name: '＋ 新建客户' }), null);
+  // LONG-02 起默认目录新增"授权客户"区（服务端 listCustomersDirectory 按身份/租户/grant 过滤）：
+  // 搜索与新建按当前身份可达——旧断言"业务入口无搜索/新建"对应的演示目录产品决定已被
+  // SUSTAINED_THREE_TASKS LONG-02（真实授权客户不得仅经 ?acceptance=1 或 API 可见）取代，
+  // 按新合同更新断言：验收视图专属文案、调试开关、演示案例内部编号仍不得出现。
+  // （注：此断言失败时 node:test 序列化 jsdom 元素会 OOM——2026-10-02 夜间曾致 46s 超时假象，
+  //   根因是断言失败而非查询本身；断言更新为通过态后消失。）
+  assert.equal(screen.queryByText(/验收视图/), null);
+  assert.ok(screen.getByLabelText('搜索授权客户'), '授权客户搜索按当前身份可达');
+  assert.ok(screen.getByRole('button', { name: '＋ 新建客户' }), '有建档权限身份（biz1）可新建');
+  assert.ok(screen.getByRole('region', { name: '授权客户' }));
   assert.equal(screen.queryByText(/cust-001/), null);
   assert.equal(screen.queryByText(/case-01/), null);
+  assert.equal(screen.queryByText(/demoFixture=1/), null);
   // 逐客户只读进度
   await waitFor(() => assert.equal(calls.history.length, 10));
 });
@@ -265,7 +272,8 @@ test('助手无模型：提问得到"案例说明"确定性投影（来源清楚
   const box = screen.getByLabelText('聊天消息');
   fireEvent.change(box, { target: { value: '@业务 现在办理到哪一步了？' } });
   fireEvent.submit(box.closest('form'));
-  await screen.findByText(/案例说明 · 服务端读面组答/);
+  // R3-02 收敛：短结论常驻，来源标注与明细在“原因与依据”展开区
+  await screen.findByText(/服务端读面 · 非真实模型/);
   assert.match(document.querySelector('[aria-label="助手对话"]').textContent, /非真实模型/);
   assert.match(document.querySelector('[aria-label="助手对话"]').textContent, /洛阳涧西精密装备有限公司/);
   assert.match(document.querySelector('[aria-label="助手对话"]').textContent, /现行材料 4 份/);

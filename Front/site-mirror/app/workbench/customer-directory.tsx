@@ -74,11 +74,19 @@ export function CustomerDirectory({ wb, onOpen }: { wb: WbApi; onOpen: (id: stri
       if (r.kind !== 'ok') throw new Error();
       setRows((old) => next ? [...old, ...r.customers] : r.customers);
       setCursor(r.nextCursor ?? null);
-    } catch { if (seq === request.current) setError('暂时无法读取客户，请重试。'); }
-    finally { if (seq === request.current) setLoading(false); }
+    } catch (e) {
+      if (seq !== request.current) return;
+      // LONG-02：失败分类如实——客户联系人身份不走内部目录（403），其余=暂时不可读。
+      const status = (e as { status?: number }).status;
+      setError(status === 403
+        ? '客户联系人身份不使用内部客户目录：请在客户门户查看材料与办理进度。'
+        : '暂时无法读取客户，请重试。');
+    } finally { if (seq === request.current) setLoading(false); }
   }, [wb.client]);
   // Only load the full directory when it is actually requested or needed.
-  useEffect(() => { if(acceptanceParam || acceptance || demo.phase==='unavailable') void load(''); return () => { request.current++; }; }, [load, acceptanceParam, acceptance, demo.phase]);
+  // LONG-02：默认演示目录同样加载"授权客户"（服务端按身份/租户/grant 过滤）——
+  // 评测或新建客户不得只经 API 可见；仍仅在演示目录状态落定后读一次，避免双发。
+  useEffect(() => { if (demo.phase !== 'loading') void load(''); return () => { request.current++; }; }, [load, acceptanceParam, acceptance, demo.phase]);
   const canCreate = (wb.session?.roles ?? []).some((r) => ['business', 'credit', 'admin'].includes(r));
   const create = async (e: React.FormEvent) => {
     e.preventDefault(); if (saving || !name.trim() || !code.trim()) return;
@@ -101,6 +109,22 @@ export function CustomerDirectory({ wb, onOpen }: { wb: WbApi; onOpen: (id: stri
         <CaseStrip cases={demo.cases} progress={progress} onOpen={onOpen}/>
         {demo.fixture && <p className="tk-inline-error" role="note">当前为开发夹具布局预览（demoFixture=1）：案例与客户编号不是真实服务端数据，不作联调验收。</p>}
         <span className="tk-picker-caption">全部案例均为模拟案例（合成材料与受控外部事件）；分析、规则、办理记录与进度来自真实服务端。结果由材料与规则计算，不按案例分类预设。</span>
+      </section>
+      {/* LONG-02：授权客户区（复用既有搜索/清单/分页/新建）。服务端 listCustomersDirectory 按
+          身份+租户+principal_customer_grants 过滤——评测/新建/受邀客户与演示案例同屏可达，
+          不经 ?acceptance=1 才可见，不以客户编号硬编码。 */}
+      <section className="tk-picker-content tk-my-customers" aria-label="授权客户">
+        <div className="tk-directory-title"><div><span className="tk-eyebrow">按当前身份</span><h2>授权客户</h2></div>{canCreate && <button className="tk-btn primary" onClick={() => setCreating(!creating)}>{creating ? '收起' : '＋ 新建客户'}</button>}</div>
+        <span className="tk-picker-caption">仅列出当前身份有权办理的客户（服务端按身份与授权过滤）；新建或受邀客户同样在这里进入。</span>
+        <form className="tk-search" onSubmit={(e) => { e.preventDefault(); void load(search.trim()); }}><input aria-label="搜索授权客户" placeholder="搜索客户名称" value={search} onChange={(e) => setSearch(e.target.value)} /><button className="tk-btn" disabled={loading}>搜索</button></form>
+        {creating && canCreate && <form className="tk-new-customer" onSubmit={create}><label>客户全称<input required value={name} onChange={(e) => setName(e.target.value)} /></label><label>统一社会信用代码<input required value={code} onChange={(e) => setCode(e.target.value)} /></label><button className="tk-btn primary" disabled={saving}>{saving ? '创建中…' : '创建并进入'}</button></form>}
+        {(error || wb.error) && <p className="tk-inline-error" role="alert">{error || wb.error} <button className="tk-btn small" onClick={() => { wb.setError(null); void load(search.trim()); }}>重试</button></p>}
+        <div className="tk-customer-list" aria-label="授权客户列表" aria-busy={loading}>
+          {loading && !rows.length && <p>正在读取授权客户…</p>}
+          {!loading && !error && rows.length === 0 && <div className="tk-directory-empty"><strong>{search ? '没有找到这位客户' : '当前身份暂无授权客户'}</strong><p>{search ? '换个名称试试。' : '上方演示案例可直接进入；新建客户或获得授权后，这里会列出你有权办理的客户。'}</p></div>}
+          {rows.map((c) => <button className="tk-customer-row" key={c.customerId} onClick={() => onOpen(c.customerId)} title={`客户编号：${c.customerId}`}><span className="tk-customer-monogram" aria-hidden="true">{(c.displayName || '客').slice(0, 1)}</span><span className="tk-customer-copy"><strong>{c.displayName || '未命名客户'}</strong><small>首次回租预评估 · 编号 {c.customerId.slice(-6)}</small></span><span className="tk-customer-enter">进入工作台 →</span></button>)}
+        </div>
+        {cursor && <button className="tk-btn" disabled={loading} onClick={() => void load(search.trim(), cursor!)}>加载更多</button>}
       </section>
     </main>;
   }

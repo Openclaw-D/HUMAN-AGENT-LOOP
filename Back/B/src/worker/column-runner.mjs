@@ -6,7 +6,7 @@ import { Worker, isMainThread, parentPort, workerData } from 'node:worker_thread
 import { readFileSync } from 'node:fs';
 import { perceptionStage, assessStage } from '../../../C/domains/pipeline.mjs';
 import { zoneCandidates } from '../../../C/domains/zone-candidates.mjs';
-import { candidateMaterials,valueOf,loadColumnRules } from './column-dependencies.mjs';
+import { candidateMaterials,valueOf,loadColumnRules,describeColumnDependencies } from './column-dependencies.mjs';
 
 export function runBusinessColumn({ customer, materials, facts, evaluatedAt }) {
   if (!String(customer.legal_entity_ref).startsWith('SYNTHETIC-')) throw new Error('SYNTHETIC_ONLY');
@@ -52,7 +52,13 @@ export function runDomainCandidate(input) {
   if (!result.ok) return result;
   const {facts:unusedFacts,...ruleEvaluation}=result.ruleEvaluation;
   const zone = zoneCandidates({ domain, entry: result.analyses[domain], ruleEvaluation, transaction });
+  // Read-only original-source declarations stay available to semantic review even below calculation trust thresholds.
+  const projected=projectForDomain(built.snapshot,domain);
+  const dependencyKeys=new Set((input.deps??describeColumnDependencies(input)[domain].deps).factKeys);
+  const observedFacts=projected.ok?projected.projection.items.filter(it=>dependencyKeys.has(it.factKey)).map(it=>({factKey:it.factKey,value:it.value,unit:it.unit??null,
+    verificationLevel:it.verificationLevel,materialId:it.materialId})):[];
   return { ok:true,...result.analyses[domain],...(domain==='policy'?{ruleEvaluation}:{}),unreadable:built.snapshot.unreadable,
+    observedFacts,
     zoneCandidates:zone.ok?zone:{ok:false,reason:zone.reason},
     sourceMode:'synthetic',authority:'none',ruleVersion:rulePack.version };
 }

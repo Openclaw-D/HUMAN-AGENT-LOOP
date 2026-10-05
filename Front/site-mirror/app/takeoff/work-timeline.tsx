@@ -9,6 +9,23 @@ interface TimelineEvent { id:string; type:string; at:string|null; seq:string; su
 function category(type:string): 'materials'|'analysis'|'human'|'other' { return /artifact|evidence|material/i.test(type) ? 'materials' : /analysis|candidate|model|domain_result|package/i.test(type) ? 'analysis' : /confirm|decid|review|admission|grant/i.test(type) ? 'human' : 'other'; }
 const icons: Record<string,string> = { materials:'materials',analysis:'analysis',human:'verify',other:'business' };
 
+// V0.6-02/R3-02：操作者只显示业务可读身份；内部身份代号不进正文。
+// R3 整改（任务卡 fmtActor 规则）：身份未知=如实“未记录”——null 不能证明系统操作，
+// 内部代号不能证明已授权；只有服务端事件明确标记的服务身份才显示“系统登记”。
+// FINAL-02：代号识别补缺口——principal-17/biz1 等 ASCII 代号（字母数字_.- 组合且含数字、
+// 无空格非中文）此前绕过 ID_LIKE 直显正文，违反本文件“内部身份代号不进正文”契约。
+const ROLE_CN: Record<string,string> = { business:'业务', policy:'政策', credit:'信审', commerce:'商务', asset:'资产', customer:'客户' };
+const ID_LIKE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$|^[0-9a-f]{16,}$/i;
+const CODE_LIKE = /^[\w.\-]*\d[\w.\-]*$/;
+const SYSTEM_ACTORS = new Set(['system', 'svcexec', 'service', 'kernel', 'connectors']);
+export function fmtActor(actor: string | null, roles?: string[]): string {
+  if (roles && roles.length > 0) return roles.map((r) => ROLE_CN[r] ?? r).join('、') + '（身份代号见办理详情）';
+  if (actor && SYSTEM_ACTORS.has(String(actor).trim().toLowerCase())) return '系统登记（服务身份）';
+  if (!actor || ID_LIKE.test(actor)) return '操作者身份未记录';
+  if (CODE_LIKE.test(actor) && !/[\u4e00-\u9fff]/.test(actor) && !/\s/.test(actor)) return '操作者身份未记录';
+  return actor;
+}
+
 export function WorkTimeline({ wb, customerId, activeDomain, rounds=[] }: { wb:WbApi; customerId:string; activeDomain?:string; rounds?:ColumnReceipt[] }) {
   const [events,setEvents]=useState<TimelineEvent[]>([]);
   const [error,setError]=useState(''); const [loading,setLoading]=useState(false);
@@ -55,7 +72,7 @@ export function WorkTimeline({ wb, customerId, activeDomain, rounds=[] }: { wb:W
         {loading&&events.length>0&&<p role="status">正在核对最新服务端记录…</p>}
         <ol className="tk-timeline-events">{visible.map((event,i)=>{const validDate=event.at && !Number.isNaN(Date.parse(event.at));const day=validDate?new Date(event.at!).toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric'}):'日期未记录';const prior=visible[i-1]?.at;const sameDay=validDate&&prior&&new Date(prior).toDateString()===new Date(event.at!).toDateString();return <li key={event.id}>
           {!sameDay&&<div className="tk-timeline-date">{day}</div>}
-          <div className="tk-timeline-event"><time>{validDate?new Date(event.at!).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',hour12:false}):'时间未知'}</time><span className="tk-timeline-dot"><ObjectIcon name={icons[category(event.type)]} size={32}/></span><article><span className="tk-event-category">{({materials:'材料与证据',analysis:'分析与方案',human:'人工办理',other:'客户协作'})[category(event.type)]}</span><h3>{eventNames[event.type]??'办理事件已记录'}</h3>{event.summary&&<p>{event.summary}</p>}<p>操作者：{event.actor??'身份未知'}{event.roles?.length?` · 角色：${event.roles.join('、')}`:''}</p></article></div>
+          <div className="tk-timeline-event"><time>{validDate?new Date(event.at!).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',hour12:false}):'时间未知'}</time><span className="tk-timeline-dot"><ObjectIcon name={icons[category(event.type)]} size={32}/></span><article><span className="tk-event-category">{({materials:'材料与证据',analysis:'分析与方案',human:'人工办理',other:'客户协作'})[category(event.type)]}</span><h3>{eventNames[event.type]??'办理事件已记录'}</h3>{event.summary&&<p>{event.summary}</p>}<p>操作者：{fmtActor(event.actor, event.roles)}</p></article></div>
         </li>;})}</ol>
         {hasMore&&<button className="tk-btn tk-load-history" disabled={loading} onClick={()=>cursor&&void load(cursor,true)}>{loading?'正在读取…':'继续加载记录'}</button>}
         {!!events.length&&!hasMore&&!loading&&!error&&<div className="tk-timeline-end">已到本次读取的最新记录</div>}<div ref={end}/>

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { describeColumnDependencies } from '../src/worker/column-dependencies.mjs';
+import { describeColumnDependencies, candidateMaterials } from '../src/worker/column-dependencies.mjs';
 import { runDomainCandidate } from '../src/worker/column-runner.mjs';
 const domains=['business','policy','credit','commerce','asset'];
 const seed=()=>{
@@ -44,4 +44,57 @@ test('source grade and global freshness expiry cannot be hidden',()=>{
   assert.deepEqual(diff(before,after),['policy','credit']);
   const withOld=structuredClone(before);add(withOld,'unrelated_old_archive_note','old');withOld.materials.at(-1).created_at='2020-01-01T00:00:00.000Z';
   assert.deepEqual(diff(before,withOld),['policy']);assert.notDeepEqual(semantic(before,'policy'),semantic(withOld,'policy'));
+});
+
+test('parsed facts are actual domain dependencies and legacy boolean envelopes stay usable',()=>{
+  const input=seed();
+  const rent=input.facts.find(f=>f.fact_key==='proposed_monthly_rent');
+  const fees=input.facts.find(f=>f.fact_key==='fees_known');
+  const rentMaterial=input.materials.find(m=>m.artifact_id===rent.artifact_id);
+  rent.fact_key='parse:rent';rent.value={declaredFactSummaries:[{factKey:'proposed_monthly_rent',value:10000,level:'declared',unit:'CNY'}]};
+  rentMaterial.content=structuredClone(rent.value);rentMaterial.kind='parse_extraction';
+  fees.fact_key='parse:fees';fees.value={declaredFactSummaries:[{factKey:'fees_known',value:'true',level:'declared'}]};
+  const deps=describeColumnDependencies(input);
+  assert.ok(deps.commerce.deps.artifactIds.includes(rent.artifact_id));
+  assert.ok(deps.commerce.deps.artifactIds.includes(fees.artifact_id));
+  const after=structuredClone(input);after.facts.find(f=>f.fact_key==='parse:rent').value.declaredFactSummaries[0].value=20000;
+  assert.ok(diff(input,after).includes('commerce'), 'a changed parse envelope invalidates its candidate');
+  const rows=candidateMaterials(input.materials,input.facts);
+  assert.equal(rows.flatMap(m=>m.declaredFacts).find(f=>f.factKey==='fees_known').value,true);
+});
+
+test('commerce never guesses missing currency and compares known mixed scales in CNY',()=>{
+  const input=seed();
+  const rent=input.facts.find(f=>f.fact_key==='proposed_monthly_rent');
+  input.materials.find(m=>m.artifact_id===rent.artifact_id).material_meta.unit=null;
+  const missing=runDomainCandidate({...input,domain:'commerce'});
+  assert.equal(missing.ok,true,JSON.stringify(missing));
+  assert.ok(missing.assessment.unknowns.some(s=>s.includes('单位')));
+  assert.ok(!missing.assessment.knownFacts.some(s=>s.includes('10000万元')));
+  assert.ok(missing.assessment.knownFacts.some(s=>s.includes('不可计算')));
+  const mixed=seed();add(mixed,'proposed_monthly_rent',2);
+  mixed.materials.at(-1).material_meta.unit='wan';
+  const result=runDomainCandidate({...mixed,domain:'commerce'});
+  assert.ok(result.assessment.knownFacts.some(s=>s.includes('plan-2 为最高')));
+  assert.ok(result.assessment.evidenceRefs.some(ref=>ref.materialId===mixed.materials.at(-1).artifact_id));
+});
+
+test('scalar fact metadata preserves its explicitly declared unit',()=>{
+  const input=seed();const f=input.facts.find(f=>f.fact_key==='proposed_monthly_rent');
+  input.materials.find(m=>m.artifact_id===f.artifact_id).material_meta=null;
+  f.value.unit='CNY';
+  assert.equal(candidateMaterials(input.materials,input.facts).flatMap(m=>m.declaredFacts).find(row=>row.factKey===f.fact_key).unit,'CNY');
+});
+
+test('declared inputs stay visible to review and existence declarations cannot become video evidence',()=>{
+  const input=seed();input.facts.find(f=>f.fact_key==='equipment_exists_observed').value.value=false;
+  const asset=runDomainCandidate({...input,domain:'asset'});
+  assert.ok(asset.assessment.knownFacts.some(s=>s.includes('存在性记录：false')));
+  assert.ok(!asset.assessment.knownFacts.some(s=>s.includes('远程画面观察到设备存在')));
+  const cf=input.facts.find(f=>f.fact_key==='monthly_operating_cash_flow');cf.grade='unverified';
+  const credit=runDomainCandidate({...input,domain:'credit'});
+  assert.ok(credit.observedFacts.some(f=>f.factKey===cf.fact_key&&f.value===200000&&f.verificationLevel==='declared'));
+  assert.ok(!credit.observedFacts.some(f=>f.factKey==='proposed_monthly_rent'),'semantic facts cannot exceed the domain dependency basis');
+  const commerce=runDomainCandidate({...input,domain:'commerce'});
+  assert.ok(!commerce.assessment.knownFacts.some(s=>s.includes('为最高定价方案')),'single record is not a comparison');
 });

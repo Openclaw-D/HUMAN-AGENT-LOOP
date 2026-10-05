@@ -11,7 +11,11 @@ const wb={session:{sessionId:'s1',roles:['business']},client:{read:async()=>({ar
 test('mixed-version or cross-customer views fail closed',()=>{const r=receipt();assert.equal(readColumnReceipt(r,'c1'),r);const bad=structuredClone(r);bad.views.decisions.version=1;assert.throws(()=>readColumnReceipt(bad,'c1'));const other=structuredClone(r);other.views.materials.customerId='c2';assert.throws(()=>readColumnReceipt(other,'c1'));});
 test('materials renders only explicit same-round references',async t=>{t.after(cleanup);await act(async()=>render(React.createElement(MaterialsDesk,{wb,customerId:'c1',onUpload:()=>{},round:receipt()})));assert.ok(screen.getByRole('article',{name:'材料卡片：本轮原件'}));assert.equal(screen.queryByRole('article',{name:'材料卡片：其他轮材料'}),null);assert.ok(screen.getByText(/本轮引用 1 份 · v2/));});
 test('decision reader consumes round view rather than newer chat candidates',async t=>{t.after(cleanup);await act(async()=>render(React.createElement(RoleFlow,{wb,cells:[],top:{},activeDomain:'opportunity',round:receipt()})));assert.ok(screen.getByText('同轮合成分析'));assert.ok(screen.getByText('synthetic'));assert.equal(document.querySelector('.tk-round-selected'),null);});
-test('timeline uses server event timestamp and actual actor, roles remain separate',async t=>{t.after(cleanup);await act(async()=>render(React.createElement(WorkTimeline,{wb,customerId:'c1',rounds:[receipt()]})));assert.ok(screen.getByText(/操作者：principal-17 · 角色：business/));assert.ok(screen.getByText(/v2 · r1/));assert.equal(screen.queryByText(/操作者：business/),null);});
+test('timeline uses server event timestamp and actual actor, roles remain separate',async t=>{t.after(cleanup);await act(async()=>render(React.createElement(WorkTimeline,{wb,customerId:'c1',rounds:[receipt()]})));
+ // FINAL-02 对照现行契约更新：work-timeline fmtActor“内部身份代号不进正文”——principal-17 是
+ // 内部代号，正文只显示“操作者身份未记录”（原断言期望原始代号上屏，恰是 R3 契约移除的行为）。
+ // 实际渲染：事件带 roles 时显示中文角色（身份代号不进正文）；无 roles 的代号事件经 fmtActor 显“未记录”。
+ assert.ok(screen.getByText(/操作者：业务（身份代号见办理详情）/));assert.ok(screen.getByText(/v2 · r1/));assert.equal(screen.queryByText(/操作者：business/),null);assert.equal(screen.queryByText(/principal-17/),null);});
 
 test('missing live artifact still previews immutable round content',async t=>{
  t.after(cleanup);const r=receipt();r.views.materials.items=[{artifactId:'old-only',kind:'financial_statement',content:{value:12345,proof:'frozen-only'}}];

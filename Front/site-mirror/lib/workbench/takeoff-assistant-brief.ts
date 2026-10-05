@@ -73,6 +73,14 @@ const fmtYuan = (m: number | null | undefined, currency?: string | null): string
   return `¥${s}${currency ? ` ${currency}` : ''}`;
 };
 
+const TENDENCY_CN: Record<string, string> = {
+  do: '可做（支持）',
+  do_with_adjusted_terms: '可做（调整条件）',
+  do_not: '不做（负面）',
+  review: '待复核',
+};
+const GATE_RESULT_CN: Record<string, string> = { pass: '通过', rejected: '未通过', unknown: '结果未知' };
+
 function amountCandidateLines(ac: NonNullable<AssistantBriefSource['finalization']>['amountCandidate']): string[] {
   if (!ac) return [];
   const lines: string[] = [];
@@ -82,7 +90,7 @@ function amountCandidateLines(ac: NonNullable<AssistantBriefSource['finalization
     const range = ac.supportable?.min != null && ac.supportable?.max != null && ac.supportable.min !== ac.supportable.max
       ? `${fmtYuan(ac.supportable.min)}–${fmtYuan(ac.supportable.max, ac.supportable.currency ?? undefined)}`
       : fmtYuan(ac.supportable?.max ?? ac.supportable?.min, ac.supportable?.currency ?? undefined);
-    lines.push(`可支持区间 ${range}（authority=none，倾向 ${ac.tendency ?? '未声明'}）`);
+    lines.push(`可支持区间 ${range}（仅供参考，不等于正式审批；倾向 ${TENDENCY_CN[ac.tendency ?? ''] ?? ac.tendency ?? '未声明'}）`);
   }
   if (ac.suggestedTerm?.value != null) lines.push(`建议期限 ${ac.suggestedTerm.value} ${ac.suggestedTerm.unit ?? 'month'}${ac.suggestedTerm.basis ? `（口径：${ac.suggestedTerm.basis}）` : ''}`);
   if (ac.referencePrice?.value != null) lines.push(`参考价格 ${fmtYuan(ac.referencePrice.value, ac.referencePrice.currency ?? undefined)}${ac.referencePrice.basis ? `（${ac.referencePrice.basis}）` : ''}`);
@@ -112,7 +120,7 @@ export function composeAssistantBrief(
     return {
       kind, deterministic: true, deduped: false,
       refs: as?.assessmentId ? [as.assessmentId] : [],
-      text: `${who}：处理链收口尚未读到（无 finId）——不能据此说分析已完成。可先上传/补证（统一提交链），处理链自动登记后本简报会引用新收口。`,
+      text: `${who}：分析收口尚未读到——不能据此说分析已完成。可先上传/补证（统一提交链），处理链自动登记后本简报会引用新收口。`,
     };
   }
 
@@ -127,7 +135,7 @@ export function composeAssistantBrief(
   if (priorFinId != null && fin.finId === priorFinId) {
     return {
       kind, deterministic: true, deduped: true, refs: [fin.finId],
-      text: `${who}：收口未变化（finId=${fin.finId} 与上次相同）——不重复全量推理；有新材料或新事实后再问会引用新收口。`,
+      text: `${who}：分析收口与上次询问相同——不重复全量推理；有新材料或新事实后再问会引用新收口（本次收口编号见引用）。`,
     };
   }
 
@@ -135,15 +143,15 @@ export function composeAssistantBrief(
   const body: string[] = [];
 
   if (kind === 'business' || kind === 'jianwei') {
-    body.push(`客户 ${src.customerName ?? '（名称未读到）'}：${as?.status ? `评估 ${as.status}` : '评估状态未读到'}${as?.stale === true ? '，依据已过时（stale）' : ''}`);
+    body.push(`客户 ${src.customerName ?? '（名称未读到）'}：${as?.status ? `预评估${ASSESSMENT_STATUS_CN[as.status] ?? as.status}` : '评估状态未读到'}${as?.stale === true ? '，材料后来有变化，需要重新核对' : ''}`);
     const reqAmount = adm?.request?.requestedAmount ?? as?.requestedAmountMinor ?? null;
     body.push(reqAmount != null ? `首次回租需求已登记：金额 ${fmtMinor(reqAmount)}（客户表述，非融资申请）` : '首次回租需求未录入（如实待补，不冒用融资申请）');
   }
   if (kind === 'policy' || kind === 'jianwei') {
     const g = fin.gate ?? null;
     body.push(g?.result
-      ? `Gate ${g.result}${Array.isArray(g.reasons) && g.reasons.length > 0 ? `（${g.reasons.join('；')}）` : ''}${Array.isArray(g.ruleIds) && g.ruleIds.length > 0 ? ` 规则[${g.ruleIds.join(',')}]` : ''}`
-      : `Gate 结果未读到${fin.rulesetVersion ? `（规则版本 ${fin.rulesetVersion}）` : ''}`);
+      ? `准入规则检查${GATE_RESULT_CN[g.result] ?? g.result}${Array.isArray(g.reasons) && g.reasons.length > 0 ? `（原因：${g.reasons.join('；')}）` : ''}`
+      : `准入规则结果未读到${fin.rulesetVersion ? `（规则版本 ${fin.rulesetVersion}）` : ''}`);
   }
   if (kind === 'credit' || kind === 'jianwei') {
     body.push(as?.stale === true
@@ -151,7 +159,7 @@ export function composeAssistantBrief(
       : '评估依据当前性：未标记过时（服务端确认时仍会重查）');
     const pre = adm?.preassessment ?? null;
     body.push(pre?.confirmationId
-      ? `预评估结论已确认：${pre.outcome ?? '未知'}（${pre.confirmedBy ?? '有权人'}）${pre.needsReview === true ? '，需复核：确认依据被取代（旧确认保留，不默认重开）' : ''}`
+      ? `预评估结论已确认：${TENDENCY_CN[pre.outcome ?? ''] ?? pre.outcome ?? '未知'}（${pre.confirmedBy ?? '有权人'}）${pre.needsReview === true ? '，需复核：确认依据被取代（旧确认保留，不默认重开）' : ''}；这是预评估结论，不等于正式批准`
       : '预评估结论未确认（终点=有权人员确认；本助手不能代替确认）');
   }
   if (kind === 'commerce' || kind === 'jianwei') {
@@ -230,27 +238,41 @@ const ASSESSMENT_STATUS_TEXT: Record<string, string> = {
   collecting: '材料收集中', candidate_ready: '已有建议方案', awaiting_human_review: '待人工确认',
   preassessment_confirmed: '结论已确认', rejected: '不支持', superseded: '已撤回',
 };
+const ASSESSMENT_STATUS_CN = ASSESSMENT_STATUS_TEXT;
 
 /**
- * 无模型时的确定性"案例说明"（2026-09-30-final）：从服务端读面投影回答"现在什么情况/为什么/能做什么"。
- * 来源固定标注"案例说明（服务端读面，非真实模型）"；不编造数字，未知如实；不推进业务。
+ * 无模型时的确定性"案例说明"（2026-09-30-final；R3-02 收敛）：
+ * 默认只给一句短结论，原因/依据/下一步收进可展开明细——不与顶部简报条重复整份业务说明，
+ * 不常驻免责长文。来源固定标注"服务端读面 · 非真实模型"；不编造数字，未知如实；不推进业务。
  */
-export function composeCaseExplanation(kind: AssistantBriefKind, src: SuggestionSource): string {
-  const who = ASSISTANT_BRIEF_NAMES[kind];
+export interface CaseExplanation {
+  /** 一句短结论（当前状态）。 */
+  conclusion: string;
+  /** 原因/依据/下一步明细（调用方折叠展示）。 */
+  details: string[];
+  /** 来源标注（短，不再重复长免责）。 */
+  sourceNote: string;
+}
+
+export function composeCaseExplanation(kind: AssistantBriefKind, src: SuggestionSource): CaseExplanation {
   const basis = src.snapshot?.decisionStatus?.basis ?? null;
-  const lines: string[] = [];
-  const latest = (src.snapshot?.assessments ?? []).length > 0 ? (src.snapshot?.assessments ?? [])[(src.snapshot?.assessments ?? []).length - 1]! : null;
-  lines.push(`当前客户：${src.customerName ?? '（名称未读到）'}${latest?.status ? `；评估状态：${ASSESSMENT_STATUS_TEXT[String(latest.status)] ?? String(latest.status)}${latest.stale === true ? '（依据已过时，需复核）' : ''}` : ''}`);
+  // R2-02/R3-02：当前评估=清单序首条非 superseded（A 清单按 assessment_id DESC 最新在前），不盲取末条。
+  const list = src.snapshot?.assessments ?? [];
+  const latest = (list.find((a) => a && a.status !== 'superseded') ?? list[0] ?? null) as { status?: string | null; stale?: boolean | null } | null;
   const materials = src.currentMaterials;
-  lines.push(materials == null ? '现行材料数暂时无法读取（未知≠零）。' : `现行材料 ${materials} 份${materials === 0 ? '：还没有可分析的原件，先上传材料。' : ''}。`);
+  const materialsText = materials == null
+    ? '现行材料数暂时无法读取（未知≠零）'
+    : `现行材料 ${materials} 份${materials === 0 ? '（还没有可分析的原件，先上传材料）' : ''}`;
+  const conclusion = `${src.customerName ? `「${src.customerName}」` : ''}当前：${latest?.status ? `${ASSESSMENT_STATUS_TEXT[String(latest.status)] ?? String(latest.status)}${latest.stale === true ? '（依据已过时，需复核）' : ''}` : '办理状态未读到'}；${materialsText}。`;
+  const details: string[] = [];
   const req = src.snapshot?.admission?.request?.requestedAmount ?? null;
-  lines.push(req != null ? `首次回租需求已登记（金额以需求登记为准）。` : '首次回租需求尚未登记（如实待补）。');
-  if (basis?.gate?.result) lines.push(`准入规则门：${basis.gate.result}${basis.gate.result === 'rejected' ? '——本次按规则不能通过，不能强制放行。' : ''}`);
-  if (Array.isArray(basis?.blockedActions) && basis!.blockedActions!.length > 0) lines.push(`暂缓动作：${basis!.blockedActions!.join('、')}（需先解除前置条件）。`);
+  details.push(req != null ? '首次回租需求已登记（金额以需求登记为准）。' : '首次回租需求尚未登记（如实待补）。');
+  if (basis?.gate?.result) details.push(`准入规则检查${GATE_RESULT_CN[basis.gate.result] ?? basis.gate.result}${basis.gate.result === 'rejected' ? '——本次按规则不能通过，不能强制放行。' : ''}`);
+  if (Array.isArray(basis?.blockedActions) && basis!.blockedActions!.length > 0) details.push(`暂缓动作：${basis!.blockedActions!.join('、')}（需先解除前置条件）。`);
   const conditions = src.snapshot?.admission?.candidate?.conditions ?? null;
-  if (Array.isArray(conditions) && conditions.length > 0) lines.push(`候选待满足条件：${conditions.join('；')}。`);
-  if ((src.factConflicts ?? 0) > 0) lines.push(`有 ${src.factConflicts} 处材料内容互相矛盾：需人工复核后才能继续确认。`);
+  if (Array.isArray(conditions) && conditions.length > 0) details.push(`候选待满足条件：${conditions.join('；')}。`);
+  if ((src.factConflicts ?? 0) > 0) details.push(`有 ${src.factConflicts} 处材料内容互相矛盾：需人工复核后才能继续确认。`);
   const suggestion = composeAssistantSuggestions(kind, src)[0];
-  if (suggestion) lines.push(`可继续的事：${suggestion}`);
-  return `【案例说明 · 服务端读面组答（非真实模型） · ${who}】\n${lines.map((l) => `· ${l}`).join('\n')}\n（自由模型问答未配置：以上为当前真实投影说明；可查看材料原件、按页面按钮办理，或请负责人接入模型。）`;
+  if (suggestion) details.push(`可继续的事：${suggestion}`);
+  return { conclusion, details, sourceNote: '服务端读面 · 非真实模型' };
 }

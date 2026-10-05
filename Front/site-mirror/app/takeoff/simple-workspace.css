@@ -1,0 +1,159 @@
+/* V0.6: short labels, distinct content cards, details on demand. No business-state changes. */
+.tk-workspace {
+  --workspace-inset:24px;
+  --workspace-top:20px;
+  --workspace-bottom:20px;
+  --assistant-width:304px;
+  --reading-gap:20px;
+  padding:var(--workspace-top) var(--workspace-inset) var(--workspace-bottom);
+  background:#f5f5f7;
+}
+.tk-compact-top {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  min-height:64px;
+  padding:0 0 16px;
+  margin-right:calc(var(--assistant-width) + var(--reading-gap));
+  align-items:center;
+}
+.tk-compact-top .tk-back-client { padding:8px; min-width:36px; min-height:36px; }
+.tk-compact-top .tk-appbrand .tk-eye-mark { width:26px!important; height:26px!important; }
+.tk-compact-top .tk-cust-name { flex:1 1 140px; min-width:0; font-size:16px; font-weight:600; }
+.tk-compact-top .tk-mainnav {
+  position:static;
+  transform:none;
+  flex:0 1 304px;
+  width:auto;
+  min-height:44px;
+  padding:4px;
+  gap:2px;
+  margin:0;
+  border:1px solid #dedee3;
+  border-radius:14px;
+  background:#eaeaef;
+  box-shadow:none;
+}
+.tk-compact-top .tk-mainnav button { flex-direction:row; flex:1; min-height:36px; padding:7px 11px; gap:6px; font-size:13px; border-radius:10px; }
+.tk-compact-top .tk-mainnav button>img,.tk-compact-top .tk-mainnav button>svg { width:18px; height:18px; }
+.tk-compact-top .tk-mainnav button[aria-current=page] { background:#fff; color:#1d1d1f; box-shadow:0 1px 4px #00000012; }
+.tk-compact-top .tk-node-navigation { width:auto; order:initial; margin-left:auto; flex-wrap:wrap; justify-content:flex-end; font-size:12px; }
+.tk-compact-top .tk-column-position { color:#65656c; }
+.tk-compact-top .tk-node-navigation button.tk-next-event { min-height:40px; padding:9px 14px; max-width:none; border-radius:12px; font-size:13px; }
+.tk-compact-top .tk-role-identity { padding:5px; gap:4px; min-height:36px; }
+.tk-compact-top .tk-role-identity > span:last-child { display:block; font-size:12px; white-space:nowrap; }
+.tk-compact-top .tk-role-logo { width:28px; height:28px; }
+.tk-role-logo { color:#51515a; background:#eeeef2!important; border:0; box-shadow:none; border-radius:12px; }
+.tk-role-logo svg { max-width:100%; max-height:100%; }
+.tk-unified-workspace { padding-right:calc(var(--assistant-width) + var(--reading-gap)); }
+.tk-global-assistant { right:var(--workspace-inset); top:var(--workspace-top); bottom:var(--workspace-bottom); }
+.tk-case-brief {
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
+  gap:10px;
+  margin:0 calc(var(--assistant-width) + var(--reading-gap)) 12px 0;
+  padding:0;
+  background:transparent;
+  border:0;
+  font-size:13px;
+  line-height:1.55;
+}
+.tk-case-brief.has-attention { background:transparent; border:0; }
+.tk-case-brief > .tk-brief-row { display:flex; flex-direction:column; align-items:stretch; gap:6px; padding:12px 14px; background:#fff; border:1px solid #e2e2e7; border-radius:16px; }
+.tk-case-brief .tk-brief-label { display:flex; align-items:center; gap:7px; color:#696970; font-size:12px; }
+.tk-case-brief > .tk-brief-row .tk-brief-text { flex:initial; }
+.tk-case-brief .tk-brief-chip { margin:0; display:block; }
+.tk-case-brief .tk-brief-chip b { color:#51515a; font-weight:500; margin-right:5px; }
+.tk-case-brief .tk-brief-chip.attention { padding:6px 8px; background:#fff7e6; border-radius:8px; color:#81550d; }
+.tk-case-brief .tk-brief-chip.attention b { color:#81550d; }
+.tk-case-brief .tk-brief-more { grid-column:1/-1; font-size:12px; margin:0 4px; }
+.tk-brief-more[open] { padding:10px 12px; border:1px solid #e2e2e7; border-radius:12px; background:#fff; }
+.tk-finance-summary { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin:0 calc(var(--assistant-width) + var(--reading-gap)) 14px 0; position:relative; padding-bottom:20px; }
+.tk-metric-card { display:flex; flex-direction:column; gap:5px; padding:10px 12px; background:#fff; border:1px solid #e2e2e7; border-radius:14px; }
+.tk-metric-card > span { font-size:12px; color:#727279; }
+.tk-metric-card > strong { font-size:17px; font-weight:600; color:#28282d; overflow-wrap:anywhere; font-variant-numeric:tabular-nums; }
+.tk-finance-summary .tk-plan-marks { position:absolute; bottom:0; right:4px; font-size:11px; max-width:100%; }
+.tk-plan-marks summary { display:flex; align-items:center; gap:5px; }
+.tk-finance-summary .tk-plan-marks[open] { z-index:25; padding:10px; border:1px solid #e2e2e7; background:#fff; border-radius:10px; box-shadow:0 4px 18px #00000012; }
+.tk-board-page .tk-board-wrap { padding:12px; border:1px solid #e2e2e7; border-radius:20px; background:#fff; box-shadow:none; }
+.tk-board-page .tk-board { min-height:390px; grid-template-rows:58px repeat(4,minmax(70px,1fr)); gap:8px; background:none; }
+.tk-board .tk-hcell { font-size:13px; background:transparent; box-shadow:none; border:0; }
+.tk-domain-select .tk-role-logo { width:30px; height:30px; }
+.tk-board .tk-hcell[data-active-column=true] { background:#eaeaef; border-radius:12px; color:#1d1d1f; }
+.tk-board-page .tk-cell { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:8px; border:1px solid #e8e8ed; background:#fafafc; border-radius:14px; }
+.tk-board-page .tk-cell:hover,.tk-board-page .tk-cell.tk-hi { background:#f0f0f5; }
+.tk-board-page .tk-cell[aria-selected=true] { outline:2px solid #51515a; outline-offset:-2px; }
+.tk-board-page .tk-cell > .tk-status-icon { width:42px; height:42px; }
+.tk-cell-state { font-size:11px; color:#666670; line-height:1.4; }
+.tk-status-legend { font-size:11px; padding:12px 4px 0; gap:14px; flex-wrap:wrap; }
+.tk-assistant-shell .tk-right { border:1px solid #e2e2e7; border-radius:20px; background:#fff; box-shadow:none; }
+.tk-asst-tabs { gap:2px; padding:8px; }
+.tk-asst-tabs .tk-asst-tab { flex:1; display:flex; flex-direction:column; min-width:0; min-height:52px; gap:4px; border:0; border-radius:10px; padding:5px 2px; background:transparent; }
+.tk-asst-tabs .tk-role-logo { width:24px; height:24px; background:transparent!important; border-radius:0; }
+.tk-asst-tabs .tk-asst-tab > span:last-child { font-size:11px; color:#67676f; }
+.tk-asst-tabs .tk-asst-tab[aria-selected=true] { background:#eeeef2; box-shadow:none; }
+.tk-asst-context { margin:0 12px; padding:10px 0 12px; }
+.tk-asst-context strong { font-size:14px; color:#303035; }
+.tk-asst-context span { font-size:11px; color:#73737a; }
+.tk-chat-messages { padding:12px; }
+.tk-chat-empty { color:#777780; font-size:13px; }
+.tk-chat-bubble { padding:10px; border-radius:14px; background:#f4f4f7; font-size:13px; line-height:1.65; }
+.tk-chat-bubble.mine { background:#eaeaef; color:#303035; }
+.tk-observation-cards { display:grid; gap:8px; }
+.tk-observation-group { padding:10px; border:1px solid #e0e0e6; border-radius:12px; background:#fff; }
+.tk-observation-group > strong { display:flex; align-items:center; gap:6px; font-size:12px; color:#62626b; }
+.tk-observation-group > p { font-size:13px; line-height:1.65; margin:8px 0 0; }
+.tk-observation-group.needs-check { background:#fffaf0; border-color:#ecd8b0; }
+.tk-observation-boundary { font-size:11px; color:#74747d; }
+.tk-suggestion-disclosure { margin:0 12px; padding:8px 0; font-size:12px; color:#73737b; border-top:1px solid #eaeaef; }
+.tk-suggestion-disclosure > summary { display:flex; align-items:center; gap:6px; cursor:pointer; min-height:28px; }
+.tk-suggestion-disclosure > summary::after { content:'⌄'; margin-left:auto; }
+.tk-suggestion-disclosure[open] > summary::after { content:'⌃'; }
+.tk-asst-suggest button { border-radius:10px; font-size:12px; }
+.tk-chat-composer { padding:8px; border-radius:16px; margin:8px 12px 12px; background:#f2f2f6; border-color:#dedee5; }
+.tk-detail-cards { display:grid; gap:12px; }
+.tk-detail-cards .tk-detail-sec { padding:16px; border:1px solid #e2e2e7; border-radius:16px; background:#fff; margin:0; }
+.tk-detail-cards h3 { display:flex; gap:7px; align-items:center; font-size:14px; }
+.tk-detail-cards .tk-item { line-height:1.65; font-size:13px; }
+.tk-drawer { border-radius:22px 0 0 22px; background:#f5f5f7; }
+.tk-drawer-head { padding:16px; }
+.tk-drawer-head h2 { font-size:18px; }
+.tk-drawer-body { padding:16px; }
+.tk-entry,.tk-directory,.tk-picker { background:#f5f5f7; }
+.tk-role-content { width:min(1120px,calc(100% - 64px)); margin:clamp(48px,12vh,130px) auto 0; }
+.tk-role-content > h1 { font-size:34px; font-weight:600; }
+.tk-role-grid { gap:16px; margin-top:36px; }
+.tk-role-card { min-height:210px; padding:24px 12px; border:1px solid #e2e2e7; border-radius:20px; background:#fff; justify-content:center; }
+.tk-role-card .tk-role-logo { width:72px; height:72px; background:#f4f4f7!important; border-radius:18px; margin-bottom:24px; }
+.tk-role-card .tk-role-logo svg { width:40px; height:40px; }
+.tk-role-card > span.tk-role-value { font-size:15px; letter-spacing:0; white-space:normal; }
+.tk-role-card .tk-role-title { margin:0 0 8px; font-size:20px; font-weight:600; }
+.tk-role-card:hover:not(:disabled) { background:#fff; transform:translateY(-2px); box-shadow:0 6px 18px #00000009; }
+@media(max-width:1200px) {
+  .tk-workspace { --workspace-inset:16px; --workspace-top:16px; --workspace-bottom:16px; --assistant-width:272px; --reading-gap:16px; }
+  .tk-compact-top .tk-node-navigation { flex:1 1 100%; }
+  .tk-compact-top .tk-mainnav { flex:0 1 290px; }
+  .tk-metric-card > strong { font-size:15px; }
+}
+@media(max-width:1050px) {
+  .tk-workspace { overflow-y:auto; }
+  .tk-entry { overflow-y:auto; }
+  .tk-compact-top { margin-right:0; }
+  .tk-case-brief,.tk-finance-summary { margin-right:0; }
+  .tk-unified-workspace { padding-right:0; flex-direction:column; flex:none; gap:16px; }
+  .tk-page-content { min-height:460px; }
+  .tk-global-assistant { position:relative; inset:auto; width:100%; height:480px; flex:none; }
+  .tk-workspace:has(.assistant-collapsed) .tk-global-assistant { height:40px; }
+  .tk-edge-toggle { top:12px; left:auto; right:12px; transform:none; width:28px; height:28px; }
+  .tk-case-brief { grid-template-columns:1fr; }
+  .tk-finance-summary { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .tk-compact-top .tk-mainnav { order:3; flex-basis:100%; }
+  .tk-compact-top .tk-node-navigation { order:4; }
+  .tk-compact-top .tk-role-identity { margin-left:auto; }
+  .tk-role-content { width:calc(100% - 32px); margin-top:36px; }
+  .tk-role-content { padding-bottom:32px; }
+  .tk-role-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .tk-entry-brand { padding:0 20px; }
+  .tk-root .tk-drawer { width:min(96%,680px)!important; min-width:0!important; }
+}
+@media(prefers-reduced-motion:reduce) { .tk-root button { transition:none; } }

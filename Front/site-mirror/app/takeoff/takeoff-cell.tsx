@@ -14,5 +14,6 @@ export function TakeoffCell({ cell, cells, selected, highlighted, exact, onSelec
   return <button type="button" className={`tk-cell${highlighted ? ' tk-hi' : ''}${exact ? ' tk-hi-exact' : ''}`}
     aria-label={name} aria-selected={selected} title={name} onClick={onSelect} onMouseEnter={onHover} onFocus={onHover}>
     <span className={`tk-status-icon ${state.color}`} aria-hidden="true"><StatusObject kind={state.icon}/></span>
+    <span className="tk-cell-state" aria-hidden="true">{state.label.split('，')[0]}</span>
   </button>;
 }

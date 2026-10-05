@@ -91,8 +91,12 @@ test('首次snapshot异步到达：空快照不发起候选读取；快照到达
   assert.deepEqual(calls.readDecisions[0], { customerId: CID, assistant: 'credit' });
   const cards = groupCards();
   assert.equal(cards.length, 2);
-  assert.equal(cards[0].getAttribute('aria-pressed'), 'true', '默认首选=第一候选');
-  assert.match(cards[0].textContent, /建议首选/);
+  // FINAL-02 对照现行契约更新：aria-pressed 只反映服务端已记录的人工选择（feedback.candidateId），
+  // 不再把“排序第一”渲染成“已选中”——默认推荐≠已选择是现行诚实契约（原断言期望首位默认
+  // aria-pressed=true 并显示“建议首选”，恰是契约明确移除的冒充语义）。排序首位展示仍在（编号1+首位渲染）。
+  assert.equal(cards[0].getAttribute('aria-pressed'), 'false', '未记录人工选择前无冒充选中态');
+  assert.match(cards[0].textContent, /^1\./, '排序首位仍按第一候选展示');
+  assert.match(cards[0].textContent, /双击选择/, '未选择态如实提示如何选择');
   for (const c of cards) assert.equal(c.disabled, false, '当前合法候选可点选');
   assert.match(cards[0].textContent, /72%/, '置信度按未校准估计展示');
   assert.ok(screen.getByText(/置信度为模型估计，尚未校准/), '未校准置信度说明可见');

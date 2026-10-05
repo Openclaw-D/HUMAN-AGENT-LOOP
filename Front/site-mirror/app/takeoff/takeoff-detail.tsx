@@ -5,8 +5,11 @@
 import type { WbApi } from '../../lib/workbench/use-workbench';
 import type { TakeoffCellView } from '../../lib/workbench/takeoff-projection';
 import { takeoffDomainName, takeoffRowName } from '../../lib/workbench/takeoff-projection';
+// C1-02：格子抽屉“下一步”与四页简报同源——按 arrow 该区现行状态给下一步，不再固定展示
+ // 与真实进度可能矛盾的静态职责文案；arrow 不可用时回退原职责文案（不编造状态）。
+import { domainNextStepCn, type ArrowProjection } from '../../lib/workbench/case-brief';
 import { HumanVerificationRegister, isVerificationRegisterCell } from './human-verification';
-import { ObjectIcon } from './ui-icons';
+import { ObjectIcon, UiIcon } from './ui-icons';
 
 
 const DOMAIN_TODO: Record<string, string> = {
@@ -25,15 +28,21 @@ export function TakeoffCellDetail({ wb, cell, onOpenPanel, onOpenAssistant, onVi
   onViewMaterials?: () => void;
 }) {
   const snap = wb.snapshot;
-  const latestAssessment = (snap?.assessments ?? []).length > 0 ? (snap?.assessments ?? [])[(snap?.assessments ?? []).length - 1] : null;
+  // R2-02：当前评估=清单序首条非 superseded（A 清单按 assessment_id DESC 最新在前），不盲取末条。
+  const asList = snap?.assessments ?? [];
+  const latestAssessment = (asList.find((a) => a && a.status !== 'superseded') ?? asList[0] ?? null) as (typeof asList)[number] | null;
   const chanFollowups = (snap?.session?.followups ?? []).filter((f) => f?.ownerRole === cell.domain);
   // 当前问题：卡点/冻结/待补优先；无卡点时给该域当前的真实进展（事项清单首条）。
   const problems = cell.items.filter((i) => i.tone === 'red' || i.tone === 'yellow');
   const progress = cell.items.filter((i) => i.tone !== 'red' && i.tone !== 'yellow');
+  // C1-02：下一步=五区 arrow 现行状态驱动的同源文案；无状态信息时回退本专业日常职责。
+  const arrow = (snap as unknown as { admission?: { arrow?: ArrowProjection | null } } | null)?.admission?.arrow ?? null;
+  const zoneNext = domainNextStepCn(cell.domain, arrow);
+  const zoneNextNeedsHuman = zoneNext != null && /确认|重新|核对|补|重跑/.test(zoneNext.what) && !zoneNext.who.startsWith('系统');
   return (
-    <div aria-label={`${takeoffDomainName(cell.domain)}${takeoffRowName(cell.row)}格详情`}>
+    <div className="tk-detail-cards" aria-label={`${takeoffDomainName(cell.domain)}${takeoffRowName(cell.row)}格详情`}>
       <div className="tk-detail-sec">
-        <h3>待处理</h3>
+        <h3><UiIcon name="info" size={19}/>{cell.completed && problems.length === 0 && !cell.frozen ? '当前状态' : '待处理'}</h3>
         {cell.frozen && <div className="tk-item"><span className="tk-dot yellow" />依据有变化，需复核后继续确认。你仍可查看或补充材料。</div>}
         {problems.length === 0 && !cell.frozen && <div className="tk-item"><span className="tk-dot gray" />{cell.completed ? '本项已完成。' : '本项尚未完成，已取得的结果见下方。'}</div>}
         {problems.map((p) => (
@@ -41,8 +50,10 @@ export function TakeoffCellDetail({ wb, cell, onOpenPanel, onOpenAssistant, onVi
         ))}
       </div>
       <div className="tk-detail-sec">
-        <h3>下一步</h3>
-        <div className="tk-item"><span className="tk-dot gray" />{DOMAIN_TODO[cell.domain] ?? '—'}</div>
+        <h3><UiIcon name="arrow" size={19}/>下一步</h3>
+        {zoneNext
+          ? <div className="tk-item"><span className={`tk-dot ${zoneNextNeedsHuman ? 'yellow' : 'gray'}`} />{zoneNext.who}：{zoneNext.what}</div>
+          : <div className="tk-item"><span className="tk-dot gray" />{DOMAIN_TODO[cell.domain] ?? '—'}</div>}
         {chanFollowups.map((f, i) => (
           <div key={i} className="tk-item"><span className="tk-dot yellow" />转会后待办：{f.reason ?? '—'} → {f.nextAction ?? '待定'}</div>
         ))}
@@ -60,7 +71,7 @@ export function TakeoffCellDetail({ wb, cell, onOpenPanel, onOpenAssistant, onVi
         </div>
       </div>
       <div className="tk-detail-sec">
-        <h3>已取得的结果</h3>
+        <h3><UiIcon name="file" size={19}/>已取得的结果</h3>
         {progress.length === 0 && <div className="tk-item"><span className="tk-dot gray" />暂无已登记产出。</div>}
         {progress.map((p) => (
           <div key={p.key} className="tk-item"><span className={`tk-dot ${p.tone === 'green' && !cell.completed ? 'gray' : p.tone}`} />{p.label.replace(/（[^）]*(?:A |authority|adoption|stale=|03协议|scope=)[^）]*）/g, '')}{p.detail && <details className="tk-technical"><summary>详情</summary>{p.detail}</details>}</div>

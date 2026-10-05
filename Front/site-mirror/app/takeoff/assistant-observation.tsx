@@ -3,18 +3,34 @@ import type { WbApi } from '../../lib/workbench/use-workbench';
 import type { WbClient } from '../../lib/workbench/wb-client';
 import { DecisionFeedbackPanel } from './decision-feedback-panel';
 import { observationAnchor, takeoffError, verifiedObservationEvidence, type AssistantObservation, type ModelAssistant } from '../../lib/workbench/takeoff-actions';
+import type { CaseExplanation } from '../../lib/workbench/takeoff-assistant-brief';
+import { UiIcon } from './ui-icons';
+
+function ObservationCards({ result }: { result: AssistantObservation }) {
+  return <div className="tk-observation-cards" aria-label="助手发现与待核验">
+    {result.observations.length > 0 && <section className="tk-observation-group" aria-label="发现">
+      <strong><UiIcon name="sparkle" size={17}/>发现</strong>
+      {result.observations.map((item, index) => <p key={index}>{item.text}</p>)}
+    </section>}
+    {result.questions.length > 0 && <section className="tk-observation-group needs-check" aria-label="待核验问题">
+      <strong><UiIcon name="alert" size={17}/>待核验问题</strong>
+      {result.questions.map((item, index) => <p key={index}>{item.text}</p>)}
+    </section>}
+    <small className="tk-observation-boundary">辅助观察 · 未代替人工核验或批准</small>
+  </div>;
+}
 
 type ObservationState = {
   anchor: string; assistant: ModelAssistant; question: string; at: string;
   plain?: boolean; busy: boolean; unknown: boolean; note: string; result: AssistantObservation | null;
-  /** 无模型时确定性"案例说明"回答（composeCaseExplanation；来源标注非真实模型）。 */
-  deterministic?: string | null;
+  /** 无模型时确定性"案例说明"（composeCaseExplanation：短结论+可展开依据；来源标注非真实模型）。 */
+  deterministic?: string | CaseExplanation | null;
 };
 // 身份会话分区，客户切换/抽屉重新挂载不能解除 unknown 防重发锁。
 const observations = new WeakMap<WbClient, Map<string, ObservationState>>();
 const names: Record<ModelAssistant, string> = { business: '业务', policy: '政策', credit: '信审', commerce: '商务', asset: '资产', jianwei: '见微' };
 
-export function AssistantObservationPanel({ wb, assistant, chat = false, defaultToAssistant = false, mention, onOpenMaterials, suggestions, explainCase }: { wb: WbApi; assistant: ModelAssistant; chat?: boolean; defaultToAssistant?: boolean; mention?: {id: ModelAssistant; nonce: number} | null; onOpenMaterials?: () => void; suggestions?: string[]; explainCase?: (target: ModelAssistant) => string }) {
+export function AssistantObservationPanel({ wb, assistant, chat = false, defaultToAssistant = false, mention, onOpenMaterials, suggestions, explainCase }: { wb: WbApi; assistant: ModelAssistant; chat?: boolean; defaultToAssistant?: boolean; mention?: {id: ModelAssistant; nonce: number} | null; onOpenMaterials?: () => void; suggestions?: string[]; explainCase?: (target: ModelAssistant) => CaseExplanation }) {
   const client = wb.client;
   const customerId = wb.customerId ?? '';
   const key = `${wb.session?.sessionId}:${customerId}`;
@@ -113,7 +129,7 @@ export function AssistantObservationPanel({ wb, assistant, chat = false, default
       const unknown = !definitelyNotSent && problem.unknown;
       // 无模型自由问答：给可理解的确定性"案例说明"（真实投影，来源标注），不给空白/通用失败。
       if (problem.code === 'MODEL_NOT_CONFIGURED' && chat && explainCase) {
-        publish({ ...started, busy: false, unknown: false, deterministic: explainCase(target), note: '模型问答未配置：以下为服务端读面案例说明（非真实模型），可继续用页面按钮办理。' });
+        publish({ ...started, busy: false, unknown: false, deterministic: explainCase(target), note: '未接真实模型：以上为服务端读面说明（非模型回答），可继续用页面按钮办理。' });
         return;
       }
       publish({ ...started, busy: false, unknown, note: unknown
@@ -135,9 +151,17 @@ export function AssistantObservationPanel({ wb, assistant, chat = false, default
           <div className="tk-chat-bubble mine">{item.question}</div>
           <div className="tk-chat-speaker">{item.plain ? "内部消息" : names[item.assistant]} <button type="button" className="tk-quote-message" aria-label="引用这条消息" onClick={() => setQuestion(`「${item.question.slice(0,500)}」\n`)}>引用</button></div>
           <div className="tk-chat-bubble">
-            {item.plain ? item.note : item.busy ? '正在思考…' : item.deterministic ? item.deterministic.split('\n').map((line, li) => <p key={li}>{line}</p>) : available ? <>
-              {item.result!.observations.map((value, index) => <p key={index}>{value.text}</p>)}
-              {item.result!.questions.map((value, index) => <p key={`q-${index}`}>{value.text}</p>)}
+            {item.plain ? item.note : item.busy ? '正在思考…' : item.deterministic ? <>
+              <p>{typeof item.deterministic === 'string'
+                ? item.deterministic
+                : item.deterministic.conclusion}</p>
+              {typeof item.deterministic !== 'string' && item.deterministic.details.length > 0 && <details className="tk-chat-sources">
+                <summary>{item.deterministic.sourceNote} · 原因与依据</summary>
+                {item.deterministic.details.map((line, li) => <p key={li}>{line}</p>)}
+              </details>}
+            </> : available ? <>
+              {item.result!.model.replayed === true && <p className="tk-chat-replayed">历史回放 · 非新调用（同一问题此前的真实模型回执，未重新发起请求）</p>}
+              <ObservationCards result={item.result!}/>
               {verifiedObservationEvidence(item.result!).length > 0 && <details className="tk-chat-sources"><summary>查看依据</summary>
                 {verifiedObservationEvidence(item.result!).map(ref => <p key={ref.id}>{ref.text}</p>)}
               </details>}
@@ -146,9 +170,9 @@ export function AssistantObservationPanel({ wb, assistant, chat = false, default
         </div>;
       })}
     </div>
-    {suggestions && suggestions.length > 0 && <div className="tk-asst-suggest" aria-label="建议提问">
+    {suggestions && suggestions.length > 0 && <details className="tk-suggestion-disclosure"><summary><UiIcon name="sparkle" size={16}/>建议提问</summary><div className="tk-asst-suggest" aria-label="建议提问">
       {suggestions.map(q => <button type="button" key={q} title="点击填入输入框，确认后再发送（只读提问，不推进办理）" onClick={() => { setQuestion(q); setValidation(''); }}>{q}</button>)}
-    </div>}
+    </div></details>}
     <div className="tk-chat-tools" role="toolbar" aria-label="聊天工具">
       <button type="button" aria-label="上传文件" title="上传文件" onClick={onOpenMaterials} disabled={!onOpenMaterials}>＋</button>
       <button type="button" aria-label="引用最近消息" title="引用最近消息" disabled={!history.length} onClick={() => setQuestion(`「${history[history.length-1].question.slice(0,500)}」\n`)}>❞</button>
@@ -175,9 +199,9 @@ export function AssistantObservationPanel({ wb, assistant, chat = false, default
       {changed && <p role="status">工作台依据已变化，旧观察不再展示为当前结果。</p>}
       {state.note && <p role="status">{state.note}</p>}
       {showOutput && <>
-        <strong>{result.model.status === 'simulated' ? '模拟输出（离线替身）' : '模型辅助观察'}</strong>
-        {result.observations.map((item, i) => <p key={`o-${i}`} className="tk-model-text">{item.text}</p>)}
-        {result.questions.length > 0 && <><strong>待核验问题</strong>{result.questions.map((item, i) => <p key={`q-${i}`} className="tk-model-text">{item.text}</p>)}</>}
+        <strong>{result.model.status === 'simulated' ? '模拟输出（离线替身）' : result.model.replayed === true ? '模型辅助观察（历史回放 · 非新调用）' : '模型辅助观察'}</strong>
+        {result.model.replayed === true && <p role="status">本条为此前同一请求的真实回执回放，未重新发起模型调用、不产生新费用。</p>}
+        <ObservationCards result={result}/>
         {verifiedObservationEvidence(result).map(ref => <details key={ref.id} className="tk-technical">
           <summary>查看引用片段 · {ref.locator.kind === 'page_text' ? `第 ${ref.locator.page} 页` : '提取文本位置'} · {ref.locator.start}–{ref.locator.end}</summary>
           <p className="tk-model-text">{ref.text}</p>

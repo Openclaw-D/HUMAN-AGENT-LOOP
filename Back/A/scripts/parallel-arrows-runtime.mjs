@@ -12,6 +12,7 @@ import { buildZoneSemantic } from '../src/domain/zone-semantic.ts';
 import { migrate } from '../src/db/db.ts';
 import { startHttpServer } from '../src/http/server.ts';
 import { runReadyDomains } from '../../B/src/worker/column-runner.mjs';
+import { DEPENDENCY_VERSION } from '../../B/src/worker/column-dependencies.mjs';
 import { startEdgeServer } from '../../Edge/src/server.mjs';
 import { createKernelStore } from '../../Edge/src/kernel-store.mjs';
 import { createSessionStore } from '../../Edge/src/session.mjs';
@@ -93,7 +94,7 @@ export async function createIsolatedArrowRuntime({dbUrl,edgePort=0,aPort=0,seed=
           displayName:c.displayName,scenarioKey:c.id,scenarioLabel:{good:'好',medium:'中',bad:'差'}[c.id],
           scenarioIsOutcome:false,industry:'制造业',annualRevenueCny:c.facts.revenue_annual_declared,
           transaction:c.transaction});}catch{/* Scope is checked per customer; no hidden customer identity leaks. */}}
-      return {ok:true,manifestVersion:'parallel-arrows-cases-v1',exerciseId:seedSuffix,dependencyVersion:'column-deps-v1',cases:visible};
+      return {ok:true,manifestVersion:'parallel-arrows-cases-v1',exerciseId:seedSuffix,dependencyVersion:DEPENDENCY_VERSION,cases:visible};
     };
     a=await startHttpServer(kernel,aPort,{advance,cycles,...(casesHandler?{cases:casesHandler}:{})});const base=`http://127.0.0.1:${a.address().port}`;
     const store=createKernelStore({baseUrl:base});

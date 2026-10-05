@@ -24,6 +24,8 @@ export function workspaceContext(snapshot, assistant) {
     preassessment: a?.preassessment ?? null, frozen: a?.frozen ?? null,
     blockers: a?.blockers ?? [], blockersCount: a?.blockers?.length ?? 0,
     materialsByDomain: Object.fromEntries((a?.cells ?? []).filter(c => c?.row === 'input' && c.domain).map(c => [c.domain, c.satisfiedItemCount ?? null])),
+    // V0.6-01（additive）：arrow 面现行候选投影随上下文进入模型/说明层——同客户同版本四页同源。
+    arrow: a?.arrow ?? null,
     evidenceRefs: [],
   };
 }

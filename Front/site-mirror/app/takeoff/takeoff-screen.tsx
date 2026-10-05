@@ -22,10 +22,11 @@ import { DEMO_CASES } from '../../lib/workbench/demo-cases';
 import type { ColumnReceipt } from '../../lib/workbench/advance-client';
 import { projectColumnReceipts } from './column-projection';
 import { RoundSupplement } from './round-supplement';
-import { ColumnAdvance } from './column-advance';
+import { ColumnAdvance, planBlockOf } from './column-advance';
 import { CyclesPanel } from './cycles-panel';
 import { blockingPredecessor } from './cell-status';
-import { RoleLogo, UiIcon, ObjectIcon } from './ui-icons';
+import { CaseBriefStrip } from './case-brief-strip';
+import { RoleLogo, UiIcon } from './ui-icons';
 import { FlowView, MaterialsView, RecordsView, TodoView, type PanelKey } from './takeoff-aux';
 import { CustomerPortal } from '../workbench/customer-portal';
 import { VerifyPanel } from '../workbench/verify-panel';
@@ -36,6 +37,7 @@ import { WbError, useAction } from '../workbench/wb-parts';
 import './takeoff.css';
 import './glass.css';
 import './compact-workspace.css';
+import './simple-workspace.css'; // V0.6: consistent compact controls and readable content cards.
 
 type DrawerView =
   | { kind: 'cell'; cell: TakeoffCellView }
@@ -125,6 +127,25 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
   const activeRound=rounds.filter(r=>r.domain===(activeColumn==='opportunity'?'business':activeColumn)).sort((a,b)=>b.roundNo-a.roundNo||b.version-a.version)[0];
   const onDomain=(domain:string)=>setColumn({scope:columnScope,domain:(domain==='business'?'opportunity':domain) as TakeoffDomainId});
 
+  // NIGHT-FF2+NIGHT_GATE：计划面静态投影——对当前专业列做一次只读 advance-plan 读取（与按钮流同端点）。
+  // 依赖含 snapshotVersion/session：材料更正（supersede→快照版本前进）或换会话后重新读取，
+  // 避免已解除的红线残留；alive 取消+plan() 内 customerId 校验绑定当前客户（旧响应晚回不写回）。
+  // available:false 且原因有映射才显示；读取失败/未知原因=null=不显示，不冒充阻断也不冒充可用。
+  const planDomain = activeColumn === 'opportunity' ? 'business' : activeColumn;
+  const [planBlock, setPlanBlock] = useState<{ domain: string; reason: string; text: string; next: string; short: string } | null>(null);
+  const sessionKey = wb.session?.sessionId ?? null;
+  useEffect(() => {
+    let alive = true;
+    setPlanBlock(null);
+    const api = wb.client?.advance;
+    if (!api?.plan || !customerId) return;
+    void api.plan(customerId, planDomain).then((p) => {
+      if (!alive) return;
+      setPlanBlock(planBlockOf(p, planDomain));
+    }).catch(() => { if (alive) setPlanBlock(null); /* 计划面不可读≠被阻断：不显示，不推断 */ });
+    return () => { alive = false; };
+  }, [wb.client, customerId, planDomain, wb.snapshotVersion, sessionKey]);
+
 
 
 
@@ -167,16 +188,22 @@ export function TakeoffScreen({ wb, onBackToDirectory, onLogout }: {
         <button className="tk-back-client" onClick={onBackToDirectory} aria-label="切换客户"><UiIcon name="back" size={20}/></button>
         <span className="tk-appbrand"><UiIcon name="jianwei" size={26}/></span>
         <button className="tk-cust-name" onClick={() => setDrawer({ kind: 'customer' })} title={top.customer.displayName || '客户详情'}>{top.customer.displayName || '客户工作区'}</button>
-        <nav className="tk-mainnav" aria-label="客户工作区">{([['board','平台','board'],['materials','材料','materials'],['flow','决策','flow'],['records','流程','timeline']] as const).map(([id,label,icon])=><button key={id} aria-current={page===id?'page':undefined} title={{board:'工作台',materials:'材料清单',flow:'角色流程／决策树',records:'时间轴'}[id]} onClick={()=>{setPage(id);closeDrawer();}}>{icon==='materials'?<ObjectIcon name="materials" size={25}/>:<UiIcon name={icon} size={22}/>}<span>{label}</span></button>)}</nav>
-        <span className="tk-request-amount" title="客户申请金额"><span>申请金额</span> <strong>{top.requestedAmount.text}</strong></span>
+        <nav className="tk-mainnav" aria-label="客户工作区">{([['board','平台','board'],['materials','材料','materials'],['flow','决策','flow'],['records','流程','timeline']] as const).map(([id,label,icon])=><button key={id} aria-current={page===id?'page':undefined} title={{board:'工作台',materials:'材料清单',flow:'角色流程／决策树',records:'时间轴'}[id]} onClick={()=>{setPage(id);closeDrawer();}}><UiIcon name={icon} size={20}/><span>{label}</span></button>)}</nav>
         <details className="tk-work-actions" open={moreOpen} onClick={e => { const target=e.target as HTMLElement; if(target.closest('summary')){e.preventDefault();setMoreOpen(v=>!v);}else if(target.closest('button'))setMoreOpen(false); }}><summary aria-label="更多客户操作">更多</summary>{moreOpen&&<div><button onClick={() => setDrawer({kind:'admission'})}>需求与申请</button><button onClick={() => setDrawer({kind:'todos'})}>待办事项</button><button onClick={() => setDrawer({kind:'cycles'})}>履约·结清·返单</button><button onClick={() => openPanel('proposal')}>建议方案</button><button onClick={() => setEndOpen(true)}>确认预评估结论</button><span>{phaseText}</span></div>}</details>
-        <ColumnAdvance key={columnScope} wb={wb} customerId={customerId} domain={activeColumn==='opportunity'?'business':activeColumn} onDomain={onDomain} onReceipts={setRounds} onOpenMaterials={() => openPanel('materials')} onFinished={() => void openFinished()}/>
+        <ColumnAdvance key={columnScope} wb={wb} customerId={customerId} domain={activeColumn==='opportunity'?'business':activeColumn} onDomain={onDomain} onReceipts={setRounds} onOpenMaterials={() => openPanel('materials')} onFinished={() => void openFinished()} planBlock={planBlock}/>
 
         <button className="tk-role-identity" onClick={onLogout} title="切换角色"><RoleLogo role={role} size={23}/><span>{workRoleName(wb.session?.roles)}</span></button>
         {demoCase && <small className="tk-demo-badge" title="本客户为模拟案例：合成材料与受控外部事件；分析、规则与记录来自真实服务端。">模拟案例</small>}
       </header>
       <WbError error={wb.error} onDismiss={() => wb.setError(null)} />
-      <div className="tk-case-summary" aria-label="当前客户建议摘要">{[['建议额度',top.suggestedAmount],['建议期限',top.suggestedTerm],['参考价格',top.referencePrice]].map(([label,value]) => <span key={String(label)}>{String(label)} · <span>{(value as {text:string}).text}</span></span>)}</div>
+      <CaseBriefStrip source={currentSource} customerName={top.customer.displayName} planBlock={planBlock} separateAmounts />
+      <div className="tk-finance-summary" aria-label="当前客户建议摘要">
+        {[['申请金额',top.requestedAmount],['建议额度',top.suggestedAmount],['建议期限',top.suggestedTerm],['参考价格',top.referencePrice]].map(([label,value]) => <div className="tk-metric-card" key={String(label)}><span>{String(label)}</span><strong>{(value as {text:string}).text}</strong></div>)}
+        <details className="tk-plan-marks">
+          <summary><UiIcon name="info" size={16}/>版本依据</summary>
+          <span>{top.planMarks.join(' · ')}</span>
+        </details>
+      </div>
       {terminal && <CaseEnding key={terminal.recordId} record={terminal} onRecords={() => { setPage('records'); setDrawer(null); }}/>}
       <div className={`tk-unified-workspace${assistantCollapsed ? ' assistant-collapsed' : ''}`}>
         <main className="tk-page-content">

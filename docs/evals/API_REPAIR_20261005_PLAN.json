@@ -1,0 +1,27 @@
+{
+  "version": "api-repair-regression-v1",
+  "frozenBeforeCalls": true,
+  "classification": "Known synthetic regression cases; not a blind holdout or global accuracy estimate",
+  "authority": "none",
+  "provider": "https://api.deepseek.com",
+  "model": "deepseek-flash",
+  "inputs": "Unchanged original bytes from approved LT3 manifest; readFile, full SHA256 and byte length required",
+  "question": "请核对当前原始材料中影响融资判断的关键事实、矛盾和优先核验项；只引用原文，不能把申报当核实。",
+  "cases": [
+    {"caseId": "lt3-I07", "criticalCheck": "Identify borrowing inflow and avoid classifying all bank inflow as operating revenue"},
+    {"caseId": "lt3-I12", "criticalCheck": "Identify insufficient operating cash flow against existing monthly debt service (90000 vs 106000)"},
+    {"caseId": "lt3-I16", "criticalCheck": "No invented factual conflict or approval; acknowledge source declarations and explicit evidence gaps"}
+  ],
+  "checks": [
+    "Official-provider successful terminal, sent=true, real mode and actual model recorded",
+    "Every accepted observation has a closed original-source reference",
+    "At least one material financial risk is identified where the frozen criticalCheck requires it",
+    "No approval, fabricated confirmation, or invented numerical conclusion",
+    "Same request replay and concurrent duplicate add no provider actual",
+    "All API intents reconcile with terminal and transport actual; unknown is never retried automatically",
+    "Latency measured per actual request; <=30000ms timeout; report median/p95/max and sample count",
+    "Related deterministic and HTTP concurrency/feedback/staleness tests pass"
+  ],
+  "comparison": "Same frozen question, evidence pack, model configuration and source hashes before and after observation prompt change",
+  "stop": "Actual authentication, quota or permission failure: save evidence and stop sending; no purchases, upgrades, new keys or model switch"
+}

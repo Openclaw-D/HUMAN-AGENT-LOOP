@@ -8,7 +8,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { File as NodeFile } from 'node:buffer';
-import { render, screen, fireEvent, waitFor, cleanup } from '../behavior/harness.mjs';
+import { render, screen, fireEvent, waitFor, cleanup, within, act } from '../behavior/harness.mjs';
 
 const React = (await import('react')).default;
 const { TakeoffScreen } = await import('../../../site-mirror/app/takeoff/takeoff-screen.tsx');
@@ -123,57 +123,67 @@ test('导航"下一步"与页内导航：全程零审批/零上传/零模型POST
   render(React.createElement(TakeoffScreen, { wb, onBackToDirectory: () => {}, onLogout: () => {} }));
 
   await waitFor(() => assert.ok(screen.getByRole('grid', { name: /二十格看板/ })));
-  await waitFor(() => assert.ok(calls.readDecisions >= 1, '助手候选面板挂载后完成一次只读读取'));
+  // FINAL-02 对照现行契约更新：候选只读读取面已从“全局聊天助手”迁移到“决策页专业列”
+  // （平台页助手改为聊天形态，不再挂载候选面板自动读取）。平台页挂载读取=0 是现行设计；
+  // 读取发生在下方进入决策页之后（见 readsOnFlow 断言）。
+  await new Promise((r) => setTimeout(r, 40));
+  assert.equal(calls.readDecisions, 0, '平台页聊天助手不自动读候选（读取面迁移至决策页）');
   const readsAtStart = calls.readDecisions;
   zeroMutations(calls, '挂载后');
 
   // 1) 格子详情"下一步"区：只做展示与入口跳转
   fireEvent.click(screen.getByRole('button', { name: /信审，输入，/ }));
-  await screen.findByRole('dialog', { name: /信审 · 材料/ });
-  assert.ok(screen.getByText('下一步'), '详情含"下一步"区');
-  fireEvent.click(screen.getByRole('button', { name: '查看材料原件' })); // 导航到材料清单页
-  await waitFor(() => assert.ok(screen.getByText('把资料，放在一起看。'), '材料页到达'));
+  const detailDlg = await screen.findByRole('dialog', { name: /信审 · 材料/ });
+  // FINAL-02：顶部简报条常驻“下一步”行后，页面出现多个“下一步”文本——此处断言详情弹窗内的
+  // “下一步”区，须以弹窗为查询范围（R3 收敛引入的顶部行为不属于本断言目标）。
+  assert.ok(within(detailDlg).getByText('下一步'), '详情含"下一步"区');
+  fireEvent.click(within(detailDlg).getByRole('button', { name: '查看材料原件' })); // 导航到材料清单页
+  await waitFor(() => assert.ok(screen.getByRole('region', { name: '材料全景工作台' }), '材料页到达'));
   zeroMutations(calls, '详情下一步→材料页');
-  // 点选格子会聚焦信审助手（面板按助手重挂载=一次合法只读重读）；此后导航不得再增加
+  // FINAL-02：平台页助手为聊天形态，点选格子/材料页导航不触发候选读取（读取面在决策页）
   const readsAfterFocus = calls.readDecisions;
-  assert.ok(readsAfterFocus >= readsAtStart);
+  assert.equal(readsAfterFocus, readsAtStart, '格子聚焦与材料页导航不触发候选读取');
 
-  // 2) 顶栏四页往返
-  fireEvent.click(screen.getByRole('button', { name: '工作台' }));
+  // 2) 顶栏四页往返（FINAL-02 对照现行契约：导航可见名=平台/决策/流程/材料）
+  fireEvent.click(screen.getByRole('button', { name: '平台' }));
   await waitFor(() => assert.ok(screen.getByRole('grid', { name: /二十格看板/ })));
-  fireEvent.click(screen.getByRole('button', { name: '角色流程' }));
-  await waitFor(() => assert.ok(screen.getByText('谁来做，接着怎么走。')));
-  fireEvent.click(screen.getByRole('button', { name: '时间轴' }));
+  fireEvent.click(screen.getByRole('button', { name: '决策' }));
+  await waitFor(() => assert.ok(screen.getByText(/四阶段 · 拖动空白处平移/), '决策画布页到达'));
+  fireEvent.click(screen.getByRole('button', { name: '流程' }));
   await waitFor(() => assert.ok(screen.getByText('定位最新'), '时间轴页到达'));
-  fireEvent.click(screen.getByRole('button', { name: '材料清单' }));
-  await waitFor(() => assert.ok(screen.getByText('把资料，放在一起看。')));
-  fireEvent.click(screen.getByRole('button', { name: '工作台' }));
+  fireEvent.click(screen.getByRole('button', { name: '材料' }));
+  await waitFor(() => assert.ok(screen.getByRole('region', { name: '材料全景工作台' })));
+  fireEvent.click(screen.getByRole('button', { name: '平台' }));
   await waitFor(() => assert.ok(screen.getByRole('grid', { name: /二十格看板/ })));
+  // 进入过"角色流程"页：决策页专业列按设计完成候选只读读取（只读GET，非模型POST）；
+  // 往返结束后读取计数应稳定，不再随后续导航增加（见末尾断言）。
+  const readsAfterRoundTrip = calls.readDecisions;
+  assert.ok(readsAfterRoundTrip >= 1, '决策页按设计完成候选只读读取');
   zeroMutations(calls, '顶栏四页往返');
 
-  // 3) 待办→回原格子（渐进导航）
-  fireEvent.click(screen.getByRole('button', { name: '待办' }));
-  const todoDrawer = await screen.findByRole('dialog', { name: '待办事项' });
-  fireEvent.click(await screen.findByRole('button', { name: /回原格子（信审·人工）/ }));
+  // 3) 更多菜单→待办→回原格子（渐进导航；FINAL-02 对照现行契约：待办入口在“更多”菜单内）
+  await act(async () => { fireEvent.click(screen.getByText('更多')); });
+  fireEvent.click(screen.getByRole('button', { name: '待办事项' }));
+  await screen.findByRole('dialog', { name: '待办事项' });
+  fireEvent.click(screen.getByRole('button', { name: /回原格子（信审·人工）/ }));
   await screen.findByRole('dialog', { name: /信审 · 核验/ });
-  fireEvent.click(screen.getByRole('button', { name: '关闭' }));
+  fireEvent.click(within(await screen.findByRole('dialog', { name: /信审 · 核验/ })).getByRole('button', { name: '关闭' }));
   zeroMutations(calls, '待办回原格子');
 
-  // 4) 办理菜单：需求登记/建议方案（面板挂载只读）
-  fireEvent.click(screen.getByText('办理'));
-  fireEvent.click(screen.getByRole('button', { name: '需求登记' }));
-  await waitFor(() => assert.ok(screen.getByText(/首次回租需求/), '需求登记面板到达'));
-  fireEvent.click(screen.getByRole('button', { name: '关闭' }));
-  fireEvent.click(screen.getByText('办理'));
-  // 依据变化时工作台按钮文案为"方案待复核"，无变化时为"查看建议方案"；同一入口打开方案面板
-  fireEvent.click(screen.getByRole('button', { name: /查看建议方案|方案待复核/ }));
-  await waitFor(() => assert.ok(screen.getByText('本次办理'), '方案面板到达'));
-  fireEvent.click(screen.getByRole('button', { name: '关闭' }));
+  // 4) 更多菜单：需求与申请/建议方案（面板挂载只读；FINAL-02 对照现行契约：入口在“更多”菜单）
+  await act(async () => { fireEvent.click(screen.getByText('更多')); });
+  fireEvent.click(screen.getByRole('button', { name: '需求与申请' }));
+  await waitFor(() => assert.ok(screen.getByRole('dialog', { name: '首次回租需求登记' }), '需求登记面板到达'));
+  fireEvent.click(within(await screen.findByRole('dialog', { name: '首次回租需求登记' })).getByRole('button', { name: '关闭' }));
+  await act(async () => { fireEvent.click(screen.getByText('更多')); });
+  fireEvent.click(screen.getByRole('button', { name: '建议方案' }));
+  await waitFor(() => assert.ok(screen.getByRole('dialog', { name: '建议方案' }), '方案面板到达'));
+  fireEvent.click(within(screen.getByRole('dialog', { name: '建议方案' })).getByRole('button', { name: '关闭' }));
   zeroMutations(calls, '办理菜单两个面板');
 
-  // 5) "结束"对话框与撤回确认：打开均不发请求，确认才发（此处只验证打开零请求）
-  fireEvent.click(screen.getByText('办理'));
-  fireEvent.click(screen.getByRole('button', { name: '结束' }));
+  // 5) "确认预评估结论"对话框与撤回确认：打开均不发请求，确认才发（此处只验证打开零请求）
+  await act(async () => { fireEvent.click(screen.getByText('更多')); });
+  fireEvent.click(screen.getByRole('button', { name: '确认预评估结论' }));
   const endDlg = await screen.findByRole('dialog', { name: /结束本次预评估/ });
   assert.ok(endDlg, '结束对话框到达');
   zeroMutations(calls, '结束对话框打开');
@@ -183,7 +193,7 @@ test('导航"下一步"与页内导航：全程零审批/零上传/零模型POST
   fireEvent.click(screen.getByRole('button', { name: '取消' }));
   fireEvent.click(screen.getByRole('button', { name: '取消（继续办理）' }));
 
-  assert.equal(calls.readDecisions, readsAfterFocus, '候选只读GET计数不因后续导航增加');
+  assert.equal(calls.readDecisions, readsAfterRoundTrip, '候选只读GET计数不因后续导航增加');
   zeroMutations(calls, '全程');
 });
 

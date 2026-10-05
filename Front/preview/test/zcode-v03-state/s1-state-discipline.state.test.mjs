@@ -144,31 +144,34 @@ test('计时器不能自行推进业务：lock静止tick后仍lock；running扳�
   lockView.unmount(); runView.unmount(); doneView.unmount();
 });
 
-test('StatusObject：开锁动画走完仍停在wrench；旧解锁计时器不能覆盖失败cross；静止挂载无过渡', async (t) => {
+test('StatusObject：开锁过渡走完仍停在wrench；失败即时如实显示；静止挂载无过渡', async (t) => {
   t.mock.timers.enable({ apis: ['setTimeout'] });
   const view = render(React.createElement(StatusObject, { kind: 'lock' }));
   const scene = () => view.container.querySelector('.tk-status-scene');
   assert.equal(scene().dataset.transition, undefined, '首帧无过渡');
 
-  // 未开始→处理中：unlock过渡（含钥匙），计时器走完仍是wrench（视觉不制造完成）
+  // 未开始→处理中：unlock过渡（FINAL-02 对照现行呈现契约：钥匙元素已改为翻牌动画
+  // tk-status-flipper 前后脸，原 .tk-unlock-key 断言随呈现改版淘汰），计时器走完仍是wrench（视觉不制造完成）
   view.rerender(React.createElement(StatusObject, { kind: 'wrench' }));
   assert.equal(scene().dataset.transition, 'unlock');
-  assert.ok(view.container.querySelector('.tk-unlock-key'), '开锁动画含钥匙元素');
+  assert.ok(view.container.querySelector('.tk-status-flipper'), 'unlock 过渡含翻牌动画元素');
   act(() => t.mock.timers.tick(3000));
   assert.equal(scene().dataset.state, 'wrench', '计时器不能把wrench推成check');
   assert.equal(scene().dataset.transition, undefined);
-  assert.equal(view.container.querySelector('.tk-unlock-key'), null, '过渡结束钥匙移除');
+  assert.equal(view.container.querySelector('.tk-status-flipper'), null, '过渡结束翻牌元素移除');
 
-  // 处理中→明确失败：fail过渡；此前的解锁计时器不能把cross再推走
+  // 处理中→明确失败：现行设计失败无过渡动画（即时如实换脸，不播放 finish/unlock）；
+  // 此前的解锁计时器不能把cross再推走
   view.rerender(React.createElement(StatusObject, { kind: 'cross' }));
-  assert.equal(scene().dataset.transition, 'fail');
+  assert.equal(scene().dataset.transition, undefined, '失败即时显示，无过渡动画');
   act(() => t.mock.timers.tick(3000));
   assert.equal(scene().dataset.state, 'cross', '旧计时器不能覆盖失败状态');
   assert.equal(scene().dataset.transition, undefined);
 
-  // 失败→真实完成：finish过渡走完停在check；卸载重挂不重播
+  // 失败→真实完成：现行设计 cross→check 无过渡动画（finish 仅 wrench→check），即时如实换脸；
+  // 卸载重挂不重播
   view.rerender(React.createElement(StatusObject, { kind: 'check' }));
-  assert.equal(scene().dataset.transition, 'finish');
+  assert.equal(scene().dataset.transition, undefined, 'cross→check 无过渡（finish 仅 wrench→check）');
   act(() => t.mock.timers.tick(2000));
   assert.equal(scene().dataset.state, 'check');
   view.unmount();

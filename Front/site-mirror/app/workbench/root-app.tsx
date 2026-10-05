@@ -11,6 +11,7 @@ import { VirtualWorkbench } from '../takeoff/virtual-workbench';
 import { useWorkbench } from '../../lib/workbench/use-workbench';
 import '../takeoff/takeoff.css';
 import '../takeoff/glass.css';
+import '../takeoff/simple-workspace.css';
 
 export function RootApp() {
   if (new URLSearchParams(window.location.search).get('demo') === 'virtual') {

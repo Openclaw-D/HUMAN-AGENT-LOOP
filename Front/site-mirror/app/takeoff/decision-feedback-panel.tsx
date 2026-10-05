@@ -43,7 +43,12 @@ export function DecisionFeedbackPanel({ wb, assistant, requiredQuestion, onState
       EVIDENCE_NOT_AUTHORIZED: '材料尚未获得分析授权，请联系负责同事核对。',
       INVALID_RESPONSE: '返回内容未通过核对，暂不显示建议。请刷新后重试。',
     };
-    return messages[code] ?? '本次结果尚未确认，请刷新查看进展，暂勿重复提交。';
+    // LT-02 UI-B：证据类失败按当前助手所属专业标域（读面按 assistant 分域取证据），
+    // 不与上方其他专业的冲突/缺件警示混写；非证据类保持原文。
+    const evidenceCodes = new Set(['EVIDENCE_UNAVAILABLE', 'EVIDENCE_MISSING', 'EVIDENCE_NOT_AUTHORIZED']);
+    const side = ({ business: '业务', policy: '政策', credit: '信审', commerce: '商务', asset: '资产', jianwei: '见微' } as Record<string, string>)[assistant];
+    const text = messages[code] ?? '本次结果尚未确认，请刷新查看进展，暂勿重复提交。';
+    return evidenceCodes.has(code) && side ? `${side}侧：${text}` : text;
   }
   async function checked(value: DecisionResponse, startAnchor: string) {
     const fresh = await client!.workspace(customerId!);
