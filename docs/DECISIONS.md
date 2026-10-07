@@ -262,3 +262,8 @@ User requires one frontend preserving native materials/tree/timeline, driven by 
 ## 2026-10-05 · 用户授权个人修复与简洁交互
 
 用户明确要求 Codex 亲自修复至 API 稳定、快速、准确，并更新 Git；随后要求 1.5X、全面修复及 Apple 风格的简单交互，以符号和分区卡片减少大段文字。本次允许 Codex 作为唯一 writer 直接完成 API 局部修复与前端收敛，覆盖本轮旧委派/源码冻结，禁止内部 subagent/worktree 继续有效。1.5X 暂按加快交付节奏理解；不虚称已改语音速度或 API 固定提速。人工决定、原件等级、审批门和产品北极星不改变。真实回归只用已批准合成原件、既有官方配置；Git 更新不授权部署、清库或重启共享栈。验收与限制见 [API_REPAIR_20261005_ACCEPTANCE](evals/API_REPAIR_20261005_ACCEPTANCE.md)。
+
+
+## 2026-10-07 用户授权 Git 合入，不打 tag
+
+用户明确要求“merge进去就可以，别tag了”，随后要求继续。本轮允许将已安装且核准的产品源码、匹配 Front/dist、必要回归与脱敏验收说明提交推送当前 main；不创建/移动 tag，不部署或重启共享栈，不恢复夜间任务、扩展真实 API 测试或安装未独验候选。原历史材料、原始运行日志、凭据/数据库与无关在制改动不纳入本次提交。整体 PARTIAL 与 D9 OPEN/商务 BLOCKED/model authority none 保留。

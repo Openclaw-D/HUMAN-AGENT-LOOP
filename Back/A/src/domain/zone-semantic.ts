@@ -97,7 +97,7 @@ export function buildZoneSemantic(options: { configPath: string; receiptsDir: st
     await ensureTransport();
     if (!transport) return { status: 'not_configured', note: 'MODEL_NOT_CONFIGURED：调用未发送' };
     // 证据宇宙：候选自身引用的材料/规则，可引用集合闭合校验的依据。
-    const assessment = ctx.candidate?.assessment ?? {};
+    const assessment = ctx.candidate?.assessment ?? ctx.candidate ?? {}; // [A1候选v2] 引擎 job.result 平铺 assessment 字段，回退顶层取值
     const allowed = new Set<string>([
       ...((assessment.evidenceRefs ?? []) as Data[]).map(r => String(r.materialId)),
       ...((ctx.candidate?.unreadable ?? []) as Data[]).map((r: Data) => String(r.materialId)),

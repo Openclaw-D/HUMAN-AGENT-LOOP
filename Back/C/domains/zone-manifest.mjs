@@ -44,7 +44,7 @@ const ZONES = [
   {
     domain: 'credit',
     title: '信审',
-    inputs: { factKeys: ['monthly_operating_cash_flow', 'monthly_debt_service', 'new_debt_monthly_payment', 'top1_customer_revenue_share', 'video_liveliness', 'material_page_count', 'transaction_scope'], materials: '同上', rulePack: '同上' },
+    inputs: { factKeys: ['monthly_operating_cash_flow', 'monthly_debt_service', 'new_debt_monthly_payment', 'top1_customer_revenue_share', 'video_liveliness', 'material_page_count', 'revenue_annual_declared', 'total_assets_declared', 'total_liabilities_declared', 'net_profit_annual_declared', 'operating_cash_flow_annual_declared', 'gross_margin_declared', 'transaction_scope', 'risk_disclosure_excerpt'], materials: '同上', rulePack: '同上' },
     dependsOn: { upstreamDomains: [], note: '与商机/政策并行；并行不等于无依赖——候选项的核验建议会引用其他区缺口，但评估本身只吃事实' },
     executionIdentity: 'A 服务身份须持有 credit 角色',
     executor: { kind: 'deterministic-worker-thread', module: 'C assessCredit', modelCalls: '默认无' },

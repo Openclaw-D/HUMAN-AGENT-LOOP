@@ -61,6 +61,33 @@ function topFact(projection, factKey, { caliber = null } = {}) {
   return all.reduce((a, b) => (rank[b.verificationLevel] >= rank[a.verificationLevel] ? b : a));
 }
 
+// [A1候选v3] 年报事实键→中文名（年度事实参考贯通；不推月度、不提确认等级、不作放行依据）
+const ANNUAL_FACT_DEFS = [
+  ['revenue_annual_declared', '年度营业收入'],
+  ['total_assets_declared', '年度总资产'],
+  ['total_liabilities_declared', '年度总负债'],
+  ['net_profit_annual_declared', '年度净利润'],
+  ['operating_cash_flow_annual_declared', '年度经营现金流'],
+  ['gross_margin_declared', '年度毛利率申报'],
+];
+const annualLvOk = (f) => ['source_supported', 'verified'].includes(f.verificationLevel);
+// 单位族判定：未申报 → null（绝不默认 CNY）；cny/wan 同族才可比较
+const annualUnitFamily = (f) => { const u = f.unit; if (u === undefined || u === null || u === '') return null;
+  if (['CNY', '元', '人民币'].includes(u)) return 'cny';
+  if (['wan', '万元'].includes(u)) return 'wan';
+  return 'other:' + String(u); };
+const annualUnitText = (f) => ((f.unit === undefined || f.unit === null || f.unit === '') ? '单位未申报' : String(f.unit));
+// 口径查找按【factKey+materialId+值+核验级】精确绑定（R1 FAIL 整改：禁止跨 factKey 同金额错取）；
+// 命中多条且口径不一致=歧义（ambiguous），歧义/缺证一律转 UNKNOWN 保留来源
+const annualCaliberOf = (projection, f, factKey) => {
+  const cals = [...new Set(projection.items
+    .filter(x => x.factKey === factKey && x.materialId === f.materialId && x.value === f.value && x.verificationLevel === f.verificationLevel)
+    .map(x => (x.caliber === undefined || x.caliber === null || x.caliber === '') ? null : x.caliber))];
+  if (cals.length === 0) return { caliber: null, ambiguous: false };
+  if (cals.length > 1) return { caliber: null, ambiguous: true, cals };
+  return { caliber: cals[0], ambiguous: false };
+};
+
 // ---------------------------------------------------------------- 政策域
 
 export function assessPolicy({ snapshot, projection, ruleEvaluation, now = () => new Date().toISOString() }) {
@@ -178,7 +205,55 @@ export function assessCredit({ snapshot, projection, thresholds, coverageRuleApp
   a.summary = coverage !== null
     ? `信审解释性意见（${rulesetNote}）：覆盖率 ${coverage}；未知项 ${a.unknowns.length} 条；意见为候选，不构成结论`
     : `信审解释性意见（${rulesetNote}）：关键现金流输入缺失或等级不足，覆盖结论不可计算（不补数）；未知项 ${a.unknowns.length} 条`;
-  a.evidenceRefs = [op, ds, newDebt, top1].filter(Boolean).map(factRef);
+  // [A1候选v3] 年度事实参考：有即记 knownFacts；单位/口径如实显示（缺=「未申报」/「口径歧义」），绝不默认 CNY
+  const annualRefs = [];
+  for (const [annualKey, annualLabel] of ANNUAL_FACT_DEFS) {
+    const f = topFact(projection, annualKey);
+    if (!f || typeof f.value !== 'number') continue;
+    const c = annualCaliberOf(projection, f, annualKey);
+    const caliberText = c.ambiguous ? '口径歧义（同事实多口径）' : (c.caliber !== null ? `口径 ${c.caliber}` : '口径未申报');
+    a.knownFacts.push(`年度事实参考：${annualLabel} ${f.value} ${annualUnitText(f)}（${f.verificationLevel}，来源 ${f.materialId}，${caliberText}；年度口径，不推月度，不作放行依据）`);
+    annualRefs.push(f);
+  }
+  // [A1候选v3] 年度风险信号——仅口径证据充分（同 factKey 精确绑定、非歧义、双方已申报且一致）时判定；缺口转 UNKNOWN 保留来源
+  {
+    const ta = topFact(projection, 'total_assets_declared');
+    const tl = topFact(projection, 'total_liabilities_declared');
+    if (ta && tl && typeof ta.value === 'number' && typeof tl.value === 'number' && annualLvOk(ta) && annualLvOk(tl)) {
+      const ca = annualCaliberOf(projection, ta, 'total_assets_declared');
+      const cl = annualCaliberOf(projection, tl, 'total_liabilities_declared');
+      const fa = annualUnitFamily(ta); const fl = annualUnitFamily(tl);
+      const srcNote = `（来源 ${ta.materialId}/${tl.materialId}）`;
+      if (ca.ambiguous || cl.ambiguous) {
+        a.unknowns.push(`年度资产负债口径歧义（${ca.ambiguous ? `总资产多口径 ${JSON.stringify(ca.cals ?? [])}` : ''}${ca.ambiguous && cl.ambiguous ? '；' : ''}${cl.ambiguous ? `总负债多口径 ${JSON.stringify(cl.cals ?? [])}` : ''}）：资不抵债判定转 UNKNOWN，保留来源${srcNote}`);
+      } else if (fa === null || fl === null) {
+        a.unknowns.push(`年度资产负债单位缺证（总资产${annualUnitText(ta)}，总负债${annualUnitText(tl)}）：资不抵债判定转 UNKNOWN，不默认币种${srcNote}`);
+      } else if (ca.caliber !== null && cl.caliber !== null && ca.caliber !== cl.caliber) {
+        a.unknowns.push(`年度资产负债口径不一致（${ca.caliber} vs ${cl.caliber}）：不做资不抵债比较，需同口径复核${srcNote}`);
+      } else if (ca.caliber === null || cl.caliber === null) {
+        a.unknowns.push(`年度资产负债口径/年度缺证（${ca.caliber === null ? '总资产口径未申报' : ''}${cl.caliber === null ? '总负债口径未申报' : ''}）：资不抵债判定转 UNKNOWN，保留来源${srcNote}`);
+      } else if (fa !== fl) {
+        a.unknowns.push(`年度资产负债单位族不一致（${ta.unit} vs ${tl.unit}）：不做资不抵债比较，需同口径复核${srcNote}`);
+      } else if (ta.value > 0 && tl.value > ta.value) {
+        a.findingsSuspicion.push({ note: `年度口径资不抵债信号：总负债 ${tl.value}${tl.unit} 严格大于总资产 ${ta.value}${ta.unit}（申报值待核验，口径 ${ca.caliber}）：需人工风险复核`, evidenceRefs: [factRef(ta), factRef(tl)] });
+      } else if (ta.value > 0 && tl.value === ta.value) {
+        a.knownFacts.push(`年度口径：总负债 ${tl.value}${tl.unit} 与总资产 ${ta.value}${ta.unit} 相等（口径 ${ca.caliber}）——不构成资不抵债判定，是否需其他口径复核待人工判断`);
+      }
+    }
+    const np = topFact(projection, 'net_profit_annual_declared');
+    if (np && typeof np.value === 'number' && np.value < 0 && annualLvOk(np)) {
+      a.findingsSuspicion.push({ note: `年度净利润为负（亏损申报 ${np.value} ${annualUnitText(np)}）：需人工风险复核（亏损幅度/行业口径未核，不作\"巨亏\"定性）`, evidenceRefs: [factRef(np)] });
+    }
+    const gm = topFact(projection, 'gross_margin_declared');
+    if (gm && typeof gm.value === 'number' && gm.value < 0 && annualLvOk(gm)) {
+      a.findingsSuspicion.push({ note: `年度毛利率申报为负（负毛利 ${gm.value}${gm.unit ?? ''}）：需人工风险复核（申报值待核验）`, evidenceRefs: [factRef(gm)] });
+    }
+    const cf = topFact(projection, 'operating_cash_flow_annual_declared');
+    if (cf && typeof cf.value === 'number' && cf.value < 0 && annualLvOk(cf)) {
+      a.findingsSuspicion.push({ note: `年度经营现金流为负 ${cf.value} ${annualUnitText(cf)}（申报值待核验）：需人工风险复核`, evidenceRefs: [factRef(cf)] });
+    }
+  }
+  a.evidenceRefs = [op, ds, newDebt, top1, ...annualRefs].filter(Boolean).map(factRef);
   const run = baseRun({ domain: 'credit', snapshot, rulesetVersion: thresholds.versions.business, now });
   const v = validateDomainAnalysis({ analysisRun: run, assessment: a }, snapshot);
   if (!v.ok) return { ok: false, reasons: v.reasons };

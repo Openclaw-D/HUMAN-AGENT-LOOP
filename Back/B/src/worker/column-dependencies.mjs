@@ -39,7 +39,8 @@ export function candidateMaterials(materials,facts){
 }
 const KEYSETS={
   business:['revenue_annual_declared','new_order_amount_declared','litigation_pending_declared','total_assets_declared','total_liabilities_declared'],
-  credit:['monthly_operating_cash_flow','monthly_debt_service','new_debt_monthly_payment','top1_customer_revenue_share','video_liveliness','material_page_count'],
+  credit:['monthly_operating_cash_flow','monthly_debt_service','new_debt_monthly_payment','top1_customer_revenue_share','video_liveliness','material_page_count',
+    'revenue_annual_declared','total_assets_declared','total_liabilities_declared','net_profit_annual_declared','operating_cash_flow_annual_declared','gross_margin_declared','risk_disclosure_excerpt'],
   commerce:['lease_term_months','proposed_monthly_rent','funding_cost_annual','fees_known'],
   asset:['equipment_ownership_verified','equipment_exists_observed','equipment_deal_amount','nameplate_serial','equipment_model'],
 };

@@ -1,0 +1,234 @@
+{
+  "schemaVersion": 1,
+  "candidate": "main incremental merge after V0.6.0",
+  "generatedAt": "2026-10-07T09:50:40.112Z",
+  "base": "71b50d2cc1b91e4681df914c772682b7733a9aa4",
+  "newTag": false,
+  "overallAcceptance": "PARTIAL",
+  "sourceAndBuild": [
+    {
+      "path": "Back/B/src/worker/column-dependencies.mjs",
+      "sha256": "253055904e103d803567ecb74bf9f289e80bc9f8b16f09250c3087c074918661",
+      "bytes": 7029
+    },
+    {
+      "path": "Back/C/domains/assessors.mjs",
+      "sha256": "41f4ed4978368056d8bffa8679eae3d179981004fa50384d22c4479f8f84f6b9",
+      "bytes": 28925
+    },
+    {
+      "path": "Back/C/domains/zone-manifest.mjs",
+      "sha256": "f17e78df876882c8daa47a71ee6be48fd79c854d36db1b7e205e311d924f456f",
+      "bytes": 8321
+    },
+    {
+      "path": "Back/A/src/domain/zone-semantic.ts",
+      "sha256": "fe4b13fe2ccf17f2c6033a0279c4c6c44b3f44180763ef498035a990ebec1755",
+      "bytes": 14494
+    },
+    {
+      "path": "Front/site-mirror/app/takeoff/work-timeline.tsx",
+      "sha256": "534f5f5de981a2c875e2c5d37afc54c7ee7cd5d33bfb9b1c96f3db3cf839712f",
+      "bytes": 11652
+    },
+    {
+      "path": "Front/dist/assets/index-C0hFv4-A.js",
+      "sha256": "bf6df6aa8d582bfb5dc4badc56aaffcd75ceefa9953bb6acabf3d728dddc3241",
+      "bytes": 537876
+    },
+    {
+      "path": "Front/dist/assets/index-T-UhuXqx.css",
+      "sha256": "b9b7519237210d9e886b012e6fc5f9f219fe4c1a592c6139909dd241d41e2554",
+      "bytes": 105464
+    },
+    {
+      "path": "Front/dist/assets/pdf-BcWFNYq-.js",
+      "sha256": "3a1791662665054984a001c8b9e16928570f8d625ff0f8d8f3157464bd3b37fe",
+      "bytes": 431182
+    },
+    {
+      "path": "Front/dist/assets/pdf.worker.min-BiMwkZSR.js",
+      "sha256": "e3e2117ce0d1ae2f3c6d3f429a8cfbb03923f72143f2714f54702ee2a42662e8",
+      "bytes": 64
+    },
+    {
+      "path": "Front/dist/assets/pdf.worker.min-CK_pjWcW.js",
+      "sha256": "21cdf80e98776346a6c6165a6e26a2c004179a730a17bab250d2fd6a1616b0ea",
+      "bytes": 1173924
+    },
+    {
+      "path": "Front/dist/index.html",
+      "sha256": "e17134fd413cf3ef11390bda4ed1e601db97832a75cef1a1c5eaaaa9f7092942",
+      "bytes": 641
+    },
+    {
+      "path": "Front/dist/objects/analysis-v1.png",
+      "sha256": "6a1f6792daf72f99d5e2417342133a70b99a356fa18fc5acbb61d9f9222338b6",
+      "bytes": 961034
+    },
+    {
+      "path": "Front/dist/objects/asset-v1.png",
+      "sha256": "d99cf7758973420e3d29a5d16c08cd725f7e40b625c51346051c78488565dbdb",
+      "bytes": 1098036
+    },
+    {
+      "path": "Front/dist/objects/branch-v1.png",
+      "sha256": "407bd2e0814f5da9a76b702dc2c6bbe0cdf433e7cb1d2858e19f5dfd1f92c178",
+      "bytes": 868190
+    },
+    {
+      "path": "Front/dist/objects/business-v1.png",
+      "sha256": "9b5da79f0058d578a2e8451a3136441943b7f1562c540245000e8eecfe6f125a",
+      "bytes": 1109993
+    },
+    {
+      "path": "Front/dist/objects/closure-v1.png",
+      "sha256": "63567616baac880d1ca6beb49677313dc5583113cbefc3e384f4b88ec69c9583",
+      "bytes": 973924
+    },
+    {
+      "path": "Front/dist/objects/commerce-v1.png",
+      "sha256": "fba21e5c3e31c63deaea3d25c850bbe330b46ac19962ead126b507cc2161501a",
+      "bytes": 1424848
+    },
+    {
+      "path": "Front/dist/objects/credit-v1.png",
+      "sha256": "7a1c9a2f46253edc58db7ae9bb1a7167d6cecbea2f5510ead403009baa41d81e",
+      "bytes": 1338698
+    },
+    {
+      "path": "Front/dist/objects/desk-v1.png",
+      "sha256": "76afec02def76882f3dbb8cabb9312bcec0234c83fb4f367a43aadfd9abec787",
+      "bytes": 959457
+    },
+    {
+      "path": "Front/dist/objects/equipment-v1.png",
+      "sha256": "637576df394e5d2879c779d10b629c1a2eef5d02d8d3662e7b58d526d097b382",
+      "bytes": 1590651
+    },
+    {
+      "path": "Front/dist/objects/eye-natural-v2.png",
+      "sha256": "dbee38206e9c2e2f446e452cfed93c03b49cbe51c4fced81161703898da34fb2",
+      "bytes": 893388
+    },
+    {
+      "path": "Front/dist/objects/eye-v3.png",
+      "sha256": "d10c597a3ae181d2a99088c8eed2ef6bd04cdb1034efa012ab78907604469b5c",
+      "bytes": 708618
+    },
+    {
+      "path": "Front/dist/objects/license-v1.png",
+      "sha256": "be9edaf2ea1a6f59cc2cf83542721e64a43fd68d1b64bccac8a7469e5c0fc232",
+      "bytes": 1673913
+    },
+    {
+      "path": "Front/dist/objects/materials-v1.png",
+      "sha256": "af7945e5f39d0c0a64611a5fb5d4208c164ba0ddd3739bb23c4e04a43c6a0d48",
+      "bytes": 2007720
+    },
+    {
+      "path": "Front/dist/objects/policy-v1.png",
+      "sha256": "7c18b55d0788fc451d437574ec3aff973b06683d1ed6b4e03876262c62da56e2",
+      "bytes": 934549
+    },
+    {
+      "path": "Front/dist/objects/statement-v1.png",
+      "sha256": "94672766c44804b1b7957ef265cd9e7e8bf4c948eb5feb87632455db9b126946",
+      "bytes": 1319920
+    },
+    {
+      "path": "Front/dist/objects/timeline-v1.png",
+      "sha256": "e1885fd7ea18d89fa22b4d074237fe37eecf4ceb486710b08f63a3982ee73062",
+      "bytes": 793373
+    },
+    {
+      "path": "Front/dist/objects/verify-v1.png",
+      "sha256": "8b38cec32d9dbdcc2b2b59bc077c151d9a2e45cc8f019a77502a8ec426ec326e",
+      "bytes": 1153261
+    },
+    {
+      "path": "Front/dist/status/check-v1.png",
+      "sha256": "4d112de571bdbfce2b5427beb81379ced60a7da3281b3c3c7ec9e98685bc9077",
+      "bytes": 758190
+    },
+    {
+      "path": "Front/dist/status/cross-v1.png",
+      "sha256": "2f70b3d2d349fa72d3551b25e42b3e99c6a077f405596d404441dadd854524da",
+      "bytes": 956620
+    },
+    {
+      "path": "Front/dist/status/key-v1.png",
+      "sha256": "9130f5a24c5c4778d87536c02e6421ae39bfc2a94843dd817954b5047c86018a",
+      "bytes": 691806
+    },
+    {
+      "path": "Front/dist/status/lock-v1.png",
+      "sha256": "fc6227a6830948e703d4c084f474eb346cf9034f58faed052ed905b30e9467c4",
+      "bytes": 1228041
+    },
+    {
+      "path": "Front/dist/status/open-lock-v1.png",
+      "sha256": "1d6c204b35d98ff5ea211c44951467bdfda3469bee8a03ee7a93eb64928c71e0",
+      "bytes": 1139070
+    },
+    {
+      "path": "Front/dist/status/wrench-v1.png",
+      "sha256": "f329a510fd3dbfcdeb71d778333fd2ae96f634c8ed8e72fb1248d5fc61a28345",
+      "bytes": 1043139
+    }
+  ],
+  "validation": {
+    "relatedTests": {
+      "passed": 50,
+      "failed": 0
+    },
+    "frontTypecheck": "PASS",
+    "kernelTypecheck": "PASS",
+    "build": "existing R2 successful build retained; all 29 dist files match installed frozen version",
+    "newRealApiCallsForMerge": 0
+  },
+  "historicalRealApi": {
+    "window": "2026-10-06 night to 2026-10-07 09:30 Asia/Taipei",
+    "actual": 28,
+    "assistant": 12,
+    "semantic": 16,
+    "pending": 0,
+    "fees": "UNKNOWN",
+    "publicCases": 2,
+    "newSixCasesCompleted": 0,
+    "contentAcceptance": "NOT_PASSED",
+    "receiptLatencyMs": {
+      "median": 2836.5,
+      "p95": 3688,
+      "scope": "six latest semantic receipt spans only; not end-to-end latency"
+    }
+  },
+  "include": [
+    "five installed product source changes",
+    "annual-credit regression test and test entry",
+    "matching Front/dist assets",
+    "release notes and sanitized acceptance summary"
+  ],
+  "exclude": [
+    ".local",
+    "runtime configuration and credentials",
+    "databases and browser profiles",
+    "raw API logs and responses",
+    "unreviewed historical tests and material directories",
+    "uninstalled preview and runner candidates"
+  ],
+  "knownIssues": [
+    "B credit arithmetic difference is 40000 CNY wrong",
+    "B operating-profit unit confused",
+    "A guarantee/control and B parent/consolidated risk distinctions incompletely surfaced",
+    "current/historical receipt convergence runner not accepted",
+    "new six case campaign and full product role/source chain incomplete"
+  ],
+  "authority": {
+    "D9": "OPEN",
+    "D6": "existing limited accepted scope",
+    "commerce": "HUMAN_SELECTION_REQUIRED/L1L2/shared-role policy BLOCKED",
+    "model": "none"
+  },
+  "deployment": "not authorized by this merge; running shared services unchanged"
+}

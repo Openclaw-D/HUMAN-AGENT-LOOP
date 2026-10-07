@@ -13,6 +13,7 @@ const files = [
   'contract-adapter.test.mjs',
   'four-domain.test.mjs',
   'four-domain-matrix.test.mjs',
+  'annual-credit-regression.test.mjs',
   'rule-negative.test.mjs',
   'gate-adapter.test.mjs',
   'intake-normalize.test.mjs',
@@ -30,5 +31,5 @@ const targets = only.length > 0 ? only.map((f) => path.join(here, f)) : files;
 console.log(`[test] 运行 ${targets.length} 个测试文件：`);
 for (const f of targets) console.log(`  - ${path.basename(f)}`);
 
-const r = spawnSync(process.execPath, ['--test', ...targets], { stdio: 'inherit' });
+const r = spawnSync(process.execPath, ['--experimental-strip-types', '--test', ...targets], { stdio: 'inherit' });
 process.exit(r.status ?? 1);
