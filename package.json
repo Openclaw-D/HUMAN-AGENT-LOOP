@@ -1,0 +1,16 @@
+{
+  "name": "human-agent-loop",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.13.0" },
+  "scripts": {
+    "start": "node Back/src/server.mjs",
+    "dev": "npm --prefix Front run dev",
+    "build": "npm --prefix Front run build",
+    "typecheck": "npm --prefix Front run typecheck",
+    "test": "node --test --test-concurrency=1 Back/test/*.test.mjs",
+    "test:front": "npm --prefix Front test",
+    "check:domain": "node scripts/check-scope.mjs"
+  }
+}
